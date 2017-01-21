@@ -1,0 +1,14 @@
+{
+  "platform": "ios",
+  "source": {
+    "type":"googlesheet",
+    "column_key":"key",
+    "column_locales":["base", "ru"],
+    "column_comment":"base",
+    "column_quantity":"quantity",
+    "id":"1JZxUcu30BjxLwHg12bdHTxjDgsGFX9HA9zC4Jd8cuUM",
+    "worksheet_title":"Strings"
+  },
+  "duplicate_comment":false,
+  "root_dir":"../out/ios/"
+}

@@ -1,0 +1,8 @@
+rootProject.name = 'loco-laser'
+
+include 'core'
+include 'source-googlesheet'
+include 'platform-mobile'
+
+include 'locolaser-mobile-google'
+
