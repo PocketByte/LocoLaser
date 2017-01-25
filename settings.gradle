@@ -1,4 +1,4 @@
-rootProject.name = 'loco-laser'
+rootProject.name = 'locolaser'
 
 include 'core'
 include 'source-googlesheet'

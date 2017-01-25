@@ -29,19 +29,9 @@ jar {
     manifest {
         attributes('Main-Class': "$mainClassName")
     }
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-}
 
-// Load credentials for bintray publication
-File propFile = project.rootProject.file('local.properties')
-if (propFile.exists()) {
-    Properties props = new Properties()
-    props.load(propFile.newDataInputStream())
-    ext {
-        bintrayUser = props.get("bintray.user")
-        bintrayApikey = props.get("bintray.apikey")
-        bintrayGpgPassphrase = props.get("bintray.gpgPassphrase")
-    }
+    // Include all libraries into result JAR file.
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 task sourceJar(type: Jar) {
@@ -68,7 +58,6 @@ publishing {
         locolaserPublication(MavenPublication) {
             from components.java
             groupId 'ru.pocketbyte.locolaser'
-//            artifactId 'locolaser'
             artifactId 'locolaser-mobile-googlesheet'
             version project.version
             pom.withXml {
@@ -87,10 +76,10 @@ publishing {
 
 bintray {
     publish = true
-    override = true
+    override = false
 
-    user = bintrayUser
-    key = bintrayApikey
+    user = project.hasProperty('bintray.publish.user') ? project.properties.get("bintray.publish.user") : "-"
+    key = project.hasProperty('bintray.publish.apikey') ? project.properties.get("bintray.publish.apikey") : "-"
     pkg {
         repo = 'maven'
         name = 'locolaser-mobile-googlesheet'
@@ -104,7 +93,7 @@ bintray {
             desc = 'Tool for Android and iOS to import localized strings from Google Sheets.'
             released  = new Date()
             vcsTag = project.version
-            gpg.passphrase = bintrayGpgPassphrase
+            gpg.passphrase = project.properties.get("bintray.publish.gpgPassphrase")
         }
         publications = ['locolaserPublication']
     }
