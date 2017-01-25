@@ -24,6 +24,12 @@ import java.io.IOException;
  */
 public class IosPluralResourceFile  extends ResourceStreamFile {
 
+    private static final String[] FORMAT_VARIANTS = new String[]{
+            "%d", "%D", "%u", "%U",
+            "%x", "%X", "%o", "%O",
+            "%f", "%F", "%e", "%E",
+            "%g", "%G", "%a", "%A"
+    };
 
     private final String mLocale;
 
@@ -81,6 +87,19 @@ public class IosPluralResourceFile  extends ResourceStreamFile {
                     writeStringLn("        <dict>");
                     writeStringLn("            <key>NSStringFormatSpecTypeKey</key>");
                     writeStringLn("            <string>NSStringPluralRuleType</string>");
+                    writeStringLn("            <key>NSStringFormatValueTypeKey</key>");
+
+                    // Searching format
+                    String format = "f";
+                    for (String formatString: FORMAT_VARIANTS) {
+                        if (resItem.valueForQuantity(Quantity.OTHER).value.contains(formatString)) {
+                            format = formatString.substring(1);
+                            break;
+                        }
+                    }
+                    writeString("            <string>");
+                    writeString(format);
+                    writeStringLn("</string>");
 
                     for (ResValue resValue: resItem.values) {
 
@@ -109,7 +128,6 @@ public class IosPluralResourceFile  extends ResourceStreamFile {
                 .replace("'", "\\'")
                 .replace("\"", "\\\"")
                 .replace("\n", "\\n")
-                .replace("%s", "%@")
                 .replace("<", "&lt;");
         return string;
     }
@@ -119,7 +137,6 @@ public class IosPluralResourceFile  extends ResourceStreamFile {
                 .replace("\\'", "'")
                 .replace("\\\"", "\"")
                 .replace("\\n", "\n")
-                .replace("%@", "%s")
                 .replace("&lt;", "<");
 
         return string;

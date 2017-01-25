@@ -25,8 +25,8 @@ import static org.junit.Assert.assertNotNull;
  */
 public class IosPluralResourceFileTest {
 
-    private static String testString = "?'test';:<tag>\"value\nsecond line\" %s<tagg/>";
-    private static String platformTestString = "?\\'test\\';:&lt;tag>\\\"value\\nsecond line\\\" %@&lt;tagg/>";
+    private static String testString = "?'test';:<tag>\"value\nsecond line\" %d<tagg/>";
+    private static String platformTestString = "?\\'test\\';:&lt;tag>\\\"value\\nsecond line\\\" %d&lt;tagg/>";
 
     @Rule
     public TemporaryFolder tempFolder= new TemporaryFolder();
@@ -56,6 +56,8 @@ public class IosPluralResourceFileTest {
                 "        <dict>\n" +
                 "            <key>NSStringFormatSpecTypeKey</key>\n" +
                 "            <string>NSStringPluralRuleType</string>\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\n" +
+                "            <string>d</string>\n" +
                 "            <key>one</key>\n" +
                 "            <string>String one</string>\n" +
                 "            <key>two</key>\n" +
@@ -72,6 +74,8 @@ public class IosPluralResourceFileTest {
                 "        <dict>\n" +
                 "            <key>NSStringFormatSpecTypeKey</key>\n" +
                 "            <string>NSStringPluralRuleType</string>\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\n" +
+                "            <string>d</string>\n" +
                 "            <key>zero</key>\n" +
                 "            <string>String 3 zero</string>\n" +
                 "            <key>few</key>\n" +
@@ -149,6 +153,8 @@ public class IosPluralResourceFileTest {
                 "        <dict>\n" +
                 "            <key>NSStringFormatSpecTypeKey</key>\n" +
                 "            <string>NSStringPluralRuleType</string>\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\n" +
+                "            <string>f</string>\n" +
                 "            <key>other</key>\n" +
                 "            <string>String</string>\n" +
                 "            <key>one</key>\n" +
@@ -165,6 +171,8 @@ public class IosPluralResourceFileTest {
                 "        <dict>\n" +
                 "            <key>NSStringFormatSpecTypeKey</key>\n" +
                 "            <string>NSStringPluralRuleType</string>\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\n" +
+                "            <string>f</string>\n" +
                 "            <key>other</key>\n" +
                 "            <string>String 3</string>\n" +
                 "            <key>few</key>\n" +
@@ -195,6 +203,8 @@ public class IosPluralResourceFileTest {
                 "        <dict>\n" +
                 "            <key>NSStringFormatSpecTypeKey</key>\n" +
                 "            <string>NSStringPluralRuleType</string>\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\n" +
+                "            <string>d</string>\n" +
                 "            <key>other</key>\n" +
                 "            <string>" + platformTestString + "</string>\n" +
                 "        </dict>\n" +
@@ -243,6 +253,8 @@ public class IosPluralResourceFileTest {
                 "        <dict>\n" +
                 "            <key>NSStringFormatSpecTypeKey</key>\n" +
                 "            <string>NSStringPluralRuleType</string>\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\n" +
+                "            <string>d</string>\n" +
                 "            <key>other</key>\n" +
                 "            <string>" + platformTestString + "</string>\n" +
                 "            <key>one</key>\n" +
