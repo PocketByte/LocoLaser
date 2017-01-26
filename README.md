@@ -1,64 +1,16 @@
 # LocoLaser
-It's the simple tool for Android and iOS to import localized strings from Google Sheets.
-### How to use
-##### Android studio. Gradle:
-1) Create folder '**_build-tool-libs_**' inside module folder.<br>
-2) Put '**_locolaser-google.jar_**' into '**_build-tool-libs_**'.<br>
-3) Put config file into module folder.<br>
-
-Project file structure should looks following:
-```
-Module folder
-├─ build
-│   └─ ...
-├─ build-tool-libs
-│   └─ locolaser-google.jar
-├─ src
-│   └─ ...
-│   ...
-├─ build.gradle
-└─ locolaser_config.json
-```
-
-4) Edit module **_build.gradle_** to:<br>
-```java
-apply plugin: 'com.android.application'
-
-android {
-    ...
-}
-
-// Add new configuration
-configurations {
-    build_tool
-}
-
-dependencies {
-
-    ...
-
-    // Add LocoLaser jar to the build_tool configuration
-    build_tool files('build-tool-libs/locolaser-google.jar')
-}
-
-// Run LocoLaser before build
-preBuild.doFirst {
-    javaexec {
-        classpath configurations.build_tool
-        main = "ru.pocketbyte.locolaser.Main"
-        args = ["locolazer_config.json"]
-        ignoreExitValue = false
-    }
-}
-```
-Done!
-##### Console command example:
+LocoLaser - Localization tool for Android and iOS to import localized strings from Google Sheets.
+##### Related Git's
+Gradle plugin: https://github.com/PocketByte/locolaser-gradle-plugin
+<br>Android Example: https://github.com/PocketByte/locolaser-android-example
+<br>iOS Example: https://github.com/PocketByte/locolaser-ios-example
+### Run from Console
+You can run LocoLaser jar file from console:
 ```
 java -jar locolaser-google.jar locolaser_config.json
 ```
-
 ### Config structure
-Config is a JSON object that must contain configuration of platform and source.<br>
+Config is a JSON object that must contain configuration of platform and source.
 For example:
 ```json
 {
@@ -107,7 +59,7 @@ Google Sheet should contain following properties:<br>
 - **`delay`** - Long. Time in minutes that define delay for next localization. Localization will executed not more often the specified delay. If force import switch on delay will be ignored.
 
 ### Console arguments
-You can override config properties by adding following additional console arguments:
+You can override config properties by adding additional console arguments:
 - **`--force`** or **`--f`** - Sets `force_import = true`.
 - **`--export`** or **`--e`** - Sets `conflict_strategy = export_new_local`.
 - **`-delay`** - Long. Override config property `delay`.
