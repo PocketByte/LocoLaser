@@ -8,6 +8,7 @@ package ru.pocketbyte.locolaser.source.google.sheet;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import com.google.gdata.util.ResourceNotFoundException;
 import com.google.gdata.util.ServiceException;
 import ru.pocketbyte.locolaser.config.source.BaseTableSourceConfig;
@@ -121,6 +122,14 @@ public class GoogleSheetConfig extends BaseTableSourceConfig {
     private SpreadsheetEntry prepareSheetEntry(SpreadsheetService service) {
         SpreadsheetEntry entry;
         try {
+            // !!! Bug workaround. Start !!!
+            // Some times when used service account the server returns response with wrong content type.
+            // Invoke getFeed request first, before getEntry.
+            service.getFeed(new URL(
+                    "https://spreadsheets.google.com/feeds/spreadsheets/private/full?xoauth_requestor_id=test"),
+                    WorksheetFeed.class);
+            // !!! Bug workaround. End !!!
+
             entry = service.getEntry(getUrl(), SpreadsheetEntry.class);
         } catch (ResourceNotFoundException e) {
             e.printStackTrace();
