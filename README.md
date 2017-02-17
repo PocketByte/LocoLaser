@@ -49,7 +49,7 @@ Google Sheet should contain following properties:<br>
 - **`credential_file`** - String. Path to OAUth credential file. Not necessary property.
 
 ##### Other config properties
-- **`root_dir`** - String. Path to root directory. Other related paths will be related to this root dir. By default is directory of the configuration file.
+- **`work_dir`** - String. Path to work directory. Other related paths will be related to this work dir. By default is directory of the configuration file.
 - **`force_import`** - Boolean. Import doesn't execute without a need, but if `force_import` is `true` import will be executed any way.
 - **`conflict_strategy`** - String. Define which action should performed for conflicts. There is 3 actions:
   * `remove_local` - Remove local resources and replace it with resources from sheet. Default value.

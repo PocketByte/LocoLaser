@@ -120,15 +120,15 @@ public class ConfigParserTest {
     }
 
     @Test
-    public void testJsonRootDir() throws IOException, ParseException, InvalidConfigException {
-        String newRootDir = "./new/root/dir";
+    public void testJsonWorkDir() throws IOException, ParseException, InvalidConfigException {
+        String newWorkDir = "./new/work/dir";
         HashMap<String, Object> map = new HashMap<>();
-        map.put(ConfigParser.ROOT_DIR, newRootDir);
+        map.put(ConfigParser.WORK_DIR, newWorkDir);
 
         File file = prepareMockFile(map);
         Config config = mConfigParser.fromFile(file);
 
-        assertEquals(new File(file.getParentFile(), newRootDir).getCanonicalPath(), System.getProperty("user.dir"));
+        assertEquals(new File(file.getParentFile(), newWorkDir).getCanonicalPath(), System.getProperty("user.dir"));
     }
 
     @Test

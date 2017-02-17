@@ -37,8 +37,8 @@ public class SummaryTest {
 
     @Before
     public void init() throws IOException {
-        File rootFolder = tempFolder.newFolder();
-        System.setProperty("user.dir", rootFolder.getCanonicalPath());
+        File workDir = tempFolder.newFolder();
+        System.setProperty("user.dir", workDir.getCanonicalPath());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class SummaryTest {
         JSONObject json = (JSONObject) JSON_PARSER.parse(jsonString);
         Summary summary = new Summary(file, json);
 
-        assertEquals(file, summary.file);
+        assertEquals(file.getCanonicalPath(), summary.file.getCanonicalPath());
         assertEquals(new FileSummary(123, "test"), summary.getConfigSummary());
         assertEquals(23132123, summary.getSourceModifiedDate());
         assertEquals(new FileSummary(1233, "test1"), summary.getResourceSummary("en"));

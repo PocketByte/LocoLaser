@@ -30,7 +30,7 @@ public class ConfigParser {
 
     public static final String SOURCE = "source";
     public static final String PLATFORM = "platform";
-    public static final String ROOT_DIR = "root_dir";
+    public static final String WORK_DIR = "work_dir";
 
     public static final String FORCE_IMPORT = "force_import";
     public static final String CONFLICT_STRATEGY = "conflict_strategy";
@@ -101,9 +101,9 @@ public class ConfigParser {
         reader.close();
 
         System.setProperty("user.dir", file.getParentFile().getCanonicalPath());
-        String rootDir = JsonParseUtils.getString(configJson, ROOT_DIR, null, false);
-        if (rootDir != null)
-            System.setProperty("user.dir", new File(rootDir).getCanonicalPath());
+        String workDir = JsonParseUtils.getString(configJson, WORK_DIR, null, false);
+        if (workDir != null)
+            System.setProperty("user.dir", new File(workDir).getCanonicalPath());
 
         Config config = new Config();
         config.setFile(file);

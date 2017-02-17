@@ -49,8 +49,8 @@ public class LocoLaserTest {
 
     @Before
     public void init() throws IOException {
-        File rootFolder = tempFolder.newFolder();
-        System.setProperty("user.dir", rootFolder.getCanonicalPath());
+        File workDir = tempFolder.newFolder();
+        System.setProperty("user.dir", workDir.getCanonicalPath());
 
         Summary.setFactory(new Summary.Factory() {
             @Override
@@ -78,7 +78,7 @@ public class LocoLaserTest {
         sourceConfig = new MockSourceConfig("mockSource", source, new HashSet<>(Arrays.asList("en", "ru")));
 
         config = new Config();
-        config.setFile(new File(rootFolder, "config.json"));
+        config.setFile(new File(workDir, "config.json"));
         config.setPlatform(platformConfig);
         config.setSourceConfig(sourceConfig);
 
