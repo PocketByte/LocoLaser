@@ -90,7 +90,7 @@ bintray {
         issueTrackerUrl = 'https://github.com/PocketByte/LocoLaser/issue'
         version {
             name = project.version
-            desc = 'Tool for Android and iOS to import localized strings from Google Sheets.'
+            desc = 'Localization tool for Android and iOS to import localized strings from Google Sheets'
             released  = new Date()
             vcsTag = project.version
             gpg.passphrase = project.properties.get("bintray.publish.gpgPassphrase")
