@@ -168,14 +168,16 @@ public class IosResourceFile extends ResourceStreamFile {
     static String toPlatformValue(String string) {
         string = string
                 .replace("\"", "\\\"")
-                .replace("\n", "\\n");
+                .replace("\n", "\\n")
+                .replaceAll("%([0-9]{0,})s", "%$1@");
         return string;
     }
 
     static String fromPlatformValue(String string) {
         string = string
                 .replace("\\\"", "\"")
-                .replace("\\n", "\n");
+                .replace("\\n", "\n")
+                .replaceAll("%([0-9]{0,})@", "%$1s");
         return string;
     }
 }

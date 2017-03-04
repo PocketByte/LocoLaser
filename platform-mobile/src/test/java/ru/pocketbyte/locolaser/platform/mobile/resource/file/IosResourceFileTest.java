@@ -25,8 +25,8 @@ import static org.junit.Assert.*;
  */
 public class IosResourceFileTest {
 
-    static String testString = "?'test';:<tag>\"value\nsecond line\" %s<tagg/>";
-    static String platformTestString = "?'test';:<tag>\\\"value\\nsecond line\\\" %s<tagg/>";
+    static String testString = "?'test';:<tag>\"value\nsecond line\" %1s %2s %s<tagg/>";
+    static String platformTestString = "?'test';:<tag>\\\"value\\nsecond line\\\" %1@ %2@ %@<tagg/>";
 
     @Rule
     public TemporaryFolder tempFolder= new TemporaryFolder();
