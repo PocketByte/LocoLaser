@@ -10,7 +10,7 @@ You can run LocoLaser jar file from console:
 java -jar locolaser-google.jar locolaser_config.json
 ```
 ### Config structure
-Config is a JSON object that must contain configuration of platform and source.
+Config is a file with JSON object that must contain configuration of platform and source.
 For example:
 ```json
 {
@@ -25,7 +25,7 @@ For example:
 ```
 ##### Platform
 Platform can be defined by single string("android" or "ios") or by JSON object.<br>
-JSON object should contain following properties:<br>
+JSON object may contain following properties:<br>
 - **`type`** - String. Type of the platform ("android" or "ios").
 - **`res_name`** - String. Resource name.
   * Default Android: "strings",
@@ -38,7 +38,7 @@ JSON object should contain following properties:<br>
   * Default iOS: ".\\\\tmp\\\\".
 
 ##### Google Sheet
-Google Sheet should contain following properties:<br>
+Google Sheet may contain following properties:<br>
 - **`type`** - String. Type of the source. Must be "googlesheet". Not necessary property but if you want to be sure that you use right tool you should define it.
 - **`id`** - String. ID of the Google Sheet. You can get it from sheet url (https://docs.google.com/spreadsheets/d/**sheet_id**).
 - **`worksheet_title`** - Title of the worksheet with localized strings. Not necessary property, by default will used first worksheet of the sheet.
@@ -52,21 +52,21 @@ Google Sheet should contain following properties:<br>
 - **`work_dir`** - String. Path to work directory. Other related paths will be related to this work dir. By default is directory of the configuration file.
 - **`force_import`** - Boolean. Import doesn't execute without a need, but if `force_import` is `true` import will be executed any way.
 - **`conflict_strategy`** - String. Define which action should performed for conflicts. There is 3 actions:
-  * `remove_local` - Remove local resources and replace it with resources from sheet. Default value.
-  * `keep_new_local` - Keep local resource if sheet doesn't contain this resource.
-  * `export_new_local` -  Resource should be exported from locale resources into sheet if sheet doesn't contain this resource.
+  * `remove_platform` - Remove platform resources and replace it with resources from sheet. Default value.
+  * `keep_new_platform` - Keep new platform resources if sheet doesn't contain this resources.
+  * `export_new_platform` -  New platform resources should be exported into source if source doesn't contain this resources.
 - **`duplicate_comments`** - Boolean. If false comment will not be written if it equal localized string. Default value false.
 - **`delay`** - Long. Time in minutes that define delay for next localization. Localization will executed not more often the specified delay. If force import switch on delay will be ignored.
 
 ### Console arguments
 You can override config properties by adding additional console arguments:
-- **`--force`** or **`--f`** - Sets `force_import = true`.
-- **`--export`** or **`--e`** - Sets `conflict_strategy = export_new_local`.
+- **`--force`** or **`--f`* - Sets `force_import = true`.
+- **`-cs`** - String. Override config property `conflict_strategy`.
 - **`-delay`** - Long. Override config property `delay`.
 
 For example:
 ```
-java -jar locolaser-google.jar locolaser_config.json --f --e
+java -jar locolaser-google.jar locolaser_config.json --f -cs export_new_platform
 ```
 
 ## License

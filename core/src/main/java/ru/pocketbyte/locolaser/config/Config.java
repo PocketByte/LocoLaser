@@ -38,14 +38,14 @@ public class Config {
 
     public enum ConflictStrategy {
 
-        /** Remove local resources and replace it with resources from source. */
-        REMOVE_LOCAL,
+        /** Remove platform resources and replace it with resources from source. */
+        REMOVE_PLATFORM,
 
-        /** Keep local resource if source doesn't contain this resource. */
-        KEEP_NEW_LOCAL,
+        /** Keep new platform resources if source doesn't contain this resources. */
+        KEEP_NEW_PLATFORM,
 
-        /** Resource should be exported from local resources into source if source doesn't contain this resource. */
-        EXPORT_NEW_LOCAL
+        /** New platform resources should be exported into source if source doesn't contain this resources. */
+        EXPORT_NEW_PLATFORM
     }
 
     // =================================================================================================================
@@ -110,7 +110,7 @@ public class Config {
     }
 
     /**
-     * Sets which strategy should be processed for conflicts. Default value: REMOVE_LOCAL.
+     * Sets which strategy should be processed for conflicts. Default value: REMOVE_PLATFORM.
      * @param strategy see {@link ru.pocketbyte.locolaser.config.Config.ConflictStrategy}
      */
     public void setConflictStrategy(ConflictStrategy strategy) {
@@ -179,7 +179,7 @@ public class Config {
      */
     public ConflictStrategy getConflictStrategy() {
         if (mConflictStrategy == null)
-            return ConflictStrategy.REMOVE_LOCAL;
+            return ConflictStrategy.REMOVE_PLATFORM;
         return mConflictStrategy;
     }
 

@@ -38,9 +38,9 @@ public class ConfigParser {
     public static final String DELAY = "delay";
 
     public static class ConflictStrategy {
-        public static final String REMOVE_LOCAL = "remove_local";
-        public static final String KEEP_NEW_LOCAL = "keep_new_local";
-        public static final String EXPORT_NEW_LOCAL = "export_new_local";
+        public static final String REMOVE_PLATFORM = "remove_platform";
+        public static final String KEEP_NEW_PLATFORM = "keep_new_platform";
+        public static final String EXPORT_NEW_PLATFORM = "export_new_platform";
     }
 
     /**
@@ -132,12 +132,12 @@ public class ConfigParser {
             return null;
 
         switch (strategy) {
-            case ConflictStrategy.REMOVE_LOCAL:
-                return Config.ConflictStrategy.REMOVE_LOCAL;
-            case ConflictStrategy.KEEP_NEW_LOCAL:
-                return Config.ConflictStrategy.KEEP_NEW_LOCAL;
-            case ConflictStrategy.EXPORT_NEW_LOCAL:
-                return Config.ConflictStrategy.EXPORT_NEW_LOCAL;
+            case ConflictStrategy.REMOVE_PLATFORM:
+                return Config.ConflictStrategy.REMOVE_PLATFORM;
+            case ConflictStrategy.KEEP_NEW_PLATFORM:
+                return Config.ConflictStrategy.KEEP_NEW_PLATFORM;
+            case ConflictStrategy.EXPORT_NEW_PLATFORM:
+                return Config.ConflictStrategy.EXPORT_NEW_PLATFORM;
             default:
                 throw new InvalidConfigException("Unknown conflict strategy. Strategy = " + strategy);
         }
@@ -151,17 +151,18 @@ public class ConfigParser {
         @Parameter(names = { "--force", "--f" })
         private boolean forceImport;
 
-        @Parameter(names = { "--export", "--e" })
-        private boolean export;
+        @Parameter(names = { "-cs" })
+        private String conflictStrategy;
 
         @Parameter(names = "-delay")
         private Long delay;
 
-        public void applyFor(Config config) {
+        public void applyFor(Config config) throws InvalidConfigException {
             if (forceImport)
                 config.setForceImport(true);
-            if (export)
-                config.setConflictStrategy(Config.ConflictStrategy.EXPORT_NEW_LOCAL);
+            if (conflictStrategy != null) {
+                config.setConflictStrategy(parseConflictStrategy(conflictStrategy));
+            }
             if (delay != null)
                 config.setDelay(delay * DELAY_MULT);
         }

@@ -119,7 +119,7 @@ public class LocoLaserTest {
 
     @Test
     public void testConflictStrategyRemoveLocal() {
-        config.setConflictStrategy(Config.ConflictStrategy.REMOVE_LOCAL);
+        config.setConflictStrategy(Config.ConflictStrategy.REMOVE_PLATFORM);
 
         String locale = "en";
         String newKey = "newKey";
@@ -138,7 +138,7 @@ public class LocoLaserTest {
 
     @Test
     public void testConflictStrategyKeepNewLocal() {
-        config.setConflictStrategy(Config.ConflictStrategy.KEEP_NEW_LOCAL);
+        config.setConflictStrategy(Config.ConflictStrategy.KEEP_NEW_PLATFORM);
 
         String locale = "en";
         String newKey = "newKey";
@@ -160,7 +160,7 @@ public class LocoLaserTest {
 
     @Test
     public void testConflictStrategyExportNewLocal() {
-        config.setConflictStrategy(Config.ConflictStrategy.EXPORT_NEW_LOCAL);
+        config.setConflictStrategy(Config.ConflictStrategy.EXPORT_NEW_PLATFORM);
 
         String locale = "en";
         String newKey = "newKey";
@@ -182,7 +182,7 @@ public class LocoLaserTest {
 
     @Test
     public void testConflictStrategyExportMissedValues() {
-        config.setConflictStrategy(Config.ConflictStrategy.EXPORT_NEW_LOCAL);
+        config.setConflictStrategy(Config.ConflictStrategy.EXPORT_NEW_PLATFORM);
 
         String missedKey = "key1";
         String locale = "ru";

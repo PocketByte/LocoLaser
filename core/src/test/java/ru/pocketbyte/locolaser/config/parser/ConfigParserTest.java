@@ -79,7 +79,7 @@ public class ConfigParserTest {
         assertFalse(config.isForceImport());
         assertFalse(config.isDuplicateComments());
         assertEquals(file.getParentFile().getCanonicalPath(), System.getProperty("user.dir"));
-        assertEquals(Config.ConflictStrategy.REMOVE_LOCAL, config.getConflictStrategy());
+        assertEquals(Config.ConflictStrategy.REMOVE_PLATFORM, config.getConflictStrategy());
         assertEquals(0, config.getDelay());
     }
 
@@ -134,9 +134,9 @@ public class ConfigParserTest {
     @Test
     public void testJsonConflictStrategy() throws IOException, ParseException, InvalidConfigException {
         List<Pair<String, Config.ConflictStrategy>> list = Arrays.asList(
-                new Pair<>(ConfigParser.ConflictStrategy.REMOVE_LOCAL, Config.ConflictStrategy.REMOVE_LOCAL),
-                new Pair<>(ConfigParser.ConflictStrategy.KEEP_NEW_LOCAL, Config.ConflictStrategy.KEEP_NEW_LOCAL),
-                new Pair<>(ConfigParser.ConflictStrategy.EXPORT_NEW_LOCAL, Config.ConflictStrategy.EXPORT_NEW_LOCAL)
+                new Pair<>(ConfigParser.ConflictStrategy.REMOVE_PLATFORM, Config.ConflictStrategy.REMOVE_PLATFORM),
+                new Pair<>(ConfigParser.ConflictStrategy.KEEP_NEW_PLATFORM, Config.ConflictStrategy.KEEP_NEW_PLATFORM),
+                new Pair<>(ConfigParser.ConflictStrategy.EXPORT_NEW_PLATFORM, Config.ConflictStrategy.EXPORT_NEW_PLATFORM)
         );
 
         for (Pair<String, Config.ConflictStrategy> pair: list) {
@@ -189,17 +189,19 @@ public class ConfigParserTest {
     }
 
     @Test
-    public void testArgumentExport() throws IOException, ParseException, InvalidConfigException {
+    public void testArgumentConflictStrategy() throws IOException, ParseException, InvalidConfigException {
         HashMap<String, Object> map = new HashMap<>();
-        map.put(ConfigParser.CONFLICT_STRATEGY, ConfigParser.ConflictStrategy.KEEP_NEW_LOCAL);
+        map.put(ConfigParser.CONFLICT_STRATEGY, ConfigParser.ConflictStrategy.KEEP_NEW_PLATFORM);
 
         File file = prepareMockFile(map);
 
-        Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(), "--export"});
-        assertEquals(Config.ConflictStrategy.EXPORT_NEW_LOCAL, config.getConflictStrategy());
+        Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
+                "-cs", ConfigParser.ConflictStrategy.EXPORT_NEW_PLATFORM});
+        assertEquals(Config.ConflictStrategy.EXPORT_NEW_PLATFORM, config.getConflictStrategy());
 
-        config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(), "--e"});
-        assertEquals(Config.ConflictStrategy.EXPORT_NEW_LOCAL, config.getConflictStrategy());
+        config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
+                "-cs ", ConfigParser.ConflictStrategy.REMOVE_PLATFORM});
+        assertEquals(Config.ConflictStrategy.REMOVE_PLATFORM, config.getConflictStrategy());
     }
 
     @Test
@@ -221,11 +223,11 @@ public class ConfigParserTest {
 
         Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
                 "--force",
-                "--export",
+                "-cs", ConfigParser.ConflictStrategy.EXPORT_NEW_PLATFORM,
                 "-delay",Long.toString(delay)});
 
         assertTrue(config.isForceImport());
-        assertEquals(Config.ConflictStrategy.EXPORT_NEW_LOCAL, config.getConflictStrategy());
+        assertEquals(Config.ConflictStrategy.EXPORT_NEW_PLATFORM, config.getConflictStrategy());
         assertEquals(delay * ConfigParser.DELAY_MULT, config.getDelay());
     }
 

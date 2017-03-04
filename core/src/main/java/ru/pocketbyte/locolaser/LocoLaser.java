@@ -126,7 +126,7 @@ public class LocoLaser {
             List<Source.MissedValue> missedList = result.missedValues;
             ResMap sourceResMap = result.items;
 
-            if (sourceResMap == null && config.getConflictStrategy() != Config.ConflictStrategy.EXPORT_NEW_LOCAL) {
+            if (sourceResMap == null && config.getConflictStrategy() != Config.ConflictStrategy.EXPORT_NEW_PLATFORM) {
                 LogUtils.info("Source is empty. Localization stopped.");
                 return true;
             }
@@ -138,7 +138,7 @@ public class LocoLaser {
 
             // =================================
             // Export local resources if needed
-            if (config.getConflictStrategy() != Config.ConflictStrategy.REMOVE_LOCAL) {
+            if (config.getConflictStrategy() != Config.ConflictStrategy.REMOVE_PLATFORM) {
 
                 // Read local files
                 ResMap oldResMap = resources.read(resourcesToLocalize).remove(sourceResMap);
@@ -184,7 +184,7 @@ public class LocoLaser {
                     }
                 }
                 for (Map.Entry<Source, ResMap> entry: foundResMaps.entrySet()) {
-                    if (config.getConflictStrategy() == Config.ConflictStrategy.EXPORT_NEW_LOCAL
+                    if (config.getConflictStrategy() == Config.ConflictStrategy.EXPORT_NEW_PLATFORM
                                                                                     && entry.getValue().size() > 0) {
                         // Key is Source
                         entry.getKey().write(entry.getValue());
@@ -198,7 +198,7 @@ public class LocoLaser {
                 }
 
                 // Second part. Export other values into the first source.
-                if (config.getConflictStrategy() == Config.ConflictStrategy.EXPORT_NEW_LOCAL && oldResMap.size() > 0) {
+                if (config.getConflictStrategy() == Config.ConflictStrategy.EXPORT_NEW_PLATFORM && oldResMap.size() > 0) {
                     source.write(oldResMap);
                 }
 
