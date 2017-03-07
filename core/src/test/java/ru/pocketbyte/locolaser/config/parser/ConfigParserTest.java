@@ -79,7 +79,7 @@ public class ConfigParserTest {
         assertFalse(config.isForceImport());
         assertFalse(config.isDuplicateComments());
         assertEquals(file.getParentFile().getCanonicalPath(), System.getProperty("user.dir"));
-        assertEquals(Config.ConflictStrategy.REMOVE_PLATFORM, config.getConflictStrategy());
+        assertEquals(Config.ConflictStrategy.KEEP_NEW_PLATFORM, config.getConflictStrategy());
         assertEquals(0, config.getDelay());
     }
 

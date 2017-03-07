@@ -179,7 +179,7 @@ public class Config {
      */
     public ConflictStrategy getConflictStrategy() {
         if (mConflictStrategy == null)
-            return ConflictStrategy.REMOVE_PLATFORM;
+            return ConflictStrategy.KEEP_NEW_PLATFORM;
         return mConflictStrategy;
     }
 

@@ -411,8 +411,10 @@ public class LocoLaserTest {
         @Override
         public ResMap read(Set<String> locales) {
             ResMap resMap = new ResMap();
-            for (String locale: locales) {
-                resMap.put(locale, new ResLocale(mMap.get(locale)));
+            if (mMap != null) {
+                for (String locale : locales) {
+                    resMap.put(locale, new ResLocale(mMap.get(locale)));
+                }
             }
             return resMap;
         }
