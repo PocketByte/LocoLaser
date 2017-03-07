@@ -10,6 +10,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import ru.pocketbyte.locolaser.config.WritingConfig;
+import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.entity.*;
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile;
 
@@ -71,7 +72,9 @@ public class IosPluralResourceFile  extends ResourceStreamFile {
                     if (!isOpen()) {
                         // Open and write header
                         open();
-                        writeStringLn("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                        writeStringLn(TemplateStr.XML_DECLARATION);
+                        writeStringLn(TemplateStr.GENERATED_XML_COMMENT);
+                        writeln();
                         writeStringLn("<plist version=\"1.0\">");
                         writeStringLn("<dict>");
                     }

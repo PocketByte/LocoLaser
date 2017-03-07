@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.pocketbyte.locolaser.config.WritingConfig;
+import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.entity.*;
 
 import java.io.File;
@@ -56,10 +57,10 @@ public class IosResourceFileTest {
     public void testRead() throws IOException {
         String testLocale = "ru";
         File testFile = prepareTestFile(
-                "/* Comment */\n" +
-                "\"string1\" = \"Value1\";\n" +
-                "\"string2\" = \"Value2\";\n" +
-                "\n" +
+                "/* Comment */\r\n" +
+                "\"string1\" = \"Value1\";\r\n" +
+                "\"string2\" = \"Value2\";\r\n" +
+                "\r\n" +
                 "\"string3\" = \"Value 3\";");
 
         IosResourceFile resourceFile = new IosResourceFile(testFile, testLocale);
@@ -100,10 +101,11 @@ public class IosResourceFileTest {
         resourceFile.write(resMap, null);
 
         String expectedResult =
-                "/* Comment */\n" +
-                "\"key1\" = \"value1_1\";\n" +
-                "\n" +
-                "/* value2_1 */\n" +
+                TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
+                "/* Comment */\r\n" +
+                "\"key1\" = \"value1_1\";\r\n" +
+                "\r\n" +
+                "/* value2_1 */\r\n" +
                 "\"key2\" = \"value2_1\";";
 
         assertEquals(expectedResult, readFile(testFile));
@@ -128,9 +130,10 @@ public class IosResourceFileTest {
         resourceFile.write(resMap, writingConfig);
 
         String expectedResult =
-                "/* Comment */\n" +
-                "\"key1\" = \"value1_1\";\n" +
-                "\n" +
+                TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
+                "/* Comment */\r\n" +
+                "\"key1\" = \"value1_1\";\r\n" +
+                "\r\n" +
                 "\"key2\" = \"value2_1\";";
 
         assertEquals(expectedResult, readFile(testFile));
@@ -140,6 +143,7 @@ public class IosResourceFileTest {
     public void testValueCorrectionWhenRead() throws IOException {
         String testLocale = "ru";
         File testFile = prepareTestFile(
+                TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
                 "\"string1\" = \"" + platformTestString + "\";");
 
         IosResourceFile resourceFile = new IosResourceFile(testFile, testLocale);
@@ -170,6 +174,7 @@ public class IosResourceFileTest {
         resourceFile.write(resMap, null);
 
         String expectedResult =
+                TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
                 "\"string1\" = \"" + platformTestString + "\";";
 
         assertEquals(expectedResult, readFile(testFile));
@@ -185,8 +190,7 @@ public class IosResourceFileTest {
     }
 
     private String readFile(File file) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), Charset.defaultCharset())
-                .replace("\r\n", "\n");
+        return new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), Charset.defaultCharset());
     }
 
     private ResItem prepareResItem(String key, ResValue[] values) {

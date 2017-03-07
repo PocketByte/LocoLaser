@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser.platform.mobile.resource.file;
 
 import ru.pocketbyte.locolaser.config.WritingConfig;
+import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.entity.ResItem;
 import ru.pocketbyte.locolaser.resource.entity.ResLocale;
 import ru.pocketbyte.locolaser.resource.entity.ResMap;
@@ -40,7 +41,6 @@ public class IosResourceFile extends ResourceStreamFile {
         mLocale = locale;
     }
 
-    // TODO read plurals https://developer.apple.com/library/ios/documentation/MacOSX/Conceptual/BPInternational/StringsdictFileFormat/StringsdictFileFormat.html
     @Override
     public ResMap read() {
         if (mFile.exists()) {
@@ -123,6 +123,9 @@ public class IosResourceFile extends ResourceStreamFile {
     @Override
     public void write(ResMap resMap, WritingConfig writingConfig) throws IOException {
         open();
+
+        writeStringLn(TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT);
+        writeln();
 
         ResLocale items = resMap.get(mLocale);
 

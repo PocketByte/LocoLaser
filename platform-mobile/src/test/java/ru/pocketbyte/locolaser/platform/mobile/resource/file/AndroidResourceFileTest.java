@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ru.pocketbyte.locolaser.config.WritingConfig;
+import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.entity.*;
 
 import java.io.File;
@@ -56,13 +57,14 @@ public class AndroidResourceFileTest {
     public void testRead() throws IOException {
         String testLocale = "ru";
         File testFile = prepareTestFile(
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<resources>\n" +
-                "    /* Comment */\n" +
-                "    <string name=\"string1\">Value1</string>\n" +
-                "    <string name=\"string2\">Value2</string>\n" +
-                "\n" +
-                "    <string name=\"string3\">Value 3</string>\n" +
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    /* Comment */\r\n" +
+                "    <string name=\"string1\">Value1</string>\r\n" +
+                "    <string name=\"string2\">Value2</string>\r\n" +
+                "\r\n" +
+                "    <string name=\"string3\">Value 3</string>\r\n" +
                 "</resources>");
 
         AndroidResourceFile resourceFile = new AndroidResourceFile(testFile, testLocale);
@@ -84,22 +86,23 @@ public class AndroidResourceFileTest {
     public void testReadPlurals() throws IOException {
         String testLocale = "en";
         File testFile = prepareTestFile(
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<resources>\n" +
-                "    /* Comment */\n" +
-                "    <plurals name=\"string1\">\n" +
-                "        <item quantity=\"other\">String</item>\n" +
-                "        <item quantity=\"one\">String one</item>\n" +
-                "        <item quantity=\"two\">String two</item>\n" +
-                "    </plurals>\n" +
-                "    <string name=\"string2\">Value2</string>\n" +
-                "\n" +
-                "    <plurals name=\"string3\">\n" +
-                "        /* Comment */\n" +
-                "        <item quantity=\"other\">String 3</item>\n" +
-                "        <item quantity=\"few\">String 3 few</item>\n" +
-                "        <item quantity=\"zero\">String 3 zero</item>\n" +
-                "    </plurals>\n" +
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    /* Comment */\r\n" +
+                "    <plurals name=\"string1\">\r\n" +
+                "        <item quantity=\"other\">String</item>\r\n" +
+                "        <item quantity=\"one\">String one</item>\r\n" +
+                "        <item quantity=\"two\">String two</item>\r\n" +
+                "    </plurals>\r\n" +
+                "    <string name=\"string2\">Value2</string>\r\n" +
+                "\r\n" +
+                "    <plurals name=\"string3\">\r\n" +
+                "        /* Comment */\r\n" +
+                "        <item quantity=\"other\">String 3</item>\r\n" +
+                "        <item quantity=\"few\">String 3 few</item>\r\n" +
+                "        <item quantity=\"zero\">String 3 zero</item>\r\n" +
+                "    </plurals>\r\n" +
                 "</resources>");
 
         AndroidResourceFile resourceFile = new AndroidResourceFile(testFile, testLocale);
@@ -148,12 +151,13 @@ public class AndroidResourceFileTest {
         resourceFile.write(resMap, null);
 
         String expectedResult =
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<resources>\n" +
-                "    /* Comment */\n" +
-                "    <string name=\"key1\">value1_1</string>\n" +
-                "    /* value2_1 */\n" +
-                "    <string name=\"key2\">value2_1</string>\n" +
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    /* Comment */\r\n" +
+                "    <string name=\"key1\">value1_1</string>\r\n" +
+                "    /* value2_1 */\r\n" +
+                "    <string name=\"key2\">value2_1</string>\r\n" +
                 "</resources>";
 
         assertEquals(expectedResult, readFile(testFile));
@@ -178,11 +182,12 @@ public class AndroidResourceFileTest {
         resourceFile.write(resMap, writingConfig);
 
         String expectedResult =
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<resources>\n" +
-                "    /* Comment */\n" +
-                "    <string name=\"key1\">value1_1</string>\n" +
-                "    <string name=\"key2\">value2_1</string>\n" +
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    /* Comment */\r\n" +
+                "    <string name=\"key1\">value1_1</string>\r\n" +
+                "    <string name=\"key2\">value2_1</string>\r\n" +
                 "</resources>";
 
         assertEquals(expectedResult, readFile(testFile));
@@ -212,19 +217,20 @@ public class AndroidResourceFileTest {
         resourceFile.write(resMap, null);
 
         String expectedResult =
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<resources>\n" +
-                "    <plurals name=\"string1\">\n" +
-                "        <item quantity=\"other\">String</item>\n" +
-                "        <item quantity=\"one\">String one</item>\n" +
-                "        <item quantity=\"two\">String two</item>\n" +
-                "    </plurals>\n" +
-                "    <string name=\"string2\">Value2</string>\n" +
-                "    <plurals name=\"string3\">\n" +
-                "        <item quantity=\"other\">String 3</item>\n" +
-                "        <item quantity=\"few\">String 3 few</item>\n" +
-                "        <item quantity=\"zero\">String 3 zero</item>\n" +
-                "    </plurals>\n" +
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    <plurals name=\"string1\">\r\n" +
+                "        <item quantity=\"other\">String</item>\r\n" +
+                "        <item quantity=\"one\">String one</item>\r\n" +
+                "        <item quantity=\"two\">String two</item>\r\n" +
+                "    </plurals>\r\n" +
+                "    <string name=\"string2\">Value2</string>\r\n" +
+                "    <plurals name=\"string3\">\r\n" +
+                "        <item quantity=\"other\">String 3</item>\r\n" +
+                "        <item quantity=\"few\">String 3 few</item>\r\n" +
+                "        <item quantity=\"zero\">String 3 zero</item>\r\n" +
+                "    </plurals>\r\n" +
                 "</resources>";
 
         assertEquals(expectedResult, readFile(testFile));
@@ -235,13 +241,14 @@ public class AndroidResourceFileTest {
     public void testValueCorrectionWhenRead() throws IOException {
         String testLocale = "en";
         File testFile = prepareTestFile(
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<resources>\n" +
-                "    <plurals name=\"string1\">\n" +
-                "        <item quantity=\"other\">String\\'</item>\n" +
-                "        <item quantity=\"one\">\\?String one</item>\n" +
-                "    </plurals>\n" +
-                "    <string name=\"string2\">\\\"Value2</string>\n" +
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    <plurals name=\"string1\">\r\n" +
+                "        <item quantity=\"other\">String\\'</item>\r\n" +
+                "        <item quantity=\"one\">\\?String one</item>\r\n" +
+                "    </plurals>\r\n" +
+                "    <string name=\"string2\">\\\"Value2</string>\r\n" +
                 "</resources>");
 
         AndroidResourceFile resourceFile = new AndroidResourceFile(testFile, testLocale);
@@ -279,14 +286,15 @@ public class AndroidResourceFileTest {
         resourceFile.write(resMap, null);
 
         String expectedResult =
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                        "<resources>\n" +
-                        "    <plurals name=\"string1\">\n" +
-                        "        <item quantity=\"other\">String\\'</item>\n" +
-                        "        <item quantity=\"one\">\\?String one</item>\n" +
-                        "    </plurals>\n" +
-                        "    <string name=\"string2\">\\\"Value2</string>\n" +
-                        "</resources>";
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    <plurals name=\"string1\">\r\n" +
+                "        <item quantity=\"other\">String\\'</item>\r\n" +
+                "        <item quantity=\"one\">\\?String one</item>\r\n" +
+                "    </plurals>\r\n" +
+                "    <string name=\"string2\">\\\"Value2</string>\r\n" +
+                "</resources>";
 
         assertEquals(expectedResult, readFile(testFile));
     }
@@ -301,8 +309,7 @@ public class AndroidResourceFileTest {
     }
 
     private String readFile(File file) throws IOException {
-        return new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), Charset.defaultCharset())
-                .replace("\r\n", "\n");
+        return new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), Charset.defaultCharset());
     }
 
     private ResItem prepareResItem(String key, ResValue[] values) {
