@@ -23,6 +23,11 @@ public class MobilePlatformConfigParser implements PlatformConfigParser<BasePlat
     public static final String RESOURCES_DIR = "res_dir";
     public static final String TEMP_DIR = "temp_dir";
 
+    // Extra properties for iOS
+    public static final String SOURCE_DIR = "source_dir";
+    public static final String SWIFT_CLASS = "swift_class";
+    public static final String OBJC_CLASS = "objc_class";
+
     public BasePlatformConfig parse(Object platformObject) throws InvalidConfigException {
         BasePlatformConfig platform;
 
@@ -43,6 +48,17 @@ public class MobilePlatformConfigParser implements PlatformConfigParser<BasePlat
 
             platform.setTempDir(JsonParseUtils.getFile(
                                         platformJSON, TEMP_DIR, ConfigParser.PLATFORM, false));
+
+            // Extra properties for iOS
+            if (IosPlatformConfig.TYPE.equals(platform.getType())) {
+                IosPlatformConfig iosPlatform = (IosPlatformConfig) platform;
+                iosPlatform.setSourceDir(JsonParseUtils.getFile(
+                                platformJSON, SOURCE_DIR, ConfigParser.PLATFORM, false));
+                iosPlatform.setSwiftClassName(JsonParseUtils.getString(
+                                platformJSON, SWIFT_CLASS, ConfigParser.PLATFORM, false));
+                iosPlatform.setObjcClassName(JsonParseUtils.getString(
+                                platformJSON, OBJC_CLASS, ConfigParser.PLATFORM, false));
+            }
         }
         else
             throw new InvalidConfigException("Property \"" + ConfigParser.PLATFORM + "\" must be a String or JSON object.");

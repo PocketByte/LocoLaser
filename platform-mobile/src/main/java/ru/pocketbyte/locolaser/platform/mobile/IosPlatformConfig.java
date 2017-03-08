@@ -9,6 +9,8 @@ import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig;
 import ru.pocketbyte.locolaser.platform.mobile.resource.IosResources;
 import ru.pocketbyte.locolaser.resource.PlatformResources;
 
+import java.io.File;
+
 /**
  * iOS platform configuration.
  *
@@ -16,6 +18,10 @@ import ru.pocketbyte.locolaser.resource.PlatformResources;
  */
 public class IosPlatformConfig extends BasePlatformConfig {
     public static final String TYPE = "ios";
+
+    private File mSourceDir;
+    private String mSwiftClassName;
+    private String mObjcClassName;
 
     @Override
     public String getType() {
@@ -39,6 +45,34 @@ public class IosPlatformConfig extends BasePlatformConfig {
 
     @Override
     public PlatformResources getResources() {
-        return new IosResources(getResourcesDir(), getResourceName());
+        IosResources resources = new IosResources(getResourcesDir(), getResourceName());
+        resources.setSourceDir(mSourceDir);
+        resources.setSwiftClassName(mSwiftClassName);
+        resources.setObjcClassName(mObjcClassName);
+        return resources;
+    }
+
+    public void setSourceDir(File dir) {
+        mSourceDir = dir;
+    }
+
+    public void setSwiftClassName(String className) {
+        mSwiftClassName = className;
+    }
+
+    public void setObjcClassName(String className) {
+        mObjcClassName = className;
+    }
+
+    public String getSwiftClassName() {
+        return mSwiftClassName;
+    }
+
+    public String getObjcClassName() {
+        return mObjcClassName;
+    }
+
+    public File getSourceDir() {
+        return mSourceDir;
     }
 }

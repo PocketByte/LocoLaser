@@ -7,7 +7,9 @@ package ru.pocketbyte.locolaser.platform.mobile.parser;
 
 import org.json.simple.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser;
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig;
 import ru.pocketbyte.locolaser.config.platform.PlatformConfig;
@@ -27,11 +29,17 @@ import static org.junit.Assert.assertNotNull;
  */
 public class MobilePlatformConfigParserTest {
 
+    @Rule
+    public TemporaryFolder tempFolder= new TemporaryFolder();
+
     private MobilePlatformConfigParser parser;
 
     @Before
-    public void init() {
+    public void init() throws IOException {
         parser = new MobilePlatformConfigParser();
+
+        File workDir = tempFolder.newFolder();
+        System.setProperty("user.dir", workDir.getCanonicalPath());
     }
 
     @Test
@@ -89,6 +97,24 @@ public class MobilePlatformConfigParserTest {
     @Test(expected = InvalidConfigException.class)
     public void testFromInvalidClass() throws InvalidConfigException {
         parser.parse(new ArrayList<String>());
+    }
+
+    @Test
+    public void testIosExtraFromJson() throws InvalidConfigException, IOException {
+        String swiftClassName = "SomeSwiftClass";
+        String objcClassName = "SomeObjcClass";
+        String sourceDirPath = "./subdir/";
+
+        JSONObject iosJson = prepareTestPlatformJson(IosPlatformConfig.TYPE);
+        iosJson.put(MobilePlatformConfigParser.SOURCE_DIR, sourceDirPath);
+        iosJson.put(MobilePlatformConfigParser.SWIFT_CLASS, swiftClassName);
+        iosJson.put(MobilePlatformConfigParser.OBJC_CLASS, objcClassName);
+
+        IosPlatformConfig config = (IosPlatformConfig) parser.parse(iosJson);
+
+        assertEquals(swiftClassName, config.getSwiftClassName());
+        assertEquals(objcClassName, config.getObjcClassName());
+        assertEquals(new File(sourceDirPath).getCanonicalPath(), config.getSourceDir().getCanonicalPath());
     }
 
     private JSONObject prepareTestPlatformJson(String platform) {

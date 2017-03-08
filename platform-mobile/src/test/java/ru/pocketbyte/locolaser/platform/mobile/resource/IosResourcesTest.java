@@ -8,12 +8,19 @@ package ru.pocketbyte.locolaser.platform.mobile.resource;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
+import ru.pocketbyte.locolaser.resource.PlatformResources;
 import ru.pocketbyte.locolaser.resource.entity.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Denis Shurygin
@@ -34,6 +41,128 @@ public class IosResourcesTest {
 
         assertNotNull(resMap2);
         assertEquals(resMap1, resMap2);
+    }
+
+    @Test
+    public void testWriteSwiftFile() throws IOException {
+        ResMap resMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("key3", new ResValue[]{
+                new ResValue("value1_2", null, Quantity.OTHER)
+        }));
+        resMap.put(PlatformResources.BASE_LOCALE, resLocale);
+
+        String className = "Strings";
+        File sourceDir = tempFolder.newFolder();
+
+        IosResources resources = new IosResources(tempFolder.newFolder(), "test");
+        resources.setSourceDir(sourceDir);
+        resources.setSwiftClassName(className);
+        resources.write(resMap, null);
+
+        File swiftFile = new File(sourceDir, className + IosResources.SWIFT_FILE_EXTENSION);
+        assertTrue(swiftFile.exists());
+
+        String expectedResult =
+                TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
+                        "import Foundation\r\n" +
+                        "\r\n" +
+                        "public class Strings {\r\n" +
+                        "\r\n" +
+                        "    /// value1_2\r\n" +
+                        "    public static var key3 : String {\r\n" +
+                        "        get {\r\n" +
+                        "            return NSLocalizedString(\"key3\", comment: \"\")\r\n" +
+                        "        }\r\n" +
+                        "    }\r\n" +
+                        "\r\n" +
+                        "}";
+
+        assertEquals(expectedResult, readFile(swiftFile));
+    }
+
+    @Test
+    public void testWriteSwiftFileWithNullDir() throws IOException {
+        ResMap resMap = new ResMap();
+        resMap.put(PlatformResources.BASE_LOCALE, prepareResLocale1());
+
+        String className = "Str";
+
+        IosResources resources = new IosResources(tempFolder.newFolder(), "test");
+        resources.setSourceDir(null);
+        resources.setSwiftClassName(className);
+        resources.write(resMap, null);
+
+        File swiftFile = new File(System.getProperty("user.dir"), className + IosResources.SWIFT_FILE_EXTENSION);
+        assertTrue(swiftFile.exists());
+    }
+
+    @Test
+    public void testWriteObjcFile() throws IOException {
+        ResMap resMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("key3", new ResValue[]{
+                new ResValue("value1_2", null, Quantity.OTHER)
+        }));
+        resMap.put(PlatformResources.BASE_LOCALE, resLocale);
+
+        String className = "Strings";
+        File sourceDir = tempFolder.newFolder();
+
+        IosResources resources = new IosResources(tempFolder.newFolder(), "test");
+        resources.setSourceDir(sourceDir);
+        resources.setObjcClassName(className);
+        resources.write(resMap, null);
+
+        File objcHFile = new File(sourceDir, className + IosResources.OBJC_H_FILE_EXTENSION);
+        File objcMFile = new File(sourceDir, className + IosResources.OBJC_M_FILE_EXTENSION);
+        assertTrue(objcHFile.exists());
+        assertTrue(objcMFile.exists());
+
+        String expectedHResult =
+                TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
+                        "#import <Foundation/Foundation.h>\r\n" +
+                        "\r\n" +
+                        "@interface Strings : NSObject\r\n" +
+                        "\r\n" +
+                        "/// value1_2\r\n" +
+                        "@property (class, readonly) NSString* key3;\r\n" +
+                        "\r\n" +
+                        "@end";
+
+        assertEquals(expectedHResult, readFile(objcHFile));
+
+        String expectedMResult =
+                TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
+                        "#import <Strings.h>\r\n" +
+                        "\r\n" +
+                        "@implementation Strings\r\n" +
+                        "\r\n" +
+                        "+(NSString*)key3 {\r\n" +
+                        "    return NSLocalizedString(@\"key3\", @\"\")\r\n" +
+                        "}\r\n" +
+                        "\r\n" +
+                        "@end";
+
+        assertEquals(expectedMResult, readFile(objcMFile));
+    }
+
+    @Test
+    public void testWriteObjCFileWithNullDir() throws IOException {
+        ResMap resMap = new ResMap();
+        resMap.put(PlatformResources.BASE_LOCALE, prepareResLocale1());
+
+        String className = "Str";
+
+        IosResources resources = new IosResources(tempFolder.newFolder(), "test");
+        resources.setSourceDir(null);
+        resources.setObjcClassName(className);
+        resources.write(resMap, null);
+
+        File objcHFile = new File(System.getProperty("user.dir"), className + IosResources.OBJC_H_FILE_EXTENSION);
+        File objcMFile = new File(System.getProperty("user.dir"), className + IosResources.OBJC_M_FILE_EXTENSION);
+        assertTrue(objcHFile.exists());
+        assertTrue(objcMFile.exists());
     }
 
     private ResMap prepareResMap() {
@@ -100,5 +229,9 @@ public class IosResourcesTest {
         for (ResValue value: values)
             resItem.addValue(value);
         return resItem;
+    }
+
+    private String readFile(File file) throws IOException {
+        return new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), Charset.defaultCharset());
     }
 }
