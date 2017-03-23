@@ -74,20 +74,13 @@ public class GoogleSheet extends BaseTableSource {
                             if (resValue.getLocation() instanceof CellLocation) {
                                 int resRow = ((CellLocation) resValue.getLocation()).row;
                                 CellEntry batchEntry = new CellEntry(getCell(localeColumn, resRow));
-                                batchEntry.changeInputValueLocal(resValue.value);
+                                batchEntry.changeInputValueLocal(valueToSourceValue(resValue.value));
                                 BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
                                 batchRequest.getEntries().add(batchEntry);
 
                                 if (resValue.comment != null && mColumnIndexes.comment >= 0) {
                                     batchEntry = new CellEntry(getCell(mColumnIndexes.comment, resRow));
-                                    batchEntry.changeInputValueLocal(resValue.comment);
-                                    BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
-                                    batchRequest.getEntries().add(batchEntry);
-                                }
-
-                                if (resValue.comment != null && mColumnIndexes.comment >= 0) {
-                                    batchEntry = new CellEntry(getCell(mColumnIndexes.comment, resRow));
-                                    batchEntry.changeInputValueLocal(resValue.comment);
+                                    batchEntry.changeInputValueLocal(valueToSourceValue(resValue.comment));
                                     BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
                                     batchRequest.getEntries().add(batchEntry);
                                 }
@@ -165,14 +158,14 @@ public class GoogleSheet extends BaseTableSource {
                                     int resRow = ((CellLocation) resValue.getLocation()).row;
                                     int index = entryIndex(localeColumn, resRow, mRowsCount);
                                     CellEntry batchEntry = new CellEntry(cellFeed.getEntries().get(index));
-                                    batchEntry.changeInputValueLocal(resValue.value);
+                                    batchEntry.changeInputValueLocal(valueToSourceValue(resValue.value));
                                     BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
                                     batchRequest.getEntries().add(batchEntry);
 
                                     if (resValue.comment != null && mColumnIndexes.comment >= 0) {
                                         index = entryIndex(mColumnIndexes.comment, resRow, mRowsCount);
                                         batchEntry = new CellEntry(cellFeed.getEntries().get(index));
-                                        batchEntry.changeInputValueLocal(resValue.comment);
+                                        batchEntry.changeInputValueLocal(valueToSourceValue(resValue.comment));
                                         BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
                                         batchRequest.getEntries().add(batchEntry);
                                     }
@@ -245,6 +238,24 @@ public class GoogleSheet extends BaseTableSource {
     public int getRowsCount() {
         fetchCellsIfNeeded();
         return mRowsCount;
+    }
+
+    @Override
+    public String valueToSourceValue(String value) {
+        if (value == null)
+            return null;
+
+        // Add "'" if string beginning from "'", "+" or "="
+        return value.replaceAll("^(['+=])", "'$1");
+    }
+
+    @Override
+    public String sourceValueToValue(String sourceValue) {
+        if (sourceValue == null)
+            return null;
+
+        // Remove "'" from the beginning
+        return sourceValue.replaceAll("^(')", "");
     }
 
     private boolean fetchCellsIfNeeded() {
