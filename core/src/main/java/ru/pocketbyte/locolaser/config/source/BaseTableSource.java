@@ -69,7 +69,7 @@ public abstract class BaseTableSource extends Source {
                                 itemMap.put(item);
                             }
 
-                            ResValue resValue = new ResValue(value, comment, quantity);
+                            ResValue resValue = new ResValue(sourceValueToValue(value), comment, quantity);
                             resValue.setLocation(
                                     new CellLocation(this, localeCol, row));
                             item.addValue(resValue);
@@ -85,6 +85,25 @@ public abstract class BaseTableSource extends Source {
         }
 
         return new ReadResult(items, missedValues);
+    }
+
+
+    /**
+     * Converts common value to source value format
+     * @param value Value that should be converted
+     * @return Source value format
+     */
+    public String valueToSourceValue(String value) {
+        return value;
+    }
+
+    /**
+     * Converts source value to common value format
+     * @param sourceValue Source value that should be converted
+     * @return Value in common format
+     */
+    public String sourceValueToValue(String sourceValue) {
+        return sourceValue;
     }
 
     public static class CellLocation extends ValueLocation {
