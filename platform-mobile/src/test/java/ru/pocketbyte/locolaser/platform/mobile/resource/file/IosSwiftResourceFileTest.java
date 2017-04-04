@@ -41,7 +41,7 @@ public class IosSwiftResourceFileTest {
 
     @Test
     public void testRead() throws IOException {
-        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(tempFolder.newFile(), "Strings");
+        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(tempFolder.newFile(), "Strings", "Strings");
         assertNull(resourceFile.read());
     }
 
@@ -53,7 +53,7 @@ public class IosSwiftResourceFileTest {
         resMap.put(PlatformResources.BASE_LOCALE, resLocale);
 
         File testFile = tempFolder.newFile();
-        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(testFile, "Strings");
+        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(testFile, "Strings", "Strings");
         resourceFile.write(resMap, null);
 
         String expectedResult =
@@ -65,7 +65,8 @@ public class IosSwiftResourceFileTest {
                 "    /// value1_1\r\n" +
                 "    public static var key1 : String {\r\n" +
                 "        get {\r\n" +
-                "            return NSLocalizedString(\"key1\", comment: \"Comment\")\r\n" +
+                "            return NSLocalizedString(\"key1\", tableName:\"Strings\", bundle:Bundle.main," +
+                                                                  " value:\"value1_1\", comment: \"Comment\")\r\n" +
                 "        }\r\n" +
                 "    }\r\n" +
                 "\r\n" +
@@ -89,7 +90,7 @@ public class IosSwiftResourceFileTest {
         resMap.put(PlatformResources.BASE_LOCALE, resLocale);
 
         File testFile = tempFolder.newFile();
-        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(testFile, "Strings");
+        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(testFile, "Strings", "Strings");
         resourceFile.write(resMap, null);
 
         String expectedResult =
@@ -101,14 +102,16 @@ public class IosSwiftResourceFileTest {
                 "    /// value1_2\r\n" +
                 "    public static var key1 : String {\r\n" +
                 "        get {\r\n" +
-                "            return NSLocalizedString(\"key1\", comment: \"\")\r\n" +
+                "            return NSLocalizedString(\"key1\", tableName:\"Strings\", bundle:Bundle.main," +
+                                                                  " value:\"value1_2\", comment: \"\")\r\n" +
                 "        }\r\n" +
                 "    }\r\n" +
                 "\r\n" +
                 "    /// value3_2\r\n" +
                 "    public static var key3 : String {\r\n" +
                 "        get {\r\n" +
-                "            return NSLocalizedString(\"key3\", comment: \"value2_1\")\r\n" +
+                "            return NSLocalizedString(\"key3\", tableName:\"Strings\", bundle:Bundle.main," +
+                                                                  " value:\"value3_2\", comment: \"value2_1\")\r\n" +
                 "        }\r\n" +
                 "    }\r\n" +
                 "\r\n" +
@@ -129,7 +132,7 @@ public class IosSwiftResourceFileTest {
         resMap.put(PlatformResources.BASE_LOCALE, resLocale);
 
         File testFile = tempFolder.newFile();
-        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(testFile, "Strings");
+        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(testFile, "Strings", "Strings");
         resourceFile.write(resMap, null);
 
         String expectedResult =
@@ -144,7 +147,10 @@ public class IosSwiftResourceFileTest {
                                                                                                 "Comment\r\n" +
                 "    public static var key1 : String {\r\n" +
                 "        get {\r\n" +
-                "            return NSLocalizedString(\"key1\", comment: \"\")\r\n" +
+                "            return NSLocalizedString(\"key1\", tableName:\"Strings\", bundle:Bundle.main," +
+                        " value:\"Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
+                        " Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
+                        " Wery Wery Wery Long Comment\", comment: \"\")\r\n" +
                 "        }\r\n" +
                 "    }\r\n" +
                 "\r\n" +

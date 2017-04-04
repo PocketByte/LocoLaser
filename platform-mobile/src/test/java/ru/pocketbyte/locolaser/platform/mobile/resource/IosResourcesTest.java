@@ -72,7 +72,8 @@ public class IosResourcesTest {
                         "    /// value1_2\r\n" +
                         "    public static var key3 : String {\r\n" +
                         "        get {\r\n" +
-                        "            return NSLocalizedString(\"key3\", comment: \"\")\r\n" +
+                        "            return NSLocalizedString(\"key3\", tableName:\"test\", bundle:Bundle.main," +
+                                                                          " value:\"value1_2\", comment: \"\")\r\n" +
                         "        }\r\n" +
                         "    }\r\n" +
                         "\r\n" +
@@ -139,7 +140,7 @@ public class IosResourcesTest {
                         "@implementation Strings\r\n" +
                         "\r\n" +
                         "+(NSString*)key3 {\r\n" +
-                        "    return NSLocalizedString(@\"key3\", @\"\")\r\n" +
+                        "    return NSLocalizedStringFromTable(@\"key3\", @\"test\", @\"\")\r\n" +
                         "}\r\n" +
                         "\r\n" +
                         "@end";

@@ -30,7 +30,8 @@ public class IosObjectiveCMResourceFileTest {
 
     @Test
     public void testRead() throws IOException {
-        IosObjectiveCMResourceFile resourceFile = new IosObjectiveCMResourceFile(tempFolder.newFile(), "Strings");
+        IosObjectiveCMResourceFile resourceFile = new IosObjectiveCMResourceFile(tempFolder.newFile(), "Strings",
+                "Strings");
         assertNull(resourceFile.read());
     }
 
@@ -42,7 +43,7 @@ public class IosObjectiveCMResourceFileTest {
         resMap.put(PlatformResources.BASE_LOCALE, resLocale);
 
         File testFile = tempFolder.newFile();
-        IosObjectiveCMResourceFile resourceFile = new IosObjectiveCMResourceFile(testFile, "Strings");
+        IosObjectiveCMResourceFile resourceFile = new IosObjectiveCMResourceFile(testFile, "Strings", "Strings");
         resourceFile.write(resMap, null);
 
         String expectedResult =
@@ -52,7 +53,7 @@ public class IosObjectiveCMResourceFileTest {
                         "@implementation Strings\r\n" +
                         "\r\n" +
                         "+(NSString*)key1 {\r\n" +
-                        "    return NSLocalizedString(@\"key1\", @\"Comment\")\r\n" +
+                        "    return NSLocalizedStringFromTable(@\"key1\", @\"Strings\", @\"Comment\")\r\n" +
                         "}\r\n" +
                         "\r\n" +
                         "@end";
@@ -75,7 +76,7 @@ public class IosObjectiveCMResourceFileTest {
         resMap.put(PlatformResources.BASE_LOCALE, resLocale);
 
         File testFile = tempFolder.newFile();
-        IosObjectiveCMResourceFile resourceFile = new IosObjectiveCMResourceFile(testFile, "Strings");
+        IosObjectiveCMResourceFile resourceFile = new IosObjectiveCMResourceFile(testFile, "Strings", "Strings");
         resourceFile.write(resMap, null);
 
         String expectedResult =
@@ -85,11 +86,11 @@ public class IosObjectiveCMResourceFileTest {
                         "@implementation Strings\r\n" +
                         "\r\n" +
                         "+(NSString*)key1 {\r\n" +
-                        "    return NSLocalizedString(@\"key1\", @\"\")\r\n" +
+                        "    return NSLocalizedStringFromTable(@\"key1\", @\"Strings\", @\"\")\r\n" +
                         "}\r\n" +
                         "\r\n" +
                         "+(NSString*)key3 {\r\n" +
-                        "    return NSLocalizedString(@\"key3\", @\"value2_1\")\r\n" +
+                        "    return NSLocalizedStringFromTable(@\"key3\", @\"Strings\", @\"value2_1\")\r\n" +
                         "}\r\n" +
                         "\r\n" +
                         "@end";

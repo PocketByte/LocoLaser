@@ -30,17 +30,20 @@ public class IosSwiftResourceFile extends ResourceStreamFile {
 
     private static String PROPERTY_TEMPLATE = "    public static var %s : String {\r\n"
                                             + "        get {\r\n"
-                                            + "            return NSLocalizedString(\"%s\", comment: \"%s\")\r\n"
+                                            + "            return NSLocalizedString(\"%s\", tableName:\"%s\"," +
+                                                            " bundle:Bundle.main, value:\"%s\", comment: \"%s\")\r\n"
                                             + "        }\r\n"
                                             + "    }\r\n";
 
     private static int MAX_LINE_SIZE = 120;
 
     private String mClassName;
+    private String mTableName;
 
-    public IosSwiftResourceFile(File file, String className) {
+    public IosSwiftResourceFile(File file, String className, String tableName) {
         super(file);
         mClassName = className;
+        mTableName = tableName;
     }
 
     @Override
@@ -74,7 +77,8 @@ public class IosSwiftResourceFile extends ResourceStreamFile {
 
                     String comment = valueOther != null && valueOther.comment != null ? valueOther.comment : "";
 
-                    writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key, comment));
+                    writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key, mTableName,
+                            valueOther.value, comment));
                 }
             }
 

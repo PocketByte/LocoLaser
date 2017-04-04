@@ -30,16 +30,18 @@ public class IosObjectiveCMResourceFile extends ResourceStreamFile {
 
     private static String PROPERTY_TEMPLATE =
             "+(NSString*)%s {\r\n" +
-            "    return NSLocalizedString(@\"%s\", @\"%s\")\r\n" +
+            "    return NSLocalizedStringFromTable(@\"%s\", @\"%s\", @\"%s\")\r\n" +
             "}";
 
     private static int MAX_LINE_SIZE = 120;
 
     private String mClassName;
+    private String mTableName;
 
-    public IosObjectiveCMResourceFile(File file, String className) {
+    public IosObjectiveCMResourceFile(File file, String className, String tableName) {
         super(file);
         mClassName = className;
+        mTableName = tableName;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class IosObjectiveCMResourceFile extends ResourceStreamFile {
                     ResValue valueOther = item.valueForQuantity(Quantity.OTHER);
                     String comment = valueOther != null && valueOther.comment != null ? valueOther.comment : "";
 
-                    writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key, comment));
+                    writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key, mTableName, comment));
                     writeln();
                 }
             }

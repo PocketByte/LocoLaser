@@ -30,8 +30,8 @@ public class IosResources extends AbsPlatformResources {
     private String mSwiftClassName;
     private String mObjcClassName;
 
-    public IosResources(File resourcesDir, String fileName) {
-        super(resourcesDir, fileName);
+    public IosResources(File resourcesDir, String name) {
+        super(resourcesDir, name);
     }
 
     @Override
@@ -49,14 +49,14 @@ public class IosResources extends AbsPlatformResources {
         int totalFiles = locales.size() * 2;
         if (isHasSwiftClass()) {
             resourceFiles[totalFiles]
-                    = new IosSwiftResourceFile(getSwiftFile(mSwiftClassName), mSwiftClassName);
+                    = new IosSwiftResourceFile(getSwiftFile(mSwiftClassName), mSwiftClassName, getName());
             totalFiles++;
         }
         if (isHasObjcClass()) {
             resourceFiles[totalFiles]
                     = new IosObjectiveCHResourceFile(getObjcHFile(mObjcClassName), mObjcClassName);
             resourceFiles[totalFiles + 1]
-                    = new IosObjectiveCMResourceFile(getObjcMFile(mObjcClassName), mObjcClassName);
+                    = new IosObjectiveCMResourceFile(getObjcMFile(mObjcClassName), mObjcClassName, getName());
         }
         return resourceFiles;
     }
