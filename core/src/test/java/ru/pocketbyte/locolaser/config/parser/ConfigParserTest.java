@@ -134,9 +134,9 @@ public class ConfigParserTest {
     @Test
     public void testJsonConflictStrategy() throws IOException, ParseException, InvalidConfigException {
         List<Pair<String, Config.ConflictStrategy>> list = Arrays.asList(
-                new Pair<>(ConfigParser.ConflictStrategy.REMOVE_PLATFORM, Config.ConflictStrategy.REMOVE_PLATFORM),
-                new Pair<>(ConfigParser.ConflictStrategy.KEEP_NEW_PLATFORM, Config.ConflictStrategy.KEEP_NEW_PLATFORM),
-                new Pair<>(ConfigParser.ConflictStrategy.EXPORT_NEW_PLATFORM, Config.ConflictStrategy.EXPORT_NEW_PLATFORM)
+                new Pair<>(Config.ConflictStrategy.REMOVE_PLATFORM.name, Config.ConflictStrategy.REMOVE_PLATFORM),
+                new Pair<>(Config.ConflictStrategy.KEEP_NEW_PLATFORM.name, Config.ConflictStrategy.KEEP_NEW_PLATFORM),
+                new Pair<>(Config.ConflictStrategy.EXPORT_NEW_PLATFORM.name, Config.ConflictStrategy.EXPORT_NEW_PLATFORM)
         );
 
         for (Pair<String, Config.ConflictStrategy> pair: list) {
@@ -191,16 +191,16 @@ public class ConfigParserTest {
     @Test
     public void testArgumentConflictStrategy() throws IOException, ParseException, InvalidConfigException {
         HashMap<String, Object> map = new HashMap<>();
-        map.put(ConfigParser.CONFLICT_STRATEGY, ConfigParser.ConflictStrategy.KEEP_NEW_PLATFORM);
+        map.put(ConfigParser.CONFLICT_STRATEGY, Config.ConflictStrategy.KEEP_NEW_PLATFORM.name);
 
         File file = prepareMockFile(map);
 
         Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
-                "-cs", ConfigParser.ConflictStrategy.EXPORT_NEW_PLATFORM});
+                "-cs", Config.ConflictStrategy.EXPORT_NEW_PLATFORM.name});
         assertEquals(Config.ConflictStrategy.EXPORT_NEW_PLATFORM, config.getConflictStrategy());
 
         config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
-                "-cs ", ConfigParser.ConflictStrategy.REMOVE_PLATFORM});
+                "-cs ", Config.ConflictStrategy.REMOVE_PLATFORM.name});
         assertEquals(Config.ConflictStrategy.REMOVE_PLATFORM, config.getConflictStrategy());
     }
 
@@ -223,7 +223,7 @@ public class ConfigParserTest {
 
         Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
                 "--force",
-                "-cs", ConfigParser.ConflictStrategy.EXPORT_NEW_PLATFORM,
+                "-cs", Config.ConflictStrategy.EXPORT_NEW_PLATFORM.name,
                 "-delay",Long.toString(delay)});
 
         assertTrue(config.isForceImport());

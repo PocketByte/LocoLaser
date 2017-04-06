@@ -39,13 +39,23 @@ public class Config {
     public enum ConflictStrategy {
 
         /** Remove platform resources and replace it with resources from source. */
-        REMOVE_PLATFORM,
+        REMOVE_PLATFORM("remove_platform"),
 
         /** Keep new platform resources if source doesn't contain this resources. */
-        KEEP_NEW_PLATFORM,
+        KEEP_NEW_PLATFORM("keep_new_platform"),
 
         /** New platform resources should be exported into source if source doesn't contain this resources. */
-        EXPORT_NEW_PLATFORM
+        EXPORT_NEW_PLATFORM("export_new_platform");
+
+        public final String name;
+        ConflictStrategy(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 
     // =================================================================================================================

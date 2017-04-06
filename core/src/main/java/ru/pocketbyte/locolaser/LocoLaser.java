@@ -64,6 +64,8 @@ public class LocoLaser {
             }
         }
 
+        LogUtils.info("Conflict strategy: " + config.getConflictStrategy().toString());
+
         boolean isRefreshAll = config.isForceImport() || isConfigFileChanged;
 
         SourceConfig sourceConfig = config.getSourceConfig();

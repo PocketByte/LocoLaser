@@ -37,12 +37,6 @@ public class ConfigParser {
     public static final String DUPLICATE_COMMENTS = "duplicate_comments";
     public static final String DELAY = "delay";
 
-    public static class ConflictStrategy {
-        public static final String REMOVE_PLATFORM = "remove_platform";
-        public static final String KEEP_NEW_PLATFORM = "keep_new_platform";
-        public static final String EXPORT_NEW_PLATFORM = "export_new_platform";
-    }
-
     /**
      * Config delay defined in minutes but code use time in milliseconds.
      * So delay value from config must multiplied by this value.
@@ -131,16 +125,12 @@ public class ConfigParser {
         if (strategy == null)
             return null;
 
-        switch (strategy) {
-            case ConflictStrategy.REMOVE_PLATFORM:
-                return Config.ConflictStrategy.REMOVE_PLATFORM;
-            case ConflictStrategy.KEEP_NEW_PLATFORM:
-                return Config.ConflictStrategy.KEEP_NEW_PLATFORM;
-            case ConflictStrategy.EXPORT_NEW_PLATFORM:
-                return Config.ConflictStrategy.EXPORT_NEW_PLATFORM;
-            default:
-                throw new InvalidConfigException("Unknown conflict strategy. Strategy = " + strategy);
+        for (Config.ConflictStrategy enumItem : Config.ConflictStrategy.values()) {
+            if (enumItem.name.equals(strategy))
+                return enumItem;
         }
+
+        throw new InvalidConfigException("Unknown conflict strategy. Strategy = " + strategy);
     }
 
     public static class ConfigArgsParser {
@@ -151,7 +141,7 @@ public class ConfigParser {
         @Parameter(names = { "--force", "--f" })
         private boolean forceImport;
 
-        @Parameter(names = { "-cs" })
+        @Parameter(names = "-cs")
         private String conflictStrategy;
 
         @Parameter(names = "-delay")
