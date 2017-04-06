@@ -53,7 +53,7 @@ public class GoogleSheet extends BaseTableSource {
         if (fetchCellsIfNeeded()) {
             int totalRows = mRowsCount;
 
-            HashMap<String, Integer> newRowIds = new HashMap<>();
+            HashMap<String, NewRowItem> newRowIds = new HashMap<>();
 
             CellFeed batchRequest = new CellFeed();
 
@@ -92,12 +92,13 @@ public class GoogleSheet extends BaseTableSource {
                                 // =====================================
                                 // Reserve rows for new keys
                                 int row;
-                                Integer integer = newRowIds.get(resItem.key);
-                                if (integer != null)
-                                    row = integer;
+                                String mapKey = resItem.key + ":" + resValue.quantity.toString();
+                                NewRowItem newRowItem = newRowIds.get(mapKey);
+                                if (newRowItem != null)
+                                    row = newRowItem.row;
                                 else {
                                     row = ++totalRows;
-                                    newRowIds.put(resItem.key, row);
+                                    newRowIds.put(mapKey, new NewRowItem(resItem.key, row));
                                 }
                                 resValue.setLocation(new CellLocation(this, localeColumn, row));
                             }
@@ -129,10 +130,10 @@ public class GoogleSheet extends BaseTableSource {
                     throw new RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + mConfig.getId());
                 }
 
-                for (Map.Entry<String, Integer> entry : newRowIds.entrySet()) {
-                    int index = entryIndex(mColumnIndexes.key, entry.getValue(), mRowsCount);
+                for (NewRowItem newRowItem : newRowIds.values()) {
+                    int index = entryIndex(mColumnIndexes.key, newRowItem.row, mRowsCount);
                     CellEntry batchEntry = new CellEntry(cellFeed.getEntries().get(index));
-                    batchEntry.changeInputValueLocal(entry.getKey());
+                    batchEntry.changeInputValueLocal(newRowItem.key);
                     BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE);
                     batchRequest.getEntries().add(batchEntry);
                 }
@@ -365,5 +366,16 @@ public class GoogleSheet extends BaseTableSource {
 
     private int entryIndex(int col, int row, int top) {
         return (row - top - 1) * (mColumnIndexes.max - mColumnIndexes.min + 1) + col - mColumnIndexes.min;
+    }
+
+    private static class NewRowItem {
+
+        final String key;
+        final int row;
+
+        private NewRowItem(String key, int row) {
+            this.key = key;
+            this.row = row;
+        }
     }
 }
