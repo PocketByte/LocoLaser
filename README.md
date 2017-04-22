@@ -11,7 +11,7 @@ java -jar locolaser-google.jar locolaser_config.json
 ```
 ### Config structure
 Config is a file with JSON object that must contain configuration of platform and source:
-```json
+```
 {
     "platform" : (
         "android" | "ios" |
