@@ -10,17 +10,42 @@ You can run LocoLaser jar file from console:
 java -jar locolaser-google.jar locolaser_config.json
 ```
 ### Config structure
-Config is a file with JSON object that must contain configuration of platform and source.
-For example:
+Config is a file with JSON object that must contain configuration of platform and source:
 ```json
 {
-    "platform":"android",
-    "source": {
-        "type":"googlesheet",
-        "column_key":"key",
-        "column_locales":["en", "fi"],
-        "id":"1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
-    }
+    "platform" : (
+        "android" | "ios" |
+        {
+            "type" : ("android" | "ios"),
+            "res_name" : (String value),
+            "res_dir" : (Path to dir),
+            "temp_dir" : (Path to dir),
+
+            // extra properties for iOS
+            "swift_class" : (String value),
+            "objc_class" : (String value),
+            "source_dir" : (Path to dir)
+        }
+    ),
+    "source" : {
+        "type" : "googlesheet",
+        "id" : (String value),
+        "worksheet_title" : (String value),
+        "column_key" : (String value),
+        "column_locales" : (Array of strings),
+        "column_quantity" : (String value),
+        "column_comment" : (String value),
+        "credential_file" : (Path to file)
+    },
+    "conflict_strategy" : (
+        "remove_platform"   |
+        "keep_new_platform" |
+        "export_new_platform"
+    ),
+    "work_dir" : (Path to dir)
+    "force_import" : (false | true),
+    "duplicate_comments" : (false | true),
+    "delay" : (Integer value)
 }
 ```
 ##### Platform
@@ -36,6 +61,11 @@ JSON object may contain following properties:<br>
 - **`temp_dir`** - String. Path to directory with temporary files.
   * Default Android: ".\\\\build\\\\tmp\\\\",
   * Default iOS: ".\\\\tmp\\\\".
+<br>
+JSON object of the iOS platform has the extra properties:<br>
+- **`swift_class`** - String. If not null Swift class will generated in source dir.
+- **`objc_class`** - String. If not null Obj-C class will generated in source dir.
+- **`source_dir`** - String. Path to directory with source files. By default used work dir.
 
 ##### Google Sheet
 Google Sheet may contain following properties:<br>
@@ -58,9 +88,23 @@ Google Sheet may contain following properties:<br>
 - **`duplicate_comments`** - Boolean. If false comment will not be written if it equal localized string. Default value false.
 - **`delay`** - Long. Time in minutes that define delay for next localization. Localization will executed not more often the specified delay. If force import switch on delay will be ignored.
 
+##### Example
+```json
+{
+    "platform" : "android",
+    "source" : {
+        "type" : "googlesheet",
+        "column_key" : "key",
+        "column_locales" : ["en", "fi"],
+        "id" : "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
+    },
+    "delay" : 30
+}
+```
+
 ### Console arguments
 You can override config properties by adding additional console arguments:
-- **`--force`** or **`--f`* - Sets `force_import = true`.
+- **`--force`** or **`--f`** - Sets `force_import = true`.
 - **`-cs`** - String. Override config property `conflict_strategy`.
 - **`-delay`** - Long. Override config property `delay`.
 
