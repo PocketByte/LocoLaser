@@ -61,7 +61,7 @@ JSON object may contain following properties:<br>
 - **`temp_dir`** - String. Path to directory with temporary files.
   * Default Android: ".\\\\build\\\\tmp\\\\",
   * Default iOS: ".\\\\tmp\\\\".
-<br>
+
 JSON object of the iOS platform has the extra properties:<br>
 - **`swift_class`** - String. If not null Swift class will generated in source dir.
 - **`objc_class`** - String. If not null Obj-C class will generated in source dir.
