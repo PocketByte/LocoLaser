@@ -26,8 +26,12 @@ import static org.junit.Assert.*;
  */
 public class IosResourceFileTest {
 
-    static String testString = "?'test';:<tag>\"value\nsecond line\" %1s %2s %s<tagg/>";
-    static String platformTestString = "?'test';:<tag>\\\"value\\nsecond line\\\" %1@ %2@ %@<tagg/>";
+    static String testString =
+            "?'test';:<tag>\"value\nsecond line\" %1$s %2$s %s<tagg/>" +
+                    " Wrong Formats: %$s $5s";
+    static String platformTestString =
+            "?'test';:<tag>\\\"value\\nsecond line\\\" %1$@ %2$@ %@<tagg/>" +
+                    " Wrong Formats: %$s $5s";
 
     @Rule
     public TemporaryFolder tempFolder= new TemporaryFolder();

@@ -172,7 +172,8 @@ public class IosResourceFile extends ResourceStreamFile {
         string = string
                 .replace("\"", "\\\"")
                 .replace("\n", "\\n")
-                .replaceAll("%([0-9]{0,})s", "%$1@");
+                .replaceAll("%s", "%@")
+                .replaceAll("%([0-9]{1,})\\$s", "%$1\\$@");
         return string;
     }
 
@@ -180,7 +181,8 @@ public class IosResourceFile extends ResourceStreamFile {
         string = string
                 .replace("\\\"", "\"")
                 .replace("\\n", "\n")
-                .replaceAll("%([0-9]{0,})@", "%$1s");
+                .replaceAll("%@", "%s")
+                .replaceAll("%([0-9]{1,})\\$@", "%$1\\$s");
         return string;
     }
 }
