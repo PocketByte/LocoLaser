@@ -5,5 +5,3 @@ include 'source-googlesheet'
 include 'platform-mobile'
 include 'platform-gettext'
 
-include 'locolaser-mobile-googlesheet'
-

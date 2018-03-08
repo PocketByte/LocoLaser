@@ -1,7 +1,11 @@
 apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: "maven-publish"
+apply plugin: 'com.jfrog.bintray'
 
 sourceCompatibility = 1.7
-version = '1.0'
+version = '1.1.2'
+mainClassName = "ru.pocketbyte.locolaser.Main"
 
 repositories {
     mavenCentral()
@@ -12,4 +16,74 @@ dependencies {
     compile 'com.beust:jcommander:1.48'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': "$mainClassName")
+    }
+
+    // Include all libraries into result JAR file.
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+task generateJavadocs(type: Javadoc) {
+    source {
+        sourceSets.main.allJava
+    }
+    failOnError = false
+}
+
+task sourceDoc(type: Jar, dependsOn: generateJavadocs) {
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        locolaserPublication(MavenPublication) {
+            from components.java
+            groupId 'ru.pocketbyte.locolaser'
+            artifactId 'locolaser-core'
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.remove(root.get('dependencies'))
+            }
+            artifact sourceJar {
+                classifier "sources"
+            }
+            artifact sourceDoc {
+                classifier "javadoc"
+            }
+        }
+    }
+}
+
+bintray {
+    publish = true
+    override = false
+
+    user = project.hasProperty('bintray.publish.user') ? project.properties.get("bintray.publish.user") : "-"
+    key = project.hasProperty('bintray.publish.apikey') ? project.properties.get("bintray.publish.apikey") : "-"
+    pkg {
+        repo = 'maven'
+        name = 'locolaser-core'
+        userOrg = 'pocketbyte'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/PocketByte/LocoLaser.git'
+        websiteUrl = 'https://github.com/PocketByte/LocoLaser'
+        issueTrackerUrl = 'https://github.com/PocketByte/LocoLaser/issue'
+        version {
+            name = project.version
+            desc = 'Core library of LocoLaser tool'
+            released  = new Date()
+            vcsTag = project.version
+            gpg.passphrase = project.properties.get("bintray.publish.gpgPassphrase")
+        }
+        publications = ['locolaserPublication']
+    }
 }
