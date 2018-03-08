@@ -47,7 +47,7 @@ publishing {
         locolaserPublication(MavenPublication) {
             from components.java
             groupId 'ru.pocketbyte.locolaser'
-            artifactId 'locolaser-core'
+            artifactId 'core'
             version project.version
             pom.withXml {
                 def root = asNode()

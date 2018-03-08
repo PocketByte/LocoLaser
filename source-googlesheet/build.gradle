@@ -74,7 +74,7 @@ publishing {
         locolaserPublication(MavenPublication) {
             from components.java
             groupId 'ru.pocketbyte.locolaser'
-            artifactId 'locolaser-source-googlesheet'
+            artifactId 'source-googlesheet'
             version project.version
             pom.withXml {
                 def root = asNode()
