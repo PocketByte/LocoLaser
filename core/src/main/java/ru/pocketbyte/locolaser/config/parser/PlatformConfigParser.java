@@ -20,8 +20,9 @@ public interface PlatformConfigParser<PlatformConfigType extends PlatformConfig>
     /**
      * Parse Platform object.
      * @param platformObject An object that represent platform object.
-     * @return Parsed platform object.
+     * @param throwIfWrongType Define that parser should trow exception if object type is not supported.
+     * @return Parsed platform object or null if object has wrong type and throwIfWrongType equal false.
      * @throws InvalidConfigException if config has some logic errors or doesn't contain some required fields.
      */
-    public PlatformConfigType parse(Object platformObject) throws InvalidConfigException;
+    public PlatformConfigType parse(Object platformObject, boolean throwIfWrongType) throws InvalidConfigException;
 }

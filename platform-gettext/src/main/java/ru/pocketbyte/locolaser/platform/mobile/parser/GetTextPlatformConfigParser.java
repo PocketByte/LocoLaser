@@ -19,39 +19,43 @@ import ru.pocketbyte.locolaser.utils.JsonParseUtils;
 public class GetTextPlatformConfigParser implements PlatformConfigParser<BasePlatformConfig> {
     public static final String RESOURCE_NAME = "res_name";
     public static final String RESOURCES_DIR = "res_dir";
-    public static final String TEMP_DIR = "temp_dir";
 
-    public BasePlatformConfig parse(Object platformObject) throws InvalidConfigException {
+    public BasePlatformConfig parse(Object platformObject, boolean throwIfWrongType) throws InvalidConfigException {
 
         if (platformObject instanceof String) {
-            checkType((String) platformObject);
-            return new GetTextPlatformConfig();
+            if (checkType((String) platformObject, throwIfWrongType))
+                return new GetTextPlatformConfig();
         }
         else if (platformObject instanceof JSONObject) {
             JSONObject platformJSON = (JSONObject) platformObject;
 
-            checkType(JsonParseUtils.getString(platformJSON, PLATFORM_TYPE, ConfigParser.PLATFORM, true));
+            if (checkType(JsonParseUtils.getString(platformJSON, PLATFORM_TYPE, ConfigParser.PLATFORM, true), throwIfWrongType)) {
+                GetTextPlatformConfig platform = new GetTextPlatformConfig();
 
-            GetTextPlatformConfig platform = new GetTextPlatformConfig();
+                platform.setResourceName(JsonParseUtils.getString(
+                        platformJSON, RESOURCE_NAME, ConfigParser.PLATFORM, false));
 
-            platform.setResourceName(JsonParseUtils.getString(
-                                        platformJSON, RESOURCE_NAME, ConfigParser.PLATFORM, false));
+                platform.setResourcesDir(JsonParseUtils.getFile(
+                        platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false));
 
-            platform.setResourcesDir(JsonParseUtils.getFile(
-                                        platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false));
-
-            platform.setTempDir(JsonParseUtils.getFile(
-                                        platformJSON, TEMP_DIR, ConfigParser.PLATFORM, false));
-
-            return platform;
+                return platform;
+            }
         }
-        else
+
+        if (throwIfWrongType)
             throw new InvalidConfigException("Property \"" + ConfigParser.PLATFORM + "\" must be a String or JSON object.");
+
+        return null;
     }
 
-    private void checkType(String type) throws InvalidConfigException {
-        if (!GetTextPlatformConfig.TYPE.equals(type))
-            throw new InvalidConfigException("Source type is \"" + type + "\", but expected \"" + GetTextPlatformConfig.TYPE + "\".");
+    private boolean checkType(String type, boolean throwIfWrongType) throws InvalidConfigException {
+        if (!GetTextPlatformConfig.TYPE.equals(type)) {
+            if (throwIfWrongType)
+                throw new InvalidConfigException("Source type is \"" + type + "\", but expected \"" + GetTextPlatformConfig.TYPE + "\".");
 
+            return false;
+        }
+
+        return true;
     }
 }

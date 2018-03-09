@@ -29,5 +29,5 @@ public interface PlatformConfig {
      * Gets temporary directory.
      * @return Temporary directory.
      */
-    public File getTempDir();
+    public File getDefaultTempDir();
 }

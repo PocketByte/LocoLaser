@@ -44,7 +44,7 @@ public class MobilePlatformConfigParserTest {
 
     @Test
     public void testAndroidFromString() throws InvalidConfigException {
-        PlatformConfig config = parser.parse(AndroidPlatformConfig.TYPE);
+        PlatformConfig config = parser.parse(AndroidPlatformConfig.TYPE, true);
 
         assertNotNull(config);
         assertEquals(AndroidPlatformConfig.class, config.getClass());
@@ -52,7 +52,7 @@ public class MobilePlatformConfigParserTest {
 
     @Test
     public void testIosFromString() throws InvalidConfigException {
-        PlatformConfig config = parser.parse(IosPlatformConfig.TYPE);
+        PlatformConfig config = parser.parse(IosPlatformConfig.TYPE, true);
 
         assertNotNull(config);
         assertEquals(IosPlatformConfig.class, config.getClass());
@@ -60,12 +60,12 @@ public class MobilePlatformConfigParserTest {
 
     @Test(expected = InvalidConfigException.class)
     public void testUnknownFromString() throws InvalidConfigException {
-        parser.parse("invalid_platform");
+        parser.parse("invalid_platform", true);
     }
 
     @Test
     public void testFromJson() throws InvalidConfigException, IOException {
-        BasePlatformConfig config = parser.parse(prepareTestPlatformJson(AndroidPlatformConfig.TYPE));
+        BasePlatformConfig config = parser.parse(prepareTestPlatformJson(AndroidPlatformConfig.TYPE), true);
 
         assertNotNull(config);
         assertEquals(AndroidPlatformConfig.class, config.getClass());
@@ -74,21 +74,21 @@ public class MobilePlatformConfigParserTest {
         assertEquals(new File("test_res_dir").getCanonicalPath(),
                 config.getResourcesDir().getCanonicalPath());
         assertEquals(new File("test_temp_dir").getCanonicalPath(),
-                config.getTempDir().getCanonicalPath());
+                config.getDefaultTempDir().getCanonicalPath());
     }
 
     @Test(expected = InvalidConfigException.class)
     public void testFromJsonNoType() throws InvalidConfigException {
         JSONObject json = prepareTestPlatformJson(AndroidPlatformConfig.TYPE);
         json.remove(PlatformConfigParser.PLATFORM_TYPE);
-        parser.parse(json);
+        parser.parse(json, true);
     }
 
     @Test
     public void testFromJsonOnlyType() throws InvalidConfigException {
         JSONObject json = new JSONObject();
         json.put(PlatformConfigParser.PLATFORM_TYPE, AndroidPlatformConfig.TYPE);
-        BasePlatformConfig config = parser.parse(json);
+        BasePlatformConfig config = parser.parse(json, true);
 
         assertNotNull(config);
         assertEquals(AndroidPlatformConfig.class, config.getClass());
@@ -96,7 +96,7 @@ public class MobilePlatformConfigParserTest {
 
     @Test(expected = InvalidConfigException.class)
     public void testFromInvalidClass() throws InvalidConfigException {
-        parser.parse(new ArrayList<String>());
+        parser.parse(new ArrayList<String>(), true);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class MobilePlatformConfigParserTest {
         iosJson.put(MobilePlatformConfigParser.SWIFT_CLASS, swiftClassName);
         iosJson.put(MobilePlatformConfigParser.OBJC_CLASS, objcClassName);
 
-        IosPlatformConfig config = (IosPlatformConfig) parser.parse(iosJson);
+        IosPlatformConfig config = (IosPlatformConfig) parser.parse(iosJson, true);
 
         assertEquals(swiftClassName, config.getSwiftClassName());
         assertEquals(objcClassName, config.getObjcClassName());

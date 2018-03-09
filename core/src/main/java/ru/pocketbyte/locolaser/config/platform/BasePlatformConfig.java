@@ -19,7 +19,7 @@ public abstract class BasePlatformConfig extends Config.Child implements Platfor
 
     private String mResourceName;
     private File mResourcesPath;
-    private File mTempDir;
+    private File mDefaultTempDir;
 
     /**
      * Construct new Platform object.
@@ -31,15 +31,15 @@ public abstract class BasePlatformConfig extends Config.Child implements Platfor
     // =================================================================================================================
 
     @Override
-    public File getTempDir() {
-        if (mTempDir == null)
+    public File getDefaultTempDir() {
+        if (mDefaultTempDir == null)
             try {
-                mTempDir = new File(new File(getDefaultTempDirPath()).getCanonicalPath());
+                mDefaultTempDir = new File(new File(getDefaultTempDirPath()).getCanonicalPath());
             } catch (IOException e) {
                 e.printStackTrace();
-                mTempDir = new File(getDefaultTempDirPath());
+                mDefaultTempDir = new File(getDefaultTempDirPath());
             }
-        return mTempDir;
+        return mDefaultTempDir;
     }
 
     // =================================================================================================================
@@ -82,14 +82,6 @@ public abstract class BasePlatformConfig extends Config.Child implements Platfor
      */
     public void setResourcesDir(File file) {
         this.mResourcesPath = file;
-    }
-
-    /**
-     * Sets temporary directory.
-     * @param file Temporary directory.
-     */
-    public void setTempDir(File file) {
-        this.mTempDir = file;
     }
 
     // =================================================================================================================

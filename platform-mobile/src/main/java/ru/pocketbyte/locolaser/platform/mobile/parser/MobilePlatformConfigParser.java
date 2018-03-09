@@ -21,33 +21,31 @@ import ru.pocketbyte.locolaser.utils.JsonParseUtils;
 public class MobilePlatformConfigParser implements PlatformConfigParser<BasePlatformConfig> {
     public static final String RESOURCE_NAME = "res_name";
     public static final String RESOURCES_DIR = "res_dir";
-    public static final String TEMP_DIR = "temp_dir";
 
     // Extra properties for iOS
     public static final String SOURCE_DIR = "source_dir";
     public static final String SWIFT_CLASS = "swift_class";
     public static final String OBJC_CLASS = "objc_class";
 
-    public BasePlatformConfig parse(Object platformObject) throws InvalidConfigException {
-        BasePlatformConfig platform;
+    public BasePlatformConfig parse(Object platformObject, boolean throwIfWrongType) throws InvalidConfigException {
 
         if (platformObject instanceof String) {
             String type = (String) platformObject;
-            platform = platformByType(type);
+            return platformByType(type, throwIfWrongType);
         }
         else if (platformObject instanceof JSONObject) {
             JSONObject platformJSON = (JSONObject) platformObject;
             String type = JsonParseUtils.getString(platformJSON, PLATFORM_TYPE, ConfigParser.PLATFORM, true);
-            platform = platformByType(type);
+            BasePlatformConfig platform = platformByType(type, throwIfWrongType);
+
+            if (platform == null)
+                return null;
 
             platform.setResourceName(JsonParseUtils.getString(
                                         platformJSON, RESOURCE_NAME, ConfigParser.PLATFORM, false));
 
             platform.setResourcesDir(JsonParseUtils.getFile(
                                         platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false));
-
-            platform.setTempDir(JsonParseUtils.getFile(
-                                        platformJSON, TEMP_DIR, ConfigParser.PLATFORM, false));
 
             // Extra properties for iOS
             if (IosPlatformConfig.TYPE.equals(platform.getType())) {
@@ -59,26 +57,34 @@ public class MobilePlatformConfigParser implements PlatformConfigParser<BasePlat
                 iosPlatform.setObjcClassName(JsonParseUtils.getString(
                                 platformJSON, OBJC_CLASS, ConfigParser.PLATFORM, false));
             }
+
+            return platform;
         }
-        else
+
+        if (throwIfWrongType)
             throw new InvalidConfigException("Property \"" + ConfigParser.PLATFORM + "\" must be a String or JSON object.");
 
-        return platform;
+        return null;
     }
 
     /**
      * Creates new platform object from it's type.
      * @param type Platform type.
-     * @return Platform object depends on type.
+     * @param throwIfWrongType Define that parser should trow exception if object type is not supported.
+     * @return Platform object depends on type or null if type is not supported and throwIfWrongType equal false.
      * @throws InvalidConfigException if platform is unknown.
      */
-    protected BasePlatformConfig platformByType(String type) throws InvalidConfigException {
+    protected BasePlatformConfig platformByType(String type, boolean throwIfWrongType) throws InvalidConfigException {
         if (AndroidPlatformConfig.TYPE.equals(type))
             return new AndroidPlatformConfig();
         if (IosPlatformConfig.TYPE.equals(type))
             return new IosPlatformConfig();
         if (WpPlatformConfig.TYPE.equals(type))
             return new WpPlatformConfig();
-        throw new InvalidConfigException("Unknown platform: " + type);
+
+        if (throwIfWrongType)
+            throw new InvalidConfigException("Unknown platform: " + type);
+
+        return null;
     }
 }

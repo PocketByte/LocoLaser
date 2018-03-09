@@ -1,8 +1,3 @@
-/*
- * Copyright © 2017 Denis Shurygin. All rights reserved.
- * Licensed under the Apache License, Version 2.0
- */
-
 package ru.pocketbyte.locolaser.resource;
 
 import org.junit.Before;
@@ -16,19 +11,12 @@ import ru.pocketbyte.locolaser.testutils.mock.MockResourceFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 
-/**
- * @author Denis Shurygin
- */
-public class AbsPlatformResourcesTest {
-
-    private static final String NAME = "name";
+public class PlatformSetResourcesTest {
 
     @Rule
     public TemporaryFolder tempFolder= new TemporaryFolder();
@@ -40,59 +28,63 @@ public class AbsPlatformResourcesTest {
         resFolder = tempFolder.newFolder();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorNullDir() {
-        new MockPlatformResources(null, NAME);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructorNullName() {
-        new MockPlatformResources(resFolder, null);
-    }
-
-    @Test
-    public void testConstructor() {
-        AbsPlatformResources resources = new MockPlatformResources(resFolder, NAME);
-
-        assertEquals(NAME, resources.getName());
-        assertEquals(resFolder, resources.getDirectory());
-    }
-
     @Test
     public void testRead() {
-        final MockResourceFile res1 = new MockResourceFile(prepareResMap1());
-        final MockResourceFile res2 = new MockResourceFile(prepareResMap2());
+        PlatformSetResources resources = prepareResources(
+                new MockResourceFile(prepareResMap1()),
+                new MockResourceFile(prepareResMap2())
+        );
 
-        AbsPlatformResources resources = new MockPlatformResources(resFolder, NAME) {
-            @Override
-            protected ResourceFile[] getResourceFiles(Set<String> locales) {
-                return new ResourceFile[] {res1, res2};
-            }
-        };
+        ResMap expected = prepareResMap1().merge(prepareResMap2());
 
-        ResMap result = resources.read(getAllLocales());
+        assertEquals(expected, resources.read(getAllLocales()));
+    }
 
-        ResMap expectedMap = prepareResMap1().merge(prepareResMap2());
+    @Test
+    public void testReadWrongDirection() {
+        PlatformSetResources resources = prepareResources(
+                new MockResourceFile(prepareResMap1()),
+                new MockResourceFile(prepareResMap2())
+        );
 
-        assertEquals(expectedMap, result);
+        ResMap expected = prepareResMap2().merge(prepareResMap1());
+
+        assertNotEquals(expected, resources.read(getAllLocales()));
     }
 
     @Test
     public void testWrite() throws IOException {
-        ResMap map = new ResMap();
-        final MockResourceFile res1 = new MockResourceFile(null);
-        final MockResourceFile res2 = new MockResourceFile(null);
+        MockResourceFile file1 = new MockResourceFile(prepareResMap1());
+        MockResourceFile file2 = new MockResourceFile(prepareResMap1());
 
-        AbsPlatformResources resources = new MockPlatformResources(resFolder, NAME) {
+        PlatformSetResources resources = prepareResources(file1, file2);
+
+        ResMap expected = prepareResMap2();
+
+        resources.write(expected, null);
+
+        assertEquals(expected, file1.mMap);
+        assertEquals(expected, file2.mMap);
+    }
+
+    private PlatformSetResources prepareResources(final ResourceFile res1, final ResourceFile res2) {
+        Set<PlatformResources> set = new LinkedHashSet<>(2);
+
+        set.add(new MockPlatformResources(resFolder, "resource1") {
             @Override
             protected ResourceFile[] getResourceFiles(Set<String> locales) {
-                return new ResourceFile[] {res1, res2};
+                return new ResourceFile[] {res1};
             }
-        };
+        });
 
-        resources.write(map, null);
-        assertTrue(map == res1.mMap);
-        assertTrue(map == res2.mMap);
+        set.add(new MockPlatformResources(resFolder, "resource2") {
+            @Override
+            protected ResourceFile[] getResourceFiles(Set<String> locales) {
+                return new ResourceFile[] {res2};
+            }
+        });
+
+        return new PlatformSetResources(set);
     }
 
     private Set<String> getAllLocales() {

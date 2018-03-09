@@ -169,7 +169,7 @@ public class SummaryTest {
             }
 
             @Override
-            public File getTempDir() {
+            public File getDefaultTempDir() {
                 return new File(System.getProperty("user.dir"), "temp/");
             }
         });

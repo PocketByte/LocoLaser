@@ -36,7 +36,7 @@ public class GetTextPlatformConfigParserTest {
 
     @Test
     public void testFromString() throws InvalidConfigException {
-        PlatformConfig config = parser.parse(GetTextPlatformConfig.TYPE);
+        PlatformConfig config = parser.parse(GetTextPlatformConfig.TYPE, true);
 
         assertNotNull(config);
         assertEquals(GetTextPlatformConfig.class, config.getClass());
@@ -44,12 +44,12 @@ public class GetTextPlatformConfigParserTest {
 
     @Test(expected = InvalidConfigException.class)
     public void testUnknownFromString() throws InvalidConfigException {
-        parser.parse("invalid_platform");
+        parser.parse("invalid_platform", true);
     }
 
     @Test
     public void testFromJson() throws InvalidConfigException, IOException {
-        BasePlatformConfig config = parser.parse(prepareTestPlatformJson());
+        BasePlatformConfig config = parser.parse(prepareTestPlatformJson(), true);
 
         assertNotNull(config);
         assertEquals(GetTextPlatformConfig.class, config.getClass());
@@ -58,7 +58,7 @@ public class GetTextPlatformConfigParserTest {
         assertEquals(new File("test_res_dir").getCanonicalPath(),
                 config.getResourcesDir().getCanonicalPath());
         assertEquals(new File("test_temp_dir").getCanonicalPath(),
-                config.getTempDir().getCanonicalPath());
+                config.getDefaultTempDir().getCanonicalPath());
     }
 
     @Test(expected = InvalidConfigException.class)
@@ -66,14 +66,14 @@ public class GetTextPlatformConfigParserTest {
         JSONObject json = prepareTestPlatformJson();
         json.remove(PlatformConfigParser.PLATFORM_TYPE);
 
-        parser.parse(json);
+        parser.parse(json, true);
     }
 
     @Test
     public void testFromJsonOnlyType() throws InvalidConfigException {
         JSONObject json = new JSONObject();
         json.put(PlatformConfigParser.PLATFORM_TYPE, GetTextPlatformConfig.TYPE);
-        BasePlatformConfig config = parser.parse(json);
+        BasePlatformConfig config = parser.parse(json, true);
 
         assertNotNull(config);
         assertEquals(GetTextPlatformConfig.class, config.getClass());
@@ -81,7 +81,7 @@ public class GetTextPlatformConfigParserTest {
 
     @Test(expected = InvalidConfigException.class)
     public void testFromInvalidClass() throws InvalidConfigException {
-        parser.parse(new ArrayList<String>());
+        parser.parse(new ArrayList<String>(), true);
     }
 
     private JSONObject prepareTestPlatformJson() {

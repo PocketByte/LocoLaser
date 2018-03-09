@@ -31,6 +31,7 @@ public class ConfigParser {
     public static final String SOURCE = "source";
     public static final String PLATFORM = "platform";
     public static final String WORK_DIR = "work_dir";
+    public static final String TEMP_DIR = "temp_dir";
 
     public static final String FORCE_IMPORT = "force_import";
     public static final String CONFLICT_STRATEGY = "conflict_strategy";
@@ -105,9 +106,10 @@ public class ConfigParser {
         config.setConflictStrategy(parseConflictStrategy(JsonParseUtils.getString(configJson, CONFLICT_STRATEGY, null, false)));
         config.setDuplicateComments(JsonParseUtils.getBoolean(configJson, DUPLICATE_COMMENTS, null, false));
         config.setDelay(JsonParseUtils.getLong(configJson, DELAY, null, false) * DELAY_MULT);
+        config.setTempDir(JsonParseUtils.getFile(configJson, TEMP_DIR, null, false));
 
         config.setSourceConfig(mSourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true)));
-        config.setPlatform(mPlatformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true)));
+        config.setPlatform(mPlatformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), true));
 
         validate(config);
 

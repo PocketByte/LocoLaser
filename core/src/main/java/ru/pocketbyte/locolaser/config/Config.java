@@ -9,6 +9,7 @@ import ru.pocketbyte.locolaser.config.platform.PlatformConfig;
 import ru.pocketbyte.locolaser.config.source.SourceConfig;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Configuration object that contain information about localization rules.
@@ -33,6 +34,7 @@ public class Config {
     private boolean isForceImport;
     private ConflictStrategy mConflictStrategy;
     private long mDelay;
+    private File mTempDir;
 
     public final WritingConfig writingConfig = new WritingConfig();
 
@@ -143,6 +145,14 @@ public class Config {
         mDelay = delay;
     }
 
+    /**
+     * Sets temporary directory.
+     * @param file Temporary directory.
+     */
+    public void setTempDir(File file) {
+        this.mTempDir = file;
+    }
+
     // =================================================================================================================
     // ============ Getters ============================================================================================
     // =================================================================================================================
@@ -156,7 +166,9 @@ public class Config {
     }
 
     public File getTempDir() {
-        return mPlatform.getTempDir();
+        if (mTempDir == null)
+            mTempDir = mPlatform.getDefaultTempDir();
+        return mTempDir;
     }
 
     /**
