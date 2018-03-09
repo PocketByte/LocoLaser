@@ -58,6 +58,14 @@ public class ConfigParser {
         mPlatformConfigParser = platformConfigParser;
     }
 
+    public SourceConfigParser<?> getSourceConfigParser() {
+        return mSourceConfigParser;
+    }
+
+    public PlatformConfigParser getPlatformConfigParser() {
+        return mPlatformConfigParser;
+    }
+
     /**
      * Parse Config from console arguments.
      * @param args Console arguments.

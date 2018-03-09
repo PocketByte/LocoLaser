@@ -57,8 +57,6 @@ public class GetTextPlatformConfigParserTest {
         assertEquals("test_res", config.getResourceName());
         assertEquals(new File("test_res_dir").getCanonicalPath(),
                 config.getResourcesDir().getCanonicalPath());
-        assertEquals(new File("test_temp_dir").getCanonicalPath(),
-                config.getDefaultTempDir().getCanonicalPath());
     }
 
     @Test(expected = InvalidConfigException.class)
@@ -89,7 +87,6 @@ public class GetTextPlatformConfigParserTest {
         json.put(PlatformConfigParser.PLATFORM_TYPE, GetTextPlatformConfig.TYPE);
         json.put(GetTextPlatformConfigParser.RESOURCE_NAME, "test_res");
         json.put(GetTextPlatformConfigParser.RESOURCES_DIR, "test_res_dir");
-        json.put(GetTextPlatformConfigParser.TEMP_DIR, "test_temp_dir");
         return json;
     }
 }

@@ -132,6 +132,28 @@ public class ConfigParserTest {
     }
 
     @Test
+    public void testJsonTempDir() throws IOException, ParseException, InvalidConfigException {
+        String tempDir = "./new/work/dir";
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(ConfigParser.TEMP_DIR, tempDir);
+
+        File file = prepareMockFile(map);
+        Config config = mConfigParser.fromFile(file);
+
+        assertEquals(new File(tempDir).getCanonicalPath(), config.getTempDir().getCanonicalPath());
+    }
+
+    @Test
+    public void testDefaultTempDir() throws IOException, ParseException, InvalidConfigException {
+        File file = prepareMockFile(new HashMap<String, Object>());
+        Config config = mConfigParser.fromFile(file);
+
+        File expected = new MockPlatformConfig().getDefaultTempDir();
+
+        assertEquals(expected.getCanonicalPath(), config.getTempDir().getCanonicalPath());
+    }
+
+    @Test
     public void testJsonConflictStrategy() throws IOException, ParseException, InvalidConfigException {
         List<Pair<String, Config.ConflictStrategy>> list = Arrays.asList(
                 new Pair<>(Config.ConflictStrategy.REMOVE_PLATFORM.name, Config.ConflictStrategy.REMOVE_PLATFORM),

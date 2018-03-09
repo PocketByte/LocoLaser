@@ -27,6 +27,6 @@ public class MockPlatformConfig implements PlatformConfig {
 
     @Override
     public File getDefaultTempDir() {
-        return null;
+        return new File("./temp/mock/");
     }
 }
