@@ -67,8 +67,12 @@ bintray {
     publish = true
     override = false
 
-    user = project.hasProperty('bintray.publish.user') ? project.properties.get("bintray.publish.user") : "-"
-    key = project.hasProperty('bintray.publish.apikey') ? project.properties.get("bintray.publish.apikey") : "-"
+    user = project.hasProperty('bintray.publish.user') ?
+            project.properties.get("bintray.publish.user") : "-"
+
+    key = project.hasProperty('bintray.publish.apikey') ?
+            project.properties.get("bintray.publish.apikey") : "-"
+
     pkg {
         repo = 'maven'
         name = 'locolaser-core'
