@@ -11,6 +11,7 @@ import org.junit.rules.TemporaryFolder;
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.PlatformResources;
 import ru.pocketbyte.locolaser.resource.entity.*;
+import ru.pocketbyte.locolaser.utils.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,12 +32,12 @@ public class IosSwiftResourceFileTest {
 
     @Test
     public void testKeyToProperty() {
-        assertEquals("some_value", IosSwiftResourceFile.keyToProperty("Some Value"));
-        assertEquals("some_value", IosSwiftResourceFile.keyToProperty("some__value__"));
-        assertEquals("some_value2", IosSwiftResourceFile.keyToProperty("some 'value2'"));
-        assertEquals("some_value_2", IosSwiftResourceFile.keyToProperty("some 'value' + 2"));
-        assertEquals("formula_x_y_3_2_z", IosSwiftResourceFile.keyToProperty("formula x = (y + 3/2) * z."));
-        assertEquals("_1_value", IosSwiftResourceFile.keyToProperty("1 value"));
+        assertEquals("some_value", TextUtils.keyToProperty("Some Value"));
+        assertEquals("some_value", TextUtils.keyToProperty("some__value__"));
+        assertEquals("some_value2", TextUtils.keyToProperty("some 'value2'"));
+        assertEquals("some_value_2", TextUtils.keyToProperty("some 'value' + 2"));
+        assertEquals("formula_x_y_3_2_z", TextUtils.keyToProperty("formula x = (y + 3/2) * z."));
+        assertEquals("_1_value", TextUtils.keyToProperty("1 value"));
     }
 
     @Test

@@ -13,4 +13,10 @@ public class TextUtils {
     public static boolean isEmpty(String string) {
         return string == null || string.length() == 0 || string.trim().length() == 0;
     }
+
+    public static String keyToProperty(String key) {
+        return key.replaceAll("[^0-9|A-Z|a-z]{1,}", "_")
+                .replaceAll("(^[0-9])", "_$1")
+                .replaceAll("(_$){1,}", "").toLowerCase();
+    }
 }

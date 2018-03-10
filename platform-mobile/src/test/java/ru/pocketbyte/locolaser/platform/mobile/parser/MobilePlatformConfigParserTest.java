@@ -73,8 +73,6 @@ public class MobilePlatformConfigParserTest {
         assertEquals("test_res", config.getResourceName());
         assertEquals(new File("test_res_dir").getCanonicalPath(),
                 config.getResourcesDir().getCanonicalPath());
-        assertEquals(new File("test_temp_dir").getCanonicalPath(),
-                config.getDefaultTempDir().getCanonicalPath());
     }
 
     @Test(expected = InvalidConfigException.class)
@@ -99,30 +97,11 @@ public class MobilePlatformConfigParserTest {
         parser.parse(new ArrayList<String>(), true);
     }
 
-    @Test
-    public void testIosExtraFromJson() throws InvalidConfigException, IOException {
-        String swiftClassName = "SomeSwiftClass";
-        String objcClassName = "SomeObjcClass";
-        String sourceDirPath = "./subdir/";
-
-        JSONObject iosJson = prepareTestPlatformJson(IosPlatformConfig.TYPE);
-        iosJson.put(MobilePlatformConfigParser.SOURCE_DIR, sourceDirPath);
-        iosJson.put(MobilePlatformConfigParser.SWIFT_CLASS, swiftClassName);
-        iosJson.put(MobilePlatformConfigParser.OBJC_CLASS, objcClassName);
-
-        IosPlatformConfig config = (IosPlatformConfig) parser.parse(iosJson, true);
-
-        assertEquals(swiftClassName, config.getSwiftClassName());
-        assertEquals(objcClassName, config.getObjcClassName());
-        assertEquals(new File(sourceDirPath).getCanonicalPath(), config.getSourceDir().getCanonicalPath());
-    }
-
     private JSONObject prepareTestPlatformJson(String platform) {
         JSONObject json = new JSONObject();
         json.put(PlatformConfigParser.PLATFORM_TYPE, platform);
         json.put(MobilePlatformConfigParser.RESOURCE_NAME, "test_res");
         json.put(MobilePlatformConfigParser.RESOURCES_DIR, "test_res_dir");
-        json.put(MobilePlatformConfigParser.TEMP_DIR, "test_temp_dir");
         return json;
     }
 }

@@ -18,8 +18,8 @@ import java.util.Set;
  */
 public abstract class AbsPlatformResources implements PlatformResources {
 
-    private File mDir;
-    private String mName;
+    private final File mDir;
+    private final String mName;
 
     public AbsPlatformResources(File dir, String name) {
         if (dir == null)
