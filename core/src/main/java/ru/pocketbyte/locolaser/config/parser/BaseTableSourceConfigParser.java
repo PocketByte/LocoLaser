@@ -45,7 +45,7 @@ public abstract class BaseTableSourceConfigParser<SourceConfigClass extends Base
      * @return Parsed source object.
      * @throws InvalidConfigException
      */
-    public SourceConfig parse(Object sourceObject) throws InvalidConfigException {
+    public SourceConfig parse(Object sourceObject, boolean throwIfWrongType) throws InvalidConfigException {
         if (sourceObject instanceof JSONObject) {
             return parseFromJson((JSONObject) sourceObject);
         } else if (sourceObject instanceof JSONArray) {

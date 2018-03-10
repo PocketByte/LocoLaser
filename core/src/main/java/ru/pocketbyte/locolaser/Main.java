@@ -6,10 +6,7 @@
 package ru.pocketbyte.locolaser;
 
 import org.json.simple.parser.ParseException;
-import ru.pocketbyte.locolaser.config.parser.ConfigParser;
-import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser;
-import ru.pocketbyte.locolaser.config.parser.PlatformSetConfigParser;
-import ru.pocketbyte.locolaser.config.parser.SourceConfigParser;
+import ru.pocketbyte.locolaser.config.parser.*;
 import ru.pocketbyte.locolaser.exception.InvalidConfigException;
 
 import java.io.*;
@@ -21,7 +18,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.jar.JarInputStream;
 
 /**
  * @author Denis Shurygin
@@ -45,22 +41,29 @@ public class Main {
     }
 
     private static ConfigParser buildParser() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
-        SourceConfigParser<?> sourceConfigParser = (SourceConfigParser<?>)
-                Class.forName("ru.pocketbyte.locolaser.SourceConfigParserImpl").newInstance();
-
-        Set<PlatformConfigParser> platformParsers = new LinkedHashSet<>();
+        Set<PlatformConfigParser> platformConfigParsers = new LinkedHashSet<>();
+        Set<SourceConfigParser> sourceConfigParsers = new LinkedHashSet<>();
 
         for (URL url: getJarUrls()) {
-            List<String> list = readPlatformConfigs(url);
+            List<String> list;
 
+            list = readPlatformConfigParsers(url);
             for (String className: list)
-                platformParsers.add((PlatformConfigParser) Class.forName(className).newInstance());
+                platformConfigParsers.add((PlatformConfigParser) Class.forName(className).newInstance());
+
+            list = readSourceConfigParsers(url);
+            for (String className: list)
+                sourceConfigParsers.add((SourceConfigParser) Class.forName(className).newInstance());
         }
 
-        if (platformParsers.size() == 0)
+        if (platformConfigParsers.size() == 0)
             throw new RuntimeException("Platform Config parser not found");
 
-        return new ConfigParser(sourceConfigParser, new PlatformSetConfigParser(platformParsers));
+        sourceConfigParsers.add(new EmptySourceConfigParser());
+
+        return new ConfigParser(
+                new SourceSetConfigParser(sourceConfigParsers),
+                new PlatformSetConfigParser(platformConfigParsers));
     }
 
     private static URL[] getJarUrls() {
@@ -76,8 +79,12 @@ public class Main {
         return uc.getURLs();
     }
 
-    private static List<String> readPlatformConfigs(URL jarUrl) {
+    private static List<String> readPlatformConfigParsers(URL jarUrl) {
         return readLines(jarUrl, "/META-INF/platform_configs");
+    }
+
+    private static List<String> readSourceConfigParsers(URL jarUrl) {
+        return readLines(jarUrl, "/META-INF/source_configs");
     }
 
     private static List<String> readLines(URL jarUrl, String filePath) {

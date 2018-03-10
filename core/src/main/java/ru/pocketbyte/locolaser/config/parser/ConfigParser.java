@@ -116,7 +116,7 @@ public class ConfigParser {
         config.setDelay(JsonParseUtils.getLong(configJson, DELAY, null, false) * DELAY_MULT);
         config.setTempDir(JsonParseUtils.getFile(configJson, TEMP_DIR, null, false));
 
-        config.setSourceConfig(mSourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true)));
+        config.setSourceConfig(mSourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true));
         config.setPlatform(mPlatformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), true));
 
         validate(config);

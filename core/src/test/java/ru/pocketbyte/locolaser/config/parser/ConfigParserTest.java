@@ -44,7 +44,7 @@ public class ConfigParserTest {
         SourceConfigParser<MockTableSourceConfig> sourceConfigParser = new SourceConfigParser<MockTableSourceConfig>() {
 
             @Override
-            public MockTableSourceConfig parse(Object sourceObject) throws InvalidConfigException {
+            public MockTableSourceConfig parse(Object sourceObject, boolean throwIfWrongType) throws InvalidConfigException {
                 return new MockTableSourceConfig();
             }
         };

@@ -16,11 +16,14 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException;
  * @author Denis Shurygin
  */
 public interface SourceConfigParser<SourceConfigType extends SourceConfig> {
+
+    public static final String SOURCE_TYPE = "type";
+
     /**
      * Parse Source from JSON object.
      * @param sourceObject JSON object that contain source config properties.
      * @return Parsed source object.
      * @throws InvalidConfigException
      */
-    SourceConfigType parse(Object sourceObject) throws InvalidConfigException;
+    SourceConfigType parse(Object sourceObject, boolean throwIfWrongType) throws InvalidConfigException;
 }
