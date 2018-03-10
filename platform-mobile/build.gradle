@@ -10,8 +10,13 @@ repositories {
 }
 
 dependencies {
-    compile project(':core')
+    noJarCompile project(':core')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+jar {
+    // Include all libraries into result JAR file.
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 }
 
 task sourceJar(type: Jar) {

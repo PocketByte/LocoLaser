@@ -19,3 +19,12 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
     }
 }
+
+allprojects {
+
+    configurations {
+        // dependencies from this configuration will not be included in final jar file
+        noJarCompile
+        compile.extendsFrom noJarCompile
+    }
+}

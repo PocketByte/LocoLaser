@@ -9,12 +9,6 @@ repositories {
     mavenCentral()
 }
 
-configurations {
-    // dependencies from this configuration will not be included in final jar file
-    noJarCompile
-    compile.extendsFrom noJarCompile
-}
-
 dependencies {
     noJarCompile project(':core')
     compile 'com.google.api-client:google-api-client-java6:1.22.0'
@@ -26,6 +20,12 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+jar {
+    // Include all libraries into result JAR file.
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
 task copyAppProperties(type: Copy) {
     from 'src/main/resources/properties'
     into 'build/resources/main/properties'
