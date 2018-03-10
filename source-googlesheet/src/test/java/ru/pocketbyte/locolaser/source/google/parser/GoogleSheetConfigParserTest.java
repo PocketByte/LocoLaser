@@ -46,7 +46,7 @@ public class GoogleSheetConfigParserTest {
 
         PlatformConfigParser platformConfigParser = new PlatformConfigParser() {
             @Override
-            public PlatformConfig parse(Object platformObject) throws InvalidConfigException {
+            public PlatformConfig parse(Object platformObject, boolean throwIfWrongType) throws InvalidConfigException {
                 return new MockPlatformConfig();
             }
         };
