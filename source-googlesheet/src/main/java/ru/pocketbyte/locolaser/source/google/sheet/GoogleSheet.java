@@ -68,7 +68,8 @@ public class GoogleSheet extends BaseTableSource {
                         ResItem resItem = entry.getValue();
 
 
-                        for (ResValue resValue : resItem.values) {
+                        for (int i = 0; i < resItem.values.size(); i++) {
+                            ResValue resValue = resItem.values.get(i);
                             // =====================================
                             // Prepare batch for found missed resMap
                             if (resValue.getLocation() instanceof CellLocation) {
