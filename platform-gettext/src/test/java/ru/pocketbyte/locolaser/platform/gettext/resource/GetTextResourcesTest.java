@@ -1,9 +1,8 @@
-package locolaser.platform.mobile.resource;
+package ru.pocketbyte.locolaser.platform.gettext.resource;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ru.pocketbyte.locolaser.platform.mobile.resource.GetTextResources;
 import ru.pocketbyte.locolaser.resource.entity.*;
 
 import java.io.IOException;

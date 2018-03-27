@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-package ru.pocketbyte.locolaser.platform.mobile;
+package ru.pocketbyte.locolaser.platform.gettext;
 
-import ru.pocketbyte.locolaser.platform.mobile.resource.GetTextResources;
+import ru.pocketbyte.locolaser.platform.gettext.resource.GetTextResources;
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig;
 import ru.pocketbyte.locolaser.resource.PlatformResources;
 

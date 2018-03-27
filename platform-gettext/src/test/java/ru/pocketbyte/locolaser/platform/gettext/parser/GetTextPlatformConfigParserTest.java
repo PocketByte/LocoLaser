@@ -1,4 +1,4 @@
-package locolaser.platform.mobile.parser;
+package ru.pocketbyte.locolaser.platform.gettext.parser;
 
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -9,8 +9,8 @@ import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser;
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig;
 import ru.pocketbyte.locolaser.config.platform.PlatformConfig;
 import ru.pocketbyte.locolaser.exception.InvalidConfigException;
-import ru.pocketbyte.locolaser.platform.mobile.GetTextPlatformConfig;
-import ru.pocketbyte.locolaser.platform.mobile.parser.GetTextPlatformConfigParser;
+import ru.pocketbyte.locolaser.platform.gettext.GetTextPlatformConfig;
+import ru.pocketbyte.locolaser.platform.gettext.parser.GetTextPlatformConfigParser;
 
 import java.io.File;
 import java.io.IOException;

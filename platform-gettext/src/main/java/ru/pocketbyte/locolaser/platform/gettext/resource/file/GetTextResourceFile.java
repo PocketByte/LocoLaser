@@ -3,7 +3,7 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-package ru.pocketbyte.locolaser.platform.mobile.resource.file;
+package ru.pocketbyte.locolaser.platform.gettext.resource.file;
 
 import ru.pocketbyte.locolaser.config.WritingConfig;
 import ru.pocketbyte.locolaser.resource.entity.*;

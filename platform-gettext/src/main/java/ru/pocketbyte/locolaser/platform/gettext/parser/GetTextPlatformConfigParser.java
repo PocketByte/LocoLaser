@@ -3,9 +3,9 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-package ru.pocketbyte.locolaser.platform.mobile.parser;
+package ru.pocketbyte.locolaser.platform.gettext.parser;
 
-import ru.pocketbyte.locolaser.platform.mobile.GetTextPlatformConfig;
+import ru.pocketbyte.locolaser.platform.gettext.GetTextPlatformConfig;
 import org.json.simple.JSONObject;
 import ru.pocketbyte.locolaser.config.parser.ConfigParser;
 import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser;
