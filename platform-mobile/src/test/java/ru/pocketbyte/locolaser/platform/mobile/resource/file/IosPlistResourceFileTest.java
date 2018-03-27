@@ -1,8 +1,3 @@
-/*
- * Copyright © 2017 Denis Shurygin. All rights reserved.
- * Licensed under the Apache License, Version 2.0
- */
-
 package ru.pocketbyte.locolaser.platform.mobile.resource.file;
 
 import org.junit.Rule;
@@ -19,14 +14,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static ru.pocketbyte.locolaser.platform.mobile.resource.file.AbsIosStringsResourceFileTest.PLATFORM_TEST_STRING;
 import static ru.pocketbyte.locolaser.platform.mobile.resource.file.AbsIosStringsResourceFileTest.TEST_STRING;
 
-/**
- * @author Denis Shurygin
- */
-public class IosResourceFileTest {
+public class IosPlistResourceFileTest {
 
     @Rule
     public TemporaryFolder tempFolder= new TemporaryFolder();
@@ -36,12 +29,12 @@ public class IosResourceFileTest {
         String testLocale = "ru";
         File testFile = prepareTestFile(
                 "/* Comment */\r\n" +
-                " \"string1\" = \"Value1\";\r\n" +
-                "\"string2\"= \"Value2\";\r\n" +
-                "\r\n" +
-                "\"string3\" = \"Value 3\";");
+                        " string1 = \"Value1\";\r\n" +
+                        "string2= \"Value2\";\r\n" +
+                        "\r\n" +
+                        "string3 = \"Value 3\";");
 
-        IosResourceFile resourceFile = new IosResourceFile(testFile, testLocale);
+        IosPlistResourceFile resourceFile = new IosPlistResourceFile(testFile, testLocale);
         ResMap resMap = resourceFile.read();
 
         assertNotNull(resMap);
@@ -75,16 +68,16 @@ public class IosResourceFileTest {
         resMap.put(redundantLocale, resLocale);
 
         File testFile = tempFolder.newFile();
-        IosResourceFile resourceFile = new IosResourceFile(testFile, testLocale);
+        IosPlistResourceFile resourceFile = new IosPlistResourceFile(testFile, testLocale);
         resourceFile.write(resMap, null);
 
         String expectedResult =
                 TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
-                "/* Comment */\r\n" +
-                "\"key1\" = \"value1_1\";\r\n" +
-                "\r\n" +
-                "/* value2_1 */\r\n" +
-                "\"key2\" = \"value2_1\";";
+                        "/* Comment */\r\n" +
+                        "\"key1\" = \"value1_1\";\r\n" +
+                        "\r\n" +
+                        "/* value2_1 */\r\n" +
+                        "\"key2\" = \"value2_1\";";
 
         assertEquals(expectedResult, readFile(testFile));
     }
@@ -104,15 +97,15 @@ public class IosResourceFileTest {
         writingConfig.setDuplicateComments(false);
 
         File testFile = tempFolder.newFile();
-        IosResourceFile resourceFile = new IosResourceFile(testFile, testLocale);
+        IosPlistResourceFile resourceFile = new IosPlistResourceFile(testFile, testLocale);
         resourceFile.write(resMap, writingConfig);
 
         String expectedResult =
                 TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
-                "/* Comment */\r\n" +
-                "\"key1\" = \"value1_1\";\r\n" +
-                "\r\n" +
-                "\"key2\" = \"value2_1\";";
+                        "/* Comment */\r\n" +
+                        "\"key1\" = \"value1_1\";\r\n" +
+                        "\r\n" +
+                        "\"key2\" = \"value2_1\";";
 
         assertEquals(expectedResult, readFile(testFile));
     }
@@ -122,9 +115,9 @@ public class IosResourceFileTest {
         String testLocale = "ru";
         File testFile = prepareTestFile(
                 TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
-                "\"string1\" = \"" + PLATFORM_TEST_STRING + "\";");
+                        "\"string1\" = \"" + PLATFORM_TEST_STRING + "\";");
 
-        IosResourceFile resourceFile = new IosResourceFile(testFile, testLocale);
+        IosPlistResourceFile resourceFile = new IosPlistResourceFile(testFile, testLocale);
         ResMap resMap = resourceFile.read();
 
         assertNotNull(resMap);
@@ -148,12 +141,12 @@ public class IosResourceFileTest {
         resMap.put(testLocale, resLocale);
 
         File testFile = tempFolder.newFile();
-        IosResourceFile resourceFile = new IosResourceFile(testFile, testLocale);
+        IosPlistResourceFile resourceFile = new IosPlistResourceFile(testFile, testLocale);
         resourceFile.write(resMap, null);
 
         String expectedResult =
                 TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
-                "\"string1\" = \"" + PLATFORM_TEST_STRING + "\";";
+                        "\"string1\" = \"" + PLATFORM_TEST_STRING + "\";";
 
         assertEquals(expectedResult, readFile(testFile));
     }

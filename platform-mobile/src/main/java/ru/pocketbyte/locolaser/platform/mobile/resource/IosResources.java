@@ -18,9 +18,8 @@ import java.util.Set;
  *
  * @author Denis Shurygin
  */
-public class IosResources extends AbsPlatformResources {
+public class IosResources extends AbsIosStringsResources {
 
-    public static final String RES_FILE_EXTENSION = ".strings";
     public static final String PLURAL_RES_FILE_EXTENSION = ".stringsdict";
 
     public IosResources(File resourcesDir, String name) {
@@ -48,25 +47,9 @@ public class IosResources extends AbsPlatformResources {
         });
     }
 
-    private File getFileForLocale(String locale) {
-        File localeFolder = new File(getDirectory(), getLocaleDirName(locale));
-        localeFolder.mkdirs();
-        return new File(localeFolder, getName() + RES_FILE_EXTENSION);
-    }
-
     private File getPluralFileForLocale(String locale) {
         File localeFolder = new File(getDirectory(), getLocaleDirName(locale));
         localeFolder.mkdirs();
         return new File(localeFolder, getName() + PLURAL_RES_FILE_EXTENSION);
-    }
-
-    private String getLocaleDirName(String locale) {
-        StringBuilder builder = new StringBuilder();
-        if (BASE_LOCALE.equals(locale))
-            builder.append("Base");
-        else
-            builder.append(locale);
-        builder.append(".lproj");
-        return builder.toString();
     }
 }

@@ -16,6 +16,7 @@ import ru.pocketbyte.locolaser.config.platform.PlatformConfig;
 import ru.pocketbyte.locolaser.exception.InvalidConfigException;
 import ru.pocketbyte.locolaser.platform.mobile.AndroidPlatformConfig;
 import ru.pocketbyte.locolaser.platform.mobile.IosPlatformConfig;
+import ru.pocketbyte.locolaser.platform.mobile.IosPlistPlatformConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +57,14 @@ public class MobilePlatformConfigParserTest {
 
         assertNotNull(config);
         assertEquals(IosPlatformConfig.class, config.getClass());
+    }
+
+    @Test
+    public void testIosPlistFromString() throws InvalidConfigException {
+        PlatformConfig config = parser.parse(IosPlistPlatformConfig.TYPE, true);
+
+        assertNotNull(config);
+        assertEquals(IosPlistPlatformConfig.class, config.getClass());
     }
 
     @Test(expected = InvalidConfigException.class)

@@ -9,6 +9,7 @@ import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig;
 import ru.pocketbyte.locolaser.exception.InvalidConfigException;
 import ru.pocketbyte.locolaser.platform.mobile.AndroidPlatformConfig;
 import ru.pocketbyte.locolaser.platform.mobile.IosPlatformConfig;
+import ru.pocketbyte.locolaser.platform.mobile.IosPlistPlatformConfig;
 import ru.pocketbyte.locolaser.platform.mobile.WpPlatformConfig;
 
 /**
@@ -22,6 +23,8 @@ public class MobilePlatformConfigParser extends BaseMobilePlatformConfigParser {
             return new AndroidPlatformConfig();
         if (IosPlatformConfig.TYPE.equals(type))
             return new IosPlatformConfig();
+        if (IosPlistPlatformConfig.TYPE.equals(type))
+            return new IosPlistPlatformConfig();
         if (WpPlatformConfig.TYPE.equals(type))
             return new WpPlatformConfig();
 
