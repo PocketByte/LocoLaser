@@ -29,12 +29,12 @@ public class GetTextPlatformConfig extends BasePlatformConfig {
 
     @Override
     public String getDefaultResourcesPath() {
-        return "./src/main/res/";
+        return "./";
     }
 
     @Override
     protected String getDefaultResourceName() {
-        return "strings";
+        return "messages";
     }
 
     @Override

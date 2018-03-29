@@ -40,15 +40,10 @@ public class GetTextResources extends AbsPlatformResources {
     private File getFileForLocale(String locale) {
         File localeFolder = new File(getDirectory(), getLocaleDirName(locale));
         localeFolder.mkdirs();
-        return new File(localeFolder, getName() + ".xml");
+        return new File(localeFolder, getName() + ".po");
     }
 
     private String getLocaleDirName(String locale) {
-        StringBuilder builder = new StringBuilder("values");
-        if (BASE_LOCALE.equals(locale))
-            builder.append("/");
-        else
-            builder.append("-").append(locale).append("/");
-        return builder.toString();
+        return locale + "/LC_MESSAGES/";
     }
 }
