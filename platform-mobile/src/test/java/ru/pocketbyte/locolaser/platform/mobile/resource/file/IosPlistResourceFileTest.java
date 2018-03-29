@@ -74,10 +74,10 @@ public class IosPlistResourceFileTest {
         String expectedResult =
                 TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
                         "/* Comment */\r\n" +
-                        "\"key1\" = \"value1_1\";\r\n" +
+                        "key1 = \"value1_1\";\r\n" +
                         "\r\n" +
                         "/* value2_1 */\r\n" +
-                        "\"key2\" = \"value2_1\";";
+                        "key2 = \"value2_1\";";
 
         assertEquals(expectedResult, readFile(testFile));
     }
@@ -103,9 +103,9 @@ public class IosPlistResourceFileTest {
         String expectedResult =
                 TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
                         "/* Comment */\r\n" +
-                        "\"key1\" = \"value1_1\";\r\n" +
+                        "key1 = \"value1_1\";\r\n" +
                         "\r\n" +
-                        "\"key2\" = \"value2_1\";";
+                        "key2 = \"value2_1\";";
 
         assertEquals(expectedResult, readFile(testFile));
     }
@@ -115,7 +115,7 @@ public class IosPlistResourceFileTest {
         String testLocale = "ru";
         File testFile = prepareTestFile(
                 TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
-                        "\"string1\" = \"" + PLATFORM_TEST_STRING + "\";");
+                        "string1 = \"" + PLATFORM_TEST_STRING + "\";");
 
         IosPlistResourceFile resourceFile = new IosPlistResourceFile(testFile, testLocale);
         ResMap resMap = resourceFile.read();
@@ -146,7 +146,7 @@ public class IosPlistResourceFileTest {
 
         String expectedResult =
                 TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
-                        "\"string1\" = \"" + PLATFORM_TEST_STRING + "\";";
+                        "string1 = \"" + PLATFORM_TEST_STRING + "\";";
 
         assertEquals(expectedResult, readFile(testFile));
     }

@@ -11,7 +11,7 @@ public class IosPlistResourceFile extends AbsIosStringsResourceFile {
 
     @Override
     protected String getKeyValueLinePattern() {
-        return "[{26}]((?:[^\"]||\\\\\")+?)\\s*=\\s*\"((?:[^\"]|\\\\\")*)\"\\s*;";
+        return "^\\s?((?:[^\"]|\\\\\")+?)\\s*=\\s*\"((?:[^\"]|\\\\\")*)\"\\s*;";
     }
 
     @Override
