@@ -92,9 +92,11 @@ public class BaseTableSourceConfigParserTest {
     @Test
     public void testConfigClass() throws IOException, ParseException, InvalidConfigException {
         File file = prepareMockFile(null, prepareMinimalSourceMap());
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
 
-        SourceConfig sourceConfig = config.getSourceConfig();
+        assertEquals(1, configs.length);
+
+        SourceConfig sourceConfig = configs[0].getSourceConfig();
         assertTrue(sourceConfig instanceof BaseTableSourceConfig);
     }
 
@@ -105,9 +107,11 @@ public class BaseTableSourceConfigParserTest {
             Map<String, Object> sourceMap = prepareMinimalSourceMap();
             sourceMap.put(BaseTableSourceConfigParser.COLUMN_KEY, keyColumn);
             File file = prepareMockFile(null, sourceMap);
-            Config config = mConfigParser.fromFile(file);
+            Config[] configs = mConfigParser.fromFile(file);
 
-            BaseTableSourceConfig sourceConfig = (BaseTableSourceConfig) config.getSourceConfig();
+            assertEquals(1, configs.length);
+
+            BaseTableSourceConfig sourceConfig = (BaseTableSourceConfig) configs[0].getSourceConfig();
             assertEquals(keyColumn, sourceConfig.getKeyColumn());
         }
     }
@@ -119,9 +123,11 @@ public class BaseTableSourceConfigParserTest {
             Map<String, Object> sourceMap = prepareMinimalSourceMap();
             sourceMap.put(BaseTableSourceConfigParser.COLUMN_QUANTITY, quantityColumn);
             File file = prepareMockFile(null, sourceMap);
-            Config config = mConfigParser.fromFile(file);
+            Config[] configs = mConfigParser.fromFile(file);
 
-            BaseTableSourceConfig sourceConfig = (BaseTableSourceConfig) config.getSourceConfig();
+            assertEquals(1, configs.length);
+
+            BaseTableSourceConfig sourceConfig = (BaseTableSourceConfig) configs[0].getSourceConfig();
             assertEquals(quantityColumn, sourceConfig.getQuantityColumn());
         }
     }
@@ -133,9 +139,11 @@ public class BaseTableSourceConfigParserTest {
             Map<String, Object> sourceMap = prepareMinimalSourceMap();
             sourceMap.put(BaseTableSourceConfigParser.COLUMN_COMMENT, commentColumn);
             File file = prepareMockFile(null, sourceMap);
-            Config config = mConfigParser.fromFile(file);
+            Config[] configs = mConfigParser.fromFile(file);
 
-            BaseTableSourceConfig sourceConfig = (BaseTableSourceConfig) config.getSourceConfig();
+            assertEquals(1, configs.length);
+
+            BaseTableSourceConfig sourceConfig = (BaseTableSourceConfig) configs[0].getSourceConfig();
             assertEquals(commentColumn, sourceConfig.getCommentColumn());
         }
     }
@@ -150,9 +158,11 @@ public class BaseTableSourceConfigParserTest {
             Map<String, Object> sourceMap = prepareMinimalSourceMap();
             sourceMap.put(BaseTableSourceConfigParser.COLUMN_LOCALES, Arrays.asList(localeColumns));
             File file = prepareMockFile(null, sourceMap);
-            Config config = mConfigParser.fromFile(file);
+            Config[] configs = mConfigParser.fromFile(file);
 
-            BaseTableSourceConfig sourceConfig = (BaseTableSourceConfig) config.getSourceConfig();
+            assertEquals(1, configs.length);
+
+            BaseTableSourceConfig sourceConfig = (BaseTableSourceConfig) configs[0].getSourceConfig();
             assertEquals(localeColumns.length, sourceConfig.getLocaleColumns().size());
 
             for (int i = 0; i < localeColumns.length; i++) {
@@ -166,9 +176,10 @@ public class BaseTableSourceConfigParserTest {
         File file = prepareMultiSourceMockFile(null, Arrays.asList(
                 prepareMinimalSourceMap(),
                 prepareMinimalSourceMap()));
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
 
-        assertEquals(SourceSetConfig.class, config.getSourceConfig().getClass());
+        assertEquals(1, configs.length);
+        assertEquals(SourceSetConfig.class, configs[0].getSourceConfig().getClass());
     }
 
     private Map<String, Object> prepareMinimalSourceMap() {

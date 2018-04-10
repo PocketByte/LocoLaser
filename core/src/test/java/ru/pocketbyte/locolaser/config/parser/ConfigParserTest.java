@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser.config.parser;
 
 import javafx.util.Pair;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
@@ -70,9 +71,37 @@ public class ConfigParserTest {
     }
 
     @Test
+    public void testConfigsArray() throws IOException, ParseException, InvalidConfigException {
+        long delay1 = 141;
+        HashMap<String, Object> map1 = new HashMap<>();
+        map1.put(ConfigParser.DELAY, delay1);
+
+        long delay2 = 873;
+        HashMap<String, Object> map2 = new HashMap<>();
+        map2.put(ConfigParser.DELAY, delay2);
+
+        File file = prepareMockFileWithArray(map1, map2);
+
+        Config[] configs = mConfigParser.fromFile(file);
+
+        assertEquals(2, configs.length);
+
+        assertNotNull(configs[0]);
+        assertNotNull(configs[1]);
+
+        assertEquals(delay1 * ConfigParser.DELAY_MULT, configs[0].getDelay());
+        assertEquals(delay2 * ConfigParser.DELAY_MULT, configs[1].getDelay());
+
+    }
+
+    @Test
     public void testDefaultValues() throws IOException, ParseException, InvalidConfigException {
         File file = prepareMockFile(null);
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
+
+        assertEquals(1, configs.length);
+
+        Config config = configs[0];
 
         assertNotNull(config);
         assertEquals(config.getFile().getCanonicalPath(), file.getCanonicalPath());
@@ -89,16 +118,18 @@ public class ConfigParserTest {
         map.put(ConfigParser.FORCE_IMPORT, true);
 
         File file = prepareMockFile(map);
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
 
-        assertTrue(config.isForceImport());
+        assertEquals(1, configs.length);
+        assertTrue(configs[0].isForceImport());
 
         map.put(ConfigParser.FORCE_IMPORT, false);
 
         file = prepareMockFile(map);
-        config = mConfigParser.fromFile(file);
+        configs = mConfigParser.fromFile(file);
 
-        assertFalse(config.isForceImport());
+        assertEquals(1, configs.length);
+        assertFalse(configs[0].isForceImport());
     }
 
     @Test
@@ -107,16 +138,18 @@ public class ConfigParserTest {
         map.put(ConfigParser.DUPLICATE_COMMENTS, true);
 
         File file = prepareMockFile(map);
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
 
-        assertTrue(config.isDuplicateComments());
+        assertEquals(1, configs.length);
+        assertTrue(configs[0].isDuplicateComments());
 
         map.put(ConfigParser.DUPLICATE_COMMENTS, false);
 
         file = prepareMockFile(map);
-        config = mConfigParser.fromFile(file);
+        configs = mConfigParser.fromFile(file);
 
-        assertFalse(config.isDuplicateComments());
+        assertEquals(1, configs.length);
+        assertFalse(configs[0].isDuplicateComments());
     }
 
     @Test
@@ -126,7 +159,7 @@ public class ConfigParserTest {
         map.put(ConfigParser.WORK_DIR, newWorkDir);
 
         File file = prepareMockFile(map);
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
 
         assertEquals(new File(file.getParentFile(), newWorkDir).getCanonicalPath(), System.getProperty("user.dir"));
     }
@@ -138,19 +171,21 @@ public class ConfigParserTest {
         map.put(ConfigParser.TEMP_DIR, tempDir);
 
         File file = prepareMockFile(map);
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
 
-        assertEquals(new File(tempDir).getCanonicalPath(), config.getTempDir().getCanonicalPath());
+        assertEquals(1, configs.length);
+        assertEquals(new File(tempDir).getCanonicalPath(), configs[0].getTempDir().getCanonicalPath());
     }
 
     @Test
     public void testDefaultTempDir() throws IOException, ParseException, InvalidConfigException {
         File file = prepareMockFile(new HashMap<String, Object>());
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
 
         File expected = new MockPlatformConfig().getDefaultTempDir();
 
-        assertEquals(expected.getCanonicalPath(), config.getTempDir().getCanonicalPath());
+        assertEquals(1, configs.length);
+        assertEquals(expected.getCanonicalPath(), configs[0].getTempDir().getCanonicalPath());
     }
 
     @Test
@@ -166,9 +201,10 @@ public class ConfigParserTest {
             map.put(ConfigParser.CONFLICT_STRATEGY, pair.getKey());
 
             File file = prepareMockFile(map);
-            Config config = mConfigParser.fromFile(file);
+            Config[] configs = mConfigParser.fromFile(file);
 
-            assertEquals(pair.getValue(), config.getConflictStrategy());
+            assertEquals(1, configs.length);
+            assertEquals(pair.getValue(), configs[0].getConflictStrategy());
         }
     }
 
@@ -179,16 +215,19 @@ public class ConfigParserTest {
         map.put(ConfigParser.DELAY, delay);
 
         File file = prepareMockFile(map);
-        Config config = mConfigParser.fromFile(file);
+        Config[] configs = mConfigParser.fromFile(file);
 
-        assertEquals(delay * ConfigParser.DELAY_MULT, config.getDelay());
+        assertEquals(1, configs.length);
+        assertEquals(delay * ConfigParser.DELAY_MULT, configs[0].getDelay());
     }
 
     @Test
     public void testFromArguments() throws IOException, ParseException, InvalidConfigException {
         File file = prepareMockFile(null);
-        Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath()});
-        assertNotNull(config);
+        Config[] configs = mConfigParser.fromArguments(new String[]{file.getAbsolutePath()});
+
+        assertEquals(1, configs.length);
+        assertNotNull(configs[0]);
     }
 
     @Test(expected=InvalidConfigException.class)
@@ -203,11 +242,13 @@ public class ConfigParserTest {
 
         File file = prepareMockFile(map);
 
-        Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(), "--force"});
-        assertTrue(config.isForceImport());
+        Config[] configs = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(), "--force"});
+        assertEquals(1, configs.length);
+        assertTrue(configs[0].isForceImport());
 
-        config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(), "--f"});
-        assertTrue(config.isForceImport());
+        configs = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(), "--f"});
+        assertEquals(1, configs.length);
+        assertTrue(configs[0].isForceImport());
     }
 
     @Test
@@ -217,13 +258,15 @@ public class ConfigParserTest {
 
         File file = prepareMockFile(map);
 
-        Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
+        Config[] configs = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
                 "-cs", Config.ConflictStrategy.EXPORT_NEW_PLATFORM.name});
-        assertEquals(Config.ConflictStrategy.EXPORT_NEW_PLATFORM, config.getConflictStrategy());
+        assertEquals(1, configs.length);
+        assertEquals(Config.ConflictStrategy.EXPORT_NEW_PLATFORM, configs[0].getConflictStrategy());
 
-        config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
+        configs = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
                 "-cs ", Config.ConflictStrategy.REMOVE_PLATFORM.name});
-        assertEquals(Config.ConflictStrategy.REMOVE_PLATFORM, config.getConflictStrategy());
+        assertEquals(1, configs.length);
+        assertEquals(Config.ConflictStrategy.REMOVE_PLATFORM, configs[0].getConflictStrategy());
     }
 
     @Test
@@ -232,9 +275,10 @@ public class ConfigParserTest {
 
         File file = prepareMockFile(null);
 
-        Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
+        Config[] configs = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
                 "-delay", Long.toString(delay)});
-        assertEquals(delay * ConfigParser.DELAY_MULT, config.getDelay());
+        assertEquals(1, configs.length);
+        assertEquals(delay * ConfigParser.DELAY_MULT, configs[0].getDelay());
     }
 
     @Test
@@ -243,11 +287,14 @@ public class ConfigParserTest {
 
         File file = prepareMockFile(null);
 
-        Config config = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
+        Config[] configs = mConfigParser.fromArguments(new String[]{file.getAbsolutePath(),
                 "--force",
                 "-cs", Config.ConflictStrategy.EXPORT_NEW_PLATFORM.name,
                 "-delay",Long.toString(delay)});
 
+        assertEquals(1, configs.length);
+
+        Config config = configs[0];
         assertTrue(config.isForceImport());
         assertEquals(Config.ConflictStrategy.EXPORT_NEW_PLATFORM, config.getConflictStrategy());
         assertEquals(delay * ConfigParser.DELAY_MULT, config.getDelay());
@@ -261,6 +308,25 @@ public class ConfigParserTest {
 
         PrintWriter writer = new PrintWriter(file);
         writer.write(json.toJSONString());
+        writer.flush();
+        writer.close();
+        return file;
+    }
+
+    private File prepareMockFileWithArray(Map<String, Object>... configMaps) throws IOException {
+        File file = tempFolder.newFile();
+
+        JSONArray jsonArray = new JSONArray();
+
+        for (Map<String, Object> map: configMaps) {
+            JSONObject json = map != null ? new JSONObject(map) : new JSONObject();
+            json.put(ConfigParser.PLATFORM, "mock");
+            json.put(ConfigParser.SOURCE, "mock");
+            jsonArray.add(json);
+        }
+
+        PrintWriter writer = new PrintWriter(file);
+        writer.write(jsonArray.toJSONString());
         writer.flush();
         writer.close();
         return file;

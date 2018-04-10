@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser;
 
 import org.json.simple.parser.ParseException;
+import ru.pocketbyte.locolaser.config.Config;
 import ru.pocketbyte.locolaser.config.parser.*;
 import ru.pocketbyte.locolaser.exception.InvalidConfigException;
 
@@ -27,8 +28,11 @@ public class Main {
     public static void main(String[] args) {
         try {
             ConfigParser parser = buildParser();
-            if(!LocoLaser.localize(parser.fromArguments(args)))
-                System.exit(1);
+            Config[] configs = parser.fromArguments(args);
+            for (Config config: configs) {
+                if (!LocoLaser.localize(config))
+                    System.exit(1);
+            }
         } catch (InvalidConfigException e) {
             System.err.println("ERROR: " + e.getMessage());
             System.exit(1);

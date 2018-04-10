@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser.config.parser;
 
 import com.beust.jcommander.JCommander;
+import org.json.simple.JSONArray;
 import ru.pocketbyte.locolaser.config.Config;
 import ru.pocketbyte.locolaser.exception.InvalidConfigException;
 import org.json.simple.JSONObject;
@@ -74,15 +75,17 @@ public class ConfigParser {
      * @throws IOException if occurs an error reading the file.
      * @throws ParseException if occurs an error parsing JSON.
      */
-    public Config fromArguments(String[] args) throws IOException, ParseException, InvalidConfigException {
+    public Config[] fromArguments(String[] args) throws IOException, ParseException, InvalidConfigException {
         if(args != null && args.length > 0 && args[0] != null) {
-            Config config = fromFile(new File(args[0]));
+            Config[] configs = fromFile(new File(args[0]));
 
             ConfigArgsParser argsParser = new ConfigArgsParser();
             new JCommander(argsParser, args);
-            argsParser.applyFor(config);
 
-            return config;
+            for (Config config: configs)
+                argsParser.applyFor(config);
+
+            return configs;
         }
         throw new InvalidConfigException("JSON config not defined! Please provide file path for JSON config as a first parameter.");
     }
@@ -95,15 +98,31 @@ public class ConfigParser {
      * @throws IOException if occurs an error reading the file.
      * @throws ParseException if occurs an error parsing JSON.
      */
-    public Config fromFile(File file) throws IOException, ParseException, InvalidConfigException {
+    public Config[] fromFile(File file) throws IOException, ParseException, InvalidConfigException {
         LogUtils.info("Reading config file " + file.getCanonicalPath());
         file = new File(file.getCanonicalPath());
+        System.setProperty("user.dir", file.getParentFile().getCanonicalPath());
 
         FileReader reader = new FileReader(file);
-        JSONObject configJson = (JSONObject) JsonParseUtils.JSON_PARSER.parse(reader);
+        Object json = JsonParseUtils.JSON_PARSER.parse(reader);
         reader.close();
 
-        System.setProperty("user.dir", file.getParentFile().getCanonicalPath());
+        if (json instanceof JSONObject)
+            return new Config[] { fromJsonObject(file, (JSONObject) json) };
+        else if (json instanceof JSONArray) {
+            JSONArray jsonArray = (JSONArray) json;
+            Config[] array = new Config[jsonArray.size()];
+            for (int i = 0; i < jsonArray.size(); i++) {
+                array[i] = fromJsonObject(file, (JSONObject) jsonArray.get(i));
+            }
+            return array;
+        }
+
+        throw new InvalidConfigException("Config file must contain JSONObject or JSONArray.");
+    }
+
+    private Config fromJsonObject(File file, JSONObject configJson) throws IOException, InvalidConfigException {
+
         String workDir = JsonParseUtils.getString(configJson, WORK_DIR, null, false);
         if (workDir != null)
             System.setProperty("user.dir", new File(workDir).getCanonicalPath());
