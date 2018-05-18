@@ -63,9 +63,10 @@ public abstract class BaseTableSourceConfigParser<SourceConfigClass extends Base
                     throw new InvalidConfigException("Source array must contain JSONObjects.");
             }
             return new SourceSetConfig(configs, defaultConfig);
-        } else {
+        } else if (throwIfWrongType){
             throw new InvalidConfigException("Source must be a JSONObject or JSONArray.");
         }
+        return null;
     }
 
     protected SourceConfigClass parseFromJson(JSONObject configJson) throws InvalidConfigException {

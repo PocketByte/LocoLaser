@@ -61,6 +61,74 @@ public class GetTextResourceFileTest {
         assertEquals(expectedMap, resMap);
     }
 
+    @Test
+    public void testReadMultiline() throws IOException {
+        String testLocale = "ru";
+        File testFile = prepareTestFile(
+                GetTextResourceFile.GENERATED_GETTEXT_COMMENT + "\r\n\r\n" +
+                        "# Comment\r\n" +
+                        "msgid \"string1\"\r\n" +
+                        "msgstr \"Value1\"\r\n" +
+                        " \"Value1 string 2\"\r\n" +
+                        "      \"Value1 string 3\"\r\n" +
+                        "msgid \"string2\"\r\n" +
+                        "msgstr \"Value2\"\r\n" +
+                        "\"Value2 string 2\"\r\n" +
+                        "\r\n" +
+                        "msgid \"string3\"\r\n" +
+                        "msgstr \"Value 3\"\r\n" +
+                        "       \"Value 3 string 2\"\r\n" +
+                        " \"Value 3 string 3\"");
+
+        GetTextResourceFile resourceFile = new GetTextResourceFile(testFile, testLocale);
+        ResMap resMap = resourceFile.read();
+
+        assertNotNull(resMap);
+
+        ResMap expectedMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("string1", new ResValue[]{ new ResValue(
+                "Value1Value1 string 2Value1 string 3", "Comment", Quantity.OTHER) }));
+        resLocale.put(prepareResItem("string2", new ResValue[]{ new ResValue(
+                "Value2Value2 string 2", null, Quantity.OTHER) }));
+        resLocale.put(prepareResItem("string3", new ResValue[]{ new ResValue(
+                "Value 3Value 3 string 2Value 3 string 3", null, Quantity.OTHER) }));
+        expectedMap.put(testLocale, resLocale);
+
+        assertEquals(expectedMap, resMap);
+    }
+
+
+    @Test
+    public void testReadMultilineInvalid() throws IOException {
+        String testLocale = "ru";
+        File testFile = prepareTestFile(
+                GetTextResourceFile.GENERATED_GETTEXT_COMMENT + "\r\n\r\n" +
+                        "# Comment\r\n" +
+                        "msgid \"string1\"\r\n" +
+                        "msgstr \"Value1\"\r\n" +
+                        "msgstr \"Value1 string 2\"\r\n" +
+                        "      \"Value1 string 3\"\r\n" +
+                        "msgid \"string2\"\r\n" +
+                        "msgstr \"Value2\"\r\n" +
+                        "   error    \"Value2 string 2\"\r\n" +
+                        "       \"Value 3 string 2\"");
+
+        GetTextResourceFile resourceFile = new GetTextResourceFile(testFile, testLocale);
+        ResMap resMap = resourceFile.read();
+
+        assertNotNull(resMap);
+
+        ResMap expectedMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("string1", new ResValue[]{ new ResValue(
+                "Value1", "Comment", Quantity.OTHER) }));
+        resLocale.put(prepareResItem("string2", new ResValue[]{ new ResValue(
+                "Value2", null, Quantity.OTHER) }));
+        expectedMap.put(testLocale, resLocale);
+
+        assertEquals(expectedMap, resMap);
+    }
 
 
     @Test
