@@ -1,8 +1,9 @@
 package ru.pocketbyte.locolaser.platform.kotlinmobile;
 
+import ru.pocketbyte.locolaser.platform.kotlinmobile.resource.KotlinIosResources;
 import ru.pocketbyte.locolaser.resource.PlatformResources;
 
-public class KotlinIosPlatformConfig extends KotlinBaseImplementationPlatformConfig {
+public class KotlinIosPlatformConfig extends KotlinBaseImplPlatformConfig {
 
     public static final String TYPE = "kotlin-ios";
 
@@ -18,6 +19,6 @@ public class KotlinIosPlatformConfig extends KotlinBaseImplementationPlatformCon
 
     @Override
     public PlatformResources getResources() {
-       throw new RuntimeException("Not implemented");
+        return new KotlinIosResources(getResourcesDir(), getResourceName(), getInterfaceName());
     }
 }

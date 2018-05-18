@@ -3,7 +3,7 @@ package ru.pocketbyte.locolaser.platform.kotlinmobile;
 import ru.pocketbyte.locolaser.platform.kotlinmobile.resource.KotlinAndroidResources;
 import ru.pocketbyte.locolaser.resource.PlatformResources;
 
-public class KotlinAndroidPlatformConfig extends KotlinBaseImplementationPlatformConfig {
+public class KotlinAndroidPlatformConfig extends KotlinBaseImplPlatformConfig {
 
     public static final String TYPE = "kotlin-android";
 
@@ -21,7 +21,7 @@ public class KotlinAndroidPlatformConfig extends KotlinBaseImplementationPlatfor
 
     @Override
     public PlatformResources getResources() {
-        return new KotlinAndroidResources(getResourcesDir(), getResourceName(), getInterfaceName(), mAppPackage);
+        return new KotlinAndroidResources(getResourcesDir(), getResourceName(), getInterfaceName(), getAppPackage());
     }
 
     public void setAppPackage(String appPackage) {

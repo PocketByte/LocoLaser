@@ -8,7 +8,7 @@ import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile;
 import java.io.File;
 import java.io.IOException;
 
-public class KotlinInterfaceResourceFile extends BaseClassResourceFile {
+public class KotlinCommonResourceFile extends BaseClassResourceFile {
 
     private static final String CLASS_HEADER_TEMPLATE = "package %1$s\r\n"
             + "\r\n"
@@ -23,7 +23,7 @@ public class KotlinInterfaceResourceFile extends BaseClassResourceFile {
     private String mClassName;
     private String mClassPackage;
 
-    public KotlinInterfaceResourceFile(File file, String className, String classPackage) {
+    public KotlinCommonResourceFile(File file, String className, String classPackage) {
         super(file);
         mClassName = className;
         mClassPackage = classPackage;

@@ -2,7 +2,7 @@ package ru.pocketbyte.locolaser.platform.kotlinmobile;
 
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig;
 
-public abstract class KotlinBaseImplementationPlatformConfig extends BasePlatformConfig {
+public abstract class KotlinBaseImplPlatformConfig extends BasePlatformConfig {
 
     private String mInterfaceName;
 

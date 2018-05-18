@@ -16,14 +16,14 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 
-public class KotlinInterfaceResourceFileTest {
+public class KotlinCommonResourceFileTest {
 
     @Rule
     public TemporaryFolder tempFolder= new TemporaryFolder();
 
     @Test
     public void testRead() throws IOException {
-        KotlinInterfaceResourceFile resourceFile = new KotlinInterfaceResourceFile(tempFolder.newFile(),"Str", "com.package");
+        KotlinCommonResourceFile resourceFile = new KotlinCommonResourceFile(tempFolder.newFile(),"Str", "com.package");
         assertNull(resourceFile.read());
     }
 
@@ -35,7 +35,7 @@ public class KotlinInterfaceResourceFileTest {
         resMap.put(PlatformResources.BASE_LOCALE, resLocale);
 
         File testFile = tempFolder.newFile();
-        KotlinInterfaceResourceFile resourceFile = new KotlinInterfaceResourceFile(testFile, "Str", "com.package");
+        KotlinCommonResourceFile resourceFile = new KotlinCommonResourceFile(testFile, "Str", "com.package");
         resourceFile.write(resMap, null);
 
         String expectedResult =
@@ -69,7 +69,7 @@ public class KotlinInterfaceResourceFileTest {
         resMap.put(PlatformResources.BASE_LOCALE, resLocale);
 
         File testFile = tempFolder.newFile();
-        KotlinInterfaceResourceFile resourceFile = new KotlinInterfaceResourceFile(testFile, "StrInterface", "com.some.package");
+        KotlinCommonResourceFile resourceFile = new KotlinCommonResourceFile(testFile, "StrInterface", "com.some.package");
         resourceFile.write(resMap, null);
 
         String expectedResult =
@@ -105,7 +105,7 @@ public class KotlinInterfaceResourceFileTest {
         resMap.put(PlatformResources.BASE_LOCALE, resLocale);
 
         File testFile = tempFolder.newFile();
-        KotlinInterfaceResourceFile resourceFile = new KotlinInterfaceResourceFile(
+        KotlinCommonResourceFile resourceFile = new KotlinCommonResourceFile(
                 testFile, "Strings", "ru.pocketbyte");
 
         resourceFile.write(resMap, null);

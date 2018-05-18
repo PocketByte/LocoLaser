@@ -1,2 +1,2 @@
-ru.pocketbyte.locolaser.platform.kotlinmobile.parser.KotlinInterfacePlatformConfigParser
+ru.pocketbyte.locolaser.platform.kotlinmobile.parser.KotlinCommonPlatformConfigParser
 ru.pocketbyte.locolaser.platform.kotlinmobile.parser.KotlinImplementationPlatformConfigParser
