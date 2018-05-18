@@ -43,6 +43,7 @@ public class GetTextResourceFile extends ResourceStreamFile {
     private static final String COMMENT_SINGLE_LINE = "#";
     private static final String KEY_LINE_PATTERN = "msgid \"((?:[^\"]|\\\\\")*)\"\\s*";
     private static final String VALUE_LINE_PATTERN = "msgstr \"((?:[^\"]|\\\\\")*)\"\\s*";
+    private static final String VALUE_SECOND_LINE_PATTERN = "^[^\\S]*\"((?:[^\"]|\\\\\")*)\"\\s*";
 
     private final String mLocale;
 
@@ -58,6 +59,7 @@ public class GetTextResourceFile extends ResourceStreamFile {
 
             Matcher keyMatcher = Pattern.compile(KEY_LINE_PATTERN).matcher("");
             Matcher valueMatcher = Pattern.compile(VALUE_LINE_PATTERN).matcher("");
+            Matcher valueSecondMatcher = Pattern.compile(VALUE_SECOND_LINE_PATTERN).matcher("");
 
             Path path = Paths.get(mFile.toURI());
             try (
@@ -67,44 +69,65 @@ public class GetTextResourceFile extends ResourceStreamFile {
                 String line;
                 StringBuilder comment = null;
                 String key = null;
+                StringBuilder value = null;
 
-                while ((line = lineReader.readLine()) != null) {
+                do {
+                    line = lineReader.readLine();
 
-                    if (key == null && line.startsWith(COMMENT_SINGLE_LINE)) {
-                        if (comment == null)
-                            comment = new StringBuilder(line.substring(COMMENT_SINGLE_LINE.length()));
-                        else {
-                            comment.append("\n");
-                            comment.append(line.substring(COMMENT_SINGLE_LINE.length()));
-                        }
-                    }
-                    else if (key == null){
-                        keyMatcher.reset(line);
-                        if (keyMatcher.find() && keyMatcher.groupCount() == 1) {
-                            key = keyMatcher.group(1);
-                            if (key == null || key.length() == 0) {
-                                comment = null;
-                                key = null;
+                    if (key != null) {
+                        if (value == null) {
+                            if (line != null) {
+                                valueMatcher.reset(line);
+                                if (valueMatcher.find() && valueMatcher.groupCount() == 1) {
+                                    value = new StringBuilder(valueMatcher.group(1));
+                                }
                             }
                         }
                         else {
-                            comment = null;
+                            if (line != null)
+                                valueSecondMatcher.reset(line);
+
+                            if (line != null && valueSecondMatcher.find() && valueSecondMatcher.groupCount() == 1) {
+                                value.append(valueSecondMatcher.group(1));
+                            }
+                            else {
+                                ResItem item = new ResItem(key);
+                                item.addValue(new ResValue(
+                                        fromPlatformValue(value.toString()),
+                                        comment != null ? comment.toString().trim() : null,
+                                        null));
+                                result.put(item);
+
+                                comment = null;
+                                key = null;
+                                value = null;
+                            }
                         }
                     }
-                    else {
-                        valueMatcher.reset(line);
-                        if (valueMatcher.find() && valueMatcher.groupCount() == 1) {
-                            String value = valueMatcher.group(1);
 
-                            ResItem item = new ResItem(key);
-                            item.addValue(new ResValue(fromPlatformValue(value), comment != null ? comment.toString().trim() : null, null));
-                            result.put(item);
+                    if (line != null) {
+                        if (key == null && line.startsWith(COMMENT_SINGLE_LINE)) {
+                            if (comment == null)
+                                comment = new StringBuilder(line.substring(COMMENT_SINGLE_LINE.length()));
+                            else {
+                                comment.append("\n");
+                                comment.append(line.substring(COMMENT_SINGLE_LINE.length()));
+                            }
+                        } else if (key == null) {
+                            keyMatcher.reset(line);
+                            if (keyMatcher.find() && keyMatcher.groupCount() == 1) {
+                                key = keyMatcher.group(1);
+                                if (key == null || key.length() == 0) {
+                                    comment = null;
+                                    key = null;
+                                }
+                                value = null;
+                            } else {
+                                comment = null;
+                            }
                         }
-
-                        comment = null;
-                        key = null;
                     }
-                }
+                } while (line != null);
             } catch (IOException e) {
                 // Do nothing
                 e.printStackTrace();
@@ -166,18 +189,14 @@ public class GetTextResourceFile extends ResourceStreamFile {
     static String toPlatformValue(String string) {
         string = string
                 .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replaceAll("%s", "%@")
-                .replaceAll("%([0-9]{1,})\\$s", "%$1\\$@");
+                .replace("\n", "\\n");
         return string;
     }
 
     static String fromPlatformValue(String string) {
         string = string
                 .replace("\\\"", "\"")
-                .replace("\\n", "\n")
-                .replaceAll("%@", "%s")
-                .replaceAll("%([0-9]{1,})\\$@", "%$1\\$s");
+                .replace("\\n", "\n");
         return string;
     }
 }

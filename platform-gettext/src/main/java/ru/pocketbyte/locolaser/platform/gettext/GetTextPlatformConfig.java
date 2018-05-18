@@ -29,7 +29,7 @@ public class GetTextPlatformConfig extends BasePlatformConfig {
 
     @Override
     public String getDefaultResourcesPath() {
-        return "./";
+        return "./languages/";
     }
 
     @Override
