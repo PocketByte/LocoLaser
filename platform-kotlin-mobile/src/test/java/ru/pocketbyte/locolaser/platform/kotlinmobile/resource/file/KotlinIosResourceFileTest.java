@@ -49,7 +49,7 @@ public class KotlinIosResourceFileTest {
                         "import kotlinx.cinterop.*\r\n" +
                         "import platform.Foundation.*\r\n" +
                         "\r\n" +
-                        "public class Str(private val bundle: Bundle, private val tableName: String) {\r\n" +
+                        "public class Str(private val bundle: NSBundle, private val tableName: String) {\r\n" +
                         "\r\n" +
                         "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\r\n" +
                         "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
@@ -93,7 +93,7 @@ public class KotlinIosResourceFileTest {
                         "import kotlinx.cinterop.*\r\n" +
                         "import platform.Foundation.*\r\n" +
                         "\r\n" +
-                        "public class StrImpl(private val bundle: Bundle, private val tableName: String) {\r\n" +
+                        "public class StrImpl(private val bundle: NSBundle, private val tableName: String) {\r\n" +
                         "\r\n" +
                         "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\r\n" +
                         "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
@@ -144,7 +144,7 @@ public class KotlinIosResourceFileTest {
                         "import platform.Foundation.*\r\n" +
                         "import com.interface.StrInterface\r\n" +
                         "\r\n" +
-                        "public class StrImpl(private val bundle: Bundle, private val tableName: String): StrInterface {\r\n" +
+                        "public class StrImpl(private val bundle: NSBundle, private val tableName: String): StrInterface {\r\n" +
                         "\r\n" +
                         "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\r\n" +
                         "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
@@ -185,7 +185,7 @@ public class KotlinIosResourceFileTest {
                         "import kotlinx.cinterop.*\r\n" +
                         "import platform.Foundation.*\r\n" +
                         "\r\n" +
-                        "public class Strings(private val bundle: Bundle, private val tableName: String) {\r\n" +
+                        "public class Strings(private val bundle: NSBundle, private val tableName: String) {\r\n" +
                         "\r\n" +
                         "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\r\n" +
                         "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
