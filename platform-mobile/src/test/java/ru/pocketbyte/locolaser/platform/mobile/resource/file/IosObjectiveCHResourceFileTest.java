@@ -126,6 +126,36 @@ public class IosObjectiveCHResourceFileTest {
         assertEquals(expectedResult, readFile(testFile));
     }
 
+    @Test
+    public void testWriteSpecialCharacterInValue() throws IOException {
+        ResMap resMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("key1", new ResValue[]{ new ResValue(
+                "\\{\"ssdsd\": 333} ; ';k.,/?@'' \n {\"ssdsd\": 333} ; ';k.,/?@''",
+                "Some Comment",
+                Quantity.OTHER) }));
+        resMap.put(PlatformResources.BASE_LOCALE, resLocale);
+
+
+        File testFile = tempFolder.newFile();
+        IosObjectiveCHResourceFile resourceFile = new IosObjectiveCHResourceFile(testFile, "Strings");
+        resourceFile.write(resMap, null);
+
+
+        String expectedResult =
+                TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
+                        "#import <Foundation/Foundation.h>\r\n" +
+                        "\r\n" +
+                        "@interface Strings : NSObject\r\n" +
+                        "\r\n" +
+                        "/// \\{\"ssdsd\": 333} ; ';k.,/?@'' \\n {\"ssdsd\": 333} ; ';k.,/?@''\r\n" +
+                        "@property (class, readonly) NSString* key1;\r\n" +
+                        "\r\n" +
+                        "@end";
+
+        assertEquals(expectedResult, readFile(testFile));
+    }
+
     private String readFile(File file) throws IOException {
         return new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), Charset.defaultCharset());
     }

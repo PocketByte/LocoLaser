@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.platform.mobile.resource.file;
 
 import org.apache.commons.lang3.text.WordUtils;
 import ru.pocketbyte.locolaser.config.WritingConfig;
+import ru.pocketbyte.locolaser.platform.mobile.utils.ObjectiveCUtils;
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.PlatformResources;
 import ru.pocketbyte.locolaser.resource.entity.*;
@@ -60,7 +61,7 @@ public class IosObjectiveCHResourceFile extends BaseClassResourceFile {
     protected void writeComment(String comment) throws IOException {
         String commentLinePrefix = "/// ";
         writeString(commentLinePrefix);
-        writeStringLn(WordUtils.wrap(comment, MAX_LINE_SIZE - commentLinePrefix.length()
+        writeStringLn(WordUtils.wrap(ObjectiveCUtils.escapeComment(comment), MAX_LINE_SIZE - commentLinePrefix.length()
                 , "\r\n" + commentLinePrefix, true));
     }
 

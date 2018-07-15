@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.platform.mobile.resource.file;
 
 import org.apache.commons.lang3.text.WordUtils;
 import ru.pocketbyte.locolaser.config.WritingConfig;
+import ru.pocketbyte.locolaser.platform.mobile.utils.SwiftUtils;
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.PlatformResources;
 import ru.pocketbyte.locolaser.resource.entity.*;
@@ -67,7 +68,7 @@ public class IosSwiftResourceFile extends BaseClassResourceFile {
     protected void writeComment(String comment) throws IOException {
         String commentLinePrefix = "    /// ";
         writeString(commentLinePrefix);
-        writeStringLn(WordUtils.wrap(comment, MAX_LINE_SIZE - commentLinePrefix.length()
+        writeStringLn(WordUtils.wrap(SwiftUtils.escapeComment(comment), MAX_LINE_SIZE - commentLinePrefix.length()
                 , "\r\n" + commentLinePrefix, true));
     }
 
@@ -78,7 +79,7 @@ public class IosSwiftResourceFile extends BaseClassResourceFile {
         String comment = valueOther != null && valueOther.comment != null ? valueOther.comment : "";
 
         writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key, mTableName,
-                valueOther != null ? valueOther.value : null, comment));
+                valueOther != null ? SwiftUtils.escapeString(valueOther.value) : null, SwiftUtils.escapeString(comment)));
     }
 
     @Override
