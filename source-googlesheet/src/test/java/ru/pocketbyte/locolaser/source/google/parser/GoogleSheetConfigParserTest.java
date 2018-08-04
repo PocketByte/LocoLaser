@@ -79,9 +79,11 @@ public class GoogleSheetConfigParserTest {
     @Test
     public void testConfigClass() throws IOException, ParseException, InvalidConfigException {
         File file = prepareMockFile(null, prepareMinimalSourceMap());
-        Config config = mConfigParser.fromFile(file);
+        Config[] config = mConfigParser.fromFile(file);
 
-        SourceConfig sourceConfig = config.getSourceConfig();
+        assertEquals(1, config.length);
+
+        SourceConfig sourceConfig = config[0].getSourceConfig();
         assertTrue(sourceConfig instanceof GoogleSheetConfig);
     }
 
@@ -92,9 +94,11 @@ public class GoogleSheetConfigParserTest {
             Map<String, Object> sourceMap = prepareMinimalSourceMap();
             sourceMap.put(GoogleSheetConfigParser.SHEET_ID, expectedValue);
             File file = prepareMockFile(null, sourceMap);
-            Config config = mConfigParser.fromFile(file);
+            Config[] config = mConfigParser.fromFile(file);
 
-            GoogleSheetConfig sourceConfig = (GoogleSheetConfig) config.getSourceConfig();
+            assertEquals(1, config.length);
+
+            GoogleSheetConfig sourceConfig = (GoogleSheetConfig) config[0].getSourceConfig();
             assertEquals(expectedValue, sourceConfig.getId());
         }
     }
@@ -106,9 +110,11 @@ public class GoogleSheetConfigParserTest {
             Map<String, Object> sourceMap = prepareMinimalSourceMap();
             sourceMap.put(GoogleSheetConfigParser.SHEET_WORKSHEET_TITLE, expectedValue);
             File file = prepareMockFile(null, sourceMap);
-            Config config = mConfigParser.fromFile(file);
+            Config[] config = mConfigParser.fromFile(file);
 
-            GoogleSheetConfig sourceConfig = (GoogleSheetConfig) config.getSourceConfig();
+            assertEquals(1, config.length);
+
+            GoogleSheetConfig sourceConfig = (GoogleSheetConfig) config[0].getSourceConfig();
             assertEquals(expectedValue, sourceConfig.getWorksheetTitle());
         }
     }
@@ -120,9 +126,11 @@ public class GoogleSheetConfigParserTest {
             Map<String, Object> sourceMap = prepareMinimalSourceMap();
             sourceMap.put(GoogleSheetConfigParser.SHEET_CREDENTIAL_FILE, expectedValue);
             File file = prepareMockFile(null, sourceMap);
-            Config config = mConfigParser.fromFile(file);
+            Config[] config = mConfigParser.fromFile(file);
 
-            GoogleSheetConfig sourceConfig = (GoogleSheetConfig) config.getSourceConfig();
+            assertEquals(1, config.length);
+
+            GoogleSheetConfig sourceConfig = (GoogleSheetConfig) config[0].getSourceConfig();
             assertEquals(new File(expectedValue).getCanonicalPath(),
                     sourceConfig.getCredentialFile().getCanonicalPath());
         }
