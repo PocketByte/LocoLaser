@@ -22,6 +22,9 @@ buildscript {
 
 allprojects {
 
+    sourceCompatibility = 1.7
+    version = '1.2.2'
+
     configurations {
         // dependencies from this configuration will not be included in final jar file
         noJarCompile
