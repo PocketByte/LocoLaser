@@ -98,6 +98,37 @@ public class IosObjectiveCMResourceFileTest {
         assertEquals(expectedResult, readFile(testFile));
     }
 
+    @Test
+    public void testWriteSpecialCharacterInComment() throws IOException {
+        ResMap resMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("key1", new ResValue[]{ new ResValue(
+                "Some Value",
+                "\\{\"ssdsd\": 333} ; ';k.,/?@'' \n {\"ssdsd\": 333} ; ';k.,/?@''",
+                Quantity.OTHER) }));
+        resMap.put(PlatformResources.BASE_LOCALE, resLocale);
+
+
+        File testFile = tempFolder.newFile();
+        IosObjectiveCMResourceFile resourceFile = new IosObjectiveCMResourceFile(testFile, "Strings", "Strings");
+        resourceFile.write(resMap, null);
+
+
+        String expectedResult =
+                TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
+                        "#import <Strings.h>\r\n" +
+                        "\r\n" +
+                        "@implementation Strings\r\n" +
+                        "\r\n" +
+                        "+(NSString*)key1 {\r\n" +
+                        "    return NSLocalizedStringFromTable(@\"key1\", @\"Strings\", @\"\\\\{\\\"ssdsd\\\": 333} ; ';k.,/?@'' \\n {\\\"ssdsd\\\": 333} ; ';k.,/?@''\")\r\n" +
+                        "}\r\n" +
+                        "\r\n" +
+                        "@end";
+
+        assertEquals(expectedResult, readFile(testFile));
+    }
+
     private String readFile(File file) throws IOException {
         return new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), Charset.defaultCharset());
     }

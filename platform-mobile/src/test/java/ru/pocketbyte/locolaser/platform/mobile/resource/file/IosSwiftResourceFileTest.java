@@ -31,16 +31,6 @@ public class IosSwiftResourceFileTest {
     public TemporaryFolder tempFolder= new TemporaryFolder();
 
     @Test
-    public void testKeyToProperty() {
-        assertEquals("some_value", TextUtils.keyToProperty("Some Value"));
-        assertEquals("some_value", TextUtils.keyToProperty("some__value__"));
-        assertEquals("some_value2", TextUtils.keyToProperty("some 'value2'"));
-        assertEquals("some_value_2", TextUtils.keyToProperty("some 'value' + 2"));
-        assertEquals("formula_x_y_3_2_z", TextUtils.keyToProperty("formula x = (y + 3/2) * z."));
-        assertEquals("_1_value", TextUtils.keyToProperty("1 value"));
-    }
-
-    @Test
     public void testRead() throws IOException {
         IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(tempFolder.newFile(), "Strings", "Strings");
         assertNull(resourceFile.read());
@@ -156,6 +146,74 @@ public class IosSwiftResourceFileTest {
                 "    }\r\n" +
                 "\r\n" +
                 "}";
+
+        assertEquals(expectedResult, readFile(testFile));
+    }
+
+    @Test
+    public void testWriteSpecialCharacterInValue() throws IOException {
+        ResMap resMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("key1", new ResValue[]{ new ResValue(
+                "\\{\"ssdsd\": 333} ; ';k.,/?@'' \n {\"ssdsd\": 333} ; ';k.,/?@''",
+                "Some Comment",
+                Quantity.OTHER) }));
+        resMap.put(PlatformResources.BASE_LOCALE, resLocale);
+
+
+        File testFile = tempFolder.newFile();
+        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(testFile, "Strings", "Strings");
+        resourceFile.write(resMap, null);
+
+        String expectedResult =
+                TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
+                        "import Foundation\r\n" +
+                        "\r\n" +
+                        "public class Strings {\r\n" +
+                        "\r\n" +
+                        "    /// \\{\"ssdsd\": 333} ; ';k.,/?@'' \\n {\"ssdsd\": 333} ; ';k.,/?@''\r\n" +
+                        "    public static var key1 : String {\r\n" +
+                        "        get {\r\n" +
+                        "            return NSLocalizedString(\"key1\", tableName:\"Strings\", bundle:Bundle.main," +
+                        " value:\"\\\\{\\\"ssdsd\\\": 333} ; ';k.,/?@'' \\n {\\\"ssdsd\\\": 333} ; ';k.,/?@''\", comment: \"Some Comment\")\r\n" +
+                        "        }\r\n" +
+                        "    }\r\n" +
+                        "\r\n" +
+                        "}";
+
+        assertEquals(expectedResult, readFile(testFile));
+    }
+
+    @Test
+    public void testWriteSpecialCharacterInComment() throws IOException {
+        ResMap resMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("key1", new ResValue[]{ new ResValue(
+                "Some Value",
+                "\\{\"ssdsd\": 333} ; ';k.,/?@'' \n {\"ssdsd\": 333} ; ';k.,/?@''",
+                Quantity.OTHER) }));
+        resMap.put(PlatformResources.BASE_LOCALE, resLocale);
+
+
+        File testFile = tempFolder.newFile();
+        IosSwiftResourceFile resourceFile = new IosSwiftResourceFile(testFile, "Strings", "Strings");
+        resourceFile.write(resMap, null);
+
+        String expectedResult =
+                TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
+                        "import Foundation\r\n" +
+                        "\r\n" +
+                        "public class Strings {\r\n" +
+                        "\r\n" +
+                        "    /// Some Value\r\n" +
+                        "    public static var key1 : String {\r\n" +
+                        "        get {\r\n" +
+                        "            return NSLocalizedString(\"key1\", tableName:\"Strings\", bundle:Bundle.main," +
+                        " value:\"Some Value\", comment: \"\\\\{\\\"ssdsd\\\": 333} ; ';k.,/?@'' \\n {\\\"ssdsd\\\": 333} ; ';k.,/?@''\")\r\n" +
+                        "        }\r\n" +
+                        "    }\r\n" +
+                        "\r\n" +
+                        "}";
 
         assertEquals(expectedResult, readFile(testFile));
     }
