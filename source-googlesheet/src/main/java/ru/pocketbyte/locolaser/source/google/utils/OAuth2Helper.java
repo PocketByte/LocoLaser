@@ -34,7 +34,6 @@ public class OAuth2Helper {
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/drive.readonly");
 
-    private static final int PORT = 8080;
     private static final String DOMAIN = "127.0.0.1";
 
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
@@ -51,8 +50,7 @@ public class OAuth2Helper {
                 .setDataStoreFactory(dataStoreFactory()).build();
 
         LocalServerReceiver localServerReceiver = new LocalServerReceiver.Builder()
-                .setHost(OAuth2Helper.DOMAIN)
-                .setPort(OAuth2Helper.PORT).build();
+                .setHost(OAuth2Helper.DOMAIN).build();
         return new AuthorizationCodeInstalledApp(authorizationCodeFlow, localServerReceiver).authorize(credentialId);
     }
 
