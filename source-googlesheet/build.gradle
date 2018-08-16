@@ -76,6 +76,14 @@ publishing {
             pom.withXml {
                 def root = asNode()
                 root.remove(root.get('dependencies'))
+                def dependencies = root.appendNode('dependencies')
+
+                // Add core dependency
+                def coreDependency = dependencies.appendNode('dependency')
+                coreDependency.appendNode('groupId', 'ru.pocketbyte.locolaser')
+                coreDependency.appendNode('artifactId', 'core')
+                coreDependency.appendNode('version', project.version)
+                coreDependency.appendNode('scope', 'runtime')
             }
             artifact sourceJar {
                 classifier "sources"
