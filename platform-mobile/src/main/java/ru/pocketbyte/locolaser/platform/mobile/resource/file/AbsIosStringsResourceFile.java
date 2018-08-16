@@ -7,6 +7,7 @@ import ru.pocketbyte.locolaser.resource.entity.ResLocale;
 import ru.pocketbyte.locolaser.resource.entity.ResMap;
 import ru.pocketbyte.locolaser.resource.entity.ResValue;
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile;
+import ru.pocketbyte.locolaser.utils.LogUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,10 +50,12 @@ public abstract class AbsIosStringsResourceFile extends ResourceStreamFile {
                     LineNumberReader lineReader = new LineNumberReader(reader)
             ) {
                 String line;
+                int lineNumber = 0;
                 boolean isComment = false;
                 boolean isMultilineComment = false;
                 StringBuilder comment = null;
                 while ((line = lineReader.readLine()) != null) {
+                    lineNumber++;
 
                     if (!isComment) {
                         int commentSignLength = 0;
@@ -83,8 +86,22 @@ public abstract class AbsIosStringsResourceFile extends ResourceStreamFile {
                     }
 
                     if (!isComment) {
-                        keyValueMatcher.reset(line); //reset the input
-                        if (keyValueMatcher.find() && keyValueMatcher.groupCount() == 2) {
+                        keyValueMatcher.reset(line);
+
+                        // Workaround for following bug
+                        // https://bugs.java.com/view_bug.do?bug_id=6882582
+                        boolean isFind;
+                        try {
+                            isFind = keyValueMatcher.find();
+                        }
+                        catch (StackOverflowError e) {
+                            isFind = false;
+                            LogUtils.err("Unable to parse line " + Integer.toString(lineNumber)
+                                    + " in resource file: " + this.mFile.getAbsolutePath()
+                                    + "\nThe line will be removed from this resource file");
+                        }
+
+                        if (isFind && keyValueMatcher.groupCount() == 2) {
                             String key = keyValueMatcher.group(1);
                             String value = keyValueMatcher.group(2);
 
