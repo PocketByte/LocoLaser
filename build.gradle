@@ -36,7 +36,11 @@ task buildAll {
     group "build"
 }
 
-task publishAll(dependsOn: buildAll) {
+task testAll {
+    group "verification"
+}
+
+task publishAll(dependsOn: testAll) {
     group "publishing"
 }
 
@@ -47,7 +51,13 @@ afterEvaluate {
     buildAll.dependsOn ":platform-gettext:jar"
     buildAll.dependsOn ":source-googlesheet:jar"
 
+    testAll.dependsOn ":core:test"
+    testAll.dependsOn ":platform-mobile:test"
+    testAll.dependsOn ":platform-kotlin-mobile:test"
+    testAll.dependsOn ":platform-gettext:test"
+    testAll.dependsOn ":source-googlesheet:test"
 
+    publishAll.dependsOn buildAll
     publishAll.dependsOn ":core:bintrayUpload"
     publishAll.dependsOn ":platform-mobile:bintrayUpload"
     publishAll.dependsOn ":platform-kotlin-mobile:bintrayUpload"
