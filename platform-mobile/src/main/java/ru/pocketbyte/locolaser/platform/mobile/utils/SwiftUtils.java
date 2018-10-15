@@ -7,12 +7,14 @@ public class SwiftUtils {
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
                 .replace("\r", "\\r")
-                .replace("\n", "\\n");
+                .replace("\n", "\\n")
+                .replace("\u0009", "\\t");
     }
 
     public static String escapeComment(String string) {
         return string
                 .replace("\r", "\\r")
-                .replace("\n", "\\n");
+                .replace("\n", "\\n")
+                .replace("\u0009", "  ");
     }
 }
