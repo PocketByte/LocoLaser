@@ -9,8 +9,10 @@ import org.json.simple.parser.ParseException;
 import ru.pocketbyte.locolaser.config.Config;
 import ru.pocketbyte.locolaser.config.parser.*;
 import ru.pocketbyte.locolaser.exception.InvalidConfigException;
+import sun.misc.Unsafe;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -72,15 +74,37 @@ public class Main {
 
     private static URL[] getJarUrls() {
         ClassLoader classLoader = Main.class.getClassLoader();
-        URLClassLoader uc = null;
-        if (classLoader instanceof URLClassLoader) {
-            uc = (URLClassLoader)classLoader;
-        }
-        else {
-            throw new RuntimeException("classLoader is not an instanceof URLClassLoader");
+
+        if (classLoader == null)
+            throw new RuntimeException("ClassLoader is null");
+
+        if (classLoader instanceof URLClassLoader)
+            return ((URLClassLoader)classLoader).getURLs();
+
+        // jdk9
+        if (classLoader.getClass().getName().startsWith("jdk.internal.loader.ClassLoaders$")) {
+            try {
+                Field field = Unsafe.class.getDeclaredField("theUnsafe");
+                field.setAccessible(true);
+                Unsafe unsafe = (Unsafe) field.get(null);
+
+                // jdk.internal.loader.ClassLoaders.AppClassLoader.ucp
+                Field ucpField = classLoader.getClass().getDeclaredField("ucp");
+                long ucpFieldOffset = unsafe.objectFieldOffset(ucpField);
+                Object ucpObject = unsafe.getObject(classLoader, ucpFieldOffset);
+
+                // jdk.internal.loader.URLClassPath.path
+                Field pathField = ucpField.getType().getDeclaredField("path");
+                long pathFieldOffset = unsafe.objectFieldOffset(pathField);
+                ArrayList<URL> path = (ArrayList<URL>) unsafe.getObject(ucpObject, pathFieldOffset);
+
+                return path.toArray(new URL[path.size()]);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to read list of execution jars", e);
+            }
         }
 
-        return uc.getURLs();
+        throw new RuntimeException("Failed to read list of execution jars");
     }
 
     private static List<String> readPlatformConfigParsers(URL jarUrl) {
