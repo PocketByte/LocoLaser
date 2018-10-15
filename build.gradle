@@ -31,3 +31,26 @@ allprojects {
         compile.extendsFrom noJarCompile
     }
 }
+
+task buildAll {
+    group "build"
+}
+
+task publishAll(dependsOn: buildAll) {
+    group "publishing"
+}
+
+afterEvaluate {
+    buildAll.dependsOn ":core:jar"
+    buildAll.dependsOn ":platform-mobile:jar"
+    buildAll.dependsOn ":platform-kotlin-mobile:jar"
+    buildAll.dependsOn ":platform-gettext:jar"
+    buildAll.dependsOn ":source-googlesheet:jar"
+
+
+    publishAll.dependsOn ":core:bintrayUpload"
+    publishAll.dependsOn ":platform-mobile:bintrayUpload"
+    publishAll.dependsOn ":platform-kotlin-mobile:bintrayUpload"
+    publishAll.dependsOn ":platform-gettext:bintrayUpload"
+    publishAll.dependsOn ":source-googlesheet:bintrayUpload"
+}
