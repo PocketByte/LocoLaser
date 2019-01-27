@@ -6,19 +6,12 @@
 package ru.pocketbyte.locolaser.platform.mobile.resource.file;
 
 import org.apache.commons.lang3.text.WordUtils;
-import ru.pocketbyte.locolaser.config.WritingConfig;
-import ru.pocketbyte.locolaser.platform.mobile.utils.SwiftUtils;
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
-import ru.pocketbyte.locolaser.resource.PlatformResources;
 import ru.pocketbyte.locolaser.resource.entity.*;
 import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile;
-import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile;
-import ru.pocketbyte.locolaser.utils.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Swift class file generator. For generation used Swift version 3.0.
@@ -68,7 +61,7 @@ public class IosSwiftResourceFile extends BaseClassResourceFile {
     protected void writeComment(String comment) throws IOException {
         String commentLinePrefix = "    /// ";
         writeString(commentLinePrefix);
-        writeStringLn(WordUtils.wrap(SwiftUtils.escapeComment(comment), MAX_LINE_SIZE - commentLinePrefix.length()
+        writeStringLn(WordUtils.wrap(escapeComment(comment), MAX_LINE_SIZE - commentLinePrefix.length()
                 , "\r\n" + commentLinePrefix, true));
     }
 
@@ -79,7 +72,7 @@ public class IosSwiftResourceFile extends BaseClassResourceFile {
         String comment = valueOther != null && valueOther.comment != null ? valueOther.comment : "";
 
         writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key, mTableName,
-                valueOther != null ? SwiftUtils.escapeString(valueOther.value) : null, SwiftUtils.escapeString(comment)));
+                valueOther != null ? escapeString(valueOther.value) : null, escapeString(comment)));
     }
 
     @Override
@@ -87,4 +80,19 @@ public class IosSwiftResourceFile extends BaseClassResourceFile {
         writeString(CLASS_FOOTER_TEMPLATE);
     }
 
+    private static String escapeComment(String string) {
+        return string
+                .replace("\r", "\\r")
+                .replace("\n", "\\n")
+                .replace("\u0009", "  ");
+    }
+
+    private static String escapeString(String string) {
+        return string
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n")
+                .replace("\u0009", "\\t");
+    }
 }

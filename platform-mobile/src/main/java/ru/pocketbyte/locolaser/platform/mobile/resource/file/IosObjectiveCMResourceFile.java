@@ -5,18 +5,12 @@
 
 package ru.pocketbyte.locolaser.platform.mobile.resource.file;
 
-import ru.pocketbyte.locolaser.config.WritingConfig;
-import ru.pocketbyte.locolaser.platform.mobile.utils.ObjectiveCUtils;
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
-import ru.pocketbyte.locolaser.resource.PlatformResources;
 import ru.pocketbyte.locolaser.resource.entity.*;
 import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile;
-import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Objective-C .m file generator. Part of Objective-C class generation.
@@ -69,13 +63,21 @@ public class IosObjectiveCMResourceFile extends BaseClassResourceFile {
         ResValue valueOther = item.valueForQuantity(Quantity.OTHER);
         String comment = valueOther != null && valueOther.comment != null ? valueOther.comment : "";
 
-        writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key, mTableName, ObjectiveCUtils.escapeString(comment)));
+        writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key, mTableName, escapeString(comment)));
         writeln();
     }
 
     @Override
     protected void writeClassFooter() throws IOException {
         writeString(CLASS_FOOTER_TEMPLATE);
+    }
+
+    private static String escapeString(String string) {
+        return string
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n");
     }
 
 }

@@ -6,18 +6,12 @@
 package ru.pocketbyte.locolaser.platform.mobile.resource.file;
 
 import org.apache.commons.lang3.text.WordUtils;
-import ru.pocketbyte.locolaser.config.WritingConfig;
-import ru.pocketbyte.locolaser.platform.mobile.utils.ObjectiveCUtils;
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr;
-import ru.pocketbyte.locolaser.resource.PlatformResources;
 import ru.pocketbyte.locolaser.resource.entity.*;
 import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile;
-import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Objective-C .h file generator. Part of Objective-C class generation.
@@ -61,7 +55,7 @@ public class IosObjectiveCHResourceFile extends BaseClassResourceFile {
     protected void writeComment(String comment) throws IOException {
         String commentLinePrefix = "/// ";
         writeString(commentLinePrefix);
-        writeStringLn(WordUtils.wrap(ObjectiveCUtils.escapeComment(comment), MAX_LINE_SIZE - commentLinePrefix.length()
+        writeStringLn(WordUtils.wrap(escapeComment(comment), MAX_LINE_SIZE - commentLinePrefix.length()
                 , "\r\n" + commentLinePrefix, true));
     }
 
@@ -73,6 +67,12 @@ public class IosObjectiveCHResourceFile extends BaseClassResourceFile {
     @Override
     protected void writeClassFooter() throws IOException {
         writeString(CLASS_FOOTER_TEMPLATE);
+    }
+
+    private static String escapeComment(String string) {
+        return string
+                .replace("\r", "\\r")
+                .replace("\n", "\\n");
     }
 
 }
