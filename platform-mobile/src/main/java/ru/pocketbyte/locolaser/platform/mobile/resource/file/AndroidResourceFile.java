@@ -76,7 +76,7 @@ public class AndroidResourceFile extends ResourceStreamFile {
                     if (comment != null && (
                             (writingConfig == null || writingConfig.isDuplicateComments()) || !comment.equals(value))) {
                         writeString("    /* ");
-                        writeString(comment);
+                        writeString(escapeComment(comment));
                         writeStringLn(" */");
                     }
 
@@ -118,6 +118,12 @@ public class AndroidResourceFile extends ResourceStreamFile {
             path = "/" + path;
         }
         return "file:" + path;
+    }
+
+    private static String escapeComment(String string) {
+        return string
+                .replace("<br>", "\n")
+                .replace("<", "&lt;");
     }
 
     static String toPlatformValue(String string) {
