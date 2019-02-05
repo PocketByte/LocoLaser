@@ -70,7 +70,7 @@ publishing {
 
 bintray {
     publish = true
-    override = true
+    override = false
 
     user = project.hasProperty('bintray.publish.user') ?
             project.properties.get("bintray.publish.user") : "-"

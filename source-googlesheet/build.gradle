@@ -40,6 +40,16 @@ task copyAppProperties(type: Copy) {
     }
 }
 
+task printGoogleApiKeys {
+    doLast {
+        File propFile = project.rootProject.file('local.properties')
+        Properties props = new Properties()
+        props.load(propFile.newDataInputStream())
+        println(props.get("google_oauth_api_key", "none"))
+        println(props.get("google_oauth_api_secret", "none"))
+    }
+}
+
 processResources.finalizedBy(copyAppProperties)
 
 jar {
