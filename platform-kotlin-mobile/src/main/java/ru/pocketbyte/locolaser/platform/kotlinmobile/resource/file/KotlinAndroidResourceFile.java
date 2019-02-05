@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.platform.kotlinmobile.resource.file;
 
 import org.apache.commons.lang3.text.WordUtils;
+import ru.pocketbyte.locolaser.config.WritingConfig;
 import ru.pocketbyte.locolaser.platform.kotlinmobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.entity.ResItem;
 import ru.pocketbyte.locolaser.resource.entity.ResMap;
@@ -29,11 +30,13 @@ public class KotlinAndroidResourceFile extends BaseClassResourceFile {
     private static final String CLASS_FOOTER_TEMPLATE = "}";
 
     private static final String PROPERTY_TEMPLATE =
-            "    public val %1$s: String\r\n" +
-            "        get() = this.context.getString(R.string.%2$s)\r\n";
-    private static final String PROPERTY_TEMPLATE_WITH_OVERRIDE =
-            "    override public val %1$s: String\r\n" +
-            "        get() = this.context.getString(R.string.%2$s)\r\n";
+            "    %1$spublic val %2$s: String\r\n" +
+            "        get() = this.context.getString(R.string.%3$s)\r\n";
+
+    private static final String PROPERTY_PLURAL_TEMPLATE =
+            "    %1$spublic fun %2$s(count: Int): String {\r\n" +
+            "        return this.context.getString(R.plurals.%3$s, count)\r\n" +
+            "    }\r\n";
 
     private static final int MAX_LINE_SIZE = 120;
 
@@ -59,12 +62,12 @@ public class KotlinAndroidResourceFile extends BaseClassResourceFile {
     }
 
     @Override
-    protected void writeHeaderComment() throws IOException {
+    protected void writeHeaderComment(ResMap resMap, WritingConfig writingConfig) throws IOException {
         writeStringLn(TemplateStr.GENERATED_CLASS_COMMENT);
     }
 
     @Override
-    protected void writeClassHeader() throws IOException {
+    protected void writeClassHeader(ResMap resMap, WritingConfig writingConfig) throws IOException {
         if (mInterfaceName != null && mInterfacePackage != null)
             writeStringLn(String.format(CLASS_HEADER_TEMPLATE_WITH_INTERFACE,
                     mClassPackage, mClassName, mAppPackage,
@@ -75,7 +78,7 @@ public class KotlinAndroidResourceFile extends BaseClassResourceFile {
     }
 
     @Override
-    protected void writeComment(String comment) throws IOException {
+    protected void writeComment(WritingConfig writingConfig, String comment) throws IOException {
         if (mInterfaceName == null || mInterfacePackage == null) {
             String commentLinePrefix = "    * ";
             writeStringLn("    /**");
@@ -88,15 +91,18 @@ public class KotlinAndroidResourceFile extends BaseClassResourceFile {
     }
 
     @Override
-    protected void writeProperty(String propertyName, ResItem item) throws IOException {
-        if (mInterfaceName != null && mInterfacePackage != null)
-            writeStringLn(String.format(PROPERTY_TEMPLATE_WITH_OVERRIDE, propertyName, item.key.trim()));
-        else
-            writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName, item.key.trim()));
+    protected void writeProperty(WritingConfig writingConfig, String propertyName, ResItem item) throws IOException {
+        boolean isHasInterface = mInterfaceName != null && mInterfacePackage != null;
+        writeStringLn(String.format(
+                item.isHasQuantities()
+                        ? PROPERTY_PLURAL_TEMPLATE
+                        : PROPERTY_TEMPLATE,
+                isHasInterface ? "override " : "",
+                propertyName, item.key.trim()));
     }
 
     @Override
-    protected void writeClassFooter() throws IOException {
+    protected void writeClassFooter(ResMap resMap, WritingConfig writingConfig) throws IOException {
         writeString(CLASS_FOOTER_TEMPLATE);
     }
 }

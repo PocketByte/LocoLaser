@@ -63,6 +63,43 @@ public class KotlinAndroidResourceFileTest {
     }
 
     @Test
+    public void testWriteOnePluralItem() throws IOException {
+        ResMap resMap = new ResMap();
+        ResLocale resLocale = new ResLocale();
+        resLocale.put(prepareResItem("key1", new ResValue[]{
+                new ResValue("value1_1", "Comment 1", Quantity.ONE),
+                new ResValue("value1_2", "Comment 2", Quantity.OTHER),
+        }));
+        resMap.put(PlatformResources.BASE_LOCALE, resLocale);
+
+        File testFile = tempFolder.newFile();
+        KotlinAndroidResourceFile resourceFile = new KotlinAndroidResourceFile(testFile,
+                "Str", "com.package",
+                null, null, "com.app");
+        resourceFile.write(resMap, null);
+
+        String expectedResult =
+                TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
+                        "package com.package\r\n" +
+                        "\r\n" +
+                        "import android.content.Context\r\n" +
+                        "import com.app.R\r\n" +
+                        "\r\n" +
+                        "public class Str(private val context: Context) {\r\n" +
+                        "\r\n" +
+                        "    /**\r\n" +
+                        "    * value1_2\r\n" +
+                        "    */\r\n" +
+                        "    public fun key1(count: Int): String {\r\n" +
+                        "        return this.context.getString(R.plurals.key1, count)\r\n" +
+                        "    }\r\n" +
+                        "\r\n" +
+                        "}";
+
+        assertEquals(expectedResult, readFile(testFile));
+    }
+
+    @Test
     public void testWrite() throws IOException {
         ResMap resMap = new ResMap();
 

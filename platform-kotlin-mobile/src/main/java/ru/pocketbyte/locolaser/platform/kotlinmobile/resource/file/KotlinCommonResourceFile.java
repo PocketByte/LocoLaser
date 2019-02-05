@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.platform.kotlinmobile.resource.file;
 
 import org.apache.commons.lang3.text.WordUtils;
+import ru.pocketbyte.locolaser.config.WritingConfig;
 import ru.pocketbyte.locolaser.platform.kotlinmobile.utils.TemplateStr;
 import ru.pocketbyte.locolaser.resource.entity.*;
 import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile;
@@ -16,7 +17,8 @@ public class KotlinCommonResourceFile extends BaseClassResourceFile {
 
     private static final String CLASS_FOOTER_TEMPLATE = "}";
 
-    private static final String PROPERTY_TEMPLATE = "    val %s: String\r\n";
+    private static final String PROPERTY_TEMPLATE        = "    val %s: String\r\n";
+    private static final String PROPERTY_PLURAL_TEMPLATE = "    fun %s(count: Int): String\r\n";
 
     private static final int MAX_LINE_SIZE = 120;
 
@@ -35,17 +37,17 @@ public class KotlinCommonResourceFile extends BaseClassResourceFile {
     }
 
     @Override
-    protected void writeHeaderComment() throws IOException  {
+    protected void writeHeaderComment(ResMap resMap, WritingConfig writingConfig) throws IOException  {
         writeStringLn(TemplateStr.GENERATED_CLASS_COMMENT);
     }
 
     @Override
-    protected void writeClassHeader() throws IOException {
+    protected void writeClassHeader(ResMap resMap, WritingConfig writingConfig) throws IOException {
         writeStringLn(String.format(CLASS_HEADER_TEMPLATE, mClassPackage, mClassName));
     }
 
     @Override
-    protected void writeComment(String comment) throws IOException {
+    protected void writeComment(WritingConfig writingConfig, String comment) throws IOException {
         String commentLinePrefix = "    * ";
         writeStringLn("    /**");
         writeString(commentLinePrefix);
@@ -55,12 +57,16 @@ public class KotlinCommonResourceFile extends BaseClassResourceFile {
     }
 
     @Override
-    protected void writeProperty(String propertyName, ResItem item) throws IOException {
-        writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName));
+    protected void writeProperty(WritingConfig writingConfig, String propertyName, ResItem item) throws IOException {
+        writeStringLn(String.format(
+                item.isHasQuantities()
+                        ? PROPERTY_PLURAL_TEMPLATE
+                        : PROPERTY_TEMPLATE,
+                propertyName));
     }
 
     @Override
-    protected void writeClassFooter() throws IOException {
+    protected void writeClassFooter(ResMap resMap, WritingConfig writingConfig) throws IOException {
         writeString(CLASS_FOOTER_TEMPLATE);
     }
 }

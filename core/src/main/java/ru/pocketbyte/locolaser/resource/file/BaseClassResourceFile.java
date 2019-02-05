@@ -12,11 +12,11 @@ import java.util.Set;
 
 public abstract class BaseClassResourceFile extends ResourceStreamFile {
 
-    protected abstract void writeHeaderComment() throws IOException ;
-    protected abstract void writeClassHeader() throws IOException ;
-    protected abstract void writeComment(String comment) throws IOException ;
-    protected abstract void writeProperty(String propertyName, ResItem item) throws IOException ;
-    protected abstract void writeClassFooter() throws IOException ;
+    protected abstract void writeHeaderComment(ResMap resMap, WritingConfig writingConfig) throws IOException ;
+    protected abstract void writeClassHeader(ResMap resMap, WritingConfig writingConfig) throws IOException ;
+    protected abstract void writeComment(WritingConfig writingConfig, String comment) throws IOException ;
+    protected abstract void writeProperty(WritingConfig writingConfig, String propertyName, ResItem item) throws IOException ;
+    protected abstract void writeClassFooter(ResMap resMap, WritingConfig writingConfig) throws IOException ;
 
     public BaseClassResourceFile(File file) {
         super(file);
@@ -32,9 +32,9 @@ public abstract class BaseClassResourceFile extends ResourceStreamFile {
         ResLocale locale = resMap.get(PlatformResources.BASE_LOCALE);
         if (locale != null) {
             open();
-            writeHeaderComment();
+            writeHeaderComment(resMap, writingConfig);
             writeln();
-            writeClassHeader();
+            writeClassHeader(resMap, writingConfig);
 
             Set<String> keysSet = new HashSet<>();
             for (ResItem item : locale.values()) {
@@ -45,14 +45,14 @@ public abstract class BaseClassResourceFile extends ResourceStreamFile {
 
                     ResValue valueOther = item.valueForQuantity(Quantity.OTHER);
                     if (valueOther != null && valueOther.value != null) {
-                        writeComment(valueOther.value);
+                        writeComment(writingConfig, valueOther.value);
                     }
 
-                    writeProperty(propertyName, item);
+                    writeProperty(writingConfig, propertyName, item);
                 }
             }
 
-            writeClassFooter();
+            writeClassFooter(resMap, writingConfig);
             close();
         }
     }
