@@ -60,7 +60,7 @@ public class ResourceStreamFileTest {
 
     @Test
     public void testOpenNoFile() throws IOException {
-        assertTrue(streamFile.mFile.delete());
+        assertTrue(streamFile.getFile().delete());
 
         streamFile.open();
         assertTrue(streamFile.isOpen());
@@ -87,7 +87,7 @@ public class ResourceStreamFileTest {
         streamFile.open();
         streamFile.writeString(testString);
 
-        String result = new String(Files.readAllBytes(Paths.get(streamFile.mFile.toURI())));
+        String result = new String(Files.readAllBytes(Paths.get(streamFile.getFile().toURI())));
         assertEquals(testString, result);
     }
 
@@ -97,7 +97,7 @@ public class ResourceStreamFileTest {
         streamFile.writeStringLn("1");
         streamFile.writeString("2");
 
-        List<String> result = Files.readAllLines(Paths.get(streamFile.mFile.toURI()), Charset.defaultCharset());
+        List<String> result = Files.readAllLines(Paths.get(streamFile.getFile().toURI()), Charset.defaultCharset());
         assertEquals(2, result.size());
         assertEquals("1", result.get(0));
         assertEquals("2", result.get(1));
@@ -110,7 +110,7 @@ public class ResourceStreamFileTest {
         streamFile.writeln();
         streamFile.writeString("2");
 
-        List<String> result = Files.readAllLines(Paths.get(streamFile.mFile.toURI()), Charset.defaultCharset());
+        List<String> result = Files.readAllLines(Paths.get(streamFile.getFile().toURI()), Charset.defaultCharset());
         assertEquals(2, result.size());
         assertEquals("1", result.get(0));
         assertEquals("2", result.get(1));

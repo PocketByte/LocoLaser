@@ -1,4 +1,5 @@
-apply plugin: 'java'
+apply plugin: "org.jetbrains.kotlin.jvm"
+apply plugin: 'kotlin'
 apply plugin: "maven-publish"
 apply plugin: 'com.jfrog.bintray'
 
@@ -7,9 +8,11 @@ repositories {
 }
 
 dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
     noJarCompile project(':core')
     noJarCompile project(':platform-mobile')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 }
 
 jar {
@@ -94,5 +97,24 @@ bintray {
             gpg.passphrase = project.properties.get("bintray.publish.gpgPassphrase")
         }
         publications = ['locolaserPublication']
+    }
+}
+buildscript {
+    ext.kotlin_version = '1.2.71'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
