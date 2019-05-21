@@ -1,7 +1,6 @@
 package ru.pocketbyte.locolaser.platform.kotlinmobile
 
 import ru.pocketbyte.locolaser.platform.kotlinmobile.resource.KotlinAndroidResources
-import ru.pocketbyte.locolaser.resource.PlatformResources
 
 class KotlinAndroidPlatformConfig : KotlinBaseImplPlatformConfig() {
 
@@ -11,15 +10,10 @@ class KotlinAndroidPlatformConfig : KotlinBaseImplPlatformConfig() {
 
     var appPackage: String? = null
 
-    override fun getType(): String {
-        return TYPE
-    }
+    override val type =  TYPE
 
-    override fun getDefaultResourceName(): String {
-        return "ru.pocketbyte.locolaser.StrAndroid"
-    }
+    override val defaultResourceName =  "ru.pocketbyte.locolaser.StrAndroid"
 
-    override fun getResources(): PlatformResources {
-        return KotlinAndroidResources(resourcesDir, resourceName, interfaceName!!, appPackage!!)
-    }
+    override val resources =  KotlinAndroidResources(resourcesDir!!, resourceName!!, interfaceName!!, appPackage!!)
+
 }

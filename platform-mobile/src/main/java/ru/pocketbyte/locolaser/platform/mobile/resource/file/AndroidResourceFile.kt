@@ -145,8 +145,8 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
     }
 
     private class AndroidXmlFileParser : DefaultHandler() {
-        var map: ResLocale? = null
-            private set
+        val map: ResLocale = ResLocale()
+
         private var mItem: ResItem? = null
         private var isPlural: Boolean = false
         private var mQuantity: Quantity? = null
@@ -154,9 +154,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
         private var mComment: String? = null //TODO comments not work
 
         @Throws(SAXException::class)
-        override fun startDocument() {
-            map = ResLocale()
-        }
+        override fun startDocument() { }
 
         @Throws(SAXException::class)
         override fun startElement(uri: String?, localName: String?, qName: String?, attributes: Attributes?) {
@@ -169,7 +167,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                 isPlural = true
                 mQuantity = null
             } else if (mItem != null && isPlural && "item" == qName) {
-                mQuantity = Quantity.fromString(attributes!!.getValue("quantity"))
+                mQuantity = Quantity.fromString(attributes!!.getValue("quantity"), null)
             } else {
                 mItem = null
                 isPlural = false
@@ -188,14 +186,18 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
 
         @Throws(SAXException::class)
         override fun endElement(uri: String?, localName: String?, qName: String?) {
-            if (mItem != null && mValue != null && "string" == qName) {
-                mItem!!.addValue(ResValue(mValue!!.toString(), mComment)) // TODO read plurals http://developer.android.com/intl/ru/guide/topics/resources/string-resource.html#Plurals
-                map!!.put(mItem)
+            val item = mItem
+            val value = mValue
+
+            if (item != null && value != null && "string" == qName) {
+                item.addValue(ResValue(mValue!!.toString(), mComment))
+                // TODO read plurals http://developer.android.com/intl/ru/guide/topics/resources/string-resource.html#Plurals
+                map.put(item)
                 mItem = null
-            } else if (mItem != null && mValue != null && "item" == qName && isPlural) {
-                mItem!!.addValue(ResValue(mValue!!.toString(), mComment, mQuantity))
-            } else if (mItem != null && "plurals" == qName && isPlural) {
-                map!!.put(mItem)
+            } else if (item != null && value != null && "item" == qName && isPlural) {
+                item.addValue(ResValue(value.toString(), mComment, mQuantity ?: Quantity.OTHER))
+            } else if (item != null && "plurals" == qName && isPlural) {
+                map.put(item)
                 mItem = null
             }
 

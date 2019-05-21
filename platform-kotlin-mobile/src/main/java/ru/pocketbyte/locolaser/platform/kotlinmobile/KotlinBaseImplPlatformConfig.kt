@@ -6,11 +6,7 @@ abstract class KotlinBaseImplPlatformConfig : BasePlatformConfig() {
 
     var interfaceName: String? = null
 
-    override fun getDefaultTempDirPath(): String {
-        return "./build/tmp/"
-    }
+    override val defaultTempDirPath = "./build/tmp/"
+    override val defaultResourcesPath = "./src/main/kotlin/"
 
-    override fun getDefaultResourcesPath(): String {
-        return "./src/main/kotlin/"
-    }
 }

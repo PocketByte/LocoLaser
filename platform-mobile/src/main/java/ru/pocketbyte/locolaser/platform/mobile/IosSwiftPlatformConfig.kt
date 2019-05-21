@@ -9,12 +9,7 @@ class IosSwiftPlatformConfig : IosBaseClassPlatformConfig() {
         const val TYPE = "ios_swift"
     }
 
-    override fun getType(): String {
-        return TYPE
-    }
-
-    override fun getResources(): PlatformResources {
-        return IosSwiftResources(resourcesDir, resourceName, tableName)
-    }
+    override val type = TYPE
+    override val resources = IosSwiftResources(resourcesDir!!, resourceName!!, tableName)
 
 }

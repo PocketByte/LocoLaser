@@ -96,7 +96,7 @@ class GetTextResourceFile(file: File, private val mLocale: String) : ResourceStr
                                 val item = ResItem(key)
                                 item.addValue(ResValue(
                                         fromPlatformValue(value.toString()),
-                                        comment?.toString()?.trim { it <= ' ' }, null))
+                                        comment?.toString()?.trim { it <= ' ' }))
                                 result.put(item)
 
                                 comment = null

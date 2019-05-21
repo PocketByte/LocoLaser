@@ -10,7 +10,6 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.platform.mobile.AndroidPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.IosPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.IosPlistPlatformConfig
-import ru.pocketbyte.locolaser.platform.mobile.WpPlatformConfig
 
 /**
  * @author Denis Shurygin
@@ -25,8 +24,6 @@ class MobilePlatformConfigParser : BaseMobilePlatformConfigParser() {
             return IosPlatformConfig()
         if (IosPlistPlatformConfig.TYPE == type)
             return IosPlistPlatformConfig()
-        if (WpPlatformConfig.TYPE == type)
-            return WpPlatformConfig()
 
         if (throwIfWrongType)
             throw InvalidConfigException("Unknown platform: $type")

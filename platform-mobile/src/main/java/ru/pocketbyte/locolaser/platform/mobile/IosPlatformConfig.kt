@@ -7,7 +7,6 @@ package ru.pocketbyte.locolaser.platform.mobile
 
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.resource.IosResources
-import ru.pocketbyte.locolaser.resource.PlatformResources
 
 /**
  * iOS platform configuration.
@@ -20,24 +19,12 @@ class IosPlatformConfig : BasePlatformConfig() {
         const val TYPE = "ios"
     }
 
-    override fun getType(): String {
-        return TYPE
-    }
+    override val type = TYPE
 
-    override fun getDefaultTempDirPath(): String {
-        return "../DerivedData/LocoLaserTemp/"
-    }
+    override val defaultTempDirPath = "../DerivedData/LocoLaserTemp/"
+    override val defaultResourcesPath = "./"
+    override val defaultResourceName = "Localizable"
 
-    override fun getDefaultResourcesPath(): String {
-        return "./"
-    }
-
-    override fun getDefaultResourceName(): String {
-        return "Localizable"
-    }
-
-    override fun getResources(): PlatformResources {
-        return IosResources(resourcesDir, resourceName)
-    }
+    override val resources = IosResources(resourcesDir!!, resourceName!!)
 
 }

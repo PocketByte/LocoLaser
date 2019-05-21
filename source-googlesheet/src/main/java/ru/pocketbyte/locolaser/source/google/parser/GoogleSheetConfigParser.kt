@@ -7,11 +7,11 @@ package ru.pocketbyte.locolaser.source.google.parser
 
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.BaseTableSourceConfigParser
-import ru.pocketbyte.locolaser.config.parser.ConfigParser.SOURCE
+import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.SOURCE
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.source.google.sheet.GoogleSheetConfig
 import ru.pocketbyte.locolaser.utils.JsonParseUtils
-import ru.pocketbyte.locolaser.utils.TextUtils
+import ru.pocketbyte.locolaser.utils.JsonParseUtils.getString
 import java.net.MalformedURLException
 
 /**
@@ -36,9 +36,9 @@ class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>()
     @Throws(InvalidConfigException::class)
     override fun fillFromJSON(source: GoogleSheetConfig, configJson: JSONObject) {
         super.fillFromJSON(source, configJson)
-        source.id = JsonParseUtils.getString(configJson, SHEET_ID, SOURCE, true)
+        source.id = getString(configJson, SHEET_ID, SOURCE, true)
 
-        source.worksheetTitle = JsonParseUtils.getString(
+        source.worksheetTitle = getString(
                 configJson, SHEET_WORKSHEET_TITLE, SOURCE, false)
 
         source.credentialFile = JsonParseUtils.getFile(
@@ -49,7 +49,7 @@ class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>()
     override fun validate(source: GoogleSheetConfig) {
         super.validate(source)
 
-        if (TextUtils.isEmpty(source.id))
+        if (source.id?.isEmpty() != false)
             throw InvalidConfigException("\"$SOURCE.$SHEET_ID\" is not set.")
         try {
             source.url

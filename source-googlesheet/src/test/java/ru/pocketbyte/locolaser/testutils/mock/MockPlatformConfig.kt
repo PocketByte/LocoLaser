@@ -5,8 +5,11 @@
 
 package ru.pocketbyte.locolaser.testutils.mock
 
+import ru.pocketbyte.locolaser.config.WritingConfig
 import ru.pocketbyte.locolaser.config.platform.PlatformConfig
 import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 
@@ -15,15 +18,14 @@ import java.io.File
  */
 class MockPlatformConfig : PlatformConfig {
 
-    override fun getType(): String {
-        return "mock"
+    override val type =  "mock"
+
+    override val defaultTempDir = File("./")
+
+    override val resources = object : PlatformResources {
+        override fun read(locales: Set<String>) = ResMap()
+        override fun write(map: ResMap, writingConfig: WritingConfig?) { }
+        override fun summaryForLocale(locale: String) = FileSummary(0, null)
     }
 
-    override fun getResources(): PlatformResources? {
-        return null
-    }
-
-    override fun getDefaultTempDir(): File? {
-        return null
-    }
 }

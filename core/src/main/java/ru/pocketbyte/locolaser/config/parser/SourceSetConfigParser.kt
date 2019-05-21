@@ -16,7 +16,7 @@ class SourceSetConfigParser(
 ) : SourceConfigParser<SourceConfig> {
 
     @Throws(InvalidConfigException::class)
-    override fun parse(sourceObject: Any, throwIfWrongType: Boolean): SourceConfig? {
+    override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): SourceConfig? {
         if (sourceObject is JSONArray) {
 
             val configs = LinkedHashSet<SourceConfig>(sourceObject.size)
@@ -26,7 +26,7 @@ class SourceSetConfigParser(
             }
             return SourceSetConfig(configs, configs.firstOrNull())
         } else {
-            for (parser in mParsers) {
+            mParsers.forEach { parser ->
                 val config = parser.parse(sourceObject, false)
                 if (config != null)
                     return config
@@ -35,10 +35,10 @@ class SourceSetConfigParser(
 
         if (throwIfWrongType) {
             when (sourceObject) {
-                is String -> throw InvalidConfigException("Unknown source: " + sourceObject)
+                is String -> throw InvalidConfigException("Unknown source: $sourceObject")
                 is JSONObject -> {
                     val type = getString(sourceObject, SourceConfigParser.SOURCE_TYPE, SOURCE, false)
-                    throw InvalidConfigException("Unknown source: " + type!!)
+                    throw InvalidConfigException("Unknown source: ${type!!}")
                 }
                 else -> throw InvalidConfigException(
                         "Property \"$SOURCE\" must be a String, JSON object or Array of Strings and JSON objects.")

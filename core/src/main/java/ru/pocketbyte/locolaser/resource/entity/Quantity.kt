@@ -19,11 +19,11 @@ enum class Quantity {
         val QUANTITY_OTHER: Set<Quantity> = setOf(OTHER)
 
         @JvmOverloads
-        fun fromString(quantity: String?, fallback: Quantity = OTHER): Quantity {
+        fun fromString(quantity: String?, fallback: Quantity? = OTHER): Quantity? {
             if (quantity == null)
                 return fallback
 
-            return if (!TextUtils.isEmpty(quantity)) {
+            return if (quantity.isNotEmpty()) {
                 when (quantity.trim { it <= ' ' }) {
                     "zero" -> ZERO
                     "one" -> ONE

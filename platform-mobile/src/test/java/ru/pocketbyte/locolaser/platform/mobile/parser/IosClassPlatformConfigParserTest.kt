@@ -46,7 +46,7 @@ class IosClassPlatformConfigParserTest {
 
         assertEquals("test_res", config!!.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
-                config.resourcesDir.canonicalPath)
+                config.resourcesDir!!.canonicalPath)
         assertEquals("test_table", config.tableName)
     }
 

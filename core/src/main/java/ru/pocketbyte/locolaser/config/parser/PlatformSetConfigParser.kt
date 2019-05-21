@@ -16,7 +16,7 @@ class PlatformSetConfigParser(
 ) : PlatformConfigParser<PlatformConfig> {
 
     @Throws(InvalidConfigException::class)
-    override fun parse(platformObject: Any, throwIfWrongType: Boolean): PlatformConfig? {
+    override fun parse(platformObject: Any?, throwIfWrongType: Boolean): PlatformConfig? {
         if (platformObject is JSONArray) {
             val configs = LinkedHashSet<PlatformConfig>(platformObject.size)
 
@@ -26,7 +26,7 @@ class PlatformSetConfigParser(
 
             return PlatformSetConfig(configs)
         } else {
-            for (parser in mParsers) {
+            mParsers.forEach { parser ->
                 val config = parser.parse(platformObject, false)
                 if (config != null)
                     return config

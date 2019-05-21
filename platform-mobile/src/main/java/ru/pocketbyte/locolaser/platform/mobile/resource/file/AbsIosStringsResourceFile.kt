@@ -115,7 +115,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                             val value = keyValueMatcher.group(2)
 
                             val item = ResItem(key)
-                            item.addValue(ResValue(fromPlatformValue(value), comment?.toString()?.trim { it <= ' ' }, null))
+                            item.addValue(ResValue(fromPlatformValue(value), comment?.toString()?.trim { it <= ' ' }))
                             result.put(item)
                         }
                     }

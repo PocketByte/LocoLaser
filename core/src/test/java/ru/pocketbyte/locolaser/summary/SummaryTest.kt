@@ -169,6 +169,7 @@ class SummaryTest {
     fun testLoad() {
         val config = Config()
         config.file = prepareTestFile("{}")
+        config.tempDir = tempFolder.newFolder()
         config.platform = MockPlatformResources(
                 File(System.getProperty("user.dir"), "temp/"),
                 "mock") as? PlatformConfig

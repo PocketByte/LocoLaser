@@ -48,7 +48,7 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceCo
      * @throws InvalidConfigException
      */
     @Throws(InvalidConfigException::class)
-    override fun parse(sourceObject: Any, throwIfWrongType: Boolean): SourceConfig? {
+    override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): SourceConfig? {
         if (sourceObject is JSONObject) {
             return parseFromJson(sourceObject)
         } else if (sourceObject is JSONArray) {
@@ -88,7 +88,7 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceCo
      * @throws InvalidConfigException if config has some logic errors or doesn't contain some required fields.
      */
     @Throws(InvalidConfigException::class)
-    protected fun fillFromJSON(source: SourceConfigClass, configJson: JSONObject) {
+    protected open fun fillFromJSON(source: SourceConfigClass, configJson: JSONObject) {
         source.keyColumn = JsonParseUtils.getString(configJson, COLUMN_KEY, SOURCE, true)
         source.quantityColumn = JsonParseUtils.getString(configJson, COLUMN_QUANTITY, SOURCE, false)
         source.commentColumn = JsonParseUtils.getString(configJson, COLUMN_COMMENT, SOURCE, false)
@@ -99,8 +99,8 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceCo
     }
 
     @Throws(InvalidConfigException::class)
-    protected fun validate(source: SourceConfigClass) {
-        if (TextUtils.isEmpty(source.keyColumn))
+    protected open fun validate(source: SourceConfigClass) {
+        if (source.keyColumn?.isEmpty() != false)
             throw InvalidConfigException("\"$SOURCE.$COLUMN_KEY\" is not set.")
         if (source.localeColumns == null)
             throw InvalidConfigException("\"$SOURCE.$COLUMN_KEY\" is not set.")

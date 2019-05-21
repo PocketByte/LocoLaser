@@ -51,7 +51,7 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
 
                         var quantity = Quantity.OTHER
                         if (columnIndexes.quantity > 0)
-                            quantity = Quantity.fromString(getValue(columnIndexes.quantity, row))
+                            quantity = Quantity.fromString(getValue(columnIndexes.quantity, row), quantity)!!
 
                         if (value?.isNotEmpty() == true) {
 

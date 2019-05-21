@@ -43,13 +43,13 @@ class ConfigParserTest {
         val sourceConfigParser = object : SourceConfigParser<MockTableSourceConfig> {
 
             @Throws(InvalidConfigException::class)
-            override fun parse(sourceObject: Any, throwIfWrongType: Boolean): MockTableSourceConfig {
+            override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): MockTableSourceConfig {
                 return MockTableSourceConfig()
             }
         }
         val platformConfigParser = object : PlatformConfigParser<PlatformConfig> {
             @Throws(InvalidConfigException::class)
-            override fun parse(platformObject: Any, throwIfWrongType: Boolean): PlatformConfig {
+            override fun parse(platformObject: Any?, throwIfWrongType: Boolean): PlatformConfig {
                 return MockPlatformConfig()
             }
         }

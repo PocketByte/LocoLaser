@@ -25,7 +25,7 @@ abstract class ResourceStreamFile(file: File) : ResourceFile {
 
     private var stream: OutputStream? = null
 
-    protected val isOpen: Boolean
+    val isOpen: Boolean
         get() = stream != null
 
     init {
@@ -43,7 +43,7 @@ abstract class ResourceStreamFile(file: File) : ResourceFile {
      * @throws IOException
      */
     @Throws(IOException::class)
-    protected fun open() {
+    fun open() {
         if (stream == null) {
             file.parentFile.mkdirs()
             stream = FileOutputStream(file)
@@ -55,7 +55,7 @@ abstract class ResourceStreamFile(file: File) : ResourceFile {
      * @throws IOException
      */
     @Throws(IOException::class)
-    protected fun close() {
+    fun close() {
         if (stream != null) {
             stream!!.flush()
             stream!!.close()
@@ -69,7 +69,7 @@ abstract class ResourceStreamFile(file: File) : ResourceFile {
      * @throws IOException
      */
     @Throws(IOException::class)
-    protected fun writeString(string: String) {
+    fun writeString(string: String) {
         if (stream == null)
             throw IllegalStateException("You should open file before write")
 
@@ -77,7 +77,7 @@ abstract class ResourceStreamFile(file: File) : ResourceFile {
     }
 
     @Throws(IOException::class)
-    protected fun writeStringLn(string: String) {
+    fun writeStringLn(string: String) {
         writeString(string)
         writeln()
     }
@@ -87,7 +87,7 @@ abstract class ResourceStreamFile(file: File) : ResourceFile {
      * @throws IOException
      */
     @Throws(IOException::class)
-    protected fun writeln() {
+    fun writeln() {
         if (stream == null)
             throw IllegalStateException("You should open file before write")
 

@@ -45,9 +45,7 @@ class GoogleSheetConfig : BaseTableSourceConfig() {
         @Throws(MalformedURLException::class)
         get() = URL("https://spreadsheets.google.com/feeds/spreadsheets/" + id!!)
 
-    override fun getType(): String {
-        return TYPE
-    }
+    override val type = TYPE
 
     override fun open(): GoogleSheet? {
         val service = prepareService(credentialFile) ?: return null

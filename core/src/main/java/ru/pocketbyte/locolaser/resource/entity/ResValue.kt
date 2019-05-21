@@ -11,10 +11,10 @@ import ru.pocketbyte.locolaser.config.source.Source
  * @author Denis Shurygin
  */
 class ResValue(
-        val value: String,
+        public val value: String,
         /** Resource comment. */
-        val comment: String?,
-        val quantity: Quantity = Quantity.OTHER
+        public val comment: String?,
+        public val quantity: Quantity = Quantity.OTHER
 ) {
 
     /**

@@ -39,8 +39,10 @@ class GoogleSheetConfigParserTest {
     fun init() {
         val sourceConfigParser = GoogleSheetConfigParser()
 
-        val platformConfigParser = PlatformConfigParser<PlatformConfig> { _, _ ->
-            MockPlatformConfig()
+        val platformConfigParser = object : PlatformConfigParser<PlatformConfig> {
+            override fun parse(platformObject: Any?, throwIfWrongType: Boolean): PlatformConfig? {
+                return MockPlatformConfig()
+            }
         }
         mConfigParser = ConfigParser(sourceConfigParser, platformConfigParser)
     }

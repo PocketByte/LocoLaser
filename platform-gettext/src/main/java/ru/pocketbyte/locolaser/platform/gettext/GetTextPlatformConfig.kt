@@ -20,24 +20,15 @@ class GetTextPlatformConfig : BasePlatformConfig() {
         const val TYPE = "gettext"
     }
 
-    override fun getType(): String {
-        return TYPE
-    }
+    override val defaultTempDirPath = "./build/tmp/"
 
-    override fun getDefaultTempDirPath(): String {
-        return "./build/tmp/"
-    }
+    override val defaultResourcesPath = "./languages/"
 
-    override fun getDefaultResourcesPath(): String {
-        return "./languages/"
-    }
+    override val defaultResourceName = "messages"
 
-    override fun getDefaultResourceName(): String {
-        return "messages"
-    }
+    override val type = TYPE
 
-    override fun getResources(): PlatformResources {
-        return GetTextResources(resourcesDir, resourceName)
-    }
+    override val resources: PlatformResources
+        get() = GetTextResources(resourcesDir!!, resourceName!!)
 
 }

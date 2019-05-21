@@ -28,14 +28,14 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
 
         const val IGNORE_INDEX = "-"
 
-        fun valueToSourceValue(value: String?): String? {
+        fun valueToSourceValue(value: String): String {
             // Add "'" if string beginning from "'", "+" or "="
-            return value?.replace("^(['+=])".toRegex(), "'$1")
+            return value.replace("^(['+=])".toRegex(), "'$1")
         }
 
-        fun sourceValueToValue(sourceValue: String?): String? {
+        fun sourceValueToValue(sourceValue: String): String {
             // Remove "'" from the beginning
-            return sourceValue?.replace("^(')".toRegex(), "")
+            return sourceValue.replace("^(')".toRegex(), "")
         }
 
         private fun findCellByValue(cellFeed: CellFeed?, value: String?): CellEntry? {
@@ -56,9 +56,7 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
 
     private var mQuery: CellFeed? = null
 
-    override fun getModifiedDate(): Long {
-        return mWorksheetFacade.sheetEntry.updated.value
-    }
+    override val modifiedDate = mWorksheetFacade.sheetEntry.updated.value
 
     override fun write(resMap: ResMap) {
         if (fetchCellsIfNeeded()) {
@@ -90,9 +88,10 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
                                 BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
                                 batchRequest.entries.add(batchEntry)
 
-                                if (resValue.comment != null && mColumnIndexes!!.comment >= 0) {
+                                val comment = resValue.comment
+                                if (comment != null && mColumnIndexes!!.comment >= 0) {
                                     batchEntry = CellEntry(getCell(mColumnIndexes!!.comment, resRow)!!)
-                                    batchEntry.changeInputValueLocal(valueToSourceValue(resValue.comment))
+                                    batchEntry.changeInputValueLocal(valueToSourceValue(comment))
                                     BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
                                     batchRequest.entries.add(batchEntry)
                                 }
@@ -180,10 +179,11 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
                                     BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
                                     batchRequest.entries.add(batchEntry)
 
-                                    if (resValue.comment != null && mColumnIndexes!!.comment >= 0) {
+                                    val comment = resValue.comment
+                                    if (comment != null && mColumnIndexes!!.comment >= 0) {
                                         index = entryIndex(mColumnIndexes!!.comment, resRow, mRowsCount)
                                         batchEntry = CellEntry(cellFeed.entries[index])
-                                        batchEntry.changeInputValueLocal(valueToSourceValue(resValue.comment))
+                                        batchEntry.changeInputValueLocal(valueToSourceValue(comment))
                                         BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
                                         batchRequest.entries.add(batchEntry)
                                     }
@@ -230,15 +230,17 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
         mColumnIndexes = null
     }
 
-    override fun getFirstRow(): Int {
-        fetchCellsIfNeeded()
-        return mTitleRow + 1
-    }
+    override val firstRow: Int
+        get() {
+            fetchCellsIfNeeded()
+            return mTitleRow + 1
+        }
 
-    override fun getColumnIndexes(): ColumnIndexes? {
-        fetchCellsIfNeeded()
-        return mColumnIndexes
-    }
+    override val columnIndexes: ColumnIndexes
+        get() {
+            fetchCellsIfNeeded()
+            return mColumnIndexes!!
+        }
 
     override fun getValue(col: Int, row: Int): String? {
         fetchCellsIfNeeded()
@@ -249,16 +251,17 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
         return cell?.cell?.value
     }
 
-    override fun getRowsCount(): Int {
-        fetchCellsIfNeeded()
-        return mRowsCount
-    }
+    override val rowsCount: Int
+        get() {
+            fetchCellsIfNeeded()
+            return mRowsCount
+        }
 
-    override fun valueToSourceValue(value: String?): String? {
+    override fun valueToSourceValue(value: String): String {
         return Companion.valueToSourceValue(value)
     }
 
-    override fun sourceValueToValue(sourceValue: String?): String? {
+    override fun sourceValueToValue(sourceValue: String): String {
         return Companion.sourceValueToValue(sourceValue)
     }
 
@@ -323,7 +326,7 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
             if (cellEntry != null)
                 comment = cellEntry.cell.col
 
-            for (locale in sourceConfig.localeColumns) {
+            for (locale in sourceConfig.localeColumns!!) {
                 cellEntry = findCellByValue(titleRowFeed, locale)
                 if (cellEntry == null) {
                     LogUtils.warn("Column " + locale +

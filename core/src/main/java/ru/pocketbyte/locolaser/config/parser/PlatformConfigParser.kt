@@ -27,6 +27,6 @@ interface PlatformConfigParser<out PlatformConfigType : PlatformConfig> {
      * @throws InvalidConfigException if config has some logic errors or doesn't contain some required fields.
      */
     @Throws(InvalidConfigException::class)
-    fun parse(platformObject: Any, throwIfWrongType: Boolean): PlatformConfigType?
+    fun parse(platformObject: Any?, throwIfWrongType: Boolean): PlatformConfigType?
 
 }

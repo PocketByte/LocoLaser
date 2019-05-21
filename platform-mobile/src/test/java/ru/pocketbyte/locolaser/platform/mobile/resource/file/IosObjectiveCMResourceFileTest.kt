@@ -9,7 +9,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
-import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
 
 import java.io.File
@@ -20,7 +19,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import ru.pocketbyte.locolaser.resource.PlatformResources.BASE_LOCALE
+import ru.pocketbyte.locolaser.resource.PlatformResources.Companion.BASE_LOCALE
 
 /**
  * @author Denis Shurygin

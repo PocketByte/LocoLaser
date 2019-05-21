@@ -161,8 +161,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
             private const val LEVEL_ITEM_VALUE_STRING = 6
         }
 
-        var map: ResLocale? = null
-            private set
+        val map = ResLocale()
         private var mItem: ResItem? = null
 
         private var mValue: StringBuilder? = null
@@ -173,9 +172,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
         private var mComment: String? = null //TODO comments not work
 
         @Throws(SAXException::class)
-        override fun startDocument() {
-            map = ResLocale()
-        }
+        override fun startDocument() { }
 
         @Throws(SAXException::class)
         override fun startElement(uri: String?, localName: String?, qName: String?,
@@ -235,15 +232,17 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
                 }
                 LEVEL_ITEM_VALUE_STRING -> {
                     if (mQuantity != null && mItem != null) {
-                        mItem!!.addValue(ResValue(fromPlatformValue(mValue!!.toString()), mComment, mQuantity))
+                        mItem!!.addValue(ResValue(fromPlatformValue(mValue!!.toString()),
+                                mComment, mQuantity ?: Quantity.OTHER))
                     }
                     mQuantity = null
                     mDocLevel = LEVEL_ITEM_VALUE_DICT
                 }
                 LEVEL_ITEM_VALUE_DICT -> mDocLevel = LEVEL_ITEM_DICT
                 LEVEL_ITEM_DICT -> if ("dict" == qName) {
-                    if (mItem != null) {
-                        map!!.put(mItem)
+                    val item = mItem
+                    if (item != null) {
+                        map.put(item)
                     }
                     mItem = null
                     mDocLevel = LEVEL_DOC

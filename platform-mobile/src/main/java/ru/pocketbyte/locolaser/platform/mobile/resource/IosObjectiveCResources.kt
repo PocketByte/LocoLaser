@@ -37,6 +37,6 @@ class IosObjectiveCResources(
     }
 
     override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(arrayOf(objcHFile, objcMFile))
+        return FileSummary(arrayOf<File?>(objcHFile, objcMFile))
     }
 }

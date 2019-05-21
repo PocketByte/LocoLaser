@@ -7,7 +7,6 @@ package ru.pocketbyte.locolaser.platform.mobile
 
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.resource.AndroidResources
-import ru.pocketbyte.locolaser.resource.PlatformResources
 
 /**
  * Android platform configuration.
@@ -20,24 +19,12 @@ class AndroidPlatformConfig : BasePlatformConfig() {
         const val TYPE = "android"
     }
 
-    override fun getType(): String {
-        return TYPE
-    }
+    override val type = TYPE
 
-    override fun getDefaultTempDirPath(): String {
-        return "./build/tmp/"
-    }
+    override val defaultTempDirPath = "./build/tmp/"
+    override val defaultResourcesPath = "./src/main/res/"
+    override val defaultResourceName = "strings"
 
-    override fun getDefaultResourcesPath(): String {
-        return "./src/main/res/"
-    }
-
-    override fun getDefaultResourceName(): String {
-        return "strings"
-    }
-
-    override fun getResources(): PlatformResources {
-        return AndroidResources(resourcesDir, resourceName)
-    }
+    override val resources = AndroidResources(resourcesDir!!, resourceName!!)
 
 }

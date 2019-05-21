@@ -6,15 +6,8 @@ abstract class IosBaseClassPlatformConfig : BasePlatformConfig() {
 
     var tableName: String? = null
 
-    override fun getDefaultTempDirPath(): String {
-        return "../DerivedData/LocoLaserTemp/"
-    }
+    override val defaultTempDirPath = "../DerivedData/LocoLaserTemp/"
+    override val defaultResourcesPath = "./"
+    override val defaultResourceName = "Str"
 
-    override fun getDefaultResourcesPath(): String {
-        return "./"
-    }
-
-    override fun getDefaultResourceName(): String {
-        return "Str"
-    }
 }

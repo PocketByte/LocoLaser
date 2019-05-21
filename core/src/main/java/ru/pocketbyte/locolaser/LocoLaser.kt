@@ -177,7 +177,7 @@ object LocoLaser {
                                     foundResItem.addValue(oldResValue)
                                     oldResItem.removeValue(oldResValue)
 
-                                    if (oldResItem.values.size == 0)
+                                    if (oldResItem.values.isEmpty())
                                         oldResLocale.remove(oldResItem.key)
                                 }
                             }
@@ -190,10 +190,7 @@ object LocoLaser {
                     }
 
                     // Save into new map
-                    if (sourceResMap != null)
-                        sourceResMap = sourceResMap.merge(value)
-                    else
-                        sourceResMap = value
+                    sourceResMap = sourceResMap?.merge(value) ?: value
                 }
 
                 // Second part. Export other values into the first source.
@@ -202,8 +199,7 @@ object LocoLaser {
                 }
 
                 // Save other local items into map
-                if (oldResMap != null)
-                    sourceResMap = oldResMap.merge(sourceResMap)
+                sourceResMap = oldResMap.merge(sourceResMap)
             }
 
             // =================================

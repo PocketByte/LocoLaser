@@ -6,7 +6,7 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 class EmptySourceConfigParser : SourceConfigParser<EmptySourceConfig> {
 
     @Throws(InvalidConfigException::class)
-    override fun parse(sourceObject: Any, throwIfWrongType: Boolean): EmptySourceConfig? {
+    override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): EmptySourceConfig? {
         if (EmptySourceConfig.TYPE == sourceObject) {
             return EmptySourceConfig()
         }

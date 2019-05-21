@@ -25,7 +25,7 @@ abstract class BaseMobilePlatformConfigParser : PlatformConfigParser<BasePlatfor
     protected abstract fun platformByType(type: String?, throwIfWrongType: Boolean): BasePlatformConfig?
 
     @Throws(InvalidConfigException::class)
-    override fun parse(platformObject: Any, throwIfWrongType: Boolean): BasePlatformConfig? {
+    override fun parse(platformObject: Any?, throwIfWrongType: Boolean): BasePlatformConfig? {
 
         if (platformObject is String) {
             return parseString(platformObject, throwIfWrongType)

@@ -40,20 +40,20 @@ class IosSwiftResourceFile(
 
         private const val MAX_LINE_SIZE = 120
 
-        private fun escapeComment(string: String): String {
+        private fun escapeComment(string: String?): String? {
             return string
-                    .replace("\r", "\\r")
-                    .replace("\n", "\\n")
-                    .replace("\u0009", "  ")
+                    ?.replace("\r", "\\r")
+                    ?.replace("\n", "\\n")
+                    ?.replace("\u0009", "  ")
         }
 
-        private fun escapeString(string: String): String {
+        private fun escapeString(string: String?): String? {
             return string
-                    .replace("\\", "\\\\")
-                    .replace("\"", "\\\"")
-                    .replace("\r", "\\r")
-                    .replace("\n", "\\n")
-                    .replace("\u0009", "\\t")
+                    ?.replace("\\", "\\\\")
+                    ?.replace("\"", "\\\"")
+                    ?.replace("\r", "\\r")
+                    ?.replace("\n", "\\n")
+                    ?.replace("\u0009", "\\t")
         }
     }
 

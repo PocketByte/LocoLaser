@@ -1,7 +1,6 @@
 package ru.pocketbyte.locolaser.platform.kotlinmobile
 
 import ru.pocketbyte.locolaser.platform.kotlinmobile.resource.KotlinIosResources
-import ru.pocketbyte.locolaser.resource.PlatformResources
 
 class KotlinIosPlatformConfig : KotlinBaseImplPlatformConfig() {
 
@@ -9,15 +8,10 @@ class KotlinIosPlatformConfig : KotlinBaseImplPlatformConfig() {
         const val TYPE = "kotlin-ios"
     }
 
-    override fun getType(): String {
-        return TYPE
-    }
+    override val type = TYPE
 
-    override fun getDefaultResourceName(): String {
-        return "ru.pocketbyte.locolaser.StrIos"
-    }
+    override val defaultResourceName = "ru.pocketbyte.locolaser.StrIos"
 
-    override fun getResources(): PlatformResources {
-        return KotlinIosResources(resourcesDir, resourceName, interfaceName!!)
-    }
+    override val resources = KotlinIosResources(resourcesDir!!, resourceName!!, interfaceName!!)
+
 }

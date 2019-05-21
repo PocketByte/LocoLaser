@@ -35,12 +35,12 @@ class IosObjectiveCMResourceFile(
                 "    return NSLocalizedStringFromTable(@\"%s\", @\"%s\", @\"%s\")\r\n" +
                 "}"
 
-        private fun escapeString(string: String): String {
+        private fun escapeString(string: String?): String? {
             return string
-                    .replace("\\", "\\\\")
-                    .replace("\"", "\\\"")
-                    .replace("\r", "\\r")
-                    .replace("\n", "\\n")
+                    ?.replace("\\", "\\\\")
+                    ?.replace("\"", "\\\"")
+                    ?.replace("\r", "\\r")
+                    ?.replace("\n", "\\n")
         }
     }
 

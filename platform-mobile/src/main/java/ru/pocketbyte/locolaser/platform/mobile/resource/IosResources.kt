@@ -36,7 +36,7 @@ class IosResources(resourcesDir: File, name: String) : AbsIosStringsResources(re
     }
 
     override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(arrayOf(getFileForLocale(locale), getPluralFileForLocale(locale)))
+        return FileSummary(arrayOf<File?>(getFileForLocale(locale), getPluralFileForLocale(locale)))
     }
 
     private fun getPluralFileForLocale(locale: String): File {

@@ -17,17 +17,10 @@ import java.io.IOException
  */
 abstract class AbsPlatformResources(
         /** Resource directory path. */
-        val directory: File?,
+        val directory: File,
         /** Resource name. */
-        protected val name: String?
+        val name: String
 ) : PlatformResources {
-
-    init {
-        if (directory == null)
-            throw IllegalArgumentException("Resources dir must be not null")
-        if (name == null)
-            throw IllegalArgumentException("Resources name must be not null")
-    }
 
     protected abstract fun getResourceFiles(locales: Set<String>): Array<ResourceFile>?
 

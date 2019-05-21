@@ -7,7 +7,7 @@ package ru.pocketbyte.locolaser.platform.gettext.parser
 
 import ru.pocketbyte.locolaser.platform.gettext.GetTextPlatformConfig
 import org.json.simple.JSONObject
-import ru.pocketbyte.locolaser.config.parser.ConfigParser.*
+import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.PLATFORM
 import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
@@ -25,7 +25,7 @@ class GetTextPlatformConfigParser : PlatformConfigParser<BasePlatformConfig> {
     }
 
     @Throws(InvalidConfigException::class)
-    override fun parse(platformObject: Any, throwIfWrongType: Boolean): BasePlatformConfig? {
+    override fun parse(platformObject: Any?, throwIfWrongType: Boolean): BasePlatformConfig? {
 
         if (platformObject is String) {
             if (checkType(platformObject, throwIfWrongType))

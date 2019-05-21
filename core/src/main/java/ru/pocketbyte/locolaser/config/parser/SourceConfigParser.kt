@@ -28,6 +28,6 @@ interface SourceConfigParser<out SourceConfigType : SourceConfig> {
      * @throws InvalidConfigException
      */
     @Throws(InvalidConfigException::class)
-    fun parse(sourceObject: Any, throwIfWrongType: Boolean): SourceConfigType?
+    fun parse(sourceObject: Any?, throwIfWrongType: Boolean): SourceConfigType?
 
 }

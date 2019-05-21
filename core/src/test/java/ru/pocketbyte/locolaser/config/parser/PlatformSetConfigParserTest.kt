@@ -49,7 +49,7 @@ class PlatformSetConfigParserTest {
     ) : PlatformConfigParser<PlatformConfig> {
 
         @Throws(InvalidConfigException::class)
-        override fun parse(platformObject: Any, throwIfWrongType: Boolean): PlatformConfig? {
+        override fun parse(platformObject: Any?, throwIfWrongType: Boolean): PlatformConfig? {
             if (mType == platformObject)
                 return mConfig
 
