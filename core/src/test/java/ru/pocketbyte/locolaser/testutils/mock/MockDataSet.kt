@@ -22,7 +22,7 @@ class MockDataSet(locales: Array<String>) {
     init {
         val localeIndexes = HashMap<String, Int>(locales.size)
         for (i in 0 until mLocalesCount)
-            localeIndexes.put(locales[i], 4 + i)
+            localeIndexes[locales[i]] = 4 + i
 
         columnIndexes = BaseTableSource.ColumnIndexes(1, 2, 3, localeIndexes)
     }

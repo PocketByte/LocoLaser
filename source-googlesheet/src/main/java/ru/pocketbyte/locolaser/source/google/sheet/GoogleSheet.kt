@@ -335,7 +335,7 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
                 } else
                     locales[locale] = cellEntry.cell.col
             }
-            mColumnIndexes = BaseTableSource.ColumnIndexes(key, quantity, comment, locales)
+            mColumnIndexes = ColumnIndexes(key, quantity, comment, locales)
 
             try {
                 val list = mWorksheetFacade

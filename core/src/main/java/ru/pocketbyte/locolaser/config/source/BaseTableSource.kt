@@ -24,10 +24,10 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
     override val sourceConfig: BaseTableSourceConfig
         get() = super.sourceConfig as BaseTableSourceConfig
 
-    override fun read(): Source.ReadResult {
+    override fun read(): ReadResult {
 
         val items = ResMap()
-        val missedValues = ArrayList<Source.MissedValue>()
+        val missedValues = ArrayList<MissedValue>()
 
         var row = firstRow
         while (rowsCount >= row) {
@@ -43,7 +43,7 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
 
                     if (localeCol >= 0) {
                         if (!items.containsKey(locale))
-                            items.put(locale, ResLocale())
+                            items[locale] = ResLocale()
 
                         val itemMap = items[locale]
 
@@ -66,7 +66,7 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
                             item.addValue(resValue)
                         } else {
                             LogUtils.warn("\rValue not found! Locale= $locale, key= $key.")
-                            missedValues.add(Source.MissedValue(key, locale, quantity,
+                            missedValues.add(MissedValue(key, locale, quantity,
                                     CellLocation(this, localeCol, row)))
                         }
                     }

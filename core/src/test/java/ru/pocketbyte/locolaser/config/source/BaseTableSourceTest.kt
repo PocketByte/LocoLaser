@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.config.source
 
+import org.junit.Assert.*
 import org.junit.Test
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.testutils.mock.MockDataSet
@@ -12,9 +13,6 @@ import ru.pocketbyte.locolaser.testutils.mock.MockDataSet
 import java.util.Arrays
 import java.util.HashSet
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 
 /**
  * @author Denis Shurygin
@@ -134,7 +132,7 @@ class BaseTableSourceTest {
                     assertNotNull(missedValue.location)
                     assert(missedValue.location is BaseTableSource.CellLocation)
                     val location = missedValue.location as BaseTableSource.CellLocation
-                    assertEquals(dataSet.columnIndexes.locales["ru"]!!.toInt().toLong(), location.col.toLong())
+                    assertEquals(dataSet.columnIndexes.locales.getValue("ru").toInt().toLong(), location.col.toLong())
                     assertEquals(0, location.row.toLong())
                 }
                 "key2" -> {
@@ -143,7 +141,7 @@ class BaseTableSourceTest {
                     assertNotNull(missedValue.location)
                     assert(missedValue.location is BaseTableSource.CellLocation)
                     val location = missedValue.location as BaseTableSource.CellLocation
-                    assertEquals(dataSet.columnIndexes.locales["en"]!!.toInt().toLong(), location.col.toLong())
+                    assertEquals(dataSet.columnIndexes.locales.getValue("en").toInt().toLong(), location.col.toLong())
                     assertEquals(2, location.row.toLong())
                 }
                 else -> throw Exception()
@@ -169,7 +167,7 @@ class BaseTableSourceTest {
         // =============
         // Locale EN
         val resLocaleEn = result.items!!["en"]!!
-        var expectedCol = dataSet.columnIndexes.locales["en"]!!
+        var expectedCol = dataSet.columnIndexes.locales.getValue("en")
 
         assertLocation(resLocaleEn["key1"]!!.valueForQuantity(Quantity.OTHER), expectedCol, 0)
         assertLocation(resLocaleEn["key1"]!!.valueForQuantity(Quantity.ZERO), expectedCol, 1)
@@ -178,7 +176,7 @@ class BaseTableSourceTest {
         // =============
         // Locale RU
         val resLocaleRu = result.items!!["ru"]!!
-        expectedCol = dataSet.columnIndexes.locales["ru"]!!
+        expectedCol = dataSet.columnIndexes.locales.getValue("ru")
 
         assertLocation(resLocaleRu["key1"]!!.valueForQuantity(Quantity.OTHER), expectedCol, 0)
         assertLocation(resLocaleRu["key1"]!!.valueForQuantity(Quantity.ZERO), expectedCol, 1)
@@ -193,7 +191,10 @@ class BaseTableSourceTest {
         assertEquals(row.toLong(), (resValue.location as BaseTableSource.CellLocation).row.toLong())
     }
 
-    private class TableSourceImpl internal constructor(sourceConfig: BaseTableSourceConfig, private val mDataSet: MockDataSet) : BaseTableSource(sourceConfig) {
+    private class TableSourceImpl(
+            sourceConfig: BaseTableSourceConfig,
+            private val mDataSet: MockDataSet
+    ) : BaseTableSource(sourceConfig) {
 
         override val firstRow: Int
             get() = 0
@@ -202,16 +203,16 @@ class BaseTableSourceTest {
             get() = mDataSet.size()
 
         override fun getValue(col: Int, row: Int): String? {
-            return mDataSet.get(col, row)
+            return mDataSet[col, row]
         }
 
-        override val columnIndexes: BaseTableSource.ColumnIndexes
+        override val columnIndexes: ColumnIndexes
             get() = mDataSet.columnIndexes
 
         override val modifiedDate: Long
             get() = 0
 
-        override fun write(values: ResMap) {
+        override fun write(resMap: ResMap) {
             // Do nothing
         }
 
