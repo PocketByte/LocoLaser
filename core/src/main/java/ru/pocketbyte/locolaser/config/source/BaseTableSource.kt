@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.config.source
 
+import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.utils.LogUtils
 import ru.pocketbyte.locolaser.utils.TextUtils
@@ -75,7 +76,13 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
             row++
         }
 
-        return Source.ReadResult(items, missedValues)
+        if (items[PlatformResources.BASE_LOCALE] == null) {
+            val firstLocale = columnIndexes.locales.entries.find { it.value >= 0 && items[it.key] != null }?.key
+            if (firstLocale != null)
+                items[PlatformResources.BASE_LOCALE] = ResLocale(items[firstLocale])
+        }
+
+        return ReadResult(items, missedValues)
     }
 
 

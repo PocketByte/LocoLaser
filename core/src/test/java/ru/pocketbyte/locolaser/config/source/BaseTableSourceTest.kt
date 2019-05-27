@@ -13,6 +13,8 @@ import ru.pocketbyte.locolaser.testutils.mock.MockDataSet
 import java.util.Arrays
 import java.util.HashSet
 
+import ru.pocketbyte.locolaser.config.platform.PlatformConfig
+import ru.pocketbyte.locolaser.resource.PlatformResources
 
 /**
  * @author Denis Shurygin
@@ -181,6 +183,46 @@ class BaseTableSourceTest {
         assertLocation(resLocaleRu["key1"]!!.valueForQuantity(Quantity.OTHER), expectedCol, 0)
         assertLocation(resLocaleRu["key1"]!!.valueForQuantity(Quantity.ZERO), expectedCol, 1)
         assertLocation(resLocaleRu["key2"]!!.valueForQuantity(Quantity.OTHER), expectedCol, 2)
+    }
+
+    @Test
+    fun testReadDefaultLocale1() {
+        val dataSet = MockDataSet(arrayOf("en", "ru"))
+        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"))
+        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"))
+        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"))
+
+        val sourceConfig = BaseTableSourceConfigImpl(dataSet)
+        sourceConfig.keyColumn = "key"
+        sourceConfig.localeColumns = HashSet(Arrays.asList("en", "ru"))
+
+        val source = sourceConfig.open()
+        val result = source!!.read()
+
+        val expectLocale = result.items?.get("en")!!
+        val baseLocale = result.items?.get(PlatformResources.BASE_LOCALE)!!
+        assertEquals(expectLocale, baseLocale)
+        assertNotSame(expectLocale, baseLocale)
+    }
+
+    @Test
+    fun testReadDefaultLocale2() {
+        val dataSet = MockDataSet(arrayOf("true_base", "ru"))
+        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"))
+        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"))
+        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"))
+
+        val sourceConfig = BaseTableSourceConfigImpl(dataSet)
+        sourceConfig.keyColumn = "key"
+        sourceConfig.localeColumns = HashSet(Arrays.asList("en", "true_base", "ru"))
+
+        val source = sourceConfig.open()
+        val result = source!!.read()
+
+        val expectLocale = result.items?.get("true_base")!!
+        val baseLocale = result.items?.get(PlatformResources.BASE_LOCALE)!!
+        assertEquals(expectLocale, baseLocale)
+        assertNotSame(expectLocale, baseLocale)
     }
 
     @Throws(Exception::class)
