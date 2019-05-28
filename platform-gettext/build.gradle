@@ -64,14 +64,10 @@ publishing {
 }
 
 bintray {
-    publish = true
-    override = false
-
-    user = project.hasProperty('bintray.publish.user') ?
-            project.properties.get("bintray.publish.user") : "-"
-
-    key = project.hasProperty('bintray.publish.apikey') ?
-            project.properties.get("bintray.publish.apikey") : "-"
+    publish = project.bintray_publish
+    override = project.bintray_override
+    user = project.bintray_user
+    key = project.bintray_key
 
     pkg {
         repo = 'maven'
