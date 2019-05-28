@@ -10,6 +10,7 @@ LocoLaser - Localization tool to import localized strings from external source t
 Gradle plugin: https://github.com/PocketByte/locolaser-gradle-plugin<br>
 Android Example: https://github.com/PocketByte/locolaser-android-example<br>
 iOS Example: https://github.com/PocketByte/locolaser-ios-example
+Kotlin MPP Example: https://github.com/PocketByte/locolaser-kotlin-mpp-example
 ### How does it work
 At first you need to create configuration file in JSON format that contains configuration of platforms and sources. Here is the detailed instruction for configuring: [LocoLaser Config](https://github.com/PocketByte/LocoLaser/wiki/LocoLaser-Config)<br>
 Example of Android config that gets strings from Google Sheets:
