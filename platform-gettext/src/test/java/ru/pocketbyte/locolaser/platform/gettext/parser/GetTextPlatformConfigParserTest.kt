@@ -14,7 +14,9 @@ import java.util.ArrayList
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.platform.gettext.GetTextPlatformConfig
+import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 
 class GetTextPlatformConfigParserTest {
 
@@ -84,6 +86,15 @@ class GetTextPlatformConfigParserTest {
     @Throws(InvalidConfigException::class)
     fun testFromInvalidClass() {
         parser!!.parse(ArrayList<String>(), true)
+    }
+
+    @Test
+    fun testConfigResources() {
+        val json = prepareTestPlatformJson()
+        val resources = (parser?.parse(json, true) as GetTextPlatformConfig).resources as AbsPlatformResources
+
+        assertEquals("test_res", resources.name)
+        assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)
     }
 
     private fun prepareTestPlatformJson(): JSONObject {

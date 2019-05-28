@@ -9,6 +9,7 @@ class IosObjectiveCPlatformConfig : IosBaseClassPlatformConfig() {
     }
 
     override val type = TYPE
-    override val resources = IosObjectiveCResources(resourcesDir!!, resourceName!!, tableName)
+    override val resources
+        get() = IosObjectiveCResources(resourcesDir!!, resourceName!!, tableName)
 
 }

@@ -25,6 +25,7 @@ class AndroidPlatformConfig : BasePlatformConfig() {
     override val defaultResourcesPath = "./src/main/res/"
     override val defaultResourceName = "strings"
 
-    override val resources = AndroidResources(resourcesDir!!, resourceName!!)
+    override val resources
+        get() = AndroidResources(this.resourcesDir!!, resourceName!!)
 
 }

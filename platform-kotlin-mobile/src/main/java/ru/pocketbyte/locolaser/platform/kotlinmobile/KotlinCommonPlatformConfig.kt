@@ -15,6 +15,7 @@ class KotlinCommonPlatformConfig : BasePlatformConfig() {
     override val defaultResourcesPath = "./src/main/kotlin/"
     override val defaultResourceName = "ru.pocketbyte.locolaser.StrRepository"
 
-    override val resources = KotlinCommonResources(resourcesDir!!, resourceName!!)
+    override val resources
+        get() = KotlinCommonResources(resourcesDir!!, resourceName!!)
 
 }

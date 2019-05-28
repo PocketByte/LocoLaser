@@ -14,6 +14,7 @@ class KotlinAndroidPlatformConfig : KotlinBaseImplPlatformConfig() {
 
     override val defaultResourceName =  "ru.pocketbyte.locolaser.StrAndroid"
 
-    override val resources =  KotlinAndroidResources(resourcesDir!!, resourceName!!, interfaceName!!, appPackage!!)
+    override val resources
+        get() = KotlinAndroidResources(resourcesDir!!, resourceName!!, interfaceName!!, appPackage!!)
 
 }

@@ -14,6 +14,9 @@ import java.io.IOException
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
+import ru.pocketbyte.locolaser.platform.mobile.IosObjectiveCPlatformConfig
+import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 
 class IosClassPlatformConfigParserTest {
 
@@ -48,6 +51,20 @@ class IosClassPlatformConfigParserTest {
         assertEquals(File("test_res_dir").canonicalPath,
                 config.resourcesDir!!.canonicalPath)
         assertEquals("test_table", config.tableName)
+    }
+
+    @Test
+    fun testConfigResources() {
+        testPlatformConfigResource(IosSwiftPlatformConfig.TYPE)
+        testPlatformConfigResource(IosObjectiveCPlatformConfig.TYPE)
+    }
+
+    private fun testPlatformConfigResource(platform: String) {
+        val json = prepareTestPlatformJson(platform)
+        val resources = (parser?.parse(json, true) as BasePlatformConfig).resources as AbsPlatformResources
+
+        assertEquals("test_res", resources.name)
+        assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)
     }
 
     private fun prepareTestPlatformJson(platform: String): JSONObject {

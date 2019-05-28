@@ -12,6 +12,7 @@ class KotlinIosPlatformConfig : KotlinBaseImplPlatformConfig() {
 
     override val defaultResourceName = "ru.pocketbyte.locolaser.StrIos"
 
-    override val resources = KotlinIosResources(resourcesDir!!, resourceName!!, interfaceName!!)
+    override val resources
+        get() = KotlinIosResources(resourcesDir!!, resourceName!!, interfaceName!!)
 
 }

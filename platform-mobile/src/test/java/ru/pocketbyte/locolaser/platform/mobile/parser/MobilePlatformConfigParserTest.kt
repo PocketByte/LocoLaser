@@ -13,10 +13,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
+import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.platform.mobile.AndroidPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.IosPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.IosPlistPlatformConfig
+import ru.pocketbyte.locolaser.platform.mobile.IosSwiftPlatformConfig
+import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -109,6 +112,21 @@ class MobilePlatformConfigParserTest {
     @Throws(InvalidConfigException::class)
     fun testFromInvalidClass() {
         parser!!.parse(ArrayList<String>(), true)
+    }
+
+    @Test
+    fun testConfigResources() {
+        testPlatformConfigResource(AndroidPlatformConfig.TYPE)
+        testPlatformConfigResource(IosPlatformConfig.TYPE)
+        testPlatformConfigResource(IosPlistPlatformConfig.TYPE)
+    }
+
+    private fun testPlatformConfigResource(platform: String) {
+        val json = prepareTestPlatformJson(platform)
+        val resources = (parser?.parse(json, true) as BasePlatformConfig).resources as AbsPlatformResources
+
+        assertEquals("test_res", resources.name)
+        assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)
     }
 
     private fun prepareTestPlatformJson(platform: String): JSONObject {

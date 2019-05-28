@@ -20,6 +20,7 @@ class IosPlistPlatformConfig : BasePlatformConfig() {
     override val defaultResourcesPath = "./"
     override val defaultResourceName = "InfoPlist"
 
-    override val resources = IosPlistResources(resourcesDir!!, resourceName!!)
+    override val resources
+        get() = IosPlistResources(resourcesDir!!, resourceName!!)
 
 }

@@ -25,6 +25,7 @@ class IosPlatformConfig : BasePlatformConfig() {
     override val defaultResourcesPath = "./"
     override val defaultResourceName = "Localizable"
 
-    override val resources = IosResources(resourcesDir!!, resourceName!!)
+    override val resources
+        get() = IosResources(resourcesDir!!, resourceName!!)
 
 }
