@@ -160,12 +160,12 @@ object LocoLaser {
 
                                     if (foundResMap == null) {
                                         foundResMap = ResMap()
-                                        foundResMaps.put(missed.location.source, foundResMap)
+                                        foundResMaps[missed.location.source] = foundResMap
                                     }
                                     var foundResLocale: ResLocale? = foundResMap[missed.locale]
                                     if (foundResLocale == null) {
                                         foundResLocale = ResLocale()
-                                        foundResMap.put(missed.locale, foundResLocale)
+                                        foundResMap[missed.locale] = foundResLocale
                                     }
 
                                     var foundResItem: ResItem? = foundResLocale[oldResItem.key]

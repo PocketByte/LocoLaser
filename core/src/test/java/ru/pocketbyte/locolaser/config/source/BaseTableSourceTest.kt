@@ -36,7 +36,7 @@ class BaseTableSourceTest {
         val result = source!!.read()
         assertNotNull(result)
 
-        assertEquals(2, result.items!!.size.toLong()) // 2 locales
+        assertEquals(3, result.items!!.size.toLong()) // 2 locales + base locale
         assertEquals(0, result.missedValues!!.size.toLong()) // no missed values
 
         // =============
@@ -90,7 +90,7 @@ class BaseTableSourceTest {
         val result = source!!.read()
         assertNotNull(result)
 
-        assertEquals(1, result.items!!.size.toLong()) // 1 locale
+        assertEquals(2, result.items!!.size.toLong()) // 1 locale + base locale
         assertEquals(0, result.missedValues!!.size.toLong()) // no missed values
 
         val resLocaleEn = result.items!!["en"]!!

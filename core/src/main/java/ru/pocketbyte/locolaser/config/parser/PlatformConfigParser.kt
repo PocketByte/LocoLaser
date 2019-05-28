@@ -16,7 +16,7 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 interface PlatformConfigParser<out PlatformConfigType : PlatformConfig> {
 
     companion object {
-        val PLATFORM_TYPE = "type"
+        const val PLATFORM_TYPE = "type"
     }
 
     /**

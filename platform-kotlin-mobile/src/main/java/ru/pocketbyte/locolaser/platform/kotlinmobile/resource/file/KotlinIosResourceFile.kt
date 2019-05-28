@@ -5,7 +5,6 @@ import ru.pocketbyte.locolaser.config.WritingConfig
 import ru.pocketbyte.locolaser.platform.kotlinmobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.ResItem
-import ru.pocketbyte.locolaser.resource.entity.ResLocale
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile
 

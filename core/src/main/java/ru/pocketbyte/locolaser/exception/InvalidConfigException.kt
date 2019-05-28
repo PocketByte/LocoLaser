@@ -12,6 +12,6 @@ class InvalidConfigException @JvmOverloads constructor(
         message: String? = null
 ) : Exception(if (message != null) "$DEFAULT_MESSAGE $message" else DEFAULT_MESSAGE) {
     companion object {
-        private val DEFAULT_MESSAGE = "Invalid Config!"
+        private const val DEFAULT_MESSAGE = "Invalid Config!"
     }
 }

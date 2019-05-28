@@ -97,7 +97,7 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
                                 }
 
                                 resItem.removeValue(resValue)
-                                if (resItem.values.size == 0)
+                                if (resItem.values.isEmpty())
                                     iterator.remove()
                             } else {
                                 // =====================================
@@ -135,7 +135,7 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
             }
 
             if (totalRows > mRowsCount) {
-                var cellFeed: CellFeed? = null
+                val cellFeed: CellFeed?
                 try {
                     cellFeed = mWorksheetFacade
                             .queryRange(mColumnIndexes!!.min, mRowsCount + 1, mColumnIndexes!!.max, totalRows, true)
@@ -295,7 +295,7 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
             mTitleRow = titleRow
             LogUtils.info("Title row: $mTitleRow")
 
-            var key = 0
+            val key: Int
             var quantity = -1
             var comment = -1
             val locales = HashMap<String, Int>()
@@ -329,21 +329,21 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
             for (locale in sourceConfig.localeColumns!!) {
                 cellEntry = findCellByValue(titleRowFeed, locale)
                 if (cellEntry == null) {
-                    LogUtils.warn("Column " + locale +
-                            " not found. Resource files will not be created/changed for this locale.")
+                    LogUtils.warn("Column $locale not found. Resource files will not be created/changed for this locale.")
                     locales[locale] = -1
                 } else
                     locales[locale] = cellEntry.cell.col
             }
             mColumnIndexes = ColumnIndexes(key, quantity, comment, locales)
 
-            try {
+            mRowsCount = try {
                 val list = mWorksheetFacade
-                        .queryRange(mColumnIndexes!!.key, mTitleRow + 1, mColumnIndexes!!.key, -1, false)!!.entries
+                        .queryRange(mColumnIndexes!!.key, mTitleRow + 1, mColumnIndexes!!.key, -1, false)!!
+                        .entries
                 if (list.size > 0)
-                    mRowsCount = list[list.size - 1].cell.row
+                    list[list.size - 1].cell.row
                 else
-                    mRowsCount = mTitleRow
+                    mTitleRow
             } catch (e: IOException) {
                 e.printStackTrace()
                 return false

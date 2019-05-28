@@ -39,21 +39,21 @@ open class ConfigParser
 
     companion object {
 
-        val SOURCE = "source"
-        val PLATFORM = "platform"
-        val WORK_DIR = "work_dir"
-        val TEMP_DIR = "temp_dir"
+        const val SOURCE = "source"
+        const val PLATFORM = "platform"
+        const val WORK_DIR = "work_dir"
+        const val TEMP_DIR = "temp_dir"
 
-        val FORCE_IMPORT = "force_import"
-        val CONFLICT_STRATEGY = "conflict_strategy"
-        val DUPLICATE_COMMENTS = "duplicate_comments"
-        val DELAY = "delay"
+        const val FORCE_IMPORT = "force_import"
+        const val CONFLICT_STRATEGY = "conflict_strategy"
+        const val DUPLICATE_COMMENTS = "duplicate_comments"
+        const val DELAY = "delay"
 
         /**
          * Config delay defined in minutes but code use time in milliseconds.
          * So delay value from config must multiplied by this value.
          */
-        internal val DELAY_MULT: Long = 60000
+        internal const val DELAY_MULT: Long = 60000
 
         @Throws(InvalidConfigException::class)
         private fun parseConflictStrategy(strategy: String?): Config.ConflictStrategy? {
@@ -65,7 +65,7 @@ open class ConfigParser
                     return enumItem
             }
 
-            throw InvalidConfigException("Unknown conflict strategy. Strategy = " + strategy)
+            throw InvalidConfigException("Unknown conflict strategy. Strategy = $strategy")
         }
     }
 
@@ -149,9 +149,9 @@ open class ConfigParser
     @Throws(InvalidConfigException::class)
     private fun validate(config: Config) {
         if (config.platform == null)
-            throw InvalidConfigException("\"" + ConfigParser.PLATFORM + "\" is not set.")
+            throw InvalidConfigException("\"$PLATFORM\" is not set.")
         if (config.sourceConfig == null)
-            throw InvalidConfigException("\"" + ConfigParser.SOURCE + "\" is not set.")
+            throw InvalidConfigException("\"$SOURCE\" is not set.")
     }
 
     class ConfigArgsParser {

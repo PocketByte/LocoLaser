@@ -15,7 +15,7 @@ import java.util.ArrayList
 class SourceSet(
         sourceConfig: SourceConfig,
         private val mSources: Set<Source>,
-        private val mDeafaultSource: Source
+        private val mDefaultSource: Source
 ) : Source(sourceConfig) {
 
     override val modifiedDate: Long
@@ -23,8 +23,8 @@ class SourceSet(
                 .map { it.modifiedDate }
                 .max() ?: 0
 
-    override fun read(): Source.ReadResult {
-        var missedValues: MutableList<Source.MissedValue>? = null
+    override fun read(): ReadResult {
+        var missedValues: MutableList<MissedValue>? = null
         var resMap: ResMap? = null
         for (source in mSources) {
             val result = source.read()
@@ -33,16 +33,13 @@ class SourceSet(
                     missedValues = ArrayList()
                 missedValues.addAll(result.missedValues)
             }
-            resMap = if (resMap != null)
-                resMap.merge(result.items)
-            else
-                ResMap(result.items)
+            resMap = resMap?.merge(result.items) ?: ResMap(result.items)
         }
-        return Source.ReadResult(resMap, missedValues)
+        return ReadResult(resMap, missedValues)
     }
 
     override fun write(resMap: ResMap) {
-        mDeafaultSource.write(resMap)
+        mDefaultSource.write(resMap)
     }
 
     override fun close() {

@@ -19,8 +19,8 @@ import java.io.IOException
 class FileSummary {
 
     companion object {
-        internal val BYTES = "BYTES"
-        internal val HASH = "HASH"
+        internal const val BYTES = "BYTES"
+        internal const val HASH = "HASH"
     }
 
     val bytes: Long
@@ -105,10 +105,10 @@ class FileSummary {
     }
 
     private fun getHashFromFile(file: File): String? {
-        try {
-            return HashUtils.getMD5Checksum(file)
+        return try {
+            HashUtils.getMD5Checksum(file)
         } catch (e: IOException) {
-            return null
+            null
         }
 
     }

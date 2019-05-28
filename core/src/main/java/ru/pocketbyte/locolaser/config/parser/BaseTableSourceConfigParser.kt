@@ -23,11 +23,11 @@ import java.util.HashSet
 abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceConfig> : SourceConfigParser<SourceConfig> {
 
     companion object {
-        val TYPE = "type"
-        val COLUMN_KEY = "column_key"
-        val COLUMN_QUANTITY = "column_quantity"
-        val COLUMN_LOCALES = "column_locales"
-        val COLUMN_COMMENT = "column_comment"
+        const val TYPE = "type"
+        const val COLUMN_KEY = "column_key"
+        const val COLUMN_QUANTITY = "column_quantity"
+        const val COLUMN_LOCALES = "column_locales"
+        const val COLUMN_COMMENT = "column_comment"
     }
 
     /**

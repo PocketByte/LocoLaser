@@ -61,7 +61,7 @@ object JsonParseUtils {
             if (jsonObject is JSONArray) {
                 (jsonObject as JSONArray?)!!
                         .filter { it !is String }
-                        .forEach {
+                        .forEach { _ ->
                             throw InvalidConfigException("Property ${keyName(key, parentKey)} must be a Strings array.")
                         }
                 return jsonObject as? List<String>
@@ -92,7 +92,7 @@ object JsonParseUtils {
         return jsonObject
     }
 
-    fun keyName(key: String, parent: String?): String {
+    private fun keyName(key: String, parent: String?): String {
         val builder = StringBuilder("\"")
         if (parent != null)
             builder.append(parent).append(".")

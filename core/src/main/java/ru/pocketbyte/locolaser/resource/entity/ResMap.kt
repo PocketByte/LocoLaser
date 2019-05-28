@@ -20,7 +20,7 @@ class ResMap() : HashMap<String, ResLocale>() {
 
     fun merge(map: ResMap?): ResMap {
         map?.forEach { locale, value ->
-            this.put(locale, this[locale]?.merge(value) ?: value)
+            this[locale] = this[locale]?.merge(value) ?: value
         }
         return this
     }

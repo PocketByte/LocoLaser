@@ -23,11 +23,11 @@ import java.util.HashMap
 class Summary private constructor(file: File?) {
 
     companion object {
-        val SOURCE_MODIFIED_DATE = "SOURCE_MODIFIED_DATE"
-        val CONFIG_FILE = "CONFIG_FILE"
-        val RESOURCE_FILES = "RESOURCE_FILES"
+        const val SOURCE_MODIFIED_DATE = "SOURCE_MODIFIED_DATE"
+        const val CONFIG_FILE = "CONFIG_FILE"
+        const val RESOURCE_FILES = "RESOURCE_FILES"
 
-        val SUMMARY_FILE_NAME = "locolaser.summary"
+        const val SUMMARY_FILE_NAME = "locolaser.summary"
 
         private var sFactory: Factory? = null
 
@@ -106,7 +106,7 @@ class Summary private constructor(file: File?) {
             (json[RESOURCE_FILES] as? JSONObject)?.entries
                     ?.map { it as Map.Entry<*, *> }
                     ?.filter { it.value is JSONObject }
-                    ?.forEach { mResourceSummaries.put(it.key as String, FileSummary(it.value as JSONObject)) }
+                    ?.forEach { mResourceSummaries[it.key as String] = FileSummary(it.value as JSONObject) }
         }
     }
 
@@ -135,7 +135,7 @@ class Summary private constructor(file: File?) {
     }
 
     fun setResourceSummary(locale: String, summary: FileSummary) {
-        mResourceSummaries.put(locale, summary)
+        mResourceSummaries[locale] = summary
     }
 
     fun setConfigSummary(config: Config?) {
@@ -164,16 +164,16 @@ class Summary private constructor(file: File?) {
     internal fun toJson(): JSONObject {
         val json = JSONObject()
 
-        json.put(CONFIG_FILE, configSummary!!.toJson())
-        json.put(SOURCE_MODIFIED_DATE, sourceModifiedDate)
+        json[CONFIG_FILE] = configSummary!!.toJson()
+        json[SOURCE_MODIFIED_DATE] = sourceModifiedDate
 
         val resourceFilesJson = JSONObject()
         for (local in mResourceSummaries.keys) {
             val fileSummary = mResourceSummaries[local]
             if (fileSummary != null)
-                resourceFilesJson.put(local, fileSummary.toJson())
+                resourceFilesJson[local] = fileSummary.toJson()
         }
-        json.put(RESOURCE_FILES, resourceFilesJson)
+        json[RESOURCE_FILES] = resourceFilesJson
         return json
     }
 }

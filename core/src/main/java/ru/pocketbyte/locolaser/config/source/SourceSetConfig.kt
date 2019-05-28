@@ -12,7 +12,10 @@ import java.util.HashSet
 /**
  * @author Denis Shurygin
  */
-class SourceSetConfig(private val mConfigs: Set<SourceConfig>, private val mDefaultSourceConfig: SourceConfig?) : SourceConfig {
+class SourceSetConfig(
+        private val mConfigs: Set<SourceConfig>,
+        private val mDefaultSourceConfig: SourceConfig?
+) : SourceConfig {
 
     override val type: String = "set"
     override val locales: Set<String> = mConfigs.flatMap { it.locales }.toSet()
@@ -23,7 +26,7 @@ class SourceSetConfig(private val mConfigs: Set<SourceConfig>, private val mDefa
         for (config in mConfigs) {
             val source = config.open()
             if (source == null) {
-                LogUtils.err("Failed to open source. Source: " + config.toString())
+                LogUtils.err("Failed to open source. Source: $config")
                 for (sourceToClose in sources)
                     sourceToClose.close()
                 return null

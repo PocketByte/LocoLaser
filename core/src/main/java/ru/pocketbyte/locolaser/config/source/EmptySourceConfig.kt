@@ -5,7 +5,7 @@ import ru.pocketbyte.locolaser.resource.PlatformResources
 class EmptySourceConfig : SourceConfig {
 
     companion object {
-        val TYPE = "null"
+        const val TYPE = "null"
     }
 
     override val type: String = TYPE

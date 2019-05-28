@@ -19,7 +19,7 @@ import java.io.IOException
 interface PlatformResources {
 
     companion object {
-        val BASE_LOCALE = "base"
+        const val BASE_LOCALE = "base"
     }
 
     /**

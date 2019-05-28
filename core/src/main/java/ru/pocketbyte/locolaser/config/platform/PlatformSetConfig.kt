@@ -12,9 +12,7 @@ class PlatformSetConfig(private val mConfigs: Set<PlatformConfig>) : Config.Chil
     override val type: String = "set"
 
     override val resources: PlatformResources
-        get() {
-            return PlatformSetResources(mConfigs.mapTo(LinkedHashSet(mConfigs.size)) { it.resources })
-        }
+        get() = PlatformSetResources(mConfigs.mapTo(LinkedHashSet(mConfigs.size)) { it.resources })
 
     override val defaultTempDir: File
         get() = mConfigs.first().defaultTempDir

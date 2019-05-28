@@ -18,7 +18,7 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 interface SourceConfigParser<out SourceConfigType : SourceConfig> {
 
     companion object {
-        val SOURCE_TYPE = "type"
+        const val SOURCE_TYPE = "type"
     }
 
     /**

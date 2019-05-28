@@ -35,7 +35,7 @@ class PlatformSetConfigParser(
 
         if (throwIfWrongType) {
             when (platformObject) {
-                is String -> throw InvalidConfigException("Unknown platform: " + platformObject)
+                is String -> throw InvalidConfigException("Unknown platform: $platformObject")
                 is JSONObject -> {
                     val type = getString(platformObject, PLATFORM_TYPE, PLATFORM, false)
                     throw InvalidConfigException("Unknown platform: " + type!!)
