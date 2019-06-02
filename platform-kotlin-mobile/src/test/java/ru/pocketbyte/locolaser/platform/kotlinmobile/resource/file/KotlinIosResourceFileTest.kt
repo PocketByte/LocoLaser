@@ -148,10 +148,10 @@ class KotlinIosResourceFileTest {
                 "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
                 "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\r\n" +
                 "\r\n" +
-                "    override public val key1: String\r\n" +
+                "    public override val key1: String\r\n" +
                 "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\r\n" +
                 "\r\n" +
-                "    override public val key3: String\r\n" +
+                "    public override val key3: String\r\n" +
                 "        get() = this.bundle.localizedStringForKey(\"key3\", \"\", this.tableName)\r\n" +
                 "\r\n" +
                 "}"

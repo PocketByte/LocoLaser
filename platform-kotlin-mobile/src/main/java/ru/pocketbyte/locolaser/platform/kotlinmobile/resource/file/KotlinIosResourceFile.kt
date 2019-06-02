@@ -34,11 +34,11 @@ class KotlinIosResourceFile(
         private const val CLASS_FOOTER_TEMPLATE = "}"
 
         private const val PROPERTY_TEMPLATE =
-                "    %1\$spublic val %2\$s: String\r\n" +
+                "    public %1\$sval %2\$s: String\r\n" +
                         "        get() = this.bundle.localizedStringForKey(\"%3\$s\", \"\", this.tableName)\r\n"
 
         private const val PROPERTY_PLURAL_TEMPLATE =
-                "    %1\$spublic fun %2\$s(count: Int): String {\r\n" +
+                "    public %1\$sfun %2\$s(count: Int): String {\r\n" +
                         "        return NSLocalizedPluralString(\r\n" +
                         "            \"%3\$s\", this.tableName, this.bundle, count)!!\r\n" +
                         "    }\r\n"

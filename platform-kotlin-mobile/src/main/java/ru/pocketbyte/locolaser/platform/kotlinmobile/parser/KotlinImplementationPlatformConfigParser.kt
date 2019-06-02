@@ -14,9 +14,6 @@ class KotlinImplementationPlatformConfigParser : BaseMobilePlatformConfigParser(
 
     companion object {
         const val INTERFACE = "implements"
-
-        // Android
-        const val APP_PACKAGE = "app_id"
     }
 
     @Throws(InvalidConfigException::class)
@@ -26,11 +23,6 @@ class KotlinImplementationPlatformConfigParser : BaseMobilePlatformConfigParser(
         if (config != null) {
             config.interfaceName = JsonParseUtils
                     .getString(platformJSON, INTERFACE, ConfigParser.PLATFORM, false)
-
-            if (KotlinAndroidPlatformConfig.TYPE == config.type) {
-                (config as? KotlinAndroidPlatformConfig)?.appPackage = JsonParseUtils
-                        .getString(platformJSON, APP_PACKAGE, ConfigParser.PLATFORM, true)
-            }
         }
 
         return config

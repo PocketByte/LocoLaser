@@ -8,13 +8,13 @@ class KotlinAndroidPlatformConfig : KotlinBaseImplPlatformConfig() {
         const val TYPE = "kotlin-android"
     }
 
-    var appPackage: String? = null
-
     override val type =  TYPE
 
-    override val defaultResourceName =  "ru.pocketbyte.locolaser.StrAndroid"
+    override val defaultResourcesPath = "./src/androidMain/kotlin/"
+    override val defaultResourceName  = "ru.pocketbyte.locolaser.kmpp.AndroidStringRepository"
+    override val defaultInterfaceName = "ru.pocketbyte.locolaser.kmpp.StringRepository"
 
     override val resources
-        get() = KotlinAndroidResources(resourcesDir!!, resourceName!!, interfaceName!!, appPackage!!)
+        get() = KotlinAndroidResources(resourcesDir!!, resourceName!!, interfaceName!!)
 
 }

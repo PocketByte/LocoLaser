@@ -15,8 +15,7 @@ class KotlinAndroidResourceFile(
         private val mClassName: String,
         private val mClassPackage: String,
         private val mInterfaceName: String?,
-        private val mInterfacePackage: String?,
-        private val mAppPackage: String
+        private val mInterfacePackage: String?
 ) : BaseClassResourceFile(file) {
 
     companion object {
@@ -25,28 +24,45 @@ class KotlinAndroidResourceFile(
                 "package %1\$s\r\n" +
                 "\r\n" +
                 "import android.content.Context\r\n" +
-                "import %3\$s.R\r\n" +
                 "\r\n" +
-                "public class %2\$s(private val context: Context) {\r\n"
+                "public class %2\$s(private val context: Context) {\r\n" +
+                "\r\n" +
+                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n"
 
         private const val CLASS_HEADER_TEMPLATE_WITH_INTERFACE =
                 "package %1\$s\r\n" +
                 "\r\n" +
                 "import android.content.Context\r\n" +
-                "import %3\$s.R\r\n" +
-                "import %4\$s.%5\$s\r\n" +
+                "import %3\$s.%4\$s\r\n" +
                 "\r\n" +
-                "public class %2\$s(private val context: Context): %5\$s {\r\n"
+                "public class %2\$s(private val context: Context): %4\$s {\r\n" +
+                "\r\n" +
+                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n"
 
-        private const val CLASS_FOOTER_TEMPLATE = "}"
+        private const val CLASS_FOOTER_TEMPLATE =
+                "    private fun getId(resName: String, defType: String): Int {\r\n" +
+                "        var resMap = resIds[defType]\r\n" +
+                "        if (resMap == null) {\r\n" +
+                "            resMap = mutableMapOf()\r\n" +
+                "            resIds[defType] = resMap\r\n" +
+                "        }\r\n" +
+                "\r\n" +
+                "        var resId = resMap[resName]\r\n" +
+                "        if (resId == null) {\r\n" +
+                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\r\n" +
+                "            resMap[resName] = resId\r\n" +
+                "        }\r\n" +
+                "        return resId\r\n" +
+                "    }\r\n" +
+                "}";
 
         private const val PROPERTY_TEMPLATE =
-                "    %1\$spublic val %2\$s: String\r\n" +
-                "        get() = this.context.getString(R.string.%3\$s)\r\n"
+                "    public %1\$sval %2\$s: String\r\n" +
+                "        get() = this.context.getString(getId(\"%3\$s\", \"string\"))\r\n"
 
         private const val PROPERTY_PLURAL_TEMPLATE =
-                "    %1\$spublic fun %2\$s(count: Int): String {\r\n" +
-                "        return this.context.getString(R.plurals.%3\$s, count)\r\n" +
+                "    public %1\$sfun %2\$s(count: Int): String {\r\n" +
+                "        return this.context.resources.getQuantityString(getId(\"%3\$s\", \"plurals\"), count)\r\n" +
                 "    }\r\n"
 
         private const val MAX_LINE_SIZE = 120
@@ -65,11 +81,11 @@ class KotlinAndroidResourceFile(
     override fun writeClassHeader(resMap: ResMap, writingConfig: WritingConfig?) {
         if (mInterfaceName != null && mInterfacePackage != null)
             writeStringLn(String.format(CLASS_HEADER_TEMPLATE_WITH_INTERFACE,
-                    mClassPackage, mClassName, mAppPackage,
+                    mClassPackage, mClassName,
                     mInterfacePackage, mInterfaceName))
         else
             writeStringLn(String.format(CLASS_HEADER_TEMPLATE,
-                    mClassPackage, mClassName, mAppPackage))
+                    mClassPackage, mClassName))
     }
 
     @Throws(IOException::class)

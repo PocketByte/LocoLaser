@@ -50,7 +50,6 @@ class KotlinImplementationPlatformConfigParserTest {
     private fun prepareTestPlatformJson(platform: String): JSONObject {
         val json = JSONObject()
         json[PlatformConfigParser.PLATFORM_TYPE] = platform
-        json[KotlinImplementationPlatformConfigParser.APP_PACKAGE] = "com.test"
         json[KotlinImplementationPlatformConfigParser.INTERFACE] = "com.test_interface"
         json[BaseMobilePlatformConfigParser.RESOURCE_NAME] = "com.test_res"
         json[BaseMobilePlatformConfigParser.RESOURCES_DIR] = "test_res_dir"

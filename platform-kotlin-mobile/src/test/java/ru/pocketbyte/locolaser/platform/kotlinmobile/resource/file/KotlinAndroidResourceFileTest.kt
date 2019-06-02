@@ -25,7 +25,7 @@ class KotlinAndroidResourceFileTest {
     @Throws(IOException::class)
     fun testRead() {
         val resourceFile = KotlinAndroidResourceFile(tempFolder.newFile(),
-                "Str", "com.package", null, null, "app")
+                "Str", "com.package", null, null)
         assertNull(resourceFile.read())
     }
 
@@ -39,23 +39,38 @@ class KotlinAndroidResourceFileTest {
 
         val testFile = tempFolder.newFile()
         val resourceFile = KotlinAndroidResourceFile(testFile,
-                "Str", "com.package", null, null, "com.app")
+                "Str", "com.package", null, null)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
                 "package com.package\r\n" +
                 "\r\n" +
                 "import android.content.Context\r\n" +
-                "import com.app.R\r\n" +
                 "\r\n" +
                 "public class Str(private val context: Context) {\r\n" +
+                "\r\n" +
+                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n" +
                 "\r\n" +
                 "    /**\r\n" +
                 "    * value1_1\r\n" +
                 "    */\r\n" +
                 "    public val key1: String\r\n" +
-                "        get() = this.context.getString(R.string.key1)\r\n" +
+                "        get() = this.context.getString(getId(\"key1\", \"string\"))\r\n" +
                 "\r\n" +
+                "    private fun getId(resName: String, defType: String): Int {\r\n" +
+                "        var resMap = resIds[defType]\r\n" +
+                "        if (resMap == null) {\r\n" +
+                "            resMap = mutableMapOf()\r\n" +
+                "            resIds[defType] = resMap\r\n" +
+                "        }\r\n" +
+                "\r\n" +
+                "        var resId = resMap[resName]\r\n" +
+                "        if (resId == null) {\r\n" +
+                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\r\n" +
+                "            resMap[resName] = resId\r\n" +
+                "        }\r\n" +
+                "        return resId\r\n" +
+                "    }\r\n" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))
@@ -71,24 +86,39 @@ class KotlinAndroidResourceFileTest {
 
         val testFile = tempFolder.newFile()
         val resourceFile = KotlinAndroidResourceFile(testFile,
-                "Str", "com.package", null, null, "com.app")
+                "Str", "com.package", null, null)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
                 "package com.package\r\n" +
                 "\r\n" +
                 "import android.content.Context\r\n" +
-                "import com.app.R\r\n" +
                 "\r\n" +
                 "public class Str(private val context: Context) {\r\n" +
+                "\r\n" +
+                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n" +
                 "\r\n" +
                 "    /**\r\n" +
                 "    * value1_2\r\n" +
                 "    */\r\n" +
                 "    public fun key1(count: Int): String {\r\n" +
-                "        return this.context.getString(R.plurals.key1, count)\r\n" +
+                "        return this.context.resources.getQuantityString(getId(\"key1\", \"plurals\"), count)\r\n" +
                 "    }\r\n" +
                 "\r\n" +
+                "    private fun getId(resName: String, defType: String): Int {\r\n" +
+                "        var resMap = resIds[defType]\r\n" +
+                "        if (resMap == null) {\r\n" +
+                "            resMap = mutableMapOf()\r\n" +
+                "            resIds[defType] = resMap\r\n" +
+                "        }\r\n" +
+                "\r\n" +
+                "        var resId = resMap[resName]\r\n" +
+                "        if (resId == null) {\r\n" +
+                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\r\n" +
+                "            resMap[resName] = resId\r\n" +
+                "        }\r\n" +
+                "        return resId\r\n" +
+                "    }\r\n" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))
@@ -111,29 +141,44 @@ class KotlinAndroidResourceFileTest {
 
         val testFile = tempFolder.newFile()
         val resourceFile = KotlinAndroidResourceFile(testFile,
-                "StrImpl", "com.some.package", null, null, "ru.pocketbyte.app")
+                "StrImpl", "com.some.package", null, null)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
                 "package com.some.package\r\n" +
                 "\r\n" +
                 "import android.content.Context\r\n" +
-                "import ru.pocketbyte.app.R\r\n" +
                 "\r\n" +
                 "public class StrImpl(private val context: Context) {\r\n" +
+                "\r\n" +
+                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n" +
                 "\r\n" +
                 "    /**\r\n" +
                 "    * value1_2\r\n" +
                 "    */\r\n" +
                 "    public val key1: String\r\n" +
-                "        get() = this.context.getString(R.string.key1)\r\n" +
+                "        get() = this.context.getString(getId(\"key1\", \"string\"))\r\n" +
                 "\r\n" +
                 "    /**\r\n" +
                 "    * value3_2\r\n" +
                 "    */\r\n" +
                 "    public val key3: String\r\n" +
-                "        get() = this.context.getString(R.string.key3)\r\n" +
+                "        get() = this.context.getString(getId(\"key3\", \"string\"))\r\n" +
                 "\r\n" +
+                "    private fun getId(resName: String, defType: String): Int {\r\n" +
+                "        var resMap = resIds[defType]\r\n" +
+                "        if (resMap == null) {\r\n" +
+                "            resMap = mutableMapOf()\r\n" +
+                "            resIds[defType] = resMap\r\n" +
+                "        }\r\n" +
+                "\r\n" +
+                "        var resId = resMap[resName]\r\n" +
+                "        if (resId == null) {\r\n" +
+                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\r\n" +
+                "            resMap[resName] = resId\r\n" +
+                "        }\r\n" +
+                "        return resId\r\n" +
+                "    }\r\n" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))
@@ -157,24 +202,39 @@ class KotlinAndroidResourceFileTest {
         val testFile = tempFolder.newFile()
         val resourceFile = KotlinAndroidResourceFile(testFile,
                 "StrImpl", "com.some.package",
-                "StrInterface", "com.interface", "com.app")
+                "StrInterface", "com.interface")
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
                 "package com.some.package\r\n" +
                 "\r\n" +
                 "import android.content.Context\r\n" +
-                "import com.app.R\r\n" +
                 "import com.interface.StrInterface\r\n" +
                 "\r\n" +
                 "public class StrImpl(private val context: Context): StrInterface {\r\n" +
                 "\r\n" +
-                "    override public val key1: String\r\n" +
-                "        get() = this.context.getString(R.string.key1)\r\n" +
+                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n" +
                 "\r\n" +
-                "    override public val key3: String\r\n" +
-                "        get() = this.context.getString(R.string.key3)\r\n" +
+                "    public override val key1: String\r\n" +
+                "        get() = this.context.getString(getId(\"key1\", \"string\"))\r\n" +
                 "\r\n" +
+                "    public override val key3: String\r\n" +
+                "        get() = this.context.getString(getId(\"key3\", \"string\"))\r\n" +
+                "\r\n" +
+                "    private fun getId(resName: String, defType: String): Int {\r\n" +
+                "        var resMap = resIds[defType]\r\n" +
+                "        if (resMap == null) {\r\n" +
+                "            resMap = mutableMapOf()\r\n" +
+                "            resIds[defType] = resMap\r\n" +
+                "        }\r\n" +
+                "\r\n" +
+                "        var resId = resMap[resName]\r\n" +
+                "        if (resId == null) {\r\n" +
+                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\r\n" +
+                "            resMap[resName] = resId\r\n" +
+                "        }\r\n" +
+                "        return resId\r\n" +
+                "    }\r\n" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))
@@ -192,7 +252,7 @@ class KotlinAndroidResourceFileTest {
 
         val testFile = tempFolder.newFile()
         val resourceFile = KotlinAndroidResourceFile(
-                testFile, "Strings", "ru.pocketbyte", null, null, "app")
+                testFile, "Strings", "ru.pocketbyte", null, null)
 
         resourceFile.write(resMap, null)
 
@@ -200,9 +260,10 @@ class KotlinAndroidResourceFileTest {
                 "package ru.pocketbyte\r\n" +
                 "\r\n" +
                 "import android.content.Context\r\n" +
-                "import app.R\r\n" +
                 "\r\n" +
                 "public class Strings(private val context: Context) {\r\n" +
+                "\r\n" +
+                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n" +
                 "\r\n" +
                 "    /**\r\n" +
                 "    * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
@@ -210,8 +271,22 @@ class KotlinAndroidResourceFileTest {
                 "    * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment\r\n" +
                 "    */\r\n" +
                 "    public val key1: String\r\n" +
-                "        get() = this.context.getString(R.string.key1)\r\n" +
+                "        get() = this.context.getString(getId(\"key1\", \"string\"))\r\n" +
                 "\r\n" +
+                "    private fun getId(resName: String, defType: String): Int {\r\n" +
+                "        var resMap = resIds[defType]\r\n" +
+                "        if (resMap == null) {\r\n" +
+                "            resMap = mutableMapOf()\r\n" +
+                "            resIds[defType] = resMap\r\n" +
+                "        }\r\n" +
+                "\r\n" +
+                "        var resId = resMap[resName]\r\n" +
+                "        if (resId == null) {\r\n" +
+                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\r\n" +
+                "            resMap[resName] = resId\r\n" +
+                "        }\r\n" +
+                "        return resId\r\n" +
+                "    }\r\n" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))
