@@ -12,6 +12,7 @@ import ru.pocketbyte.locolaser.config.WritingConfig
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
+import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.File
 import java.io.IOException
 import javax.xml.parsers.ParserConfigurationException
@@ -167,7 +168,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                 isPlural = true
                 mQuantity = null
             } else if (mItem != null && isPlural && "item" == qName) {
-                mQuantity = Quantity.fromString(attributes!!.getValue("quantity"), null)
+                mQuantity = PluralUtils.quantityFromString(attributes!!.getValue("quantity"))
             } else {
                 mItem = null
                 isPlural = false

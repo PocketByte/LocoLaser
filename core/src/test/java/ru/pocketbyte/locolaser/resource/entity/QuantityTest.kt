@@ -44,24 +44,6 @@ class QuantityTest {
 
     @Test
     @Throws(Exception::class)
-    fun testFromString() {
-        for ((first, second) in quantityPairs!!) {
-            assertEquals(second, Quantity.fromString(first))
-        }
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun testFromStringFallback() {
-        val invalidQuantity = "invalid_quantity"
-        assertEquals(Quantity.OTHER, Quantity.fromString(invalidQuantity))
-        assertEquals(Quantity.OTHER, Quantity.fromString(null))
-        assertEquals(Quantity.OTHER, Quantity.fromString(invalidQuantity, Quantity.OTHER))
-        assertEquals(Quantity.MANY, Quantity.fromString(invalidQuantity, Quantity.MANY))
-    }
-
-    @Test
-    @Throws(Exception::class)
     fun testQuantityOther() {
         assertEquals(1, Quantity.QUANTITY_OTHER.size.toLong())
         assert(Quantity.QUANTITY_OTHER.contains(Quantity.OTHER))

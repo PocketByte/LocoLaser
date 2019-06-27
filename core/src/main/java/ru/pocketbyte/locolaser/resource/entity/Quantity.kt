@@ -17,29 +17,6 @@ enum class Quantity {
 
     companion object {
         val QUANTITY_OTHER: Set<Quantity> = setOf(OTHER)
-
-        @JvmOverloads
-        fun fromString(quantity: String?, fallback: Quantity? = OTHER): Quantity? {
-            if (quantity == null)
-                return fallback
-
-            return if (quantity.isNotEmpty()) {
-                when (quantity.trim { it <= ' ' }) {
-                    "zero" -> ZERO
-                    "one" -> ONE
-                    "two" -> TWO
-                    "few" -> FEW
-                    "many" -> MANY
-                    "other" -> OTHER
-                    else -> {
-                        LogUtils.err("Quantity.fromString: Unknown quantity '$quantity'.")
-                        fallback
-                    }
-                }
-            } else {
-                fallback
-            }
-        }
     }
 
     override fun toString(): String {

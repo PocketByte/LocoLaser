@@ -8,6 +8,7 @@ package ru.pocketbyte.locolaser.config.source
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.utils.LogUtils
+import ru.pocketbyte.locolaser.utils.PluralUtils
 import ru.pocketbyte.locolaser.utils.TextUtils
 
 import java.util.ArrayList
@@ -52,7 +53,8 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
 
                         var quantity = Quantity.OTHER
                         if (columnIndexes.quantity > 0)
-                            quantity = Quantity.fromString(getValue(columnIndexes.quantity, row), quantity)!!
+                            quantity = PluralUtils.quantityFromString(
+                                    getValue(columnIndexes.quantity, row), locale) ?: quantity
 
                         if (value?.isNotEmpty() == true) {
 

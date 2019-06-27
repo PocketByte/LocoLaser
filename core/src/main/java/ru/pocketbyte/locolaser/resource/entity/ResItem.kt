@@ -98,4 +98,14 @@ class ResItem(
         }
         return super.equals(other)
     }
+
+    override fun toString(): String {
+        if (isHasQuantities) {
+            val valuesString = values.joinToString(",") {
+                it.toString()
+            }
+            return "[$valuesString]"
+        }
+        return values[0].toString()
+    }
 }

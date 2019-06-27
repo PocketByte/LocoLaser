@@ -12,6 +12,7 @@ import ru.pocketbyte.locolaser.config.WritingConfig
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
+import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.File
 import java.io.IOException
 import javax.xml.parsers.ParserConfigurationException
@@ -226,7 +227,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
                     if ("NSStringFormatSpecTypeKey" == quantityString || "NSStringFormatValueTypeKey" == quantityString) {
                         mQuantity = null
                     } else {
-                        mQuantity = Quantity.fromString(quantityString, null)
+                        mQuantity = PluralUtils.quantityFromString(quantityString)
                     }
                     mDocLevel = LEVEL_ITEM_VALUE_DICT
                 }

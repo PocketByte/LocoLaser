@@ -42,4 +42,11 @@ class ResValue(
         result = 31 * result + (location?.hashCode() ?: 0)
         return result
     }
+
+    override fun toString(): String {
+        return "ResValue{" +
+                "v=" + value + "," +
+                "c=" + comment + "," +
+                "q=" + quantity.toString() + "}"
+    }
 }
