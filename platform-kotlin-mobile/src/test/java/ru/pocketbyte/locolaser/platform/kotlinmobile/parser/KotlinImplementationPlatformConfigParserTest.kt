@@ -11,6 +11,7 @@ import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
 import ru.pocketbyte.locolaser.platform.kotlinmobile.KotlinAndroidPlatformConfig
 import ru.pocketbyte.locolaser.platform.kotlinmobile.KotlinBaseImplPlatformConfig
 import ru.pocketbyte.locolaser.platform.kotlinmobile.KotlinIosPlatformConfig
+import ru.pocketbyte.locolaser.platform.kotlinmobile.KotlinJsPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.parser.BaseMobilePlatformConfigParser
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 import java.io.File
@@ -37,6 +38,7 @@ class KotlinImplementationPlatformConfigParserTest {
     fun testConfigResources() {
         testPlatformConfigResource(KotlinAndroidPlatformConfig.TYPE)
         testPlatformConfigResource(KotlinIosPlatformConfig.TYPE)
+        testPlatformConfigResource(KotlinJsPlatformConfig.TYPE)
     }
 
     private fun testPlatformConfigResource(platform: String) {
