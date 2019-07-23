@@ -168,15 +168,22 @@ open class ConfigParser
         @Parameter(names = ["-delay"])
         private val delay: Long? = null
 
+        @Parameter(names = ["-tempDir"])
+        private val tempDir: String? = null
+
         @Throws(InvalidConfigException::class)
         fun applyFor(config: Config) {
             if (forceImport)
                 config.isForceImport = true
-            if (conflictStrategy != null) {
+
+            if (conflictStrategy != null)
                 config.conflictStrategy = parseConflictStrategy(conflictStrategy)
-            }
+
             if (delay != null)
                 config.delay = delay * DELAY_MULT
+
+            if (tempDir != null)
+                config.tempDir = File(File(tempDir).canonicalPath)
         }
     }
 }
