@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    noJarCompile project(':core')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
