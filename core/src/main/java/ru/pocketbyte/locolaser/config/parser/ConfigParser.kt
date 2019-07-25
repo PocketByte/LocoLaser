@@ -80,10 +80,18 @@ open class ConfigParser
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun fromArguments(args: Array<String>?): List<Config> {
         if (args != null && args.isNotEmpty()) {
-            val configs = fromFile(File(args[0]))
 
             val argsParser = ConfigArgsParser()
             JCommander(argsParser, *args)
+
+            val file = File(File(args[0]).canonicalPath)
+            val workDir = argsParser.workDir?.let { File(File(it).canonicalPath) }
+            val configs = fromFile(file, workDir)
+
+            if (workDir == null)
+                System.setProperty("user.dir", file.parentFile.canonicalPath)
+            else
+                System.setProperty("user.dir", workDir.canonicalPath)
 
             for (config in configs)
                 argsParser.applyFor(config)
@@ -96,27 +104,44 @@ open class ConfigParser
     /**
      * Parse Config from file.
      * @param file File with JSON config.
+     * @param workDir Work directory.
      * @return Parsed config.
      * @throws InvalidConfigException if config has some logic errors or doesn't contain some required fields.
      * @throws IOException if occurs an error reading the file.
      * @throws ParseException if occurs an error parsing JSON.
      */
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
-    fun fromFile(file: File): List<Config> {
-        var file = file
+    fun fromFile(file: File, workDir: File? = null): List<Config> {
         LogUtils.info("Reading config file " + file.canonicalPath)
-        file = File(file.canonicalPath)
-        System.setProperty("user.dir", file.parentFile.canonicalPath)
+
+        val file = File(file.canonicalPath)
+
+        if (workDir != null)
+            System.setProperty("user.dir", workDir.canonicalPath)
 
         val reader = FileReader(file)
         val json = JsonParseUtils.JSON_PARSER.parse(reader)
         reader.close()
 
-        if (json is JSONObject)
+        if (json is JSONObject) {
+            if (workDir == null) JsonParseUtils.getString(json, WORK_DIR)?.let {
+                System.setProperty("user.dir", File(it).canonicalPath)
+            } ?: {
+                System.setProperty("user.dir", file.parentFile.canonicalPath)
+            }()
             return listOf(fromJsonObject(file, json))
+        }
         else if (json is JSONArray) {
             return json.indices.map { index ->
-                fromJsonObject(file, json[index] as JSONObject)
+                val jsonItem = json[index] as JSONObject
+
+                if (workDir == null) JsonParseUtils.getString(jsonItem, WORK_DIR)?.let {
+                    System.setProperty("user.dir", File(it).canonicalPath)
+                } ?: {
+                    System.setProperty("user.dir", file.parentFile.canonicalPath)
+                }()
+
+                fromJsonObject(file, jsonItem)
             }
         }
 
@@ -125,11 +150,6 @@ open class ConfigParser
 
     @Throws(IOException::class, InvalidConfigException::class)
     private fun fromJsonObject(file: File, configJson: JSONObject): Config {
-
-        val workDir = JsonParseUtils.getString(configJson, WORK_DIR, null, false)
-        if (workDir != null)
-            System.setProperty("user.dir", File(workDir).canonicalPath)
-
         val config = Config()
         config.file = file
         config.isForceImport = JsonParseUtils.getBoolean(configJson, FORCE_IMPORT, null, false)
@@ -170,6 +190,9 @@ open class ConfigParser
 
         @Parameter(names = ["-tempDir"])
         private val tempDir: String? = null
+
+        @Parameter(names = ["-workDir"])
+        val workDir: String? = null
 
         @Throws(InvalidConfigException::class)
         fun applyFor(config: Config) {

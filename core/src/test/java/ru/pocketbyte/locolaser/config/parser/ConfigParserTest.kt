@@ -308,6 +308,20 @@ class ConfigParserTest {
 
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
+    fun testArgumentWorkDir() {
+        val workDir = "./subDir"
+        val expectedTemp = File(workDir, MockPlatformConfig().defaultTempDir.path).canonicalPath
+
+        val file = prepareMockFile(null)
+
+        val configs = mConfigParser.fromArguments(
+                arrayOf(file.absolutePath, "-workDir", workDir))
+
+        assertEquals(expectedTemp, configs[0].tempDir?.canonicalPath)
+    }
+
+    @Test
+    @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testManyArguments() {
         val delay: Long = 1
 
