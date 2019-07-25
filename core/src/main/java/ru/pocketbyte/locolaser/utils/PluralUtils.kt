@@ -9,7 +9,7 @@ object PluralUtils {
     init {
         // Taken from https://www.unicode.org/cldr/charts/33/supplemental/language_plural_rules.html
         var quantities = listOf(Quantity.ONE, Quantity.OTHER)
-        arrayOf("af", "ak", "sq", "am", "hy", "as", "ast", "asa", "az", "bn", "eu", "bem", "bez", "brx", "bg",
+        arrayOf("base", "af", "ak", "sq", "am", "hy", "as", "ast", "asa", "az", "bn", "eu", "bem", "bez", "brx", "bg",
                 "ca", "tzm", "ckb", "ce", "chr", "cgg", "da", "dv", "nl", "en", "eo", "et", "ee", "fo", "fil",
                 "tl", "fi", "fr", "fur", "ff", "gl", "lg", "ka", "de", "el", "gu", "guw", "ha", "haw", "hi", "hu",
                 "is", "io", "it", "kaj", "kab", "kkj", "kl", "kn", "ks", "kk", "ku", "ky", "ln", "lb", "mk", "jmc",
