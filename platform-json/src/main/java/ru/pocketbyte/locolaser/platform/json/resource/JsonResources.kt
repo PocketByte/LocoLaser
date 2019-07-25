@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.platform.json.resource
 
 import ru.pocketbyte.locolaser.platform.json.resource.file.JsonResourceFile
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
+import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.summary.FileSummary
 
@@ -31,10 +32,13 @@ class JsonResources(resourcesDir: File, fileName: String) : AbsPlatformResources
     private fun getFileForLocale(locale: String): File {
         val localeFolder = File(directory, getLocaleDirName(locale))
         localeFolder.mkdirs()
-        return File(localeFolder, "$name.po")
+        return File(localeFolder, "$name.json")
     }
 
     private fun getLocaleDirName(locale: String): String {
-        return "$locale/LC_MESSAGES/"
+        if (PlatformResources.BASE_LOCALE == locale)
+            return "en/"
+
+        return "$locale/"
     }
 }
