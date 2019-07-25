@@ -48,7 +48,7 @@ class KotlinJsResourceFile(
 
         private const val PROPERTY_PLURAL_TEMPLATE =
                 "    public %1\$sfun %2\$s(count: Int): String {\r\n" +
-                        "        return this.i18n.t(\"%3\$s\", Plural(count))\r\n" +
+                        "        return this.i18n.t(\"%3\$s_plural\", Plural(count))\r\n" +
                         "    }\r\n"
 
         private const val MAX_LINE_SIZE = 120
