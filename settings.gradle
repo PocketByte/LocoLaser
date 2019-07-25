@@ -5,5 +5,5 @@ include 'source-googlesheet'
 include 'platform-mobile'
 include 'platform-gettext'
 include 'platform-json'
-include 'platform-kotlin-mobile'
+include 'platform-kotlin-mpp'
 
