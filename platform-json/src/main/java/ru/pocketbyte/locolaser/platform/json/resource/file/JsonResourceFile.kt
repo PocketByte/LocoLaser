@@ -110,11 +110,18 @@ class JsonResourceFile(
                 }
 
                 if (value.isHasQuantities) {
+                    var isHasAnyQuantity = false
                     value.values.forEach {
                         val index = PluralUtils.quantityIndexForLocale(it.quantity, mLocale)
-                        if (index != null)
+                        if (index != null) {
                             rootJson[keyParts.last() + PLURAL_KEY_POSTFIX + index] = it.value
+                            isHasAnyQuantity = true
+                        }
                     }
+                    if (!isHasAnyQuantity)
+                        value.valueForQuantity(Quantity.OTHER)?.value?.let {
+                            rootJson[keyParts.last() + PLURAL_KEY_POSTFIX + 0] = it
+                        }
                 } else {
                     rootJson[keyParts.last()] = value.values[0].value
                 }
