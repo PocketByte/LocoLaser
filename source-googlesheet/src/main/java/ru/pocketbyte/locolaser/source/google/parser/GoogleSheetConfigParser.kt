@@ -12,7 +12,6 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.source.google.sheet.GoogleSheetConfig
 import ru.pocketbyte.locolaser.utils.JsonParseUtils
 import ru.pocketbyte.locolaser.utils.JsonParseUtils.getString
-import java.net.MalformedURLException
 
 /**
  * @author Denis Shurygin
@@ -51,11 +50,6 @@ class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>()
 
         if (source.id?.isEmpty() != false)
             throw InvalidConfigException("\"$SOURCE.$SHEET_ID\" is not set.")
-        try {
-            source.url
-        } catch (e: MalformedURLException) {
-            throw InvalidConfigException("\"$SOURCE.$SHEET_ID\" is invalid.")
-        }
 
     }
 }

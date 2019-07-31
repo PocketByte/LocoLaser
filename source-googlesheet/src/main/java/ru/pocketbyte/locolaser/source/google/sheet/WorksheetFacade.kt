@@ -19,11 +19,11 @@ import java.net.URL
 /**
  * @author Denis Shurygin
  */
-class WorksheetFacade(
-        val service: SpreadsheetService,
-        val sheetEntry: SpreadsheetEntry,
-        val worksheetEntry: WorksheetEntry
-) {
+abstract class WorksheetFacade {
+
+    abstract val service: SpreadsheetService
+    abstract val sheetEntry: SpreadsheetEntry
+    abstract val worksheetEntry: WorksheetEntry
 
     var rowCount: Int
         get() = worksheetEntry.rowCount
