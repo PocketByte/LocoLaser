@@ -70,6 +70,9 @@ object GoogleSheetGlobalPool {
             }
 
             entriesMap[entryKey] = entry
+
+            LogUtils.info("Sheet opened: " + entry.title.plainText)
+
             entry
         }()
     }
@@ -87,16 +90,15 @@ object GoogleSheetGlobalPool {
                 throw RuntimeException(e)
             }
 
-            LogUtils.info(Integer.toString(worksheets.size) + " worksheets found.")
             if (worksheets.isEmpty()) {
+                LogUtils.info("Sheet is empty. 0 worksheets found.")
                 throw RuntimeException("ERROR: Nothing to parse!")
             } else {
                 if (title != null) {
-                    LogUtils.info("Searching worksheet with title: $title")
+                    LogUtils.info("Getting worksheet with title: $title")
                     for (entry in worksheets) {
                         if (title == entry.title.plainText) {
                             worksheet = entry
-                            LogUtils.info("Worksheet found.")
                             break
                         }
                     }

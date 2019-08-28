@@ -44,8 +44,6 @@ class GoogleSheetConfig : BaseTableSourceConfig() {
                 get() = GoogleSheetGlobalPool.getWorksheet(sheetEntry, worksheetTitle)
         }
 
-        LogUtils.info("Open sheet: " + holder.sheetEntry.title.plainText)
-
         return GoogleSheet(this, holder)
     }
 }
