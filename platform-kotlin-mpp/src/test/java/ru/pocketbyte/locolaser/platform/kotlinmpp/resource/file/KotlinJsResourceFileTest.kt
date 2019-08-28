@@ -88,7 +88,7 @@ class KotlinJsResourceFileTest {
                 "    * value1_2\r\n" +
                 "    */\r\n" +
                 "    public fun key1(count: Int): String {\r\n" +
-                "        return this.i18n.t(\"key1\", Plural(count))\r\n" +
+                "        return this.i18n.t(\"key1_plural\", Plural(count))\r\n" +
                 "    }\r\n" +
                 "\r\n" +
                 "}"

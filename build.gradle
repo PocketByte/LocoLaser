@@ -27,7 +27,7 @@ buildscript {
 allprojects {
 
     sourceCompatibility = 1.7
-    version = '1.3.0-alpha'
+    version = '1.3.0'
 
     configurations {
         // dependencies from this configuration will not be included in final jar file
@@ -52,7 +52,7 @@ task publishAll(dependsOn: test) {
 afterEvaluate {
     publishAll.dependsOn ":core:bintrayUpload"
     publishAll.dependsOn ":platform-mobile:bintrayUpload"
-    publishAll.dependsOn ":platform-kotlin-mobile:bintrayUpload"
+    publishAll.dependsOn ":platform-kotlin-mpp:bintrayUpload"
     publishAll.dependsOn ":platform-gettext:bintrayUpload"
     publishAll.dependsOn ":platform-json:bintrayUpload"
     publishAll.dependsOn ":source-googlesheet:bintrayUpload"
