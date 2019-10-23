@@ -16,7 +16,7 @@ open class MockPlatformConfig : PlatformConfig {
 
     override val type = "mock"
 
-    override val resources = MockPlatformResources(File("./"), "mock")
+    override val resources = MockPlatformResources(File("./"), "mock", null)
 
     override val defaultTempDir = File("./temp/mock/")
 }

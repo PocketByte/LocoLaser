@@ -33,7 +33,7 @@ class IosSwiftResourcesTest {
         val tableName = "somTable"
         val sourceDir = tempFolder.newFolder()
 
-        IosSwiftResources(sourceDir, className, tableName)
+        IosSwiftResources(sourceDir, className, tableName, null)
                 .write(resMap, null)
 
         val swiftFile = File(sourceDir, className + IosSwiftResources.SWIFT_FILE_EXTENSION)

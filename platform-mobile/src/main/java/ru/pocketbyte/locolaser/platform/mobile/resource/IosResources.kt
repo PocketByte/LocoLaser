@@ -16,7 +16,11 @@ import java.io.File
  *
  * @author Denis Shurygin
  */
-class IosResources(resourcesDir: File, name: String) : AbsIosStringsResources(resourcesDir, name) {
+class IosResources(
+        resourcesDir: File,
+        name: String,
+        filter: ((key: String) -> Boolean)?
+) : AbsIosStringsResources(resourcesDir, name, filter) {
 
     companion object {
         const val PLURAL_RES_FILE_EXTENSION = ".stringsdict"

@@ -21,6 +21,6 @@ class IosPlistPlatformConfig : BasePlatformConfig() {
     override val defaultResourceName = "InfoPlist"
 
     override val resources
-        get() = IosPlistResources(resourcesDir!!, resourceName!!)
+        get() = IosPlistResources(resourcesDir!!, resourceName!!, filter)
 
 }

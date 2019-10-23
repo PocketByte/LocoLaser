@@ -29,6 +29,6 @@ class JsonPlatformConfig : BasePlatformConfig() {
     override val type = TYPE
 
     override val resources: PlatformResources
-        get() = JsonResources(resourcesDir!!, resourceName!!)
+        get() = JsonResources(resourcesDir!!, resourceName!!, filter)
 
 }

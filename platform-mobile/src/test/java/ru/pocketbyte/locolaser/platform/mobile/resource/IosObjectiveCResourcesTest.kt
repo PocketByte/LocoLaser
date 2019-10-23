@@ -33,7 +33,7 @@ class IosObjectiveCResourcesTest {
         val tableName = "somAnotherTable"
         val sourceDir = tempFolder.newFolder()
 
-        IosObjectiveCResources(sourceDir, className, tableName)
+        IosObjectiveCResources(sourceDir, className, tableName, null)
                 .write(resMap, null)
 
         val objcHFile = File(sourceDir, className + IosObjectiveCResources.OBJC_H_FILE_EXTENSION)

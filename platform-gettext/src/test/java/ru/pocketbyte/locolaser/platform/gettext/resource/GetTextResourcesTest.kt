@@ -20,7 +20,7 @@ class GetTextResourcesTest {
     fun testWriteAndRead() {
         val resMap1 = prepareResMap()
 
-        val resources = GetTextResources(tempFolder.newFolder(), "test")
+        val resources = GetTextResources(tempFolder.newFolder(), "test", null)
         resources.write(resMap1, null)
 
         val resMap2 = resources.read(resMap1.keys)

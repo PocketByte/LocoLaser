@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.resource
 
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -18,9 +19,6 @@ import java.io.File
 import java.io.IOException
 import java.util.Arrays
 import java.util.HashSet
-
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 
 /**
  * @author Denis Shurygin
@@ -40,7 +38,7 @@ class AbsPlatformResourcesTest {
 
     @Test
     fun testConstructor() {
-        val resources = MockPlatformResources(resFolder!!, NAME)
+        val resources = MockPlatformResources(resFolder!!, NAME, null)
 
         assertEquals(NAME, resources.name)
         assertEquals(resFolder, resources.directory)
@@ -51,7 +49,7 @@ class AbsPlatformResourcesTest {
         val res1 = MockResourceFile(prepareResMap1())
         val res2 = MockResourceFile(prepareResMap2())
 
-        val resources = object : MockPlatformResources(resFolder!!, NAME) {
+        val resources = object : MockPlatformResources(resFolder!!, NAME, null) {
             override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
                 return arrayOf(res1, res2)
             }
@@ -71,7 +69,7 @@ class AbsPlatformResourcesTest {
         val res1 = MockResourceFile(null)
         val res2 = MockResourceFile(null)
 
-        val resources = object : MockPlatformResources(resFolder!!, NAME) {
+        val resources = object : MockPlatformResources(resFolder!!, NAME, null) {
             override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
                 return arrayOf(res1, res2)
             }
@@ -80,6 +78,24 @@ class AbsPlatformResourcesTest {
         resources.write(map, null)
         assertTrue(map === res1.map)
         assertTrue(map === res2.map)
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteFiltered() {
+        val map = ResMap()
+        val res = MockResourceFile(null)
+
+        val filter: ((key: String) -> Boolean)? = { it.contains("1") }
+        val resources = object : MockPlatformResources(resFolder!!, NAME, filter) {
+            override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
+                return arrayOf(res)
+            }
+        }
+
+        resources.write(map, null)
+        assertNotSame(map, res.map)
+        assertEquals(map.filter(filter), res.map)
     }
 
     private val allLocales: Set<String>
@@ -132,7 +148,6 @@ class AbsPlatformResourcesTest {
     }
 
     companion object {
-
-        private val NAME = "name"
+        private const val NAME = "name"
     }
 }

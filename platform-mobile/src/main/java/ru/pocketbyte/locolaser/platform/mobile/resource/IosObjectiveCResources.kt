@@ -10,8 +10,9 @@ import java.io.File
 class IosObjectiveCResources(
         resourcesDir: File,
         name: String,
-        tableName: String?
-) : IosBaseClassResources(resourcesDir, name, tableName) {
+        tableName: String?,
+        filter: ((key: String) -> Boolean)?
+) : IosBaseClassResources(resourcesDir, name, tableName, filter) {
 
     companion object {
         const val OBJC_H_FILE_EXTENSION = ".h"

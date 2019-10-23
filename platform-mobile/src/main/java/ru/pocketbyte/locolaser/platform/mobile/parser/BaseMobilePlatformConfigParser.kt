@@ -12,6 +12,7 @@ abstract class BaseMobilePlatformConfigParser : PlatformConfigParser<BasePlatfor
     companion object {
         const val RESOURCE_NAME = "res_name"
         const val RESOURCES_DIR = "res_dir"
+        const val FILTER = "filter"
     }
 
     /**
@@ -54,6 +55,9 @@ abstract class BaseMobilePlatformConfigParser : PlatformConfigParser<BasePlatfor
 
         platform.resourcesDir = JsonParseUtils.getFile(
                 platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false)
+
+        platform.filter = BasePlatformConfig.regExFilter(
+                JsonParseUtils.getString(platformJSON, FILTER, ConfigParser.PLATFORM, false))
 
         return platform
     }

@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.resource
 
 import ru.pocketbyte.locolaser.config.WritingConfig
 import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.entity.filter
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 
 import java.io.File
@@ -19,7 +20,9 @@ abstract class AbsPlatformResources(
         /** Resource directory path. */
         val directory: File,
         /** Resource name. */
-        val name: String
+        val name: String,
+        /** Resource name. */
+        private val filter: ((key: String) -> Boolean)?
 ) : PlatformResources {
 
     protected abstract fun getResourceFiles(locales: Set<String>): Array<ResourceFile>?
@@ -34,8 +37,9 @@ abstract class AbsPlatformResources(
 
     @Throws(IOException::class)
     override fun write(map: ResMap, writingConfig: WritingConfig?) {
-        getResourceFiles(map.keys)?.forEach {
-            it.write(map, writingConfig)
+        val filteredMap = map.filter(filter)
+        getResourceFiles(filteredMap.keys)?.forEach {
+            it.write(filteredMap, writingConfig)
         }
     }
 }

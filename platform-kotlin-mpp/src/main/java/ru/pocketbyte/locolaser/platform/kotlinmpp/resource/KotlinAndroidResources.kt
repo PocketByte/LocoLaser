@@ -8,8 +8,9 @@ import java.io.File
 class KotlinAndroidResources(
         dir: File,
         name: String,
-        interfaceName: String
-) : AbsKotlinImplementationPlatformResources(dir, name, interfaceName) {
+        interfaceName: String,
+        filter: ((key: String) -> Boolean)?
+) : AbsKotlinImplementationPlatformResources(dir, name, interfaceName, filter) {
 
     override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
         return arrayOf(KotlinAndroidResourceFile(file,

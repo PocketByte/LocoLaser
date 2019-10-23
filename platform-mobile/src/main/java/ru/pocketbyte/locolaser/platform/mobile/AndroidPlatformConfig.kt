@@ -26,6 +26,6 @@ class AndroidPlatformConfig : BasePlatformConfig() {
     override val defaultResourceName = "strings"
 
     override val resources
-        get() = AndroidResources(this.resourcesDir!!, resourceName!!)
+        get() = AndroidResources(this.resourcesDir!!, resourceName!!, filter)
 
 }

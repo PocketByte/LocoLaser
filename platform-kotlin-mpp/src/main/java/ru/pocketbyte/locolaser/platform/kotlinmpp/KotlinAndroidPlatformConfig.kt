@@ -15,6 +15,6 @@ class KotlinAndroidPlatformConfig : KotlinBaseImplPlatformConfig() {
     override val defaultInterfaceName = "ru.pocketbyte.locolaser.kmpp.StringRepository"
 
     override val resources
-        get() = KotlinAndroidResources(resourcesDir!!, resourceName!!, interfaceName!!)
+        get() = KotlinAndroidResources(resourcesDir!!, resourceName!!, interfaceName!!, filter)
 
 }

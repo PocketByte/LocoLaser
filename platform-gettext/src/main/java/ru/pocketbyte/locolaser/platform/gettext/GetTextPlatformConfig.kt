@@ -29,6 +29,6 @@ class GetTextPlatformConfig : BasePlatformConfig() {
     override val type = TYPE
 
     override val resources: PlatformResources
-        get() = GetTextResources(resourcesDir!!, resourceName!!)
+        get() = GetTextResources(resourcesDir!!, resourceName!!, filter)
 
 }

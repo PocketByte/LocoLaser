@@ -36,3 +36,16 @@ class ResMap() : HashMap<String, ResLocale>() {
         return this
     }
 }
+
+fun ResMap.filter(filter: ((key: String) -> Boolean)?): ResMap {
+    if (filter == null)
+        return this
+
+    val newResMap = ResMap()
+
+    this.forEach { (key, resLocale) ->
+        newResMap[key] = resLocale.filter(filter)
+    }
+
+    return newResMap
+}

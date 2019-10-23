@@ -6,7 +6,11 @@ import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 
-class IosPlistResources(resourcesDir: File, name: String) : AbsIosStringsResources(resourcesDir, name) {
+class IosPlistResources(
+        resourcesDir: File,
+        name: String,
+        filter: ((key: String) -> Boolean)?
+) : AbsIosStringsResources(resourcesDir, name, filter) {
 
     override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
         val localesArray = locales.toTypedArray()

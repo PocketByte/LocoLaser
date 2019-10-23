@@ -6,8 +6,7 @@
 package ru.pocketbyte.locolaser.platform.mobile.parser
 
 import org.json.simple.JSONObject
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -18,7 +17,6 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.platform.mobile.AndroidPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.IosPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.IosPlistPlatformConfig
-import ru.pocketbyte.locolaser.platform.mobile.IosSwiftPlatformConfig
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 import java.io.File
 import java.io.IOException
@@ -84,6 +82,7 @@ class MobilePlatformConfigParserTest {
         assertNotNull(config)
         assertEquals(AndroidPlatformConfig::class.java, config!!.javaClass)
 
+        assertNull(config.filter)
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
                 config.resourcesDir!!.canonicalPath)
@@ -119,6 +118,21 @@ class MobilePlatformConfigParserTest {
         testPlatformConfigResource(AndroidPlatformConfig.TYPE)
         testPlatformConfigResource(IosPlatformConfig.TYPE)
         testPlatformConfigResource(IosPlistPlatformConfig.TYPE)
+    }
+
+    @Test
+    @Throws(InvalidConfigException::class, IOException::class)
+    fun testFilter() {
+        val json = prepareTestPlatformJson(AndroidPlatformConfig.TYPE).apply {
+            this[BaseMobilePlatformConfigParser.FILTER] = "test_filter"
+        }
+
+        val config = parser!!.parse(json, true)
+
+        assertNotNull(config)
+        assertEquals(AndroidPlatformConfig::class.java, config!!.javaClass)
+
+        assertNotNull(config.filter)
     }
 
     private fun testPlatformConfigResource(platform: String) {

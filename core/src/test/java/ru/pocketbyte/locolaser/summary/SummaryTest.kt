@@ -172,7 +172,7 @@ class SummaryTest {
         config.tempDir = tempFolder.newFolder()
         config.platform = MockPlatformResources(
                 File(System.getProperty("user.dir"), "temp/"),
-                "mock") as? PlatformConfig
+                "mock", null) as? PlatformConfig
 
         val jsonString = (JSON_PARSER.parse("{" +
                 "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(config.file).toJson() + "," +

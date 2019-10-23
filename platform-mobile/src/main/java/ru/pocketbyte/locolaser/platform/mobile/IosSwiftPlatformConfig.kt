@@ -11,6 +11,6 @@ class IosSwiftPlatformConfig : IosBaseClassPlatformConfig() {
 
     override val type = TYPE
     override val resources
-        get() = IosSwiftResources(resourcesDir!!, resourceName!!, tableName)
+        get() = IosSwiftResources(resourcesDir!!, resourceName!!, tableName, filter)
 
 }

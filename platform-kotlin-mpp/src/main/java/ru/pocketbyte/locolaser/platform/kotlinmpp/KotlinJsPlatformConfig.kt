@@ -15,6 +15,6 @@ class KotlinJsPlatformConfig : KotlinBaseImplPlatformConfig() {
     override val defaultInterfaceName = "ru.pocketbyte.locolaser.kmpp.StringRepository"
 
     override val resources
-        get() = KotlinJsResources(resourcesDir!!, resourceName!!, interfaceName!!)
+        get() = KotlinJsResources(resourcesDir!!, resourceName!!, interfaceName!!, filter)
 
 }

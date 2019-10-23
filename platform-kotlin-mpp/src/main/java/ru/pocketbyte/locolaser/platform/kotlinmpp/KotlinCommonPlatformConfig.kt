@@ -16,6 +16,6 @@ class KotlinCommonPlatformConfig : BasePlatformConfig() {
     override val defaultResourceName  = "ru.pocketbyte.locolaser.kmpp.StringRepository"
 
     override val resources
-        get() = KotlinCommonResources(resourcesDir!!, resourceName!!)
+        get() = KotlinCommonResources(resourcesDir!!, resourceName!!, filter)
 
 }

@@ -7,8 +7,9 @@ import java.io.File
 
 abstract class AbsIosStringsResources(
         resourcesDir: File,
-        name: String
-) : AbsPlatformResources(resourcesDir, name) {
+        name: String,
+        filter: ((key: String) -> Boolean)?
+) : AbsPlatformResources(resourcesDir, name, filter) {
 
     companion object {
         const val RES_FILE_EXTENSION = ".strings"

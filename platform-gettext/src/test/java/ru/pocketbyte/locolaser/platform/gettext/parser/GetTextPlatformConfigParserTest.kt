@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.platform.gettext.parser
 
 import org.json.simple.JSONObject
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -12,8 +13,6 @@ import java.io.File
 import java.io.IOException
 import java.util.ArrayList
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.platform.gettext.GetTextPlatformConfig
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
@@ -57,6 +56,7 @@ class GetTextPlatformConfigParserTest {
         assertNotNull(config)
         assertEquals(GetTextPlatformConfig::class.java, config!!.javaClass)
 
+        assertNull(config.filter)
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
                 config.resourcesDir!!.canonicalPath)
@@ -95,6 +95,16 @@ class GetTextPlatformConfigParserTest {
 
         assertEquals("test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)
+    }
+
+    @Test
+    @Throws(InvalidConfigException::class, IOException::class)
+    fun testFilter() {
+        val json = prepareTestPlatformJson().apply {
+            this[GetTextPlatformConfigParser.FILTER] = "test_filter"
+        }
+
+        assertNotNull(parser!!.parse(json, true)?.filter)
     }
 
     private fun prepareTestPlatformJson(): JSONObject {

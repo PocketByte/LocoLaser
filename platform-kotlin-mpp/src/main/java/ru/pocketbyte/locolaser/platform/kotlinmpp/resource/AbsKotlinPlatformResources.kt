@@ -8,8 +8,9 @@ import java.io.File
 
 abstract class AbsKotlinPlatformResources(
         dir: File,
-        name: String
-) : AbsPlatformResources(dir, name) {
+        name: String,
+        filter: ((key: String) -> Boolean)?
+) : AbsPlatformResources(dir, name, filter) {
 
     companion object {
         const val KOTLIN_FILE_EXTENSION = ".kt"

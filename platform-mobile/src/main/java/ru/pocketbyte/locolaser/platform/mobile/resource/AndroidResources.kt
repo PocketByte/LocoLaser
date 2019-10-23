@@ -16,7 +16,11 @@ import java.io.File
 /**
  * @author Denis Shurygin
  */
-class AndroidResources(resourcesDir: File, fileName: String) : AbsPlatformResources(resourcesDir, fileName) {
+class AndroidResources(
+        resourcesDir: File,
+        fileName: String,
+        filter: ((key: String) -> Boolean)?
+) : AbsPlatformResources(resourcesDir, fileName, filter) {
 
     override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
         val localesArray = locales.toTypedArray()

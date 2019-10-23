@@ -5,8 +5,9 @@ import java.io.File
 abstract class AbsKotlinImplementationPlatformResources(
         dir: File,
         name: String,
-        interfaceName: String?
-) : AbsKotlinPlatformResources(dir, name) {
+        interfaceName: String?,
+        filter: ((key: String) -> Boolean)?
+) : AbsKotlinPlatformResources(dir, name, filter) {
 
     val interfaceName: String?
     val interfacePackage: String?

@@ -22,6 +22,7 @@ class JsonPlatformConfigParser : PlatformConfigParser<BasePlatformConfig> {
     companion object {
         const val RESOURCE_NAME = "res_name"
         const val RESOURCES_DIR = "res_dir"
+        const val FILTER = "filter"
     }
 
     @Throws(InvalidConfigException::class)
@@ -40,6 +41,9 @@ class JsonPlatformConfigParser : PlatformConfigParser<BasePlatformConfig> {
 
                 platform.resourcesDir = JsonParseUtils.getFile(
                         platformObject, RESOURCES_DIR, PLATFORM, false)
+
+                platform.filter = BasePlatformConfig.regExFilter(
+                        getString(platformObject, FILTER, PLATFORM, false))
 
                 return platform
             }

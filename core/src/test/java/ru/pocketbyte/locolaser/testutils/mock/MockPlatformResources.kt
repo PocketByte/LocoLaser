@@ -6,7 +6,11 @@ import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 
-open class MockPlatformResources(resourcesDir: File, name: String) : AbsPlatformResources(resourcesDir, name) {
+open class MockPlatformResources(
+        resourcesDir: File,
+        name: String,
+        filter: ((key: String) -> Boolean)?
+) : AbsPlatformResources(resourcesDir, name, filter) {
 
     override fun getResourceFiles(locales: Set<String>): Array<ResourceFile>? {
         return null

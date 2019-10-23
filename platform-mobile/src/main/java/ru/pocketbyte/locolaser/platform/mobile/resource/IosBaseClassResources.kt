@@ -7,8 +7,9 @@ import java.io.File
 abstract class IosBaseClassResources(
         resourcesDir: File,
         name: String,
-        tableName: String?
-) : AbsPlatformResources(resourcesDir, name) {
+        tableName: String?,
+        filter: ((key: String) -> Boolean)?
+) : AbsPlatformResources(resourcesDir, name, filter) {
 
     var tableName: String? = null
         get() = field ?: defaultTableName

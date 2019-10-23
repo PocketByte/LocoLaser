@@ -72,13 +72,13 @@ class PlatformSetResourcesTest {
     private fun prepareResources(res1: ResourceFile, res2: ResourceFile): PlatformSetResources {
         val set = LinkedHashSet<PlatformResources>(2)
 
-        set.add(object : MockPlatformResources(resFolder!!, "resource1") {
+        set.add(object : MockPlatformResources(resFolder!!, "resource1", null) {
             override fun getResourceFiles(locales: Set<String>): Array<ResourceFile>? {
                 return arrayOf(res1)
             }
         })
 
-        set.add(object : MockPlatformResources(resFolder!!, "resource2") {
+        set.add(object : MockPlatformResources(resFolder!!, "resource2", null) {
             override fun getResourceFiles(locales: Set<String>): Array<ResourceFile>? {
                 return arrayOf(res2)
             }

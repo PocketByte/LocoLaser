@@ -23,7 +23,7 @@ class AndroidResourcesTest {
     fun testWriteAndRead() {
         val resMap1 = prepareResMap()
 
-        val resources = AndroidResources(tempFolder.newFolder(), "test")
+        val resources = AndroidResources(tempFolder.newFolder(), "test", null)
         resources.write(resMap1, null)
 
         val resMap2 = resources.read(resMap1.keys)

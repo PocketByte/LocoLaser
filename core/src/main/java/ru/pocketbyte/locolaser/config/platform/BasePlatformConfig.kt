@@ -9,6 +9,7 @@ import ru.pocketbyte.locolaser.config.Config
 
 import java.io.File
 import java.io.IOException
+import java.util.regex.Pattern
 
 /**
  * Base implementation of PlatformConfig.
@@ -19,6 +20,18 @@ import java.io.IOException
  * Construct new Platform object.
  */
 abstract class BasePlatformConfig : Config.Child(), PlatformConfig {
+
+    companion object {
+        fun regExFilter(filter: String?): ((key: String) -> Boolean)? {
+            if (filter == null)
+                return null
+
+            val matcher = Pattern.compile(filter).matcher("")
+            return {
+                matcher.reset(it).find()
+            }
+        }
+    }
 
     /**
      * Resource name or null if should be used default name.
@@ -42,6 +55,8 @@ abstract class BasePlatformConfig : Config.Child(), PlatformConfig {
             }
             return field
         }
+
+    var filter: ((key: String) -> Boolean)? = null
 
     // =================================================================================================================
     // ========= Interface properties =====================================================================================

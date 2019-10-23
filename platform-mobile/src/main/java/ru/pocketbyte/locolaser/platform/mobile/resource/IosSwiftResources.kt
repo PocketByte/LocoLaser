@@ -9,8 +9,9 @@ import java.io.File
 class IosSwiftResources(
         resourcesDir: File,
         name: String,
-        tableName: String?
-) : IosBaseClassResources(resourcesDir, name, tableName) {
+        tableName: String?,
+        filter: ((key: String) -> Boolean)?
+) : IosBaseClassResources(resourcesDir, name, tableName, filter) {
 
     companion object {
         const val SWIFT_FILE_EXTENSION = ".swift"
