@@ -34,6 +34,11 @@ abstract class BaseTableSourceConfig : Config.Child(), SourceConfig {
      */
     var commentColumn: String? = null
 
+    /**
+     * Title of the column that contain meta data quantity.
+     */
+    var metadataColumn: String? = null
+
     override val locales: Set<String>
         get() = localeColumns ?: emptySet()
 

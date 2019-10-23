@@ -27,6 +27,7 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceCo
         const val COLUMN_QUANTITY = "column_quantity"
         const val COLUMN_LOCALES = "column_locales"
         const val COLUMN_COMMENT = "column_comment"
+        const val COLUMN_METADATA = "column_metadata"
     }
 
     /**
@@ -91,6 +92,7 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceCo
         source.keyColumn = JsonParseUtils.getString(configJson, COLUMN_KEY, SOURCE, true)
         source.quantityColumn = JsonParseUtils.getString(configJson, COLUMN_QUANTITY, SOURCE, false)
         source.commentColumn = JsonParseUtils.getString(configJson, COLUMN_COMMENT, SOURCE, false)
+        source.metadataColumn = JsonParseUtils.getString(configJson, COLUMN_METADATA, SOURCE, false)
 
         val locales = JsonParseUtils.getStrings(configJson, COLUMN_LOCALES, SOURCE, true)
         if (locales != null)

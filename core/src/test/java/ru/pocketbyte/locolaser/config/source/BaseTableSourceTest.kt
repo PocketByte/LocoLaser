@@ -21,12 +21,27 @@ import ru.pocketbyte.locolaser.resource.PlatformResources
  */
 class BaseTableSourceTest {
 
+
+    @Test
+    fun testParseMetaData() {
+        assertEquals(mapOf(Pair("format", "123")), BaseTableSource.parseMeta("format=123"))
+        assertEquals(mapOf(Pair("data", "@$%")), BaseTableSource.parseMeta("data=@$%"))
+        assertEquals(mapOf(Pair("meta_1", "some value"), Pair("meta_2", "another value")), BaseTableSource.parseMeta("meta_1=some value;meta_2=another value"))
+
+        // Ignore wrong parts
+        assertEquals(mapOf(Pair("CDATA", "true")), BaseTableSource.parseMeta("CDATA=true;meta_data_2"))
+        assertEquals(mapOf(Pair("CDATA", "false")), BaseTableSource.parseMeta("wrong;CDATA=false;data"))
+        assertNull(BaseTableSource.parseMeta("CDATA~false"))
+        assertNull(BaseTableSource.parseMeta("CDATA;"))
+        assertNull(BaseTableSource.parseMeta(""))
+    }
+
     @Test
     @Throws(Exception::class)
     fun testReadNoQuantity() {
         val dataSet = MockDataSet(arrayOf("en", "ru"))
-        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"))
-        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"))
+        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"), null)
+        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), null)
 
         val sourceConfig = BaseTableSourceConfigImpl(dataSet)
         sourceConfig.keyColumn = "key"
@@ -78,9 +93,9 @@ class BaseTableSourceTest {
     @Throws(Exception::class)
     fun testReadQuantity() {
         val dataSet = MockDataSet(arrayOf("en"))
-        dataSet.add("key1", null, null, arrayOf("value1"))
-        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2"))
-        dataSet.add("key2", Quantity.FEW.toString(), "Some comment", arrayOf("value"))
+        dataSet.add("key1", null, null, arrayOf("value1"), null)
+        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2"), null)
+        dataSet.add("key2", Quantity.FEW.toString(), "Some comment", arrayOf("value"), null)
 
         val sourceConfig = BaseTableSourceConfigImpl(dataSet)
         sourceConfig.keyColumn = "key"
@@ -112,9 +127,9 @@ class BaseTableSourceTest {
     @Throws(Exception::class)
     fun testReadMissedValues() {
         val dataSet = MockDataSet(arrayOf("en", "ru"))
-        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", null))
-        dataSet.add("key1", null, null, arrayOf("value1", "value2"))
-        dataSet.add("key2", Quantity.FEW.toString(), "Some comment", arrayOf(null, "value"))
+        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", null), null)
+        dataSet.add("key1", null, null, arrayOf("value1", "value2"), null)
+        dataSet.add("key2", Quantity.FEW.toString(), "Some comment", arrayOf(null, "value"), null)
 
         val sourceConfig = BaseTableSourceConfigImpl(dataSet)
         sourceConfig.keyColumn = "key"
@@ -155,9 +170,9 @@ class BaseTableSourceTest {
     @Throws(Exception::class)
     fun testReadCellLocations() {
         val dataSet = MockDataSet(arrayOf("en", "ru"))
-        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"))
-        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"))
-        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"))
+        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"), null)
+        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"), null)
+        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), null)
 
         val sourceConfig = BaseTableSourceConfigImpl(dataSet)
         sourceConfig.keyColumn = "key"
@@ -188,9 +203,9 @@ class BaseTableSourceTest {
     @Test
     fun testReadDefaultLocale1() {
         val dataSet = MockDataSet(arrayOf("en", "ru"))
-        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"))
-        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"))
-        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"))
+        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"), null)
+        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"), null)
+        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), null)
 
         val sourceConfig = BaseTableSourceConfigImpl(dataSet)
         sourceConfig.keyColumn = "key"
@@ -208,9 +223,9 @@ class BaseTableSourceTest {
     @Test
     fun testReadDefaultLocale2() {
         val dataSet = MockDataSet(arrayOf("true_base", "ru"))
-        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"))
-        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"))
-        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"))
+        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"), null)
+        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"), null)
+        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), null)
 
         val sourceConfig = BaseTableSourceConfigImpl(dataSet)
         sourceConfig.keyColumn = "key"
@@ -223,6 +238,48 @@ class BaseTableSourceTest {
         val baseLocale = result.items?.get(PlatformResources.BASE_LOCALE)!!
         assertEquals(expectLocale, baseLocale)
         assertNotSame(expectLocale, baseLocale)
+    }
+
+    @Test
+    fun testReadMetaData() {
+        val locales = arrayOf("base", "ru")
+        val dataSet = MockDataSet(locales)
+        dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"), "meta_1=data")
+        dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"), "invalid meta")
+        dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), "format=1;case=UPPER")
+
+        val sourceConfig = BaseTableSourceConfigImpl(dataSet)
+        sourceConfig.keyColumn = "key"
+        sourceConfig.localeColumns = HashSet(locales.asList())
+
+        val source = sourceConfig.open()
+        val result = source!!.read()
+
+        val expectedMap = ResMap().apply {
+            val meta1 = mapOf(Pair("meta_1", "data"))
+            val meta2 = mapOf(Pair("format", "1"), Pair("case", "UPPER"))
+
+            put("base", ResLocale().apply {
+                put(ResItem("key1").apply {
+                    addValue(ResValue("value1_1", null, Quantity.OTHER, meta1))
+                    addValue(ResValue("value2", "Some comment", Quantity.ZERO, null))
+                })
+                put(ResItem("key2").apply {
+                    addValue(ResValue("value2_1", "Some comment", Quantity.OTHER, meta2))
+                })
+            })
+            put("ru", ResLocale().apply {
+                put(ResItem("key1").apply {
+                    addValue(ResValue("value1_2", null, Quantity.OTHER, meta1))
+                    addValue(ResValue("value1_2", "Some comment", Quantity.ZERO, null))
+                })
+                put(ResItem("key2").apply {
+                    addValue(ResValue("value2_2", "Some comment", Quantity.OTHER, meta2))
+                })
+            })
+        }
+
+        assertEquals(expectedMap, result.items)
     }
 
     @Throws(Exception::class)

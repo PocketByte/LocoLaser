@@ -22,7 +22,10 @@ import java.util.*
 /**
  * @author Denis Shurygin
  */
-class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheetFacade: WorksheetFacade) : BaseTableSource(mConfig) {
+class GoogleSheet(
+        private val mConfig: GoogleSheetConfig,
+        private val mWorksheetFacade: WorksheetFacade
+) : BaseTableSource(mConfig) {
 
     companion object {
 
@@ -299,6 +302,7 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
             var quantity = -1
             var comment = -1
             val locales = HashMap<String, Int>()
+            var metadata = -1
 
             val titleRowFeed: CellFeed?
             try {
@@ -319,12 +323,18 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
             key = cellEntry.cell.col
 
             cellEntry = findCellByValue(titleRowFeed, sourceConfig.quantityColumn)
-            if (cellEntry != null)
+            if (cellEntry != null) {
                 quantity = cellEntry.cell.col
+            } else if (sourceConfig.quantityColumn != null) {
+                LogUtils.warn("Column ${sourceConfig.quantityColumn} not found.")
+            }
 
             cellEntry = findCellByValue(titleRowFeed, sourceConfig.commentColumn)
-            if (cellEntry != null)
+            if (cellEntry != null) {
                 comment = cellEntry.cell.col
+            } else if (sourceConfig.commentColumn != null) {
+                LogUtils.warn("Column ${sourceConfig.commentColumn} not found.")
+            }
 
             for (locale in sourceConfig.localeColumns!!) {
                 cellEntry = findCellByValue(titleRowFeed, locale)
@@ -334,7 +344,16 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
                 } else
                     locales[locale] = cellEntry.cell.col
             }
-            mColumnIndexes = ColumnIndexes(key, quantity, comment, locales)
+
+            cellEntry = findCellByValue(titleRowFeed, sourceConfig.metadataColumn)
+            if (cellEntry != null) {
+                metadata = cellEntry.cell.col
+            } else if (sourceConfig.metadataColumn != null) {
+                LogUtils.warn("Column ${sourceConfig.metadataColumn} not found.")
+            }
+
+            mColumnIndexes = ColumnIndexes(key, quantity, comment, locales, metadata)
+            LogUtils.info("Column Indexes: $mColumnIndexes")
 
             mRowsCount = try {
                 val list = mWorksheetFacade
@@ -368,7 +387,7 @@ class GoogleSheet(private val mConfig: GoogleSheetConfig, private val mWorksheet
     private fun getCell(col: Int, row: Int): CellEntry? {
         if (fetchCellsIfNeeded()) {
             val index = entryIndex(col, row, mTitleRow)
-            if (index < mQuery!!.entries.size)
+            if (index >= 0 && index < mQuery!!.entries.size)
                 return mQuery!!.entries[index]
         }
         return null

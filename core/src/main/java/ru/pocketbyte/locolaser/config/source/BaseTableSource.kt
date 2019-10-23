@@ -9,14 +9,34 @@ import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.utils.LogUtils
 import ru.pocketbyte.locolaser.utils.PluralUtils
-import ru.pocketbyte.locolaser.utils.TextUtils
+import java.lang.StringBuilder
 
 import java.util.ArrayList
+import kotlin.math.max
 
 /**
  * @author Denis Shurygin
  */
 abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sourceConfig) {
+
+    companion object {
+
+        fun parseMeta(metaString: String?): Map<String, String>? {
+            if (metaString == null || metaString.isBlank()) {
+                return null
+            } else {
+                LogUtils.warn("Meta Data: ${metaString}")
+                val metadata = mutableMapOf<String, String>()
+                metaString.split(";").forEach {
+                    val metaParts = it.split("=")
+                    if (metaParts.count() == 2) {
+                        metadata[metaParts[0].trim()] = metaParts[1].trim()
+                    }
+                }
+                return if (metadata.isNotEmpty()) metadata else null
+            }
+        }
+    }
 
     abstract val firstRow: Int
     abstract val rowsCount: Int
@@ -35,9 +55,13 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
         while (rowsCount >= row) {
             val key = getValue(columnIndexes.key, row)
             if (key?.isNotEmpty() == true) {
-                var comment: String? = null
-                if (columnIndexes.comment > 0)
-                    comment = getValue(columnIndexes.comment, row)
+                val comment: String? = if (columnIndexes.comment > 0) {
+                    getValue(columnIndexes.comment, row)
+                } else { null }
+
+                val metadata = if (columnIndexes.metadata > 0) {
+                    parseMeta(getValue(columnIndexes.metadata, row))
+                } else { null }
 
                 for (locale in sourceConfig.locales) {
 
@@ -64,7 +88,7 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
                                 itemMap?.put(item)
                             }
 
-                            val resValue = ResValue(sourceValueToValue(value), comment, quantity)
+                            val resValue = ResValue(sourceValueToValue(value), comment, quantity, metadata)
                             resValue.location = CellLocation(this, localeCol, row)
                             item.addValue(resValue)
                         } else {
@@ -108,7 +132,12 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
 
     class CellLocation(source: Source, val col: Int, val row: Int) : Source.ValueLocation(source)
 
-    class ColumnIndexes(val key: Int, val quantity: Int, val comment: Int, val locales: Map<String, Int>) {
+    class ColumnIndexes(
+            val key: Int,
+            val quantity: Int,
+            val comment: Int,
+            val locales: Map<String, Int>,
+            val metadata: Int) {
 
         val max: Int
         val min: Int
@@ -118,11 +147,11 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
             var max = -1
             var min = -1
             for (index in locales.values) {
-                max = Math.max(max, index)
+                max = max(max, index)
                 min = min(min, index)
             }
-            this.max = Math.max(Math.max(max, Math.max(key, comment)), 1)
-            this.min = Math.max(min(min, min(key, comment)), 1)
+            this.max = max(max(max, max(max(key, comment), metadata)), 1)
+            this.min = max(min(min, min(min(key, comment), metadata)), 1)
         }
 
         private fun min(a: Int, b: Int): Int {
@@ -132,6 +161,16 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
                 else
                     Math.min(a, b)
             } else a
+        }
+
+        override fun toString(): String {
+            return StringBuilder().apply {
+                append("key=").append(key).append(", ")
+                append("quantity=").append(quantity).append(", ")
+                append("comment=").append(comment).append(", ")
+                append("locales=[").append(locales.entries.joinToString { "${it.key}:${it.value}" }).append("], ")
+                append("metadata=").append(metadata).append("")
+            }.toString()
         }
     }
 }
