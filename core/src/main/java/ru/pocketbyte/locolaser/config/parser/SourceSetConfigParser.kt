@@ -6,7 +6,7 @@ import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.SOURCE
 import ru.pocketbyte.locolaser.config.source.SourceConfig
 import ru.pocketbyte.locolaser.config.source.SourceSetConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.utils.JsonParseUtils.getString
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 
 import java.util.LinkedHashSet
 

@@ -61,6 +61,35 @@ class JsonResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testSaveOrderWhenRead() {
+        val testLocale = "ru"
+        val testFile1 = prepareTestFile(
+                "{\r\n" +
+                        "    \"string1\":\"Value1\",\r\n" +
+                        "    \"string2\":\"Value2\",\r\n" +
+                        "    \"string3\":\"Value3\"\r\n" +
+                        "}")
+
+        assertEquals(
+            listOf("string1", "string2", "string3"),
+            JsonResourceFile(testFile1, testLocale).read()!![testLocale]!!.keys.map { it }
+        )
+
+        val testFile2 = prepareTestFile(
+                "{\r\n" +
+                        "    \"string3\":\"Value1\",\r\n" +
+                        "    \"string2\":\"Value2\",\r\n" +
+                        "    \"string1\":\"Value3\"\r\n" +
+                        "}")
+
+        assertEquals(
+            listOf("string3", "string2", "string1"),
+            JsonResourceFile(testFile2, testLocale).read()!![testLocale]!!.keys.map { it }
+        )
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testReadPlural() {
         val testLocale = "ru"
         val testFile = prepareTestFile(
@@ -119,6 +148,48 @@ class JsonResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testSaveOrderWhenWrite() {
+        val testLocale = "ru"
+
+        val testFile1 = tempFolder.newFile()
+
+        JsonResourceFile(testFile1, testLocale).write(
+            ResMap().apply {
+                this[testLocale] = ResLocale().apply {
+                    put(prepareResItem("key1", arrayOf(ResValue("v", null))))
+                    put(prepareResItem("key2", arrayOf(ResValue("v", null))))
+                    put(prepareResItem("key3", arrayOf(ResValue("v", null))))
+                }
+            },
+            null
+        )
+
+        assertEquals(
+            "{\"key1\":\"v\",\"key2\":\"v\",\"key3\":\"v\"}",
+            readFile(testFile1)
+        )
+
+        val testFile2 = tempFolder.newFile()
+
+        JsonResourceFile(testFile2, testLocale).write(
+            ResMap().apply {
+                this[testLocale] = ResLocale().apply {
+                    put(prepareResItem("key3", arrayOf(ResValue("v", null))))
+                    put(prepareResItem("key2", arrayOf(ResValue("v", null))))
+                    put(prepareResItem("key1", arrayOf(ResValue("v", null))))
+                }
+            },
+            null
+        )
+
+        assertEquals(
+            "{\"key3\":\"v\",\"key2\":\"v\",\"key1\":\"v\"}",
+            readFile(testFile2)
+        )
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testWritePlurals() {
         val testLocale = "ru"
 
@@ -126,9 +197,9 @@ class JsonResourceFileTest {
 
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-                ResValue("value1_1", "Comment", Quantity.OTHER),
-                ResValue("value1_2", null, Quantity.ZERO),
-                ResValue("value1_3", "Comment", Quantity.MANY)
+                ResValue("value1_0", null, Quantity.ZERO),
+                ResValue("value1_many", "Comment", Quantity.MANY),
+                ResValue("value1_other", "Comment", Quantity.OTHER)
         )))
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
         resMap[testLocale] = resLocale
@@ -139,9 +210,9 @@ class JsonResourceFileTest {
 
         val expectedResult =
                 "{" +
-                "\"key2\":\"value2_1\"," +
-                "\"key1_plural_2\":\"value1_3\"," +
-                "\"key1_plural_3\":\"value1_1\"" +
+                "\"key1_plural_2\":\"value1_many\"," +
+                "\"key1_plural_3\":\"value1_other\"," +
+                "\"key2\":\"value2_1\"" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))

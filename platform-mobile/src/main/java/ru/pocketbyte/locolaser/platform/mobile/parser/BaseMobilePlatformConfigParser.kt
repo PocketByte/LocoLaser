@@ -5,7 +5,7 @@ import ru.pocketbyte.locolaser.config.parser.ConfigParser
 import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 abstract class BaseMobilePlatformConfigParser : PlatformConfigParser<BasePlatformConfig> {
 

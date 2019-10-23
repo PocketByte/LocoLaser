@@ -3,11 +3,12 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-package ru.pocketbyte.locolaser.utils
+package ru.pocketbyte.locolaser.utils.json
 
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
+import org.json.simple.parser.ContainerFactory
 import org.json.simple.parser.JSONParser
 
 import java.io.File
@@ -21,6 +22,19 @@ import java.io.IOException
 object JsonParseUtils {
 
     val JSON_PARSER = JSONParser()
+
+    /**
+     * Instance of ContainerFactory that returns LinkedJSONObject instead of JSONObject.
+     */
+    val JSON_LINKED_CONTAINER_FACTORY = object : ContainerFactory {
+        override fun creatArrayContainer(): MutableList<Any?> {
+            return JSONArray()
+        }
+
+        override fun createObjectContainer(): MutableMap<Any?, Any?> {
+            return LinkedJSONObject()
+        }
+    }
 
     @Throws(InvalidConfigException::class)
     fun getString(json: JSONObject, key: String, parentKey: String? = null, throwIfNull: Boolean = false): String? {

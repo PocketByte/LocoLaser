@@ -9,7 +9,9 @@ import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.WritingConfig
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_LINKED_CONTAINER_FACTORY
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_PARSER
+import ru.pocketbyte.locolaser.utils.json.LinkedJSONObject
 import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.*
 import java.util.regex.Pattern
@@ -49,10 +51,10 @@ class JsonResourceFile(
 
         val pluralMatcher = Pattern.compile(PLURAL_KEY_PATTERN).matcher("")
         val reader: Reader = FileReader(file)
-        val json = JsonParseUtils.JSON_PARSER.parse(reader)
+        val json = JSON_PARSER.parse(reader, JSON_LINKED_CONTAINER_FACTORY)
         reader.close()
 
-        if (json is JSONObject) {
+        if (json is LinkedJSONObject) {
             return ResMap().apply {
                 val result = ResLocale()
 
@@ -93,7 +95,7 @@ class JsonResourceFile(
     override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
         val locale = resMap[mLocale]
         if (locale?.isNotEmpty() == true) {
-            val json = JSONObject()
+            val json = LinkedJSONObject()
 
             for (key in locale.keys) {
                 val value = locale[key] ?: continue
@@ -103,7 +105,8 @@ class JsonResourceFile(
 
                 for (i in 0..(keyParts.size - 2)) {
                     val partKey = keyParts[i]
-                    val partJson = rootJson[partKey] as? JSONObject ?: JSONObject()
+                    val partJson = rootJson[partKey] as? LinkedJSONObject
+                            ?: LinkedJSONObject()
 
                     rootJson[partKey] = partJson
                     rootJson = partJson
@@ -141,7 +144,7 @@ class JsonResourceFile(
         }
     }
 
-    private fun getResItemsFromObject(keyPrefix: String, json: JSONObject): Map<String, String> {
+    private fun getResItemsFromObject(keyPrefix: String, json: Map<Any?, Any?>): Map<String, String> {
         val result = mutableMapOf<String, String>()
 
         for (itemKey in json.keys) {

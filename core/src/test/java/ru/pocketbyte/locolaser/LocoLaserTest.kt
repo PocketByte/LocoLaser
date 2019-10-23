@@ -21,7 +21,7 @@ import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.summary.FileSummary
 import ru.pocketbyte.locolaser.summary.Summary
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 import java.io.File
 import java.io.IOException

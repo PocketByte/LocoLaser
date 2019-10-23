@@ -12,8 +12,7 @@ import ru.pocketbyte.locolaser.config.source.BaseTableSourceConfig
 import ru.pocketbyte.locolaser.config.source.SourceConfig
 import ru.pocketbyte.locolaser.config.source.SourceSetConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
-import ru.pocketbyte.locolaser.utils.TextUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 import java.util.HashSet
 

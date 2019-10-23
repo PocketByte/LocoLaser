@@ -9,7 +9,7 @@ import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinBaseImplPlatformConfig
 import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinIosPlatformConfig
 import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinJsPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.parser.BaseMobilePlatformConfigParser
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 class KotlinImplementationPlatformConfigParser : BaseMobilePlatformConfigParser() {
 

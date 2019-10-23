@@ -10,8 +10,8 @@ import ru.pocketbyte.locolaser.config.parser.BaseTableSourceConfigParser
 import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.SOURCE
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.source.google.sheet.GoogleSheetConfig
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
-import ru.pocketbyte.locolaser.utils.JsonParseUtils.getString
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 
 /**
  * @author Denis Shurygin

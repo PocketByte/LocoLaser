@@ -7,7 +7,7 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.platform.mobile.IosBaseClassPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.IosObjectiveCPlatformConfig
 import ru.pocketbyte.locolaser.platform.mobile.IosSwiftPlatformConfig
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 class IosClassPlatformConfigParser : BaseMobilePlatformConfigParser() {
 

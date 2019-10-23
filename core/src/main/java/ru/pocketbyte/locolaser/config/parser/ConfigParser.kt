@@ -11,7 +11,7 @@ import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 import com.beust.jcommander.Parameter
 import ru.pocketbyte.locolaser.utils.LogUtils
