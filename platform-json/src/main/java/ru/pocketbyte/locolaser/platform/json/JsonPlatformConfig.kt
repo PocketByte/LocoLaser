@@ -20,6 +20,8 @@ class JsonPlatformConfig : BasePlatformConfig() {
         const val TYPE = "json"
     }
 
+    var indent: Int = -1
+
     override val defaultTempDirPath = "./build/tmp/"
 
     override val defaultResourcesPath = "./locales/"
@@ -29,6 +31,6 @@ class JsonPlatformConfig : BasePlatformConfig() {
     override val type = TYPE
 
     override val resources: PlatformResources
-        get() = JsonResources(resourcesDir!!, resourceName!!, filter)
+        get() = JsonResources(resourcesDir!!, resourceName!!, indent, filter)
 
 }

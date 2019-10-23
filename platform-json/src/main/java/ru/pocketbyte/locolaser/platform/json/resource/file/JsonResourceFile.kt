@@ -13,6 +13,7 @@ import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_LINKED_CONTAINER_F
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_PARSER
 import ru.pocketbyte.locolaser.utils.json.LinkedJSONObject
 import ru.pocketbyte.locolaser.utils.PluralUtils
+import ru.pocketbyte.locolaser.utils.json.JsonToStringUtils
 import java.io.*
 import java.util.regex.Pattern
 
@@ -23,7 +24,8 @@ import java.util.regex.Pattern
  */
 class JsonResourceFile(
         private val file: File,
-        private val mLocale: String
+        private val mLocale: String,
+        private val indent: Int
 ) : ResourceFile {
 
     companion object {
@@ -134,7 +136,7 @@ class JsonResourceFile(
             try {
                 file.parentFile.mkdirs()
                 writer = FileWriter(file)
-                writer.write(json.toJSONString())
+                writer.write(JsonToStringUtils.toJSONString(json, indent))
                 writer.flush()
             } catch (e: IOException) {
                 e.printStackTrace()

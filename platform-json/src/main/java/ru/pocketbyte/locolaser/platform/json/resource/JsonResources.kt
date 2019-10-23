@@ -19,13 +19,14 @@ import java.io.File
 class JsonResources(
         resourcesDir: File,
         fileName: String,
+        private val indent: Int,
         filter: ((key: String) -> Boolean)?
 ) : AbsPlatformResources(resourcesDir, fileName, filter) {
 
     override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
         val localesArray = locales.toTypedArray()
         return Array(locales.size) { i ->
-            JsonResourceFile(getFileForLocale(localesArray[i]), localesArray[i])
+            JsonResourceFile(getFileForLocale(localesArray[i]), localesArray[i], indent)
         }
     }
 

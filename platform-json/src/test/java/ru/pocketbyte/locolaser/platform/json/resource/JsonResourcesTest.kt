@@ -21,7 +21,7 @@ class JsonResourcesTest {
     fun testWriteAndRead() {
         val resMap1 = prepareResMap()
 
-        val resources = JsonResources(tempFolder.newFolder(), "test", null)
+        val resources = JsonResources(tempFolder.newFolder(), "test", -1, null)
         resources.write(resMap1, null)
 
         val resMap2 = resources.read(resMap1.keys)

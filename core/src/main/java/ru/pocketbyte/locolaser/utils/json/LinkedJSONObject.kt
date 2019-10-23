@@ -21,11 +21,11 @@ class LinkedJSONObject: LinkedHashMap<Any?, Any?>(), JSONAware, JSONStreamAware 
         JSONObject.writeJSONString(this, out)
     }
 
-    override fun toJSONString(): String {
-        return JSONObject.toJSONString(this)
+    override fun toJSONString(): String? {
+        return JsonToStringUtils.toJSONString(this)
     }
 
     override fun toString(): String {
-        return toJSONString()
+        return toJSONString() ?: "null"
     }
 }

@@ -12,6 +12,8 @@ import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getLong
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getObject
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 
 /**
@@ -22,6 +24,7 @@ class JsonPlatformConfigParser : PlatformConfigParser<BasePlatformConfig> {
     companion object {
         const val RESOURCE_NAME = "res_name"
         const val RESOURCES_DIR = "res_dir"
+        const val INDENT = "indent"
         const val FILTER = "filter"
     }
 
@@ -44,6 +47,10 @@ class JsonPlatformConfigParser : PlatformConfigParser<BasePlatformConfig> {
 
                 platform.filter = BasePlatformConfig.regExFilter(
                         getString(platformObject, FILTER, PLATFORM, false))
+
+                if (platformObject[INDENT] != null) {
+                    platform.indent = getLong(platformObject, INDENT, PLATFORM, false).toInt()
+                }
 
                 return platform
             }

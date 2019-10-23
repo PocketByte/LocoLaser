@@ -28,7 +28,7 @@ class JsonResourceFileTest {
         if (testFile.exists())
             assertTrue(testFile.delete())
 
-        val resourceFile = JsonResourceFile(testFile, "en")
+        val resourceFile = JsonResourceFile(testFile, "en", -1)
 
         assertNull(resourceFile.read())
     }
@@ -44,7 +44,7 @@ class JsonResourceFileTest {
                             "    \"string3\":\"Value 3\"\r\n" +
                             "}")
 
-        val resourceFile = JsonResourceFile(testFile, testLocale)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
         val resMap = resourceFile.read()
 
         assertNotNull(resMap)
@@ -72,7 +72,7 @@ class JsonResourceFileTest {
 
         assertEquals(
             listOf("string1", "string2", "string3"),
-            JsonResourceFile(testFile1, testLocale).read()!![testLocale]!!.keys.map { it }
+            JsonResourceFile(testFile1, testLocale, -1).read()!![testLocale]!!.keys.map { it }
         )
 
         val testFile2 = prepareTestFile(
@@ -84,7 +84,7 @@ class JsonResourceFileTest {
 
         assertEquals(
             listOf("string3", "string2", "string1"),
-            JsonResourceFile(testFile2, testLocale).read()!![testLocale]!!.keys.map { it }
+            JsonResourceFile(testFile2, testLocale, -1).read()!![testLocale]!!.keys.map { it }
         )
     }
 
@@ -100,7 +100,7 @@ class JsonResourceFileTest {
                     "\"key1_plural_0\":\"value1_2\"" +
                     "}")
 
-        val resourceFile = JsonResourceFile(testFile, testLocale)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
         val resMap = resourceFile.read()
 
         assertNotNull(resMap)
@@ -138,10 +138,10 @@ class JsonResourceFileTest {
         resMap[redundantLocale] = resLocale
 
         val testFile = tempFolder.newFile()
-        val resourceFile = JsonResourceFile(testFile, testLocale)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
         resourceFile.write(resMap, null)
 
-        val expectedResult = "{\"key1\":\"value1_1\",\"key2\":\"value2_1\"}"
+        val expectedResult = "{\"key1\": \"value1_1\",\"key2\": \"value2_1\"}"
 
         assertEquals(expectedResult, readFile(testFile))
     }
@@ -153,7 +153,7 @@ class JsonResourceFileTest {
 
         val testFile1 = tempFolder.newFile()
 
-        JsonResourceFile(testFile1, testLocale).write(
+        JsonResourceFile(testFile1, testLocale, -1).write(
             ResMap().apply {
                 this[testLocale] = ResLocale().apply {
                     put(prepareResItem("key1", arrayOf(ResValue("v", null))))
@@ -165,13 +165,13 @@ class JsonResourceFileTest {
         )
 
         assertEquals(
-            "{\"key1\":\"v\",\"key2\":\"v\",\"key3\":\"v\"}",
+            "{\"key1\": \"v\",\"key2\": \"v\",\"key3\": \"v\"}",
             readFile(testFile1)
         )
 
         val testFile2 = tempFolder.newFile()
 
-        JsonResourceFile(testFile2, testLocale).write(
+        JsonResourceFile(testFile2, testLocale, -1).write(
             ResMap().apply {
                 this[testLocale] = ResLocale().apply {
                     put(prepareResItem("key3", arrayOf(ResValue("v", null))))
@@ -183,7 +183,7 @@ class JsonResourceFileTest {
         )
 
         assertEquals(
-            "{\"key3\":\"v\",\"key2\":\"v\",\"key1\":\"v\"}",
+            "{\"key3\": \"v\",\"key2\": \"v\",\"key1\": \"v\"}",
             readFile(testFile2)
         )
     }
@@ -205,17 +205,68 @@ class JsonResourceFileTest {
         resMap[testLocale] = resLocale
 
         val testFile = tempFolder.newFile()
-        val resourceFile = JsonResourceFile(testFile, testLocale)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
         resourceFile.write(resMap, null)
 
         val expectedResult =
                 "{" +
-                "\"key1_plural_2\":\"value1_many\"," +
-                "\"key1_plural_3\":\"value1_other\"," +
-                "\"key2\":\"value2_1\"" +
+                "\"key1_plural_2\": \"value1_many\"," +
+                "\"key1_plural_3\": \"value1_other\"," +
+                "\"key2\": \"value2_1\"" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testSaveIntend() {
+        val testLocale = "ru"
+        val testFile = tempFolder.newFile()
+
+        val resMap = ResMap().apply {
+            this[testLocale] = ResLocale().apply {
+                put(prepareResItem("key1", arrayOf(ResValue("v", null))))
+                put(prepareResItem("key2", arrayOf(ResValue("v", null))))
+                put(prepareResItem("key3", arrayOf(ResValue("v", null))))
+            }
+        }
+
+        JsonResourceFile(testFile, testLocale, -1).write(resMap, null)
+        assertEquals(
+                "{\"key1\": \"v\",\"key2\": \"v\",\"key3\": \"v\"}",
+                readFile(testFile)
+        )
+
+        JsonResourceFile(testFile, testLocale, 0).write(resMap, null)
+        assertEquals(
+                "{\n" +
+                        "\"key1\": \"v\",\n" +
+                        "\"key2\": \"v\",\n" +
+                        "\"key3\": \"v\"\n" +
+                        "}",
+                readFile(testFile)
+        )
+
+        JsonResourceFile(testFile, testLocale, 2).write(resMap, null)
+        assertEquals(
+                "{\n" +
+                        "  \"key1\": \"v\",\n" +
+                        "  \"key2\": \"v\",\n" +
+                        "  \"key3\": \"v\"\n" +
+                        "}",
+                readFile(testFile)
+        )
+
+        JsonResourceFile(testFile, testLocale, 10).write(resMap, null)
+        assertEquals(
+                "{\n" +
+                        "          \"key1\": \"v\",\n" +
+                        "          \"key2\": \"v\",\n" +
+                        "          \"key3\": \"v\"\n" +
+                        "}",
+                readFile(testFile)
+        )
     }
 
     @Throws(IOException::class)

@@ -61,6 +61,7 @@ class JsonPlatformConfigParserTest {
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
                 config.resourcesDir!!.canonicalPath)
+        assertEquals(5, (config as? JsonPlatformConfig)?.indent)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -108,11 +109,30 @@ class JsonPlatformConfigParserTest {
         assertNotNull(parser!!.parse(json, true)?.filter)
     }
 
+    @Test
+    fun testIndent() {
+        val json = prepareTestPlatformJson()
+
+        json[JsonPlatformConfigParser.INDENT] = 5L
+        var config = (parser?.parse(json, true) as JsonPlatformConfig)
+        assertEquals(5, config.indent)
+
+        json[JsonPlatformConfigParser.INDENT] = 1L
+        config = (parser?.parse(json, true) as JsonPlatformConfig)
+        assertEquals(1, config.indent)
+
+        // default -1
+        json.remove(JsonPlatformConfigParser.INDENT)
+        config = (parser?.parse(json, true) as JsonPlatformConfig)
+        assertEquals(-1, config.indent)
+    }
+
     private fun prepareTestPlatformJson(): JSONObject {
         val json = JSONObject()
         json[PlatformConfigParser.PLATFORM_TYPE] = JsonPlatformConfig.TYPE
         json[JsonPlatformConfigParser.RESOURCE_NAME] = "test_res"
         json[JsonPlatformConfigParser.RESOURCES_DIR] = "test_res_dir"
+        json[JsonPlatformConfigParser.INDENT] = 5L
         return json
     }
 }
