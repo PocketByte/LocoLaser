@@ -11,12 +11,12 @@ import ru.pocketbyte.locolaser.config.source.Source
  * @author Denis Shurygin
  */
 class ResValue(
-        public val value: String,
+        val value: String,
         /** Resource comment. */
-        public val comment: String?,
-        public val quantity: Quantity = Quantity.OTHER
+        val comment: String?,
+        val quantity: Quantity = Quantity.OTHER,
+        val meta: Map<String, String>? = null
 ) {
-
     /**
      * Source location where placed this resource item.
      */
@@ -26,7 +26,11 @@ class ResValue(
         if (other is ResValue) {
             return isStringEquals(value, other.value) &&
                     isStringEquals(comment, other.comment) &&
-                    quantity === other.quantity
+                    quantity === other.quantity && (
+                        (metaIsEmpty() && other.metaIsEmpty()) ||
+                        meta?.equals(other.meta) ?: false
+                    )
+
         }
         return super.equals(other)
     }
@@ -45,8 +49,32 @@ class ResValue(
 
     override fun toString(): String {
         return "ResValue{" +
-                "v=" + value + "," +
-                "c=" + comment + "," +
-                "q=" + quantity.toString() + "}"
+                "v=$value," +
+                "c=$comment," +
+                "q=$quantity," +
+                "meta=$meta}"
     }
+}
+
+fun ResValue.metaIsEmpty(): Boolean {
+    return this.meta == null || this.meta.isEmpty()
+}
+
+fun ResValue.metaIsNotEmpty(): Boolean {
+    return !this.metaIsEmpty()
+}
+
+fun ResValue?.merge(item: ResValue?): ResValue? {
+    if (this == null) return item
+    if (item == null) return this
+
+    if (this.metaIsNotEmpty()) {
+        return if (item.metaIsNotEmpty()) {
+            ResValue(item.value, item.comment, item.quantity,
+                    this.meta?.toMutableMap()?.apply { item.meta?.let { putAll(it) } })
+        } else {
+            ResValue(item.value, item.comment, item.quantity, this.meta)
+        }
+    }
+    return item
 }
