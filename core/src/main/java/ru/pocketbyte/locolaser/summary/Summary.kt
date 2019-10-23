@@ -55,7 +55,7 @@ class Summary private constructor(file: File?) {
 
                 if (summaryFile != null)
                     try {
-                        val reader = FileReader(summaryFile)
+                        val reader = BufferedReader(InputStreamReader(FileInputStream(summaryFile), "UTF-8"))
                         summary = Summary(summaryFile, JsonParseUtils.JSON_PARSER.parse(reader) as JSONObject)
                         reader.close()
                     } catch (e: ParseException) {

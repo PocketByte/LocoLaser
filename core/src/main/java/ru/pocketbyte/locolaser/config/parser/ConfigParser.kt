@@ -15,10 +15,8 @@ import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 import com.beust.jcommander.Parameter
 import ru.pocketbyte.locolaser.utils.LogUtils
+import java.io.*
 
-import java.io.File
-import java.io.FileReader
-import java.io.IOException
 import java.util.ArrayList
 
 /**
@@ -119,7 +117,7 @@ open class ConfigParser
         if (workDir != null)
             System.setProperty("user.dir", workDir.canonicalPath)
 
-        val reader = FileReader(file)
+        val reader = BufferedReader(InputStreamReader(FileInputStream(file), "UTF-8"))
         val json = JsonParseUtils.JSON_PARSER.parse(reader)
         reader.close()
 

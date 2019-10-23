@@ -9,6 +9,7 @@ import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.WritingConfig
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.utils.LogUtils
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_LINKED_CONTAINER_FACTORY
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_PARSER
 import ru.pocketbyte.locolaser.utils.json.LinkedJSONObject
@@ -16,6 +17,11 @@ import ru.pocketbyte.locolaser.utils.PluralUtils
 import ru.pocketbyte.locolaser.utils.json.JsonToStringUtils
 import java.io.*
 import java.util.regex.Pattern
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.io.BufferedReader
+
+
 
 /**
  * ResourceFile implementation for Android platform.
@@ -52,7 +58,7 @@ class JsonResourceFile(
             return null
 
         val pluralMatcher = Pattern.compile(PLURAL_KEY_PATTERN).matcher("")
-        val reader: Reader = FileReader(file)
+        val reader: Reader = BufferedReader(InputStreamReader(FileInputStream(file), "UTF-8"))
         val json = JSON_PARSER.parse(reader, JSON_LINKED_CONTAINER_FACTORY)
         reader.close()
 
@@ -132,10 +138,13 @@ class JsonResourceFile(
                 }
             }
 
-            var writer: FileWriter? = null
+            var writer: Writer? = null
             try {
                 file.parentFile.mkdirs()
-                writer = FileWriter(file)
+
+
+
+                writer = BufferedWriter(OutputStreamWriter(FileOutputStream(file), "UTF-8"))
                 writer.write(JsonToStringUtils.toJSONString(json, indent))
                 writer.flush()
             } catch (e: IOException) {
