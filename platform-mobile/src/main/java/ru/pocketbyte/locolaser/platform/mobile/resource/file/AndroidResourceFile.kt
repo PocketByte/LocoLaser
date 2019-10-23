@@ -72,6 +72,16 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
 
             return string
         }
+
+        public const val META_CDATA = "xml-cdata"
+        public const val META_CDATA_ON = "true"
+
+        public const val META_FORMATTED = "formatted"
+        public const val META_FORMATTED_ON = "true"
+        public const val META_FORMATTED_OFF = "false"
+
+        public const val XML_CDATA_PREFIX = "<![CDATA["
+        public const val XML_CDATA_POSTFIX = "]]>"
     }
 
     override fun read(): ResMap? {
@@ -114,8 +124,13 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
             if (resItem != null) {
 
                 if (!resItem.isHasQuantities) {
-                    val comment = resItem.values[0].comment
-                    val value = resItem.values[0].value
+                    val resValue = resItem.values[0]
+<<<<<<< HEAD
+=======
+                    val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
+>>>>>>> 3283f70... Android formater and cdata
+                    val comment = resValue.comment
+                    val value = resValue.value
                     if (comment != null && (writingConfig == null || writingConfig.isDuplicateComments || comment != value)) {
                         writeString("    /* ")
                         writeString(escapeComment(comment))
@@ -124,8 +139,29 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
 
                     writeString("    <string name=\"")
                     writeString(resItem.key.trim { it <= ' ' })
-                    writeString("\">")
+                    writeString("\"")
+
+                    when(resValue.meta?.get(META_FORMATTED)) {
+                        META_FORMATTED_ON -> writeString(" formatted=\"true\"")
+                        META_FORMATTED_OFF -> writeString(" formatted=\"false\"")
+                        else -> { /* Do nothing */ }
+                    }
+
+                    writeString(">")
+
+<<<<<<< HEAD
+                    if (META_CDATA_ON == resValue.meta?.get(META_CDATA)) {
+                        writeString(XML_CDATA_PREFIX)
+                        writeString(value)
+                        writeString(XML_CDATA_POSTFIX)
+                    } else {
+                        writeString(toPlatformValue(value))
+                    }
+=======
+                    if (isCDATA) writeString(XML_CDATA_PREFIX)
                     writeString(toPlatformValue(value))
+                    if (isCDATA) writeString(XML_CDATA_POSTFIX)
+>>>>>>> 3283f70... Android formater and cdata
                     writeStringLn("</string>")
                 } else {
                     writeString("    <plurals name=\"")
@@ -133,11 +169,28 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                     writeStringLn("\">")
 
                     for (resValue in resItem.values) {
+<<<<<<< HEAD
+                        writeString("        <item quantity=\"")
+                        writeString(resValue.quantity.toString())
+                        writeString("\">")
+
+                        if (META_CDATA_ON == resValue.meta?.get(META_CDATA)) {
+                            writeString(XML_CDATA_PREFIX)
+                            writeString(resValue.value)
+                            writeString(XML_CDATA_POSTFIX)
+                        } else {
+                            writeString(toPlatformValue(resValue.value))
+                        }
+=======
+                        val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
 
                         writeString("        <item quantity=\"")
                         writeString(resValue.quantity.toString())
                         writeString("\">")
+                        if (isCDATA) writeString(XML_CDATA_PREFIX)
                         writeString(toPlatformValue(resValue.value))
+                        if (isCDATA) writeString(XML_CDATA_POSTFIX)
+>>>>>>> 3283f70... Android formater and cdata
                         writeStringLn("</item>")
                     }
                     writeStringLn("    </plurals>")
@@ -157,6 +210,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
         private var mQuantity: Quantity? = null
         private var mValue: StringBuilder? = null
         private var mComment: String? = null //TODO comments not work
+        private var mMetaData: Map<String, String>? = null
 
         @Throws(SAXException::class)
         override fun startDocument() { }
@@ -167,12 +221,14 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                 mItem = ResItem(attributes!!.getValue("name"))
                 isPlural = false
                 mQuantity = null
+                mMetaData = getMetaFromAttributes(qName, attributes)
             } else if ("plurals" == qName) {
                 mItem = ResItem(attributes!!.getValue("name"))
                 isPlural = true
                 mQuantity = null
             } else if (mItem != null && isPlural && "item" == qName) {
                 mQuantity = PluralUtils.quantityFromString(attributes!!.getValue("quantity"))
+                mMetaData = getMetaFromAttributes(qName, attributes)
             } else {
                 mItem = null
                 isPlural = false
@@ -195,12 +251,13 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
             val value = mValue
 
             if (item != null && value != null && "string" == qName) {
-                item.addValue(ResValue(mValue!!.toString(), mComment))
-                // TODO read plurals http://developer.android.com/intl/ru/guide/topics/resources/string-resource.html#Plurals
+                item.addValue(ResValue(mValue!!.toString(), mComment, meta = mMetaData))
                 map.put(item)
                 mItem = null
+                mMetaData = null
             } else if (item != null && value != null && "item" == qName && isPlural) {
-                item.addValue(ResValue(value.toString(), mComment, mQuantity ?: Quantity.OTHER))
+                item.addValue(ResValue(value.toString(), mComment, mQuantity ?: Quantity.OTHER, meta = mMetaData))
+                mMetaData = null
             } else if (item != null && "plurals" == qName && isPlural) {
                 map.put(item)
                 mItem = null
@@ -209,6 +266,26 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
             mValue = null
             mComment = null
             mQuantity = null
+        }
+
+        private fun getMetaFromAttributes(qName: String?, attributes: Attributes?): Map<String, String>? {
+            if (attributes == null)
+                return null
+
+            val map = mutableMapOf<String, String>()
+
+            if (qName == "string") {
+                val formatted = when (attributes.getValue("formatted")) {
+                    "true" -> META_FORMATTED_ON
+                    "false" -> META_FORMATTED_OFF
+                    else -> null
+                }
+
+                if (formatted != null)
+                    map[META_FORMATTED] = formatted
+            }
+
+            return if (map.isNotEmpty()) map else null
         }
     }
 }

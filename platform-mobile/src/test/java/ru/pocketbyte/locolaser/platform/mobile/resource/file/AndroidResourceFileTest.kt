@@ -119,12 +119,63 @@ class AndroidResourceFileTest {
 
         val expectedMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("string1", arrayOf(ResValue("String", null, Quantity.OTHER), ResValue("String one", null, Quantity.ONE), ResValue("String two", null, Quantity.TWO))))
-        resLocale.put(prepareResItem("string2", arrayOf(ResValue("Value2", null, Quantity.OTHER))))
-        resLocale.put(prepareResItem("string3", arrayOf(ResValue("String 3", null, Quantity.OTHER), ResValue("String 3 few", null, Quantity.FEW), ResValue("String 3 zero", null, Quantity.ZERO))))
+        resLocale.put(prepareResItem("string1", arrayOf(
+                ResValue("String", null, Quantity.OTHER),
+                ResValue("String one", null, Quantity.ONE),
+                ResValue("String two", null, Quantity.TWO))))
+        resLocale.put(prepareResItem("string2", arrayOf(
+                ResValue("Value2", null, Quantity.OTHER))))
+        resLocale.put(prepareResItem("string3", arrayOf(
+                ResValue("String 3", null, Quantity.OTHER),
+                ResValue("String 3 few", null, Quantity.FEW),
+                ResValue("String 3 zero", null, Quantity.ZERO))))
         expectedMap[testLocale] = resLocale
 
         assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testReadMetaFormatted() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                        TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                        "<resources>\r\n" +
+                        "    /* Comment */\r\n" +
+                        "    <string name=\"string1\" formatted=\"true\">Value1</string>\r\n" +
+                        "    <string name=\"string2\" formatted=\"false\">Value2</string>\r\n" +
+                        "    <string name=\"string3\">Value3</string>\r\n" +
+                        "\r\n" +
+                        "    <plurals name=\"string4\">\r\n" +
+                        "        /* Comment */\r\n" +
+                        "        <item quantity=\"other\" formatted=\"true\">String 4</item>\r\n" +
+                        "        <item quantity=\"few\" formatted=\"false\">String 4 few</item>\r\n" +
+                        "        <item quantity=\"zero\">String 4 zero</item>\r\n" +
+                        "    </plurals>\r\n" +
+                        "</resources>")
+
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        val resMap = resourceFile.read()
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(ResValue("Value1", null, Quantity.OTHER,
+                meta = mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON))))))
+        resLocale.put(prepareResItem("string2", arrayOf(ResValue("Value2", null, Quantity.OTHER,
+                meta = mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF))))))
+        resLocale.put(prepareResItem("string3", arrayOf(ResValue("Value3", null, Quantity.OTHER))))
+        resLocale.put(prepareResItem("string4", arrayOf(
+                ResValue("String 4", null, Quantity.OTHER),
+                ResValue("String 4 few", null, Quantity.FEW),
+                ResValue("String 4 zero", null, Quantity.ZERO))))
+
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+
     }
 
     @Test
@@ -199,9 +250,16 @@ class AndroidResourceFileTest {
 
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("string1", arrayOf(ResValue("String", "Comment", Quantity.OTHER), ResValue("String one", null, Quantity.ONE), ResValue("String two", null, Quantity.TWO))))
-        resLocale.put(prepareResItem("string2", arrayOf(ResValue("Value2", null, Quantity.OTHER))))
-        resLocale.put(prepareResItem("string3", arrayOf(ResValue("String 3", "Comment", Quantity.OTHER), ResValue("String 3 few", null, Quantity.FEW), ResValue("String 3 zero", null, Quantity.ZERO))))
+        resLocale.put(prepareResItem("string1", arrayOf(
+                ResValue("String", "Comment", Quantity.OTHER),
+                ResValue("String one", null, Quantity.ONE),
+                ResValue("String two", null, Quantity.TWO))))
+        resLocale.put(prepareResItem("string2", arrayOf(
+                ResValue("Value2", null, Quantity.OTHER))))
+        resLocale.put(prepareResItem("string3", arrayOf(
+                ResValue("String 3", "Comment", Quantity.OTHER),
+                ResValue("String 3 few", null, Quantity.FEW),
+                ResValue("String 3 zero", null, Quantity.ZERO))))
         resMap[testLocale] = resLocale
 
         val testFile = tempFolder.newFile()
@@ -227,6 +285,132 @@ class AndroidResourceFileTest {
         assertEquals(expectedResult, readFile(testFile))
     }
 
+    @Test
+    @Throws(IOException::class)
+    fun testWriteMetaCDATA() {
+        val testLocale = "ru"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+<<<<<<< HEAD
+                ResValue("value1_1 <b>This tags shouldn't be escaped</b>", "Comment", Quantity.OTHER,
+                        mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON)))
+        )))
+
+        resLocale.put(prepareResItem("key2", arrayOf(
+                ResValue("value2_1", null, Quantity.OTHER)
+        )))
+=======
+                ResValue("value1_1", "Comment", Quantity.OTHER,
+                        mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON)))
+        )))
+>>>>>>> 3283f70... Android formater and cdata
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    /* Comment */\r\n" +
+<<<<<<< HEAD
+                "    <string name=\"key1\"><![CDATA[value1_1 <b>This tags shouldn't be escaped</b>]]></string>\r\n" +
+                "    <string name=\"key2\">value2_1</string>\r\n" +
+=======
+                "    <string name=\"key1\"><![CDATA[value1_1]]></string>\r\n" +
+>>>>>>> 3283f70... Android formater and cdata
+                "</resources>")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteMetaFormatted() {
+        val testLocale = "ru"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+                ResValue("value1", "Comment", Quantity.OTHER,
+                        mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON)))
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(
+                ResValue("value2", "Comment 2", Quantity.OTHER,
+                        mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF)))
+        )))
+        resLocale.put(prepareResItem("key3", arrayOf(
+                ResValue("value3 1", null, Quantity.ONE,
+                        mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON))),
+                ResValue("value3 2", null, Quantity.OTHER,
+                        mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF)))
+        )))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        // Plurals shouldn't have attribute 'formatted'
+        val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    /* Comment */\r\n" +
+                "    <string name=\"key1\" formatted=\"true\">value1</string>\r\n" +
+                "    /* Comment 2 */\r\n" +
+                "    <string name=\"key2\" formatted=\"false\">value2</string>\r\n" +
+                "    <plurals name=\"key3\">\r\n" +
+                "        <item quantity=\"one\">value3 1</item>\r\n" +
+                "        <item quantity=\"other\">value3 2</item>\r\n" +
+                "    </plurals>\r\n" +
+                "</resources>")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWritePluralsCDATA() {
+        val testLocale = "en"
+
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(
+<<<<<<< HEAD
+                ResValue("String <b>This tags shouldn't be escaped</b>", "Comment", Quantity.OTHER,
+=======
+                ResValue("String", "Comment", Quantity.OTHER,
+>>>>>>> 3283f70... Android formater and cdata
+                        mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
+                ResValue("String one", null, Quantity.ONE,
+                        mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
+                ResValue("String two", null, Quantity.TWO))))
+        resLocale.put(prepareResItem("string2", arrayOf(
+                ResValue("Value2", null, Quantity.OTHER))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    <plurals name=\"string1\">\r\n" +
+<<<<<<< HEAD
+                "        <item quantity=\"other\"><![CDATA[String <b>This tags shouldn't be escaped</b>]]></item>\r\n" +
+=======
+                "        <item quantity=\"other\"><![CDATA[String]]></item>\r\n" +
+>>>>>>> 3283f70... Android formater and cdata
+                "        <item quantity=\"one\"><![CDATA[String one]]></item>\r\n" +
+                "        <item quantity=\"two\">String two</item>\r\n" +
+                "    </plurals>\r\n" +
+                "    <string name=\"string2\">Value2</string>\r\n" +
+                "</resources>")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
 
     @Test
     @Throws(IOException::class)
