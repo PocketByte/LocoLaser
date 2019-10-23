@@ -27,8 +27,10 @@ import org.junit.Assert.*
 class AndroidResourceFileTest {
 
     companion object {
-        private const val testString = "?'test';:<tag>\"value\nsecond line\" %s<tagg/>"
-        private const val platformTestString = "\\?\\'test\\';:&lt;tag>\\\"value\\nsecond line\\\" %s&lt;tagg/>"
+        private const val testString =
+                "?'test';:<tag>\"value\nsecond line?\" %s<tagg/> &@string"
+        private const val platformTestString =
+                "\\?\\'test\\';:&lt;tag>\\\"value\\nsecond line?\\\" %s&lt;tagg/> &amp;\\@string"
     }
 
     @Rule @JvmField

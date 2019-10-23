@@ -50,6 +50,8 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                     .replace("'", "\\'")
                     .replace("\"", "\\\"")
                     .replace("\n", "\\n")
+                    .replace("@", "\\@")
+                    .replace("&", "&amp;")
                     .replace("<", "&lt;")
             if (string.startsWith("?"))
                 string = "\\" + string
@@ -61,6 +63,8 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                     .replace("\\'", "'")
                     .replace("\\\"", "\"")
                     .replace("\\n", "\n")
+                    .replace("\\@", "@")
+                    .replace("&amp;", "&")
                     .replace("&lt;", "<")
 
             if (string.startsWith("\\?"))
