@@ -3,7 +3,7 @@
 ### Gradle dependency
 ```gradle
 dependencies {
-    localize 'ru.pocketbyte.locolaser:source-googlesheet:1.2.1'
+    localize 'ru.pocketbyte.locolaser:source-googlesheet:1.4.0'
 }
 ```
 ### Config

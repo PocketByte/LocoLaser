@@ -49,7 +49,7 @@ public class IosStringRepository(private val bundle: NSBundle, private val table
 ### Gradle dependency
 ```gradle
 dependencies {
-    localize 'ru.pocketbyte.locolaser:platform-kotlin-mobile:1.2.8'
+    localize 'ru.pocketbyte.locolaser:platform-kotlin-mobile:1.4.0'
 }
 ```
 
