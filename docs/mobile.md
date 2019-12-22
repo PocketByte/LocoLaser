@@ -64,3 +64,9 @@ Example of iOS config that generates Swift Class (*`Str.swift`*) depends on Stri
     "delay" : 30
 }
 ```
+
+### Metadata
+Android also handle following metadata of the string: "formatted=(true|false)" and "xml-cdata=(true|false)".
+If metadata "formatted" exists the string xml element will contain "formatted" attribute.
+If metadata "xml-cdata" equal true the string will be surrounded by CDATA bracers.
+**IMPORTANT NOTE**: Except of other metadata "xml-cdata" can't be read from resource file and can be provided only from external source, for example, from metadata column in [Google Sheet](google_sheet.md).

@@ -25,7 +25,6 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
             if (metaString == null || metaString.isBlank()) {
                 return null
             } else {
-                LogUtils.warn("Meta Data: ${metaString}")
                 val metadata = mutableMapOf<String, String>()
                 metaString.split(";").forEach {
                     val metaParts = it.split("=")
