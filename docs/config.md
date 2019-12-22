@@ -1,3 +1,5 @@
+# LocoLaser Config
+
 Config is a file with JSON object that must contain configuration of platform and source:
 ```
 {
