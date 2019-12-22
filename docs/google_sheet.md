@@ -1,0 +1,44 @@
+### Gradle dependency
+```gradle
+dependencies {
+    localize 'ru.pocketbyte.locolaser:source-googlesheet:1.2.1'
+}
+```
+### Config
+Google Sheet source config is a JSON object that has following structure:
+```
+{
+    "type" : "googlesheet",
+    "id" : (String value),
+    "worksheet_title" : (String value),
+    "column_key" : (String value),
+    "column_locales" : (Array of strings),
+    "column_quantity" : (String value),
+    "column_comment" : (String value),
+    "credential_file" : (Path to file)
+}
+```
+Each field in JSON has following purpose:
+- **`type`** - String. Type of the source. Must be equal "googlesheet".
+- **`id`** - String. ID of the Google Sheet. You can get it from sheet url (https://docs.google.com/spreadsheets/d/**sheet_id**).
+- **`worksheet_title`** - Title of the worksheet with localized strings. Not necessary property, by default will used first worksheet of the sheet.
+- **`column_key`** - String. Column title which contain string key's.
+- **`column_locales`** - String array. Array of the column titles which contain localized strings. Column title will be used for locale name. You can use keyword `base` to specify base locale. If base locale not set or column with base locale not exists, first locale in provided locales list will import as base locale also.
+- **`column_quantity`** - String. Column title which contain quantity. Not necessary property, by default no quantities.
+- **`column_comment`** - String. Column title which contain comment. Not necessary property, by default no comments.
+- **`credential_file`** - String. Path to OAUth credential file. Not necessary property.
+
+#### Example
+Here is theexample of LocoLaser config where as a source used Google Sheet
+```json
+{
+    "platform" : "android",
+    "source" : {
+        "type" : "googlesheet",
+        "column_key" : "key",
+        "column_locales" : ["en", "fi"],
+        "id" : "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
+    },
+    "delay" : 30
+}
+```
