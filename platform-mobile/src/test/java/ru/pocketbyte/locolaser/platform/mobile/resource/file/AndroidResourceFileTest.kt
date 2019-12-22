@@ -292,19 +292,9 @@ class AndroidResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-<<<<<<< HEAD
-                ResValue("value1_1 <b>This tags shouldn't be escaped</b>", "Comment", Quantity.OTHER,
-                        mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON)))
-        )))
-
-        resLocale.put(prepareResItem("key2", arrayOf(
-                ResValue("value2_1", null, Quantity.OTHER)
-        )))
-=======
                 ResValue("value1_1", "Comment", Quantity.OTHER,
                         mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON)))
         )))
->>>>>>> 3283f70... Android formater and cdata
         resMap[testLocale] = resLocale
 
         val testFile = tempFolder.newFile()
@@ -315,12 +305,7 @@ class AndroidResourceFileTest {
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
                 "    /* Comment */\r\n" +
-<<<<<<< HEAD
-                "    <string name=\"key1\"><![CDATA[value1_1 <b>This tags shouldn't be escaped</b>]]></string>\r\n" +
-                "    <string name=\"key2\">value2_1</string>\r\n" +
-=======
                 "    <string name=\"key1\"><![CDATA[value1_1]]></string>\r\n" +
->>>>>>> 3283f70... Android formater and cdata
                 "</resources>")
 
         assertEquals(expectedResult, readFile(testFile))
@@ -377,11 +362,7 @@ class AndroidResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("string1", arrayOf(
-<<<<<<< HEAD
-                ResValue("String <b>This tags shouldn't be escaped</b>", "Comment", Quantity.OTHER,
-=======
                 ResValue("String", "Comment", Quantity.OTHER,
->>>>>>> 3283f70... Android formater and cdata
                         mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
                 ResValue("String one", null, Quantity.ONE,
                         mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
@@ -398,11 +379,7 @@ class AndroidResourceFileTest {
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
                 "    <plurals name=\"string1\">\r\n" +
-<<<<<<< HEAD
-                "        <item quantity=\"other\"><![CDATA[String <b>This tags shouldn't be escaped</b>]]></item>\r\n" +
-=======
                 "        <item quantity=\"other\"><![CDATA[String]]></item>\r\n" +
->>>>>>> 3283f70... Android formater and cdata
                 "        <item quantity=\"one\"><![CDATA[String one]]></item>\r\n" +
                 "        <item quantity=\"two\">String two</item>\r\n" +
                 "    </plurals>\r\n" +

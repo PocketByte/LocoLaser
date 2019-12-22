@@ -125,10 +125,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
 
                 if (!resItem.isHasQuantities) {
                     val resValue = resItem.values[0]
-<<<<<<< HEAD
-=======
                     val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
->>>>>>> 3283f70... Android formater and cdata
                     val comment = resValue.comment
                     val value = resValue.value
                     if (comment != null && (writingConfig == null || writingConfig.isDuplicateComments || comment != value)) {
@@ -149,19 +146,9 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
 
                     writeString(">")
 
-<<<<<<< HEAD
-                    if (META_CDATA_ON == resValue.meta?.get(META_CDATA)) {
-                        writeString(XML_CDATA_PREFIX)
-                        writeString(value)
-                        writeString(XML_CDATA_POSTFIX)
-                    } else {
-                        writeString(toPlatformValue(value))
-                    }
-=======
                     if (isCDATA) writeString(XML_CDATA_PREFIX)
                     writeString(toPlatformValue(value))
                     if (isCDATA) writeString(XML_CDATA_POSTFIX)
->>>>>>> 3283f70... Android formater and cdata
                     writeStringLn("</string>")
                 } else {
                     writeString("    <plurals name=\"")
@@ -169,19 +156,6 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                     writeStringLn("\">")
 
                     for (resValue in resItem.values) {
-<<<<<<< HEAD
-                        writeString("        <item quantity=\"")
-                        writeString(resValue.quantity.toString())
-                        writeString("\">")
-
-                        if (META_CDATA_ON == resValue.meta?.get(META_CDATA)) {
-                            writeString(XML_CDATA_PREFIX)
-                            writeString(resValue.value)
-                            writeString(XML_CDATA_POSTFIX)
-                        } else {
-                            writeString(toPlatformValue(resValue.value))
-                        }
-=======
                         val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
 
                         writeString("        <item quantity=\"")
@@ -190,7 +164,6 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                         if (isCDATA) writeString(XML_CDATA_PREFIX)
                         writeString(toPlatformValue(resValue.value))
                         if (isCDATA) writeString(XML_CDATA_POSTFIX)
->>>>>>> 3283f70... Android formater and cdata
                         writeStringLn("</item>")
                     }
                     writeStringLn("    </plurals>")
