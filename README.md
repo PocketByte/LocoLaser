@@ -3,6 +3,8 @@ LocoLaser - Localization tool to import localized strings from external source t
 - Platform Android: strings.xml
 - Platform iOS: Localizable.strings
 - Platform GetText: messages.pom
+- Platform Java Script i18next: strings.json
+- Platform Kotlin Multiplatfor: Generates repository classes for Android, iOS, macOS and JavaSript that can be used in common code.
 - Source Google Sheets
 
 
