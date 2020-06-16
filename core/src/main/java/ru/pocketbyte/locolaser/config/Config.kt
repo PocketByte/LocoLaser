@@ -16,13 +16,6 @@ import java.io.IOException
  *
  * @author Denis Shurygin
  */
-// =================================================================================================================
-// ============ Constructors =======================================================================================
-// =================================================================================================================
-
-/**
- * Construct new configuration object.
- */
 class Config {
 
     open class Child {
@@ -45,34 +38,12 @@ class Config {
         }
     }
 
-    // =================================================================================================================
-    // ============ Getters ============================================================================================
-    // =================================================================================================================
-
     /**
-     * Gets file from which this config was read.
-     * @return File from which this config was read.
-     */
-    // =================================================================================================================
-    // ============ Public methods =====================================================================================
-    // =================================================================================================================
-
-    // =================================================================================================================
-    // ============ Setters ============================================================================================
-    // =================================================================================================================
-
-    /**
-     * Sets file from which this config was read.
-     * @param file File from which this config was read.
+     * File from which this config was read.
      */
     var file: File? = null
     /**
-     * Gets source that contain resources.
-     * @return Source that contain resources.
-     */
-    /**
-     * Sets source that contain resources.
-     * @param sourceConfig Source that contain resources.
+     * Source that contain resources.
      */
     var sourceConfig: SourceConfig? = null
         set(sourceConfig) {
@@ -85,12 +56,7 @@ class Config {
                 (this.sourceConfig as Child).parent = this
         }
     /**
-     * Gets platform that contain logic of resource creation.
-     * @return Platform that contain logic of resource creation.
-     */
-    /**
-     * Sets platform that contain logic of resource creation.
-     * @param platform Platform that contain logic of resource creation.
+     * Platform that contain logic of resource creation.
      */
     var platform: PlatformConfig? = null
         set(platform) {
@@ -103,36 +69,27 @@ class Config {
                 (this.platform as Child).parent = this
         }
     /**
-     * Gets if import should be forced even if this is not necessary.
-     * @return True if import should be forced, false otherwise.
-     */
-    /**
-     * Sets if import should be forced even if this is not necessary. Default value: false.
-     * @param isForceImport True if import should be forced, false otherwise.
+     * Define if import should be forced even if this is not necessary.
+     * True if import should be forced, false otherwise.
      */
     var isForceImport: Boolean = false
     /**
-     * Gets which strategy should be processed for conflicts.
-     * @return Strategy which should be processed for conflicts.
-     */
-    /**
-     * Sets which strategy should be processed for conflicts. Default value: REMOVE_PLATFORM.
-     * @param strategy see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
+     * Strategy that should be used for merge conflicts.
+     * Default value: REMOVE_PLATFORM.
+     * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
      */
     var conflictStrategy: ConflictStrategy? = null
         get() = if (field == null) ConflictStrategy.KEEP_NEW_PLATFORM else field
+
     /**
-     * Gets time in milliseconds that define delay for next localization. Localization will executed not more often the specified delay. If force import switch on delay will be ignored.
-     * @return Time in milliseconds that define delay for next localization.
-     */
-    /**
-     * Sets time in milliseconds that define delay for next localization. Localization will executed not more often the specified delay. If force import switch on delay will be ignored.
-     * @param delay Time in milliseconds that define delay for next localization.
+     * Define time in milliseconds that define delay for next localization.
+     * Localization will executed not more often the specified delay.
+     * If force import switched on delay will be ignored.
      */
     var delay: Long = 0
+
     /**
-     * Sets temporary directory.
-     * @param file Temporary directory.
+     * Define temporary directory.
      */
     var tempDir: File? = null
         get() {
@@ -144,12 +101,8 @@ class Config {
     val writingConfig = WritingConfig()
 
     /**
-     * Gets if comment should be written even if it equal resource value.
-     * @return True if comment should be written even if it equal resource value, false otherwise.
-     */
-    /**
-     * Sets if comment should be written even if it equal resource value. Default value: false.
-     * @param isDuplicateComments True if comment should be written even if it equal resource value, false otherwise.
+     * Define if comment should be written even if it equal resource value.
+     * True if comment should be written even if it equal resource value, false otherwise.
      */
     var isDuplicateComments: Boolean
         get() = writingConfig.isDuplicateComments

@@ -11,7 +11,7 @@ package ru.pocketbyte.locolaser.config
 class WritingConfig {
 
     /**
-     * Sets if comment should be written even if it equal resource value. Default value: false.
+     * Define if comment should be written even if it equal resource value. Default value: false.
      */
     var isDuplicateComments: Boolean = false
 }
