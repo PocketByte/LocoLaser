@@ -1,70 +1,51 @@
 package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import org.apache.commons.lang3.text.WordUtils
 import ru.pocketbyte.locolaser.config.WritingConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
-import ru.pocketbyte.locolaser.resource.entity.*
-import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile
-
+import ru.pocketbyte.locolaser.resource.entity.Quantity
+import ru.pocketbyte.locolaser.resource.entity.ResItem
+import ru.pocketbyte.locolaser.resource.entity.ResMap
 import java.io.File
-import java.io.IOException
 
 class KotlinCommonResourceFile(
-        file: File,
-        private val mClassName: String,
-        private val mClassPackage: String
-) : BaseClassResourceFile(file) {
+    file: File,
+    className: String,
+    classPackage: String
+): BasePoetClassResourceFile(file, className, classPackage) {
 
-    companion object {
-
-        private const val CLASS_HEADER_TEMPLATE =
-                "package %1\$s\r\n" +
-                        "\r\n" +
-                        "interface %2\$s {\r\n"
-
-        private const val CLASS_FOOTER_TEMPLATE = "}"
-
-        private const val PROPERTY_TEMPLATE = "    val %s: String\r\n"
-        private const val PROPERTY_PLURAL_TEMPLATE = "    fun %s(count: Int): String\r\n"
-
-        private const val MAX_LINE_SIZE = 120
+    override fun instantiateClassSpecBuilder(resMap: ResMap, writingConfig: WritingConfig?): TypeSpec.Builder {
+        return TypeSpec.interfaceBuilder(className)
     }
 
-    override fun read(): ResMap? {
-        return null
+    override fun instantiatePropertySpecBuilder(
+            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+    ): PropertySpec.Builder {
+        val builder = super.instantiatePropertySpecBuilder(name, item, resMap, writingConfig)
+
+        val valueOther = item.valueForQuantity(Quantity.OTHER)
+        if (valueOther?.value != null) {
+            builder.addKdoc("%L", wrapCommentString(valueOther.value))
+        }
+
+        return builder
     }
 
-    @Throws(IOException::class)
-    override fun writeHeaderComment(resMap: ResMap, writingConfig: WritingConfig?) {
-        writeStringLn(TemplateStr.GENERATED_CLASS_COMMENT)
-    }
+    override fun instantiatePluralSpecBuilder(
+            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+    ): FunSpec.Builder {
+        val builder = super
+            .instantiatePluralSpecBuilder(name, item, resMap, writingConfig)
+            .addModifiers(KModifier.ABSTRACT)
 
-    @Throws(IOException::class)
-    override fun writeClassHeader(resMap: ResMap, writingConfig: WritingConfig?) {
-        writeStringLn(String.format(CLASS_HEADER_TEMPLATE, mClassPackage, mClassName))
-    }
+        val valueOther = item.valueForQuantity(Quantity.OTHER)
+        if (valueOther?.value != null) {
+            builder.addKdoc("%L", wrapCommentString(valueOther.value))
+        }
 
-    @Throws(IOException::class)
-    override fun writeComment(writingConfig: WritingConfig?, comment: String) {
-        val commentLinePrefix = "    * "
-        writeStringLn("    /**")
-        writeString(commentLinePrefix)
-        writeStringLn(WordUtils.wrap(comment, MAX_LINE_SIZE - commentLinePrefix.length, "\r\n" + commentLinePrefix, true))
-        writeStringLn("    */")
-    }
-
-    @Throws(IOException::class)
-    override fun writeProperty(writingConfig: WritingConfig?, propertyName: String, item: ResItem) {
-        writeStringLn(String.format(
-                if (item.isHasQuantities)
-                    PROPERTY_PLURAL_TEMPLATE
-                else
-                    PROPERTY_TEMPLATE,
-                propertyName))
-    }
-
-    @Throws(IOException::class)
-    override fun writeClassFooter(resMap: ResMap, writingConfig: WritingConfig?) {
-        writeString(CLASS_FOOTER_TEMPLATE)
+        return builder
     }
 }

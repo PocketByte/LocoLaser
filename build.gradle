@@ -7,7 +7,7 @@ version = '1.0'
 buildscript {
 
     ext {
-        kotlin_version = '1.3.61'
+        kotlin_version = '1.3.72'
         bintray_publish = true
         bintray_override = false
         bintray_user = project.hasProperty('bintray.publish.user') ? project.properties.get("bintray.publish.user") : "-"

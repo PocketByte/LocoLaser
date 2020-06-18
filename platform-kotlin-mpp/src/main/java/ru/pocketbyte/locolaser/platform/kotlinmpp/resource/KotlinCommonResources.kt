@@ -12,6 +12,6 @@ class KotlinCommonResources(
 ) : AbsKotlinPlatformResources(dir, name, filter) {
 
     override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
-        return arrayOf(KotlinCommonResourceFile(file, this.className, this.classPackage))
+        return arrayOf(KotlinCommonResourceFile(directory, this.className, this.classPackage))
     }
 }

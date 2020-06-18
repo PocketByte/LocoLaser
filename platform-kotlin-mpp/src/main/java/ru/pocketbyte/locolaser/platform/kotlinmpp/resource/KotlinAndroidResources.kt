@@ -13,7 +13,7 @@ class KotlinAndroidResources(
 ) : AbsKotlinImplementationPlatformResources(dir, name, interfaceName, filter) {
 
     override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
-        return arrayOf(KotlinAndroidResourceFile(file,
+        return arrayOf(KotlinAndroidResourceFile(directory,
                 this.className, this.classPackage,
                 this.interfaceName, this.interfacePackage))
     }

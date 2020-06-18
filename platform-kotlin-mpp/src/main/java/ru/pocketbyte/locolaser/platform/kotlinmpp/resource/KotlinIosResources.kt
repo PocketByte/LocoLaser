@@ -13,7 +13,7 @@ class KotlinIosResources(
 ) : AbsKotlinImplementationPlatformResources(dir, name, interfaceName, filter) {
 
     override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
-        return arrayOf(KotlinIosResourceFile(file,
+        return arrayOf(KotlinIosResourceFile(directory,
                 this.className, this.classPackage,
                 this.interfaceName, this.interfacePackage))
     }

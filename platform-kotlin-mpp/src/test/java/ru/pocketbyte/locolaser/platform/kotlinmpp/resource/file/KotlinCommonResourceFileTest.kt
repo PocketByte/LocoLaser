@@ -14,6 +14,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertEquals
+import ru.pocketbyte.locolaser.platform.kotlinmpp.resource.AbsKotlinPlatformResources
 import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 
 class KotlinCommonResourceFileTest {
@@ -24,7 +25,7 @@ class KotlinCommonResourceFileTest {
     @Test
     @Throws(IOException::class)
     fun testRead() {
-        val resourceFile = KotlinCommonResourceFile(tempFolder.newFile(), "Str", "com.package")
+        val resourceFile = KotlinCommonResourceFile(tempFolder.newFolder(), "Str", "com.package")
         assertNull(resourceFile.read())
     }
 
@@ -36,23 +37,53 @@ class KotlinCommonResourceFileTest {
         resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinCommonResourceFile(testFile, "Str", "com.package")
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinCommonResourceFile(testDirectory, className, classPackage)
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.package\r\n" +
-                "\r\n" +
-                "interface Str {\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value1_1\r\n" +
-                "    */\r\n" +
-                "    val key1: String\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "interface $className {\n" +
+                "    /**\n" +
+                "     * value1_1 */\n" +
+                "    val key1: String\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteOnePluralItem() {
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment 1", Quantity.ONE), ResValue("value1_2", "Comment 2", Quantity.OTHER))))
+        resMap[PlatformResources.BASE_LOCALE] = resLocale
+
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinCommonResourceFile(testDirectory, className, classPackage)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.Int\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "interface $className {\n" +
+                "    /**\n" +
+                "     * value1_2 */\n" +
+                "    fun key1(count: Int): String\n" +
+                "}\n"
+
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -70,28 +101,28 @@ class KotlinCommonResourceFileTest {
         resLocale.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinCommonResourceFile(testFile, "StrInterface", "com.some.package")
+        val testDirectory = tempFolder.newFolder()
+        val className = "StrInterface"
+        val classPackage = "com.some.pcg"
+        val resourceFile = KotlinCommonResourceFile(testDirectory, className, classPackage)
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.some.package\r\n" +
-                "\r\n" +
-                "interface StrInterface {\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value1_2\r\n" +
-                "    */\r\n" +
-                "    val key1: String\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value3_2\r\n" +
-                "    */\r\n" +
-                "    val key3: String\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "interface $className {\n" +
+                "    /**\n" +
+                "     * value1_2 */\n" +
+                "    val key1: String\n" +
+                "\n" +
+                "    /**\n" +
+                "     * value3_2 */\n" +
+                "    val key3: String\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -104,27 +135,62 @@ class KotlinCommonResourceFileTest {
                 Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinCommonResourceFile(
-                testFile, "Strings", "ru.pocketbyte")
+        val testDirectory = tempFolder.newFolder()
+        val className = "Strings"
+        val classPackage = "ru.pocketbyte"
+        val resourceFile = KotlinCommonResourceFile(testDirectory, className, classPackage)
 
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package ru.pocketbyte\r\n" +
-                "\r\n" +
-                "interface Strings {\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
-                " Wery Wery Wery Wery Wery Wery\r\n" +
-                "    * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment\r\n" +
-                "    */\r\n" +
-                "    val key1: String\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "interface $className {\n" +
+                "    /**\n" +
+                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
+                " Wery Wery Wery Wery Wery Wery\n" +
+                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment */\n" +
+                "    val key1: String\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteFormattedComment() {
+        val testValue = "Hello %s %s"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(ResValue(testValue, "", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key2", arrayOf(ResValue(testValue, "Comment 2", Quantity.OTHER), ResValue("value1_1", "Comment 1", Quantity.ONE))))
+        resMap[PlatformResources.BASE_LOCALE] = resLocale
+
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinCommonResourceFile(testDirectory, className, classPackage)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.Int\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "interface $className {\n" +
+                "    /**\n" +
+                "     * $testValue */\n" +
+                "    val key1: String\n" +
+                "\n" +
+                "    /**\n" +
+                "     * $testValue */\n" +
+                "    fun key2(count: Int): String\n" +
+                "}\n"
+
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Throws(IOException::class)
@@ -137,5 +203,12 @@ class KotlinCommonResourceFileTest {
         for (value in values)
             resItem.addValue(value)
         return resItem
+    }
+
+    private fun fileForClass(directory: File, className: String, classPackage: String): File {
+        return File(
+            File(directory, classPackage.replace(".", "/")),
+            "$className${AbsKotlinPlatformResources.KOTLIN_FILE_EXTENSION}"
+        )
     }
 }

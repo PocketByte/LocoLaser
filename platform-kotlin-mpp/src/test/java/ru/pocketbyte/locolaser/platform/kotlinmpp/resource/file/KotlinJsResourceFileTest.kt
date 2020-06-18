@@ -14,6 +14,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import ru.pocketbyte.locolaser.platform.kotlinmpp.resource.AbsKotlinPlatformResources
 import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 
 class KotlinJsResourceFileTest {
@@ -37,29 +38,26 @@ class KotlinJsResourceFileTest {
         resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinJsResourceFile(testFile,
-                "Str", "com.package", null, null)
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.package\r\n" +
-                "\r\n" +
-                "import i18next.I18n\r\n" +
-                "\r\n" +
-                "public class Str(private val i18n: I18n) {\r\n" +
-                "\r\n" +
-                "    data class Plural(val count: Int)\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value1_1\r\n" +
-                "    */\r\n" +
-                "    public val key1: String\r\n" +
-                "        get() = this.i18n.t(\"key1\")\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import i18next.I18n\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "class Str(private val i18n: I18n) {\n" +
+                "    /**\n" +
+                "     * value1_1 */\n" +
+                "    val key1: String\n" +
+                "        get() = this.i18n.t(\"key1\")\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -70,30 +68,28 @@ class KotlinJsResourceFileTest {
         resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment 1", Quantity.ONE), ResValue("value1_2", "Comment 2", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinJsResourceFile(testFile,
-                "Str", "com.package", null, null)
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.package\r\n" +
-                "\r\n" +
-                "import i18next.I18n\r\n" +
-                "\r\n" +
-                "public class Str(private val i18n: I18n) {\r\n" +
-                "\r\n" +
-                "    data class Plural(val count: Int)\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value1_2\r\n" +
-                "    */\r\n" +
-                "    public fun key1(count: Int): String {\r\n" +
-                "        return this.i18n.t(\"key1_plural\", Plural(count))\r\n" +
-                "    }\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import i18next.I18n\n" +
+                "import kotlin.Int\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "class $className(private val i18n: I18n) {\n" +
+                "    /**\n" +
+                "     * value1_2 */\n" +
+                "    fun key1(count: Int): String = this.i18n.t(\"key1_plural\", Plural(count))\n" +
+                "\n" +
+                "    data class Plural(val count: Int)\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -111,35 +107,31 @@ class KotlinJsResourceFileTest {
         resLocale.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinJsResourceFile(testFile,
-                "StrImpl", "com.some.package", null, null)
+        val testDirectory = tempFolder.newFolder()
+        val className = "StrImpl"
+        val classPackage = "com.some.pcg"
+        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.some.package\r\n" +
-                "\r\n" +
-                "import i18next.I18n\r\n" +
-                "\r\n" +
-                "public class StrImpl(private val i18n: I18n) {\r\n" +
-                "\r\n" +
-                "    data class Plural(val count: Int)\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value1_2\r\n" +
-                "    */\r\n" +
-                "    public val key1: String\r\n" +
-                "        get() = this.i18n.t(\"key1\")\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value3_2\r\n" +
-                "    */\r\n" +
-                "    public val key3: String\r\n" +
-                "        get() = this.i18n.t(\"key3\")\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import i18next.I18n\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "class $className(private val i18n: I18n) {\n" +
+                "    /**\n" +
+                "     * value1_2 */\n" +
+                "    val key1: String\n" +
+                "        get() = this.i18n.t(\"key1\")\n" +
+                "\n" +
+                "    /**\n" +
+                "     * value3_2 */\n" +
+                "    val key3: String\n" +
+                "        get() = this.i18n.t(\"key3\")\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -157,31 +149,28 @@ class KotlinJsResourceFileTest {
         resLocale.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinJsResourceFile(testFile,
-                "StrImpl", "com.some.package",
-                "StrInterface", "com.interface")
+        val testDirectory = tempFolder.newFolder()
+        val className = "StrImpl"
+        val classPackage = "com.some.pcg"
+        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, "StrInterface", "com.interface")
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.some.package\r\n" +
-                "\r\n" +
-                "import i18next.I18n\r\n" +
-                "import com.interface.StrInterface\r\n" +
-                "\r\n" +
-                "public class StrImpl(private val i18n: I18n): StrInterface {\r\n" +
-                "\r\n" +
-                "    data class Plural(val count: Int)\r\n" +
-                "\r\n" +
-                "    public override val key1: String\r\n" +
-                "        get() = this.i18n.t(\"key1\")\r\n" +
-                "\r\n" +
-                "    public override val key3: String\r\n" +
-                "        get() = this.i18n.t(\"key3\")\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import com.interface.StrInterface\n" +
+                "import i18next.I18n\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "class $className(private val i18n: I18n) : StrInterface {\n" +
+                "    override val key1: String\n" +
+                "        get() = this.i18n.t(\"key1\")\n" +
+                "\n" +
+                "    override val key3: String\n" +
+                "        get() = this.i18n.t(\"key3\")\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -194,32 +183,67 @@ class KotlinJsResourceFileTest {
                 Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinJsResourceFile(
-                testFile, "Strings", "ru.pocketbyte", null, null)
-
+        val testDirectory = tempFolder.newFolder()
+        val className = "Strings"
+        val classPackage = "ru.pocketbyte"
+        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package ru.pocketbyte\r\n" +
-                "\r\n" +
-                "import i18next.I18n\r\n" +
-                "\r\n" +
-                "public class Strings(private val i18n: I18n) {\r\n" +
-                "\r\n" +
-                "    data class Plural(val count: Int)\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
-                " Wery Wery Wery Wery Wery Wery\r\n" +
-                "    * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment\r\n" +
-                "    */\r\n" +
-                "    public val key1: String\r\n" +
-                "        get() = this.i18n.t(\"key1\")\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import i18next.I18n\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "class $className(private val i18n: I18n) {\n" +
+                "    /**\n" +
+                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
+                " Wery Wery Wery Wery Wery Wery\n" +
+                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment */\n" +
+                "    val key1: String\n" +
+                "        get() = this.i18n.t(\"key1\")\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteFormattedComment() {
+        val testValue = "Hello %s %s"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(ResValue(testValue, "", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key2", arrayOf(ResValue(testValue, "Comment 2", Quantity.OTHER), ResValue("value1_1", "Comment 1", Quantity.ONE))))
+        resMap[PlatformResources.BASE_LOCALE] = resLocale
+
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, null, null)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import i18next.I18n\n" +
+                "import kotlin.Int\n" +
+                "import kotlin.String\n" +
+                "\n" +
+                "class $className(private val i18n: I18n) {\n" +
+                "    /**\n" +
+                "     * $testValue */\n" +
+                "    val key1: String\n" +
+                "        get() = this.i18n.t(\"key1\")\n" +
+                "\n" +
+                "    /**\n" +
+                "     * $testValue */\n" +
+                "    fun key2(count: Int): String = this.i18n.t(\"key2_plural\", Plural(count))\n" +
+                "\n" +
+                "    data class Plural(val count: Int)\n" +
+                "}\n"
+
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Throws(IOException::class)
@@ -232,5 +256,12 @@ class KotlinJsResourceFileTest {
         for (value in values)
             resItem.addValue(value)
         return resItem
+    }
+
+    private fun fileForClass(directory: File, className: String, classPackage: String): File {
+        return File(
+                File(directory, classPackage.replace(".", "/")),
+                "$className${AbsKotlinPlatformResources.KOTLIN_FILE_EXTENSION}"
+        )
     }
 }

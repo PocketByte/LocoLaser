@@ -8,8 +8,18 @@ import ru.pocketbyte.locolaser.utils.TextUtils
 import java.io.File
 import java.io.IOException
 import java.util.HashSet
+import java.util.regex.Pattern
 
 abstract class BaseClassResourceFile(file: File) : ResourceStreamFile(file) {
+
+    companion object {
+        private val FORMATTING_PATTERN = Pattern.compile("%([0-9]*)([s|d])")
+    }
+
+    class FormatArgument(
+        val index: Int?,
+        val type: String
+    )
 
     @Throws(IOException::class)
     protected abstract fun writeHeaderComment(resMap: ResMap, writingConfig: WritingConfig?)
@@ -52,6 +62,8 @@ abstract class BaseClassResourceFile(file: File) : ResourceStreamFile(file) {
                     }
 
                     writeProperty(writingConfig, propertyName, item)
+
+                    var arguments = mutableListOf<Pair<Int, String>>()
                 }
             }
 

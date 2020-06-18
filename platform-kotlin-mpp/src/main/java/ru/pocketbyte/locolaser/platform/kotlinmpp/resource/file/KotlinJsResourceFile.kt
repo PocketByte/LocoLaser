@@ -1,105 +1,88 @@
 package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 
-import org.apache.commons.lang3.text.WordUtils
+import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.WritingConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
+import ru.pocketbyte.locolaser.platform.kotlinmpp.extension.hasPlurals
+import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
-import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile
-
 import java.io.File
-import java.io.IOException
 
 class KotlinJsResourceFile(
         file: File,
-        private val mClassName: String,
-        private val mClassPackage: String,
-        private val mInterfaceName: String?,
-        private val mInterfacePackage: String?
-) : BaseClassResourceFile(file) {
+        className: String,
+        classPackage: String,
+        private val interfaceName: String?,
+        private val interfacePackage: String?
+): BasePoetClassResourceFile(file, className, classPackage) {
 
-    companion object {
-
-        private const val CLASS_HEADER_TEMPLATE =
-                "package %1\$s\r\n" +
-                        "\r\n" +
-                        "import i18next.I18n\r\n" +
-                        "\r\n" +
-                        "public class %2\$s(private val i18n: I18n) {\r\n" +
-                        "\r\n" +
-                        "    data class Plural(val count: Int)\r\n"
-
-        private const val CLASS_HEADER_TEMPLATE_WITH_INTERFACE =
-                "package %1\$s\r\n" +
-                        "\r\n" +
-                        "import i18next.I18n\r\n" +
-                        "import %3\$s.%4\$s\r\n" +
-                        "\r\n" +
-                        "public class %2\$s(private val i18n: I18n): %4\$s {\r\n" +
-                        "\r\n" +
-                        "    data class Plural(val count: Int)\r\n"
-
-        private const val CLASS_FOOTER_TEMPLATE =
-                        "}"
-
-        private const val PROPERTY_TEMPLATE =
-                "    public %1\$sval %2\$s: String\r\n" +
-                        "        get() = this.i18n.t(\"%3\$s\")\r\n"
-
-        private const val PROPERTY_PLURAL_TEMPLATE =
-                "    public %1\$sfun %2\$s(count: Int): String {\r\n" +
-                        "        return this.i18n.t(\"%3\$s_plural\", Plural(count))\r\n" +
-                        "    }\r\n"
-
-        private const val MAX_LINE_SIZE = 120
-    }
-
-    override fun read(): ResMap? {
-        return null
-    }
-
-    @Throws(IOException::class)
-    override fun writeHeaderComment(resMap: ResMap, writingConfig: WritingConfig?) {
-        writeStringLn(TemplateStr.GENERATED_CLASS_COMMENT)
-    }
-
-    @Throws(IOException::class)
-    override fun writeClassHeader(resMap: ResMap, writingConfig: WritingConfig?) {
-        if (mInterfaceName != null && mInterfacePackage != null)
-            writeStringLn(String.format(CLASS_HEADER_TEMPLATE_WITH_INTERFACE,
-                    mClassPackage, mClassName,
-                    mInterfacePackage, mInterfaceName))
-        else
-            writeStringLn(String.format(CLASS_HEADER_TEMPLATE,
-                    mClassPackage, mClassName))
-    }
-
-    @Throws(IOException::class)
-    override fun writeComment(writingConfig: WritingConfig?, comment: String) {
-        if (mInterfaceName == null || mInterfacePackage == null) {
-            val commentLinePrefix = "    * "
-            writeStringLn("    /**")
-            writeString(commentLinePrefix)
-            writeStringLn(WordUtils.wrap(comment, MAX_LINE_SIZE - commentLinePrefix.length, "\r\n" + commentLinePrefix, true))
-            writeStringLn("    */")
+    override fun instantiateClassSpecBuilder(resMap: ResMap, writingConfig: WritingConfig?): TypeSpec.Builder {
+        val builder = TypeSpec.classBuilder(className)
+                .addModifiers(KModifier.PUBLIC)
+                .primaryConstructor(
+                    FunSpec.constructorBuilder()
+                        .addParameter("private val i18n", ClassName("i18next", "I18n"))
+                        .build()
+                )
+        if (interfaceName != null && interfacePackage != null) {
+            builder.addSuperinterface(ClassName(interfacePackage, interfaceName))
         }
-        // Otherwise don't write comments because they already written in interface.
+
+        if (resMap.hasPlurals) {
+            builder.addType(
+                TypeSpec.classBuilder("Plural")
+                    .addModifiers(KModifier.DATA)
+                    .primaryConstructor(
+                        FunSpec.constructorBuilder()
+                            .addParameter("val count", Int::class)
+                            .build()
+                    ).build()
+            )
+        }
+
+        return builder
     }
 
-    @Throws(IOException::class)
-    override fun writeProperty(writingConfig: WritingConfig?, propertyName: String, item: ResItem) {
-        val isHasInterface = mInterfaceName != null && mInterfacePackage != null
-        writeStringLn(String.format(
-                if (item.isHasQuantities)
-                    PROPERTY_PLURAL_TEMPLATE
-                else
-                    PROPERTY_TEMPLATE,
-                if (isHasInterface) "override " else "",
-                propertyName, item.key.trim { it <= ' ' }))
+    override fun instantiatePropertySpecBuilder(
+            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+    ): PropertySpec.Builder {
+        val builder = super
+            .instantiatePropertySpecBuilder(name, item, resMap, writingConfig)
+            .getter(
+                FunSpec.getterBuilder()
+                    .addStatement("return this.i18n.t(\"${item.key}\")")
+                    .build()
+            )
+
+        if (interfaceName == null || interfacePackage == null) {
+            val valueOther = item.valueForQuantity(Quantity.OTHER)
+            if (valueOther?.value != null) {
+                builder.addKdoc("%L", wrapCommentString(valueOther.value))
+            }
+        } else {
+            builder.addModifiers(KModifier.OVERRIDE)
+        }
+
+        return builder
     }
 
-    @Throws(IOException::class)
-    override fun writeClassFooter(resMap: ResMap, writingConfig: WritingConfig?) {
-        writeString(CLASS_FOOTER_TEMPLATE)
+    override fun instantiatePluralSpecBuilder(
+            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+    ): FunSpec.Builder {
+        val builder = super
+            .instantiatePluralSpecBuilder(name, item, resMap, writingConfig)
+            .addStatement("return this.i18n.t(\"${item.key}_plural\", Plural(count))")
+
+        if (interfaceName == null || interfacePackage == null) {
+            val valueOther = item.valueForQuantity(Quantity.OTHER)
+            if (valueOther?.value != null) {
+                builder.addKdoc("%L", wrapCommentString(valueOther.value))
+            }
+        } else {
+            builder.addModifiers(KModifier.OVERRIDE)
+        }
+
+        return builder
     }
 }

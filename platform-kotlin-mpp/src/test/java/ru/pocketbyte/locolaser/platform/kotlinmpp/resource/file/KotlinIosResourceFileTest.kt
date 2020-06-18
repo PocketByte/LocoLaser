@@ -14,6 +14,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import ru.pocketbyte.locolaser.platform.kotlinmpp.resource.AbsKotlinPlatformResources
 import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 
 class KotlinIosResourceFileTest {
@@ -37,32 +38,69 @@ class KotlinIosResourceFileTest {
         resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinIosResourceFile(testFile,
-                "Str", "com.package", null, null)
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.package\r\n" +
-                "\r\n" +
-                "import kotlinx.cinterop.*\r\n" +
-                "import platform.Foundation.*\r\n" +
-                "\r\n" +
-                "public class Str(private val bundle: NSBundle, private val tableName: String) {\r\n" +
-                "\r\n" +
-                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\r\n" +
-                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
-                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value1_1\r\n" +
-                "    */\r\n" +
-                "    public val key1: String\r\n" +
-                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.String\n" +
+                "import platform.Foundation.NSBundle\n" +
+                "\n" +
+                "class $className(private val bundle: NSBundle, private val tableName: String) {\n" +
+                "    /**\n" +
+                "     * value1_1 */\n" +
+                "    val key1: String\n" +
+                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\n" +
+                "\n" +
+                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
+                "\n" +
+                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
+                "\n" +
+                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteOnePluralItem() {
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment 1", Quantity.ONE), ResValue("value1_2", "Comment 2", Quantity.OTHER))))
+        resMap[PlatformResources.BASE_LOCALE] = resLocale
+
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.Int\n" +
+                "import kotlin.String\n" +
+                "import localizedPlural.NSLocalizedPluralString\n" +
+                "import platform.Foundation.NSBundle\n" +
+                "\n" +
+                "class $className(private val bundle: NSBundle, private val tableName: String) {\n" +
+                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
+                "\n" +
+                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
+                "\n" +
+                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n" +
+                "\n" +
+                "    /**\n" +
+                "     * value1_2 */\n" +
+                "    fun key1(count: Int): String = NSLocalizedPluralString(\"key1\", this.tableName, this.bundle, count)!!\n" +
+                "}\n"
+
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -80,38 +118,37 @@ class KotlinIosResourceFileTest {
         resLocale.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinIosResourceFile(testFile,
-                "StrImpl", "com.some.package", null, null)
+        val testDirectory = tempFolder.newFolder()
+        val className = "StrImpl"
+        val classPackage = "com.some.pcg"
+        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.some.package\r\n" +
-                "\r\n" +
-                "import kotlinx.cinterop.*\r\n" +
-                "import platform.Foundation.*\r\n" +
-                "\r\n" +
-                "public class StrImpl(private val bundle: NSBundle, private val tableName: String) {\r\n" +
-                "\r\n" +
-                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\r\n" +
-                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
-                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value1_2\r\n" +
-                "    */\r\n" +
-                "    public val key1: String\r\n" +
-                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * value3_2\r\n" +
-                "    */\r\n" +
-                "    public val key3: String\r\n" +
-                "        get() = this.bundle.localizedStringForKey(\"key3\", \"\", this.tableName)\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.String\n" +
+                "import platform.Foundation.NSBundle\n" +
+                "\n" +
+                "class $className(private val bundle: NSBundle, private val tableName: String) {\n" +
+                "    /**\n" +
+                "     * value1_2 */\n" +
+                "    val key1: String\n" +
+                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\n" +
+                "\n" +
+                "    /**\n" +
+                "     * value3_2 */\n" +
+                "    val key3: String\n" +
+                "        get() = this.bundle.localizedStringForKey(\"key3\", \"\", this.tableName)\n" +
+                "\n" +
+                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
+                "\n" +
+                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
+                "\n" +
+                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -129,34 +166,35 @@ class KotlinIosResourceFileTest {
         resLocale.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinIosResourceFile(testFile,
-                "StrImpl", "com.some.package",
+        val testDirectory = tempFolder.newFolder()
+        val className = "StrImpl"
+        val classPackage = "com.some.pcg"
+        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage,
                 "StrInterface", "com.interface")
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package com.some.package\r\n" +
-                "\r\n" +
-                "import kotlinx.cinterop.*\r\n" +
-                "import platform.Foundation.*\r\n" +
-                "import com.interface.StrInterface\r\n" +
-                "\r\n" +
-                "public class StrImpl(private val bundle: NSBundle, private val tableName: String): StrInterface {\r\n" +
-                "\r\n" +
-                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\r\n" +
-                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
-                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\r\n" +
-                "\r\n" +
-                "    public override val key1: String\r\n" +
-                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\r\n" +
-                "\r\n" +
-                "    public override val key3: String\r\n" +
-                "        get() = this.bundle.localizedStringForKey(\"key3\", \"\", this.tableName)\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import com.interface.StrInterface\n" +
+                "import kotlin.String\n" +
+                "import platform.Foundation.NSBundle\n" +
+                "\n" +
+                "class $className(private val bundle: NSBundle, private val tableName: String) : StrInterface {\n" +
+                "    override val key1: String\n" +
+                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\n" +
+                "\n" +
+                "    override val key3: String\n" +
+                "        get() = this.bundle.localizedStringForKey(\"key3\", \"\", this.tableName)\n" +
+                "\n" +
+                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
+                "\n" +
+                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
+                "\n" +
+                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Test
@@ -169,35 +207,79 @@ class KotlinIosResourceFileTest {
                 Quantity.OTHER))))
         resMap[PlatformResources.BASE_LOCALE] = resLocale
 
-        val testFile = tempFolder.newFile()
-        val resourceFile = KotlinIosResourceFile(
-                testFile, "Strings", "ru.pocketbyte", null, null)
+        val testDirectory = tempFolder.newFolder()
+        val className = "Strings"
+        val classPackage = "ru.pocketbyte"
+        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
 
         resourceFile.write(resMap, null)
 
-        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
-                "package ru.pocketbyte\r\n" +
-                "\r\n" +
-                "import kotlinx.cinterop.*\r\n" +
-                "import platform.Foundation.*\r\n" +
-                "\r\n" +
-                "public class Strings(private val bundle: NSBundle, private val tableName: String) {\r\n" +
-                "\r\n" +
-                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\r\n" +
-                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\r\n" +
-                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\r\n" +
-                "\r\n" +
-                "    /**\r\n" +
-                "    * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
-                " Wery Wery Wery Wery Wery Wery\r\n" +
-                "    * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment\r\n" +
-                "    */\r\n" +
-                "    public val key1: String\r\n" +
-                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\r\n" +
-                "\r\n" +
-                "}"
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.String\n" +
+                "import platform.Foundation.NSBundle\n" +
+                "\n" +
+                "class $className(private val bundle: NSBundle, private val tableName: String) {\n" +
+                "    /**\n" +
+                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
+                " Wery Wery Wery Wery Wery Wery\n" +
+                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment */\n" +
+                "    val key1: String\n" +
+                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\n" +
+                "\n" +
+                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
+                "\n" +
+                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
+                "\n" +
+                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n" +
+                "}\n"
 
-        assertEquals(expectedResult, readFile(testFile))
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteFormattedComment() {
+        val testValue = "Hello %s %s"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(ResValue(testValue, "", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key2", arrayOf(ResValue(testValue, "Comment 2", Quantity.OTHER), ResValue("value1_1", "Comment 1", Quantity.ONE))))
+        resMap[PlatformResources.BASE_LOCALE] = resLocale
+
+        val testDirectory = tempFolder.newFolder()
+        val className = "Str"
+        val classPackage = "com.pcg"
+        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
+                "package $classPackage\n" +
+                "\n" +
+                "import kotlin.Int\n" +
+                "import kotlin.String\n" +
+                "import localizedPlural.NSLocalizedPluralString\n" +
+                "import platform.Foundation.NSBundle\n" +
+                "\n" +
+                "class $className(private val bundle: NSBundle, private val tableName: String) {\n" +
+                "    /**\n" +
+                "     * $testValue */\n" +
+                "    val key1: String\n" +
+                "        get() = this.bundle.localizedStringForKey(\"key1\", \"\", this.tableName)\n" +
+                "\n" +
+                "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
+                "\n" +
+                "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
+                "\n" +
+                "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n" +
+                "\n" +
+                "    /**\n" +
+                "     * $testValue */\n" +
+                "    fun key2(count: Int): String = NSLocalizedPluralString(\"key2\", this.tableName, this.bundle, count)!!\n" +
+                "}\n"
+
+        assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
 
     @Throws(IOException::class)
@@ -210,5 +292,12 @@ class KotlinIosResourceFileTest {
         for (value in values)
             resItem.addValue(value)
         return resItem
+    }
+
+    private fun fileForClass(directory: File, className: String, classPackage: String): File {
+        return File(
+            File(directory, classPackage.replace(".", "/")),
+            "$className${AbsKotlinPlatformResources.KOTLIN_FILE_EXTENSION}"
+        )
     }
 }

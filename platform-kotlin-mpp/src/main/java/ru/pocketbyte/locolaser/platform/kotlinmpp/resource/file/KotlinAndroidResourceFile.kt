@@ -1,119 +1,111 @@
 package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 
-import org.apache.commons.lang3.text.WordUtils
+import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.WritingConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
+import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
-import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile
-
 import java.io.File
-import java.io.IOException
 
 class KotlinAndroidResourceFile(
         file: File,
-        private val mClassName: String,
-        private val mClassPackage: String,
-        private val mInterfaceName: String?,
-        private val mInterfacePackage: String?
-) : BaseClassResourceFile(file) {
+        className: String,
+        classPackage: String,
+        private val interfaceName: String?,
+        private val interfacePackage: String?
+): BasePoetClassResourceFile(file, className, classPackage) {
 
-    companion object {
+    private val contextClass = ClassName("android.content", "Context")
+    private val mutableMapClass = ClassName("kotlin.collections", "MutableMap")
 
-        private const val CLASS_HEADER_TEMPLATE =
-                "package %1\$s\r\n" +
-                "\r\n" +
-                "import android.content.Context\r\n" +
-                "\r\n" +
-                "public class %2\$s(private val context: Context) {\r\n" +
-                "\r\n" +
-                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n"
+    override fun instantiateClassSpecBuilder(resMap: ResMap, writingConfig: WritingConfig?): TypeSpec.Builder {
+        val builder = TypeSpec.classBuilder(className)
+                .addModifiers(KModifier.PUBLIC)
+                .primaryConstructor(
+                    FunSpec.constructorBuilder()
+                        .addParameter("private val context", contextClass)
+                        .build()
+                ).addProperty(
+                    PropertySpec.builder("resIds",
+                        ParameterizedTypeName.get(
+                            mutableMapClass, String::class.asTypeName(),
+                            ParameterizedTypeName.get(
+                                mutableMapClass, String::class.asTypeName(), Int::class.asTypeName()
+                            )
+                        ), KModifier.PRIVATE
+                    ).initializer("mutableMapOf<String, MutableMap<String, Int>>()").build()
+                ).addFunction(
+                    FunSpec.builder("getId")
+                        .addModifiers(KModifier.PRIVATE)
+                        .addParameter("resName", String::class)
+                        .addParameter("defType", String::class)
+                        .returns(Int::class)
+                        .addCode(
+                            CodeBlock.builder()
+                                .addStatement("var resMap = resIds[defType]")
+                                .beginControlFlow("if (resMap == null)")
+                                    .addStatement("resMap = mutableMapOf()")
+                                    .addStatement("resIds[defType] = resMap")
+                                .endControlFlow()
 
-        private const val CLASS_HEADER_TEMPLATE_WITH_INTERFACE =
-                "package %1\$s\r\n" +
-                "\r\n" +
-                "import android.content.Context\r\n" +
-                "import %3\$s.%4\$s\r\n" +
-                "\r\n" +
-                "public class %2\$s(private val context: Context): %4\$s {\r\n" +
-                "\r\n" +
-                "    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()\r\n"
-
-        private const val CLASS_FOOTER_TEMPLATE =
-                "    private fun getId(resName: String, defType: String): Int {\r\n" +
-                "        var resMap = resIds[defType]\r\n" +
-                "        if (resMap == null) {\r\n" +
-                "            resMap = mutableMapOf()\r\n" +
-                "            resIds[defType] = resMap\r\n" +
-                "        }\r\n" +
-                "\r\n" +
-                "        var resId = resMap[resName]\r\n" +
-                "        if (resId == null) {\r\n" +
-                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\r\n" +
-                "            resMap[resName] = resId\r\n" +
-                "        }\r\n" +
-                "        return resId\r\n" +
-                "    }\r\n" +
-                "}";
-
-        private const val PROPERTY_TEMPLATE =
-                "    public %1\$sval %2\$s: String\r\n" +
-                "        get() = this.context.getString(getId(\"%3\$s\", \"string\"))\r\n"
-
-        private const val PROPERTY_PLURAL_TEMPLATE =
-                "    public %1\$sfun %2\$s(count: Int): String {\r\n" +
-                "        return this.context.resources.getQuantityString(getId(\"%3\$s\", \"plurals\"), count)\r\n" +
-                "    }\r\n"
-
-        private const val MAX_LINE_SIZE = 120
-    }
-
-    override fun read(): ResMap? {
-        return null
-    }
-
-    @Throws(IOException::class)
-    override fun writeHeaderComment(resMap: ResMap, writingConfig: WritingConfig?) {
-        writeStringLn(TemplateStr.GENERATED_CLASS_COMMENT)
-    }
-
-    @Throws(IOException::class)
-    override fun writeClassHeader(resMap: ResMap, writingConfig: WritingConfig?) {
-        if (mInterfaceName != null && mInterfacePackage != null)
-            writeStringLn(String.format(CLASS_HEADER_TEMPLATE_WITH_INTERFACE,
-                    mClassPackage, mClassName,
-                    mInterfacePackage, mInterfaceName))
-        else
-            writeStringLn(String.format(CLASS_HEADER_TEMPLATE,
-                    mClassPackage, mClassName))
-    }
-
-    @Throws(IOException::class)
-    override fun writeComment(writingConfig: WritingConfig?, comment: String) {
-        if (mInterfaceName == null || mInterfacePackage == null) {
-            val commentLinePrefix = "    * "
-            writeStringLn("    /**")
-            writeString(commentLinePrefix)
-            writeStringLn(WordUtils.wrap(comment, MAX_LINE_SIZE - commentLinePrefix.length, "\r\n" + commentLinePrefix, true))
-            writeStringLn("    */")
+                                .addStatement("var resId = resMap[resName]")
+                                .beginControlFlow("if (resId == null)")
+                                    .addStatement("resId = context.resources.getIdentifier(resName, defType, context.packageName)")
+                                    .addStatement("resMap[resName] = resId")
+                                .endControlFlow()
+                                .addStatement("return resId")
+                                .build()
+                        ).build()
+                )
+        if (interfaceName != null && interfacePackage != null) {
+            builder.addSuperinterface(ClassName(interfacePackage, interfaceName))
         }
-        // Otherwise don't write comments because they already written in interface.
+
+        return builder
     }
 
-    @Throws(IOException::class)
-    override fun writeProperty(writingConfig: WritingConfig?, propertyName: String, item: ResItem) {
-        val isHasInterface = mInterfaceName != null && mInterfacePackage != null
-        writeStringLn(String.format(
-                if (item.isHasQuantities)
-                    PROPERTY_PLURAL_TEMPLATE
-                else
-                    PROPERTY_TEMPLATE,
-                if (isHasInterface) "override " else "",
-                propertyName, item.key.trim { it <= ' ' }))
+    override fun instantiatePropertySpecBuilder(
+            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+    ): PropertySpec.Builder {
+        val builder = super
+            .instantiatePropertySpecBuilder(name, item, resMap, writingConfig)
+            .getter(
+                FunSpec.getterBuilder()
+                    .addStatement("return this.context.getString(getId(\"${item.androidId}\", \"string\"))")
+                    .build()
+            )
+
+        if (interfaceName == null || interfacePackage == null) {
+            val valueOther = item.valueForQuantity(Quantity.OTHER)
+            if (valueOther?.value != null) {
+                builder.addKdoc("%L", wrapCommentString(valueOther.value))
+            }
+        } else {
+            builder.addModifiers(KModifier.OVERRIDE)
+        }
+
+        return builder
     }
 
-    @Throws(IOException::class)
-    override fun writeClassFooter(resMap: ResMap, writingConfig: WritingConfig?) {
-        writeString(CLASS_FOOTER_TEMPLATE)
+    override fun instantiatePluralSpecBuilder(
+            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+    ): FunSpec.Builder {
+        val builder = super
+            .instantiatePluralSpecBuilder(name, item, resMap, writingConfig)
+            .addStatement("return this.context.resources.getQuantityString(getId(\"${item.androidId}\", \"plurals\"), count)")
+
+        if (interfaceName == null || interfacePackage == null) {
+            val valueOther = item.valueForQuantity(Quantity.OTHER)
+            if (valueOther?.value != null) {
+                builder.addKdoc("%L", wrapCommentString(valueOther.value))
+            }
+        } else {
+            builder.addModifiers(KModifier.OVERRIDE)
+        }
+
+        return builder
     }
+
+    private val ResItem.androidId: String
+        get() = this.key.trim { it <= ' ' }
 }
