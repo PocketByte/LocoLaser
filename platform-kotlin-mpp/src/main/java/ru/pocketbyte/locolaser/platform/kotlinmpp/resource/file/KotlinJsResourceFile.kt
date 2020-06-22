@@ -1,9 +1,8 @@
 package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.kotlinmpp.extension.hasPlurals
-import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
@@ -17,7 +16,7 @@ class KotlinJsResourceFile(
         private val interfacePackage: String?
 ): BasePoetClassResourceFile(file, className, classPackage) {
 
-    override fun instantiateClassSpecBuilder(resMap: ResMap, writingConfig: WritingConfig?): TypeSpec.Builder {
+    override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
         val builder = TypeSpec.classBuilder(className)
                 .addModifiers(KModifier.PUBLIC)
                 .primaryConstructor(
@@ -45,10 +44,10 @@ class KotlinJsResourceFile(
     }
 
     override fun instantiatePropertySpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): PropertySpec.Builder {
         val builder = super
-            .instantiatePropertySpecBuilder(name, item, resMap, writingConfig)
+            .instantiatePropertySpecBuilder(name, item, resMap, extraParams)
             .getter(
                 FunSpec.getterBuilder()
                     .addStatement("return this.i18n.t(\"${item.key}\")")
@@ -68,10 +67,10 @@ class KotlinJsResourceFile(
     }
 
     override fun instantiatePluralSpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
         val builder = super
-            .instantiatePluralSpecBuilder(name, item, resMap, writingConfig)
+            .instantiatePluralSpecBuilder(name, item, resMap, extraParams)
             .addStatement("return this.i18n.t(\"${item.key}_plural\", Plural(count))")
 
         if (interfaceName == null || interfacePackage == null) {

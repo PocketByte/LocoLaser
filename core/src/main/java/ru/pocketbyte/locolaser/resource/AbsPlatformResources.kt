@@ -5,7 +5,7 @@
 
 package ru.pocketbyte.locolaser.resource
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.entity.filter
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
@@ -27,19 +27,19 @@ abstract class AbsPlatformResources(
 
     protected abstract fun getResourceFiles(locales: Set<String>): Array<ResourceFile>?
 
-    override fun read(locales: Set<String>): ResMap {
+    override fun read(locales: Set<String>, extraParams: ExtraParams): ResMap {
         val resMap = ResMap()
         getResourceFiles(locales)?.forEach {
-            resMap.merge(it.read())
+            resMap.merge(it.read(extraParams))
         }
         return resMap
     }
 
     @Throws(IOException::class)
-    override fun write(map: ResMap, writingConfig: WritingConfig?) {
+    override fun write(map: ResMap, extraParams: ExtraParams?) {
         val filteredMap = map.filter(filter)
         getResourceFiles(filteredMap.keys)?.forEach {
-            it.write(filteredMap, writingConfig)
+            it.write(filteredMap, extraParams)
         }
     }
 }

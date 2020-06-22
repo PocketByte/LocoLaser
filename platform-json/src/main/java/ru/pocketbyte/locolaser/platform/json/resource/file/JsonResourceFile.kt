@@ -6,10 +6,9 @@
 package ru.pocketbyte.locolaser.platform.json.resource.file
 
 import org.json.simple.JSONObject
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
-import ru.pocketbyte.locolaser.utils.LogUtils
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_LINKED_CONTAINER_FACTORY
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_PARSER
 import ru.pocketbyte.locolaser.utils.json.LinkedJSONObject
@@ -53,7 +52,7 @@ class JsonResourceFile(
         }
     }
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         if (!file.exists())
             return null
 
@@ -100,7 +99,7 @@ class JsonResourceFile(
     }
 
     @Throws(IOException::class)
-    override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         val locale = resMap[mLocale]
         if (locale?.isNotEmpty() == true) {
             val json = LinkedJSONObject()

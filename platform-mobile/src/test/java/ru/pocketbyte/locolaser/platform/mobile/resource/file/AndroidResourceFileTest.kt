@@ -8,7 +8,7 @@ package ru.pocketbyte.locolaser.platform.mobile.resource.file
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 
@@ -20,6 +20,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.config.duplicateComments
 
 /**
  * @author Denis Shurygin
@@ -55,7 +56,7 @@ class AndroidResourceFileTest {
 
         val resourceFile = AndroidResourceFile(testFile, "en")
 
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(ExtraParams()))
     }
 
     @Test
@@ -74,7 +75,7 @@ class AndroidResourceFileTest {
                         "</resources>")
 
         val resourceFile = AndroidResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -113,7 +114,7 @@ class AndroidResourceFileTest {
                         "</resources>"))
 
         val resourceFile = AndroidResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -156,7 +157,7 @@ class AndroidResourceFileTest {
                         "</resources>")
 
         val resourceFile = AndroidResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -225,8 +226,8 @@ class AndroidResourceFileTest {
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
         resMap[testLocale] = resLocale
 
-        val writingConfig = WritingConfig()
-        writingConfig.isDuplicateComments = false
+        val writingConfig = ExtraParams()
+        writingConfig.duplicateComments = false
 
         val testFile = tempFolder.newFile()
         val resourceFile = AndroidResourceFile(testFile, testLocale)
@@ -405,7 +406,7 @@ class AndroidResourceFileTest {
                         "</resources>"))
 
         val resourceFile = AndroidResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 

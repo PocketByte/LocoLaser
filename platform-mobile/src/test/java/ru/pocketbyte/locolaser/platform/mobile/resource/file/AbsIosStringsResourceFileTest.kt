@@ -10,6 +10,7 @@ import java.io.IOException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import ru.pocketbyte.locolaser.config.ExtraParams
 
 class AbsIosStringsResourceFileTest {
 
@@ -40,7 +41,7 @@ class AbsIosStringsResourceFileTest {
 
         val resourceFile = ResourceFileImpl(testFile, "en")
 
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(ExtraParams()))
     }
 
     private inner class ResourceFileImpl(file: File, locale: String) : AbsIosStringsResourceFile(file, locale) {

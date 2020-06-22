@@ -8,7 +8,8 @@ package ru.pocketbyte.locolaser.platform.mobile.resource.file
 import org.xml.sax.Attributes
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
@@ -84,7 +85,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
         public const val XML_CDATA_POSTFIX = "]]>"
     }
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         if (file.exists()) {
             val handler = AndroidXmlFileParser()
             val spf = SAXParserFactory.newInstance()
@@ -110,7 +111,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
     }
 
     @Throws(IOException::class)
-    override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         open()
         writeStringLn(TemplateStr.XML_DECLARATION)
         writeStringLn(TemplateStr.GENERATED_XML_COMMENT)
@@ -128,7 +129,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                     val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
                     val comment = resValue.comment
                     val value = resValue.value
-                    if (comment != null && (writingConfig == null || writingConfig.isDuplicateComments || comment != value)) {
+                    if (comment != null && (extraParams == null || extraParams.duplicateComments || comment != value)) {
                         writeString("    /* ")
                         writeString(escapeComment(comment))
                         writeStringLn(" */")

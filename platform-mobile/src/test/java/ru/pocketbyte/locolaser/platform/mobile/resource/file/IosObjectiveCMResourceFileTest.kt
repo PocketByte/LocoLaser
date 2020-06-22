@@ -19,6 +19,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.PlatformResources.Companion.BASE_LOCALE
 
 /**
@@ -34,7 +35,7 @@ class IosObjectiveCMResourceFileTest {
     fun testRead() {
         val resourceFile = IosObjectiveCMResourceFile(tempFolder.newFile(), "Strings",
                 "Strings")
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(ExtraParams()))
     }
 
     @Test

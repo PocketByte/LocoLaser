@@ -1,6 +1,6 @@
 package ru.pocketbyte.locolaser.resource
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.summary.FileSummary
 
@@ -10,18 +10,18 @@ class PlatformSetResources(
         private val resources: Set<PlatformResources>
 ) : PlatformResources {
 
-    override fun read(locales: Set<String>): ResMap {
+    override fun read(locales: Set<String>, extraParams: ExtraParams): ResMap {
         return ResMap().apply {
             resources.forEach {
-                merge(it.read(locales))
+                merge(it.read(locales, extraParams))
             }
         }
     }
 
     @Throws(IOException::class)
-    override fun write(map: ResMap, writingConfig: WritingConfig?) {
+    override fun write(map: ResMap, extraParams: ExtraParams?) {
         resources.forEach {
-            it.write(map, writingConfig)
+            it.write(map, extraParams)
         }
     }
 

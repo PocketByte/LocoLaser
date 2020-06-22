@@ -6,7 +6,7 @@
 package ru.pocketbyte.locolaser.platform.mobile.resource.file
 
 import org.apache.commons.lang3.text.WordUtils
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile
@@ -39,34 +39,34 @@ class IosObjectiveCHResourceFile(file: File, private val mClassName: String) : B
         }
     }
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         return null
     }
 
     @Throws(IOException::class)
-    override fun writeHeaderComment(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun writeHeaderComment(resMap: ResMap, extraParams: ExtraParams?) {
         writeStringLn(TemplateStr.GENERATED_CLASS_COMMENT)
     }
 
     @Throws(IOException::class)
-    override fun writeClassHeader(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun writeClassHeader(resMap: ResMap, extraParams: ExtraParams?) {
         writeStringLn(String.format(CLASS_HEADER_TEMPLATE, mClassName))
     }
 
     @Throws(IOException::class)
-    override fun writeComment(writingConfig: WritingConfig?, comment: String) {
+    override fun writeComment(extraParams: ExtraParams?, comment: String) {
         val commentLinePrefix = "/// "
         writeString(commentLinePrefix)
         writeStringLn(WordUtils.wrap(escapeComment(comment), MAX_LINE_SIZE - commentLinePrefix.length, "\r\n" + commentLinePrefix, true))
     }
 
     @Throws(IOException::class)
-    override fun writeProperty(writingConfig: WritingConfig?, propertyName: String, item: ResItem) {
+    override fun writeProperty(extraParams: ExtraParams?, propertyName: String, item: ResItem) {
         writeStringLn(String.format(PROPERTY_TEMPLATE, propertyName))
     }
 
     @Throws(IOException::class)
-    override fun writeClassFooter(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun writeClassFooter(resMap: ResMap, extraParams: ExtraParams?) {
         writeString(CLASS_FOOTER_TEMPLATE)
     }
 

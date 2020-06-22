@@ -13,7 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.Config
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.platform.PlatformConfig
 import ru.pocketbyte.locolaser.config.source.Source
 import ru.pocketbyte.locolaser.config.source.SourceConfig
@@ -215,12 +215,12 @@ class LocoLaserTest {
 
     @Test
     fun testWritingConfigUsage() {
-        assertNull(platformResources!!.mWritingConfig)
-        assertNotNull(config!!.writingConfig)
+        assertNull(platformResources!!.mExtraParams)
+        assertNotNull(config!!.extraParams)
 
         assertTrue(LocoLaser.localize(config!!))
 
-        assertTrue(platformResources!!.mWritingConfig == config!!.writingConfig)
+        assertTrue(platformResources!!.mExtraParams == config!!.extraParams)
     }
 
     @Test
@@ -388,22 +388,22 @@ class LocoLaserTest {
             var mSummaryMap: MutableMap<String, FileSummary>?
     ) : PlatformResources {
 
-        var mWritingConfig: WritingConfig? = null
+        var mExtraParams: ExtraParams? = null
 
-        override fun read(locales: Set<String>): ResMap {
+        override fun read(locales: Set<String>, extraParams: ExtraParams): ResMap {
             val resMap = ResMap()
             if (mMap != null) {
                 for (locale in locales) {
-                    resMap.put(locale, ResLocale(mMap!![locale]))
+                    resMap[locale] = ResLocale(mMap!![locale])
                 }
             }
             return resMap
         }
 
         @Throws(IOException::class)
-        override fun write(map: ResMap, writingConfig: WritingConfig?) {
+        override fun write(map: ResMap, extraParams: ExtraParams?) {
             mMap = ResMap(map)
-            mWritingConfig = writingConfig
+            mExtraParams = extraParams
         }
 
         override fun summaryForLocale(locale: String): FileSummary {

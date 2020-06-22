@@ -5,7 +5,8 @@
 
 package ru.pocketbyte.locolaser.platform.gettext.resource.file
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResLocale
 import ru.pocketbyte.locolaser.resource.entity.ResMap
@@ -57,7 +58,7 @@ class GetTextResourceFile(file: File, private val mLocale: String) : ResourceStr
         }
     }
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         if (file.exists()) {
             val result = ResLocale()
 
@@ -143,7 +144,7 @@ class GetTextResourceFile(file: File, private val mLocale: String) : ResourceStr
     }
 
     @Throws(IOException::class)
-    override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         open()
 
         writeStringLn(GENERATED_GETTEXT_COMMENT)
@@ -165,7 +166,7 @@ class GetTextResourceFile(file: File, private val mLocale: String) : ResourceStr
                 val comment = resItem.values[0].comment
                 val value = resItem.values[0].value
 
-                if (comment != null && (writingConfig == null || writingConfig.isDuplicateComments || comment != value)) {
+                if (comment != null && (extraParams == null || extraParams.duplicateComments || comment != value)) {
                     writeString(COMMENT_SINGLE_LINE)
                     writeString(" ")
                     writeString(comment)

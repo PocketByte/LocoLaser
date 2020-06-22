@@ -3,7 +3,7 @@ package ru.pocketbyte.locolaser.platform.json.resource.file
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 
 import java.io.File
@@ -14,7 +14,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 import org.junit.Assert.*
-import ru.pocketbyte.locolaser.platform.json.resource.file.JsonResourceFile
 
 class JsonResourceFileTest {
 
@@ -30,7 +29,7 @@ class JsonResourceFileTest {
 
         val resourceFile = JsonResourceFile(testFile, "en", -1)
 
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(ExtraParams()))
     }
 
     @Test
@@ -45,7 +44,7 @@ class JsonResourceFileTest {
                             "}")
 
         val resourceFile = JsonResourceFile(testFile, testLocale, -1)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -72,7 +71,7 @@ class JsonResourceFileTest {
 
         assertEquals(
             listOf("string1", "string2", "string3"),
-            JsonResourceFile(testFile1, testLocale, -1).read()!![testLocale]!!.keys.map { it }
+            JsonResourceFile(testFile1, testLocale, -1).read(ExtraParams())!![testLocale]!!.keys.map { it }
         )
 
         val testFile2 = prepareTestFile(
@@ -84,7 +83,7 @@ class JsonResourceFileTest {
 
         assertEquals(
             listOf("string3", "string2", "string1"),
-            JsonResourceFile(testFile2, testLocale, -1).read()!![testLocale]!!.keys.map { it }
+            JsonResourceFile(testFile2, testLocale, -1).read(ExtraParams())!![testLocale]!!.keys.map { it }
         )
     }
 
@@ -101,7 +100,7 @@ class JsonResourceFileTest {
                     "}")
 
         val resourceFile = JsonResourceFile(testFile, testLocale, -1)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 

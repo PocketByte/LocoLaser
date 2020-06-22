@@ -9,7 +9,6 @@ import ru.pocketbyte.locolaser.config.platform.PlatformConfig
 import ru.pocketbyte.locolaser.config.source.SourceConfig
 
 import java.io.File
-import java.io.IOException
 
 /**
  * Configuration object that contain information about localization rules.
@@ -98,15 +97,15 @@ class Config {
             return field
         }
 
-    val writingConfig = WritingConfig()
+    val extraParams = ExtraParams()
 
     /**
      * Define if comment should be written even if it equal resource value.
      * True if comment should be written even if it equal resource value, false otherwise.
      */
     var isDuplicateComments: Boolean
-        get() = writingConfig.isDuplicateComments
+        get() = extraParams.duplicateComments
         set(isDuplicateComments) {
-            writingConfig.isDuplicateComments = isDuplicateComments
+            extraParams.duplicateComments = isDuplicateComments
         }
 }

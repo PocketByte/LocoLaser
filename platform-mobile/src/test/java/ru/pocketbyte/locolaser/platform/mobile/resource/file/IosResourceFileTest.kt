@@ -8,7 +8,7 @@ package ru.pocketbyte.locolaser.platform.mobile.resource.file
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 
@@ -20,6 +20,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.AbsIosStringsResourceFileTest.Companion.PLATFORM_TEST_STRING
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.AbsIosStringsResourceFileTest.Companion.TEST_STRING
 
@@ -43,7 +44,7 @@ class IosResourceFileTest {
                         "\"string3\" = \"Value 3\";")
 
         val resourceFile = IosResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -102,8 +103,8 @@ class IosResourceFileTest {
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
         resMap[testLocale] = resLocale
 
-        val writingConfig = WritingConfig()
-        writingConfig.isDuplicateComments = false
+        val writingConfig = ExtraParams()
+        writingConfig.duplicateComments = false
 
         val testFile = tempFolder.newFile()
         val resourceFile = IosResourceFile(testFile, testLocale)
@@ -127,7 +128,7 @@ class IosResourceFileTest {
                         "\"string1\" = \"" + PLATFORM_TEST_STRING + "\";"))
 
         val resourceFile = IosResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 

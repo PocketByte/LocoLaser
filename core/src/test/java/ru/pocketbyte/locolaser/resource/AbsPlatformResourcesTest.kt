@@ -10,6 +10,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.testutils.mock.MockPlatformResources
@@ -55,7 +56,7 @@ class AbsPlatformResourcesTest {
             }
         }
 
-        val result = resources.read(allLocales)
+        val result = resources.read(allLocales, ExtraParams())
 
         val expectedMap = prepareResMap1().merge(prepareResMap2())
 

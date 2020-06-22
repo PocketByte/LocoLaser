@@ -10,6 +10,7 @@ import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
@@ -31,7 +32,7 @@ class IosSwiftResourceFileTest {
     @Throws(IOException::class)
     fun testRead() {
         val resourceFile = IosSwiftResourceFile(tempFolder.newFile(), "Strings", "Strings")
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(ExtraParams()))
     }
 
     @Test

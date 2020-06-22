@@ -7,7 +7,7 @@ package ru.pocketbyte.locolaser.resource.file
 
 import org.junit.*
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 
 import java.io.*
@@ -33,12 +33,12 @@ class ResourceStreamFileTest {
     @Throws(IOException::class)
     fun init() {
         streamFile = object : ResourceStreamFile(tempFolder.newFile()) {
-            override fun read(): ResMap? {
+            override fun read(extraParams: ExtraParams): ResMap? {
                 return null
             }
 
             @Throws(IOException::class)
-            override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+            override fun write(resMap: ResMap, extraParams: ExtraParams?) {
 
             }
         }

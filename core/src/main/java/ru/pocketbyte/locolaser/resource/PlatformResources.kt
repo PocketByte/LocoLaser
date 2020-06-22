@@ -5,7 +5,7 @@
 
 package ru.pocketbyte.locolaser.resource
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.summary.FileSummary
 
@@ -26,10 +26,10 @@ interface PlatformResources {
      * Read resources map from the resource files. Keys from the result map duplicate resource locale's.
      * @return Resources map. Keys from the map duplicate resource locale's.
      */
-    fun read(locales: Set<String>): ResMap
+    fun read(locales: Set<String>, extraParams: ExtraParams): ResMap
 
     @Throws(IOException::class)
-    fun write(map: ResMap, writingConfig: WritingConfig?)
+    fun write(map: ResMap, extraParams: ExtraParams?)
 
     fun summaryForLocale(locale: String): FileSummary
 }

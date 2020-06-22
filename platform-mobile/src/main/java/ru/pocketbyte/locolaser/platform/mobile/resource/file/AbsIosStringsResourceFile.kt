@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.platform.mobile.resource.file
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResLocale
@@ -45,7 +46,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
     @Throws(IOException::class)
     protected abstract fun writeKeyValueString(key: String, value: String)
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         if (file.exists()) {
             val result = ResLocale()
 
@@ -143,7 +144,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
     }
 
     @Throws(IOException::class)
-    override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         open()
 
         writeStringLn(TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT)
@@ -167,7 +168,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                     val comment = resItem.values[0].comment
                     val value = resItem.values[0].value
 
-                    if (comment != null && (writingConfig == null || writingConfig.isDuplicateComments || comment != value)) {
+                    if (comment != null && (extraParams == null || extraParams.duplicateComments || comment != value)) {
                         writeString(COMMENT_MULTILINE_START_2)
                         writeString(" ")
                         writeString(comment)

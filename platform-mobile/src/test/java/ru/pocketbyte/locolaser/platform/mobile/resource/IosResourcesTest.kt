@@ -10,6 +10,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 import java.io.IOException
 
@@ -29,7 +30,7 @@ class IosResourcesTest {
         val resources = IosResources(tempFolder.newFolder(), "test", null)
         resources.write(resMap1, null)
 
-        val resMap2 = resources.read(resMap1.keys)
+        val resMap2 = resources.read(resMap1.keys, ExtraParams())
 
         assertNotNull(resMap2)
         assertEquals(resMap1, resMap2)

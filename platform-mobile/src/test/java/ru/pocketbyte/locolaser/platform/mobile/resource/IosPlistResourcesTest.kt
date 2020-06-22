@@ -9,6 +9,7 @@ import java.io.IOException
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import ru.pocketbyte.locolaser.config.ExtraParams
 
 class IosPlistResourcesTest {
 
@@ -23,7 +24,7 @@ class IosPlistResourcesTest {
         val resources = IosResources(tempFolder.newFolder(), "test", null)
         resources.write(resMap1, null)
 
-        val resMap2 = resources.read(resMap1.keys)
+        val resMap2 = resources.read(resMap1.keys, ExtraParams())
 
         assertNotNull(resMap2)
         assertEquals(resMap1, resMap2)

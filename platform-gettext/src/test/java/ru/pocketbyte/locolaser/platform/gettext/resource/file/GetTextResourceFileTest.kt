@@ -3,7 +3,7 @@ package ru.pocketbyte.locolaser.platform.gettext.resource.file
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 
 import java.io.File
@@ -14,6 +14,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.config.duplicateComments
 
 class GetTextResourceFileTest {
 
@@ -29,7 +30,7 @@ class GetTextResourceFileTest {
 
         val resourceFile = GetTextResourceFile(testFile, "en")
 
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(ExtraParams()))
     }
 
     @Test
@@ -48,7 +49,7 @@ class GetTextResourceFileTest {
                         "msgstr \"Value 3\"")
 
         val resourceFile = GetTextResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -83,7 +84,7 @@ class GetTextResourceFileTest {
                         " \"Value 3 string 3\""))
 
         val resourceFile = GetTextResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -118,7 +119,7 @@ class GetTextResourceFileTest {
                         "       \"Value 3 string 2\""))
 
         val resourceFile = GetTextResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -181,8 +182,8 @@ class GetTextResourceFileTest {
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
         resMap[testLocale] = resLocale
 
-        val writingConfig = WritingConfig()
-        writingConfig.isDuplicateComments = false
+        val writingConfig = ExtraParams()
+        writingConfig.duplicateComments = false
 
         val testFile = tempFolder.newFile()
         val resourceFile = GetTextResourceFile(testFile, testLocale)

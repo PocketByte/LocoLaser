@@ -15,6 +15,7 @@ import java.util.*
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import ru.pocketbyte.locolaser.config.ExtraParams
 
 class PlatformSetResourcesTest {
 
@@ -38,7 +39,7 @@ class PlatformSetResourcesTest {
 
         val expected = prepareResMap1().merge(prepareResMap2())
 
-        assertEquals(expected, resources.read(allLocales))
+        assertEquals(expected, resources.read(allLocales, ExtraParams()))
     }
 
     @Test
@@ -50,7 +51,7 @@ class PlatformSetResourcesTest {
 
         val expected = prepareResMap2().merge(prepareResMap1())
 
-        assertNotEquals(expected, resources.read(allLocales))
+        assertNotEquals(expected, resources.read(allLocales, ExtraParams()))
     }
 
     @Test

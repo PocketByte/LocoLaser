@@ -9,6 +9,7 @@ import java.io.IOException
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.json.resource.JsonResources
 
 class JsonResourcesTest {
@@ -24,7 +25,7 @@ class JsonResourcesTest {
         val resources = JsonResources(tempFolder.newFolder(), "test", -1, null)
         resources.write(resMap1, null)
 
-        val resMap2 = resources.read(resMap1.keys)
+        val resMap2 = resources.read(resMap1.keys, ExtraParams())
 
         assertNotNull(resMap2)
         assertEquals(resMap1, resMap2)

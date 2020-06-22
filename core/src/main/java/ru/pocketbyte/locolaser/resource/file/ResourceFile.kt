@@ -5,7 +5,7 @@
 
 package ru.pocketbyte.locolaser.resource.file
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 
 import java.io.*
@@ -21,7 +21,7 @@ interface ResourceFile {
      * Read resources map from the resource file.
      * @return Map with resources.
      */
-    fun read(): ResMap?
+    fun read(extraParams: ExtraParams): ResMap?
 
     /**
      * Write resources map into resource files.
@@ -29,6 +29,6 @@ interface ResourceFile {
      * @throws IOException
      */
     @Throws(IOException::class)
-    fun write(resMap: ResMap, writingConfig: WritingConfig?)
+    fun write(resMap: ResMap, extraParams: ExtraParams?)
 
 }

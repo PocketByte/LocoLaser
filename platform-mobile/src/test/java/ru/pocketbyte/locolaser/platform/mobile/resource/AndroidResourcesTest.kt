@@ -9,6 +9,7 @@ import java.io.IOException
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import ru.pocketbyte.locolaser.config.ExtraParams
 
 /**
  * Created by IAm on 21.01.2017.
@@ -26,7 +27,7 @@ class AndroidResourcesTest {
         val resources = AndroidResources(tempFolder.newFolder(), "test", null)
         resources.write(resMap1, null)
 
-        val resMap2 = resources.read(resMap1.keys)
+        val resMap2 = resources.read(resMap1.keys, ExtraParams())
 
         assertNotNull(resMap2)
         assertEquals(resMap1, resMap2)

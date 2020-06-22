@@ -20,6 +20,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import ru.pocketbyte.locolaser.config.ExtraParams
 
 /**
  * @author Denis Shurygin
@@ -33,7 +34,7 @@ class IosObjectiveCHResourceFileTest {
     @Throws(IOException::class)
     fun testRead() {
         val resourceFile = IosObjectiveCHResourceFile(tempFolder.newFile(), "Strings")
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(ExtraParams()))
     }
 
     @Test

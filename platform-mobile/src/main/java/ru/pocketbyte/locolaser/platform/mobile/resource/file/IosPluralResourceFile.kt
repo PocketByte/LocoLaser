@@ -8,7 +8,7 @@ package ru.pocketbyte.locolaser.platform.mobile.resource.file
 import org.xml.sax.Attributes
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
@@ -60,7 +60,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
         }
     }
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         if (file.exists()) {
             val handler = IosXmlFileParser()
             val spf = SAXParserFactory.newInstance()
@@ -86,7 +86,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
     }
 
     @Throws(IOException::class)
-    override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         val items = resMap[mLocale]
 
         items?.keys?.forEach { key ->

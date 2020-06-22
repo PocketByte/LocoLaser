@@ -14,6 +14,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertEquals
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.kotlinmpp.resource.AbsKotlinPlatformResources
 import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 
@@ -26,7 +27,7 @@ class KotlinCommonResourceFileTest {
     @Throws(IOException::class)
     fun testRead() {
         val resourceFile = KotlinCommonResourceFile(tempFolder.newFolder(), "Str", "com.package")
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(ExtraParams()))
     }
 
     @Test

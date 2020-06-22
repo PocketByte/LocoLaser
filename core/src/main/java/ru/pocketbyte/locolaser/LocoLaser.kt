@@ -6,13 +6,10 @@
 package ru.pocketbyte.locolaser
 
 import ru.pocketbyte.locolaser.config.Config
-import ru.pocketbyte.locolaser.config.platform.PlatformConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.source.Source
-import ru.pocketbyte.locolaser.config.source.SourceConfig
-import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.ResLocale
 import ru.pocketbyte.locolaser.resource.entity.ResMap
-import ru.pocketbyte.locolaser.resource.entity.ResValue
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.summary.Summary
 import ru.pocketbyte.locolaser.utils.LogUtils
@@ -140,7 +137,7 @@ object LocoLaser {
             if (config.conflictStrategy !== Config.ConflictStrategy.REMOVE_PLATFORM) {
 
                 // Read local files
-                val oldResMap = resources.read(resourcesToLocalize).remove(sourceResMap)
+                val oldResMap = resources.read(resourcesToLocalize, ExtraParams()).remove(sourceResMap)
 
                 // First part. Find missed values
                 val foundResMaps = HashMap<Source, ResMap>()
@@ -205,7 +202,7 @@ object LocoLaser {
             // =================================
             // Write resource files
             try {
-                resources.write(sourceResMap!!, config.writingConfig)
+                resources.write(sourceResMap!!, config.extraParams)
             } catch (e: IOException) {
                 LogUtils.err(e)
                 return false

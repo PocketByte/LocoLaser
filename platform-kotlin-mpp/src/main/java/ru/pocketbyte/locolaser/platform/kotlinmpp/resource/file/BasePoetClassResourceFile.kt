@@ -2,7 +2,7 @@ package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
 import org.apache.commons.lang3.text.WordUtils
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.ResItem
@@ -22,16 +22,16 @@ abstract class BasePoetClassResourceFile(
         private const val MAX_LINE_SIZE = 120 - 6
     }
 
-    abstract fun instantiateClassSpecBuilder(resMap: ResMap, writingConfig: WritingConfig?): TypeSpec.Builder
+    abstract fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         return null
     }
 
-    override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         val locale = resMap[PlatformResources.BASE_LOCALE]
         if (locale != null) {
-            val classSpec = instantiateClassSpecBuilder(resMap, writingConfig)
+            val classSpec = instantiateClassSpecBuilder(resMap, extraParams)
 
             val keysSet = HashSet<String>()
             for (item in locale.values) {
@@ -42,19 +42,19 @@ abstract class BasePoetClassResourceFile(
 
                     if (item.isHasQuantities) {
                         classSpec.addFunction(
-                            instantiatePluralSpecBuilder(propertyName, item, resMap, writingConfig)
+                            instantiatePluralSpecBuilder(propertyName, item, resMap, extraParams)
                                 .build()
                         )
                     } else {
                         classSpec.addProperty(
-                            instantiatePropertySpecBuilder(propertyName, item, resMap, writingConfig)
+                            instantiatePropertySpecBuilder(propertyName, item, resMap, extraParams)
                                 .build()
                         )
                     }
                 }
             }
 
-            instantiateFileSpecBuilder(resMap, writingConfig)
+            instantiateFileSpecBuilder(resMap, extraParams)
                 .addType(classSpec.build())
                 .build()
                 .writeTo(directory)
@@ -63,13 +63,13 @@ abstract class BasePoetClassResourceFile(
 
 
     protected open fun instantiatePropertySpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): PropertySpec.Builder {
         return PropertySpec.builder(name, String::class, KModifier.PUBLIC)
     }
 
     protected open fun instantiatePluralSpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
         return FunSpec.builder(name)
             .addParameter("count", Int::class)
@@ -78,7 +78,7 @@ abstract class BasePoetClassResourceFile(
     }
 
     protected open fun instantiateFileSpecBuilder(
-            resMap: ResMap, writingConfig: WritingConfig?
+            resMap: ResMap, extraParams: ExtraParams?
     ): FileSpec.Builder {
         return FileSpec.builder(classPackage, className)
             .addComment(TemplateStr.GENERATED_CLASS_WARNING)

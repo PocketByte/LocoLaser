@@ -20,6 +20,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import ru.pocketbyte.locolaser.config.ExtraParams
 
 /**
  * @author Denis Shurygin
@@ -93,7 +94,7 @@ class IosPluralResourceFileTest {
                         "</plist>")
 
         val resourceFile = IosPluralResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 
@@ -205,7 +206,7 @@ class IosPluralResourceFileTest {
                         "</plist>"))
 
         val resourceFile = IosPluralResourceFile(testFile, testLocale)
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
 

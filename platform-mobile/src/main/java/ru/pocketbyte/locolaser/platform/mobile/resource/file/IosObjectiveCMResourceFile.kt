@@ -5,7 +5,7 @@
 
 package ru.pocketbyte.locolaser.platform.mobile.resource.file
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.BaseClassResourceFile
@@ -44,27 +44,27 @@ class IosObjectiveCMResourceFile(
         }
     }
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         return null
     }
 
     @Throws(IOException::class)
-    override fun writeHeaderComment(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun writeHeaderComment(resMap: ResMap, extraParams: ExtraParams?) {
         writeStringLn(TemplateStr.GENERATED_CLASS_COMMENT)
     }
 
     @Throws(IOException::class)
-    override fun writeClassHeader(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun writeClassHeader(resMap: ResMap, extraParams: ExtraParams?) {
         writeStringLn(String.format(CLASS_HEADER_TEMPLATE, mClassName, mClassName))
     }
 
     @Throws(IOException::class)
-    override fun writeComment(writingConfig: WritingConfig?, comment: String) {
+    override fun writeComment(extraParams: ExtraParams?, comment: String) {
         // Do not write comment for .m file
     }
 
     @Throws(IOException::class)
-    override fun writeProperty(writingConfig: WritingConfig?, propertyName: String, item: ResItem) {
+    override fun writeProperty(extraParams: ExtraParams?, propertyName: String, item: ResItem) {
         val valueOther = item.valueForQuantity(Quantity.OTHER)
         val comment = if (valueOther?.comment != null) valueOther.comment else ""
 
@@ -73,7 +73,7 @@ class IosObjectiveCMResourceFile(
     }
 
     @Throws(IOException::class)
-    override fun writeClassFooter(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun writeClassFooter(resMap: ResMap, extraParams: ExtraParams?) {
         writeString(CLASS_FOOTER_TEMPLATE)
     }
 

@@ -1,6 +1,6 @@
 package ru.pocketbyte.locolaser.testutils.mock
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 
@@ -10,12 +10,12 @@ class MockResourceFile(
         var map: ResMap?
 ) : ResourceFile {
 
-    override fun read(): ResMap? {
+    override fun read(extraParams: ExtraParams): ResMap? {
         return map
     }
 
     @Throws(IOException::class)
-    override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         map = resMap
     }
 }

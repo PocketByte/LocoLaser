@@ -1,9 +1,8 @@
 package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.kotlinmpp.extension.hasPlurals
-import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
@@ -19,7 +18,7 @@ class KotlinIosResourceFile(
 
     private val bundleClass = ClassName("platform.Foundation", "NSBundle")
 
-    override fun instantiateClassSpecBuilder(resMap: ResMap, writingConfig: WritingConfig?): TypeSpec.Builder {
+    override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
         val builder = TypeSpec.classBuilder(className)
             .addModifiers(KModifier.PUBLIC)
             .primaryConstructor(
@@ -51,10 +50,10 @@ class KotlinIosResourceFile(
     }
 
     override fun instantiatePropertySpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): PropertySpec.Builder {
         val builder = super
-            .instantiatePropertySpecBuilder(name, item, resMap, writingConfig)
+            .instantiatePropertySpecBuilder(name, item, resMap, extraParams)
             .getter(
                 FunSpec.getterBuilder()
                     .addStatement("return this.bundle.localizedStringForKey(\"${item.key}\", \"\", this.tableName)")
@@ -74,10 +73,10 @@ class KotlinIosResourceFile(
     }
 
     override fun instantiatePluralSpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, writingConfig: WritingConfig?
+            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
         val builder = super
-            .instantiatePluralSpecBuilder(name, item, resMap, writingConfig)
+            .instantiatePluralSpecBuilder(name, item, resMap, extraParams)
             .addStatement("return NSLocalizedPluralString(\"${item.key}\", this.tableName, this.bundle, count)!!")
 
         if (interfaceName == null || interfacePackage == null) {
@@ -92,8 +91,8 @@ class KotlinIosResourceFile(
         return builder
     }
 
-    override fun instantiateFileSpecBuilder(resMap: ResMap, writingConfig: WritingConfig?): FileSpec.Builder {
-        val builder = super.instantiateFileSpecBuilder(resMap, writingConfig)
+    override fun instantiateFileSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): FileSpec.Builder {
+        val builder = super.instantiateFileSpecBuilder(resMap, extraParams)
 
         if (resMap.hasPlurals) {
             builder.addStaticImport("localizedPlural", "NSLocalizedPluralString")
