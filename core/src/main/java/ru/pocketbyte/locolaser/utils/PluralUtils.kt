@@ -122,4 +122,8 @@ object PluralUtils {
         return null
     }
 
+    fun quantityIsSupported(quantity: Quantity, locale: String): Boolean {
+        return quantitiesForLocale(locale)?.contains(quantity) ?: true
+    }
+
 }

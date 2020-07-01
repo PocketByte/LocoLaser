@@ -105,7 +105,7 @@ class ResourceStreamFileTest {
         streamFile!!.writeString("2")
 
         val result = Files.readAllLines(Paths.get(streamFile!!.file.toURI()), Charset.defaultCharset())
-        assertEquals(2, result.size.toLong())
+        assertEquals(2, result.size)
         assertEquals("1", result[0])
         assertEquals("2", result[1])
     }
@@ -119,7 +119,7 @@ class ResourceStreamFileTest {
         streamFile!!.writeString("2")
 
         val result = Files.readAllLines(Paths.get(streamFile!!.file.toURI()), Charset.defaultCharset())
-        assertEquals(2, result.size.toLong())
+        assertEquals(2, result.size)
         assertEquals("1", result[0])
         assertEquals("2", result[1])
     }

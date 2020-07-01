@@ -29,12 +29,21 @@ class Config {
         /** Keep new platform resources if source doesn't contain this resources.  */
         KEEP_NEW_PLATFORM("keep_new_platform"),
 
+        /** Keep platform resources even if source contain this resources.  */
+        KEEP_PLATFORM("keep_platform"),
+
         /** New platform resources should be exported into source if source doesn't contain this resources.  */
-        EXPORT_NEW_PLATFORM("export_new_platform");
+        EXPORT_NEW_PLATFORM("export_new_platform"),
+
+        /** Platform resources should be exported into source even if source contain this resources. */
+        EXPORT_PLATFORM("export_platform");
 
         override fun toString(): String {
             return strValue
         }
+
+        val isExportStrategy: Boolean
+            get() = this == EXPORT_NEW_PLATFORM || this == EXPORT_PLATFORM
     }
 
     /**
@@ -45,27 +54,19 @@ class Config {
      * Source that contain resources.
      */
     var sourceConfig: SourceConfig? = null
-        set(sourceConfig) {
-            if (this.sourceConfig is Child)
-                (this.sourceConfig as Child).parent = null
-
-            field = sourceConfig
-
-            if (this.sourceConfig is Child)
-                (this.sourceConfig as Child).parent = this
+        set(value) {
+            (field as? Child)?.parent = null
+            field = value
+            (value as? Child)?.parent = this
         }
     /**
      * Platform that contain logic of resource creation.
      */
     var platform: PlatformConfig? = null
-        set(platform) {
-            if (this.platform is Child)
-                (this.platform as Child).parent = null
-
-            field = platform
-
-            if (this.platform is Child)
-                (this.platform as Child).parent = this
+        set(value) {
+            (field as? Child)?.parent = null
+            field = value
+            (value as? Child)?.parent = this
         }
     /**
      * Define if import should be forced even if this is not necessary.
@@ -77,8 +78,11 @@ class Config {
      * Default value: REMOVE_PLATFORM.
      * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
      */
-    var conflictStrategy: ConflictStrategy? = null
-        get() = if (field == null) ConflictStrategy.KEEP_NEW_PLATFORM else field
+    var conflictStrategy: ConflictStrategy
+        get() = conflictStrategyInner ?: ConflictStrategy.KEEP_NEW_PLATFORM
+        set(value) { conflictStrategyInner = value }
+
+    private var conflictStrategyInner: ConflictStrategy? = null
 
     /**
      * Define time in milliseconds that define delay for next localization.

@@ -29,6 +29,7 @@ import java.io.PrintWriter
 import java.util.*
 
 import org.junit.Assert.*
+import kotlin.collections.HashMap
 
 /**
  * @author Denis Shurygin
@@ -38,14 +39,14 @@ class LocoLaserTest {
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
 
-    private var config: Config? = null
-    private var platformConfig: MockPlatformConfig? = null
-    private var platformResources: MockPlatformResources? = null
+    private lateinit var config: Config
+    private lateinit var platformConfig: MockPlatformConfig
+    private lateinit var platformResources: MockPlatformResources
 
-    private var source: MockSource? = null
-    private var sourceConfig: MockSourceConfig? = null
+    private lateinit var source: MockSource
+    private lateinit var sourceConfig: MockSourceConfig
 
-    private var mResMap: ResMap? = null
+    private lateinit var mResMap: ResMap
 
     @Before
     @Throws(IOException::class)
@@ -68,25 +69,28 @@ class LocoLaserTest {
         localeRu.put(buildItem("key2", "valueRu2"))
 
         mResMap = ResMap()
-        mResMap!!.put("en", localeEn)
-        mResMap!!.put("ru", localeRu)
+        mResMap["en"] = localeEn
+        mResMap["ru"] = localeRu
 
         platformResources = MockPlatformResources(null, null)
-        platformConfig = MockPlatformConfig("mockPlatform", platformResources!!)
+        platformConfig = MockPlatformConfig("mockPlatform", platformResources)
 
-        sourceConfig = MockSourceConfig("mockSource", mResMap!!, HashSet(Arrays.asList("en", "ru")))
-        source = sourceConfig!!.mSource
+        sourceConfig = MockSourceConfig("mockSource", mResMap, HashSet(listOf("en", "ru")))
+        source = sourceConfig.mSource
 
         config = Config()
-        config!!.file = File(workDir, "config.json")
-        config!!.platform = platformConfig
-        config!!.sourceConfig = sourceConfig
+        config.file = File(workDir, "config.json")
+        config.platform = platformConfig
+        config.sourceConfig = sourceConfig
 
         // Write config file to make it not empty
-        val writer = PrintWriter(config!!.file!!)
-        writer.write("{}")
-        writer.flush()
-        writer.close()
+        config.file?.let {
+            PrintWriter(it).run {
+                write("{}")
+                flush()
+                close()
+            }
+        }
     }
 
     @After
@@ -99,105 +103,198 @@ class LocoLaserTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testNullPlatform() {
-        config!!.platform = null
-        LocoLaser.localize(config!!)
+        config.platform = null
+        LocoLaser.localize(config)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testNullSources() {
-        config!!.sourceConfig = null
-        LocoLaser.localize(config!!)
+        config.sourceConfig = null
+        LocoLaser.localize(config)
     }
 
     // ====================================================
     // Test conflict strategy
 
     @Test
-    fun testConflictStrategyRemoveLocal() {
-        config!!.conflictStrategy = Config.ConflictStrategy.REMOVE_PLATFORM
+    fun testConflictStrategyRemovePlatform() {
+        config.conflictStrategy = Config.ConflictStrategy.REMOVE_PLATFORM
 
         val locale = "en"
         val newKey = "newKey"
-        // Check if original map doesn't contain new value
-        assertFalse(mResMap!![locale]!!.containsKey(newKey))
+        // Check if original map doesn't contain new key
+        assertFalse(mResMap[locale]!!.containsKey(newKey))
 
         val resLocale = ResLocale()
         resLocale.put(buildItem(newKey, "value"))
 
-        platformResources!!.mMap = ResMap()
-        platformResources!!.mMap!!.put(locale, resLocale)
+        platformResources.mMap = ResMap().apply {
+            put(locale, resLocale)
+        }
 
-        assertTrue(LocoLaser.localize(config!!))
-        assertEquals(platformResources!!.mMap, source!!.mMap)
+        assertTrue(LocoLaser.localize(config))
+        assertEquals(platformResources.mMap, source.mMap)
     }
 
     @Test
-    fun testConflictStrategyKeepNewLocal() {
-        config!!.conflictStrategy = Config.ConflictStrategy.KEEP_NEW_PLATFORM
+    fun testConflictStrategyKeepNewPlatform() {
+        config.conflictStrategy = Config.ConflictStrategy.KEEP_NEW_PLATFORM
+
+        val locale = "en"
+        val newKey = "newKey"
+        // Check if original map doesn't contain new key
+        assertFalse(mResMap[locale]!!.containsKey(newKey))
+
+        val overriddenKey = "key1"
+        val overriddenValue = "valueEn1Overridden"
+        // Check if original map contain overridden key with different value
+        assertTrue(mResMap[locale]?.containsKey(overriddenKey) ?: false)
+        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(Quantity.OTHER))
+
+        val resLocale = ResLocale()
+        resLocale.put(buildItem(newKey, "value"))
+        resLocale.put(buildItem(overriddenKey, overriddenValue))
+
+        platformResources.mMap = ResMap().apply {
+            put(locale, resLocale)
+        }
+
+        assertTrue(LocoLaser.localize(config))
+        assertNotEquals(platformResources.mMap, source.mMap)
+
+        platformResources.mMap?.get(locale)?.remove(newKey)
+        assertEquals(platformResources.mMap, source.mMap)
+    }
+
+    @Test
+    fun testConflictStrategyKeepPlatform() {
+        config.conflictStrategy = Config.ConflictStrategy.KEEP_PLATFORM
 
         val locale = "en"
         val newKey = "newKey"
         // Check if original map doesn't contain new value
-        assertFalse(mResMap!![locale]!!.containsKey(newKey))
+        assertFalse(mResMap[locale]?.containsKey(newKey) ?: false)
+
+        val overriddenKey = "key1"
+        val overriddenValue = "valueEn1Overridden"
+        // Check if original map contain overridden key with different value
+        assertTrue(mResMap[locale]?.containsKey(overriddenKey) ?: false)
+        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(Quantity.OTHER))
 
         val resLocale = ResLocale()
         resLocale.put(buildItem(newKey, "value"))
+        resLocale.put(buildItem(overriddenKey, overriddenValue))
 
-        platformResources!!.mMap = ResMap()
-        platformResources!!.mMap!!.put(locale, resLocale)
+        platformResources.mMap = ResMap().apply {
+            put(locale, resLocale)
+        }
 
-        assertTrue(LocoLaser.localize(config!!))
-        assertNotEquals(platformResources!!.mMap, source!!.mMap)
+        assertTrue(LocoLaser.localize(config))
+        assertNotEquals(platformResources.mMap, source.mMap)
 
-        platformResources!!.mMap!![locale]!!.remove(newKey)
-        assertEquals(platformResources!!.mMap, source!!.mMap)
+        platformResources.mMap?.get(locale)?.remove(newKey)
+        assertNotEquals(platformResources.mMap, source.mMap)
+
+        platformResources.mMap?.get(locale)?.get(overriddenKey)?.let {
+            // Check if overridden value is not changed
+            assertEquals(overriddenValue, it.valueForQuantity(Quantity.OTHER)?.value)
+
+            // Check that it's only one difference
+            source.mMap?.get(locale)?.put(it)
+            assertEquals(platformResources.mMap, source.mMap)
+        }
     }
 
     @Test
     fun testConflictStrategyExportNewLocal() {
-        config!!.conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
+        config.conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
 
         val locale = "en"
         val newKey = "newKey"
         // Check if original map doesn't contain new value
-        assertFalse(mResMap!![locale]!!.containsKey(newKey))
+        assertFalse(mResMap[locale]!!.containsKey(newKey))
+
+        val overriddenKey = "key1"
+        val overriddenValue = "valueEn1Overridden"
+        // Check if original map contain overridden key with different value
+        assertTrue(mResMap[locale]?.containsKey(overriddenKey) ?: false)
+        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(Quantity.OTHER))
 
         val resLocale = ResLocale()
         resLocale.put(buildItem(newKey, "value"))
+        resLocale.put(buildItem(overriddenKey, overriddenValue))
 
-        platformResources!!.mMap = ResMap()
-        platformResources!!.mMap!!.put(locale, resLocale)
+        platformResources.mMap = ResMap().apply {
+            put(locale, resLocale)
+        }
 
-        assertTrue(LocoLaser.localize(config!!))
-        assertEquals(platformResources!!.mMap, source!!.mMap)
+        assertTrue(LocoLaser.localize(config))
+        assertEquals(platformResources.mMap, source.mMap)
 
-        assertTrue(source!!.mMap!![locale]!!.containsKey(newKey))
+        source.mMap?.get(locale)?.run {
+            assertTrue(containsKey(newKey))
+            assertTrue(containsKey(overriddenKey))
+        }
+
+        platformResources.mMap?.get(locale)?.get(overriddenKey)?.let {
+            // Check if overridden value is replaced
+            assertNotEquals(overriddenValue, it.valueForQuantity(Quantity.OTHER)?.value)
+        }
+    }
+
+    @Test
+    fun testConflictStrategyExportLocal() {
+        config.conflictStrategy = Config.ConflictStrategy.EXPORT_PLATFORM
+
+        val locale = "en"
+        val newKey = "newKey"
+        // Check if original map doesn't contain new value
+        assertFalse(mResMap[locale]!!.containsKey(newKey))
+
+        val overriddenKey = "key1"
+        val overriddenValue = "valueEn1Overridden"
+        // Check if original map contain overridden key with different value
+        assertTrue(mResMap[locale]?.containsKey(overriddenKey) ?: false)
+        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(Quantity.OTHER))
+
+        val resLocale = ResLocale()
+        resLocale.put(buildItem(newKey, "value"))
+        resLocale.put(buildItem(overriddenKey, overriddenValue))
+
+        platformResources.mMap = ResMap().apply {
+            put(locale, resLocale)
+        }
+
+        assertTrue(LocoLaser.localize(config))
+        assertEquals(platformResources.mMap, source.mMap)
+
+        source.mMap?.get(locale)?.run {
+            assertTrue(containsKey(newKey))
+            assertTrue(containsKey(overriddenKey))
+        }
+
+        platformResources.mMap?.get(locale)?.get(overriddenKey)?.let {
+            // Check if overridden value is not changed
+            assertEquals(overriddenValue, it.valueForQuantity(Quantity.OTHER)?.value)
+        }
     }
 
 
     @Test
     fun testConflictStrategyExportMissedValues() {
-        config!!.conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
+        config.conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
 
         val missedKey = "key1"
         val locale = "ru"
-        val location = object : Source.ValueLocation(source!!) {
 
-        }
+        platformResources.mMap = ResMap(mResMap)
+        assertNotNull(source.mMap?.get(locale)?.remove(missedKey))
 
-        platformResources!!.mMap = ResMap(mResMap)
-        assertNotNull(source!!.mMap!![locale]!!.remove(missedKey))
+        assertTrue(LocoLaser.localize(config))
+        assertEquals(platformResources.mMap, source.mMap)
 
-        source!!.mMissedValues = listOf(Source.MissedValue(
-                missedKey, locale,
-                Quantity.OTHER, location))
-
-        assertTrue(LocoLaser.localize(config!!))
-        assertEquals(platformResources!!.mMap, source!!.mMap)
-
-        val missedItem = source!!.mMap!![locale]!![missedKey]!!
+        val missedItem = source.mMap?.get(locale)?.get(missedKey)
         assertNotNull(missedItem)
-        assertTrue(missedItem.valueForQuantity(Quantity.OTHER)!!.location === location)
     }
 
     // ====================================================
@@ -205,22 +302,22 @@ class LocoLaserTest {
 
     @Test
     fun testSimpleReadAndWrite() {
-        assertNull(platformResources!!.mMap)
-        assertNotNull(source!!.mMap)
+        assertNull(platformResources.mMap)
+        assertNotNull(source.mMap)
 
-        assertTrue(LocoLaser.localize(config!!))
+        assertTrue(LocoLaser.localize(config))
 
-        assertEquals(platformResources!!.mMap, source!!.mMap)
+        assertEquals(platformResources.mMap, source.mMap)
     }
 
     @Test
     fun testWritingConfigUsage() {
-        assertNull(platformResources!!.mExtraParams)
-        assertNotNull(config!!.extraParams)
+        assertNull(platformResources.mExtraParams)
+        assertNotNull(config.extraParams)
 
-        assertTrue(LocoLaser.localize(config!!))
+        assertTrue(LocoLaser.localize(config))
 
-        assertTrue(platformResources!!.mExtraParams == config!!.extraParams)
+        assertTrue(platformResources.mExtraParams == config.extraParams)
     }
 
     @Test
@@ -228,8 +325,8 @@ class LocoLaserTest {
     fun testLocalizationNotNeeded() {
         prepareStateWhenLocalizationNotNeededBecauseNoChanges()
 
-        assertTrue(LocoLaser.localize(config!!))
-        assertNull(platformResources!!.mMap)
+        assertTrue(LocoLaser.localize(config))
+        assertNull(platformResources.mMap)
     }
 
     @Test
@@ -237,10 +334,10 @@ class LocoLaserTest {
     fun testForceImport() {
         prepareStateWhenLocalizationNotNeededBecauseNoChanges()
 
-        config!!.isForceImport = true
-        assertTrue(LocoLaser.localize(config!!))
-        assertNotNull(platformResources!!.mMap)
-        assertEquals(platformResources!!.mMap, source!!.mMap)
+        config.isForceImport = true
+        assertTrue(LocoLaser.localize(config))
+        assertNotNull(platformResources.mMap)
+        assertEquals(platformResources.mMap, source.mMap)
     }
 
     @Test
@@ -249,14 +346,14 @@ class LocoLaserTest {
         prepareStateWhenLocalizationNotNeededBecauseNoChanges()
 
         // Override config file
-        val writer = PrintWriter(config!!.file!!)
+        val writer = PrintWriter(config.file!!)
         writer.write("{\"key\":\"wrong\"}")
         writer.flush()
         writer.close()
 
-        assertTrue(LocoLaser.localize(config!!))
-        assertNotNull(platformResources!!.mMap)
-        assertEquals(platformResources!!.mMap, source!!.mMap)
+        assertTrue(LocoLaser.localize(config))
+        assertNotNull(platformResources.mMap)
+        assertEquals(platformResources.mMap, source.mMap)
     }
 
     @Test
@@ -264,11 +361,11 @@ class LocoLaserTest {
     fun testSourceChanged() {
         prepareStateWhenLocalizationNotNeededBecauseNoChanges()
 
-        source!!.modifiedDate++
+        source.modifiedDate++
 
-        assertTrue(LocoLaser.localize(config!!))
-        assertNotNull(platformResources!!.mMap)
-        assertEquals(platformResources!!.mMap, source!!.mMap)
+        assertTrue(LocoLaser.localize(config))
+        assertNotNull(platformResources.mMap)
+        assertEquals(platformResources.mMap, source.mMap)
     }
 
     @Test
@@ -277,39 +374,40 @@ class LocoLaserTest {
         prepareStateWhenLocalizationNotNeededBecauseNoChanges()
 
         val changedLocale = "en"
-        val localeSummary = platformResources!!.mSummaryMap!![changedLocale]!!
+        val localeSummary = platformResources.mSummaryMap!![changedLocale]!!
 
-        platformResources!!.mSummaryMap!!.put(changedLocale, FileSummary(localeSummary.bytes + 1, "hash_en"))
+        platformResources.mSummaryMap?.put(changedLocale, FileSummary(localeSummary.bytes + 1, "hash_en"))
 
-        assertTrue(LocoLaser.localize(config!!))
-        assertNotNull(platformResources!!.mMap)
-        assertNotEquals(platformResources!!.mMap, source!!.mMap)
-        assertEquals(1, platformResources!!.mMap!!.size.toLong())
-        assertEquals(platformResources!!.mMap!![changedLocale], source!!.mMap!![changedLocale])
+        assertTrue(LocoLaser.localize(config))
+        assertNotNull(platformResources.mMap)
+        assertNotEquals(platformResources.mMap, source.mMap)
+        assertEquals(1, platformResources.mMap?.size)
+        assertEquals(platformResources.mMap!![changedLocale], source.mMap!![changedLocale])
     }
 
     @Test
     fun testSourceClose() {
-        assertTrue(LocoLaser.localize(config!!))
-        assertTrue(source!!.isClosed)
+        assertTrue(LocoLaser.localize(config))
+        assertTrue(source.isClosed)
     }
 
     @Test
     @Throws(ParseException::class, IOException::class)
     fun testSaveSummary() {
-        platformResources!!.mSummaryMap = HashMap(2)
-        platformResources!!.mSummaryMap!!.put("en", FileSummary(2300000, "hash_en"))
-        platformResources!!.mSummaryMap!!.put("ru", FileSummary(2123123, "hash_ru"))
+        platformResources.mSummaryMap = HashMap<String, FileSummary>(2).apply {
+            put("en", FileSummary(2300000, "hash_en"))
+            put("ru", FileSummary(2123123, "hash_ru"))
+        }
 
         val jsonString = "{" +
                 "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(12312, "old_config").toJson() + "," +
-                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":" + (source!!.modifiedDate + 1) + "," +
+                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":" + (source.modifiedDate + 1) + "," +
                 "\"" + Summary.RESOURCE_FILES + "\":{" +
                 "\"en\":" + FileSummary(23213, "old_en").toJson() + "," +
                 "\"ru\":" + FileSummary(24563, "old_ru").toJson() + "}" +
                 "}"
 
-        val tempDir = config!!.tempDir
+        val tempDir = config.tempDir
         if (!tempDir!!.exists())
             assertTrue(tempDir.mkdirs())
         val summaryFile = File(tempDir, Summary.SUMMARY_FILE_NAME)
@@ -326,16 +424,16 @@ class LocoLaserTest {
         assertEquals(FileSummary(12312, "old_config"), summary.configSummary)
         assertEquals(FileSummary(23213, "old_en"), summary.getResourceSummary("en"))
         assertEquals(FileSummary(24563, "old_ru"), summary.getResourceSummary("ru"))
-        assertEquals(source!!.modifiedDate + 1, summary.sourceModifiedDate)
+        assertEquals(source.modifiedDate + 1, summary.sourceModifiedDate)
 
-        assertTrue(LocoLaser.localize(config!!))
+        assertTrue(LocoLaser.localize(config))
 
         //Check if summary changed
         summary = Summary.loadSummary(config)!!
-        assertEquals(FileSummary(config!!.file), summary.configSummary)
+        assertEquals(FileSummary(config.file), summary.configSummary)
         assertEquals(FileSummary(2300000, "hash_en"), summary.getResourceSummary("en"))
         assertEquals(FileSummary(2123123, "hash_ru"), summary.getResourceSummary("ru"))
-        assertEquals(source!!.modifiedDate, summary.sourceModifiedDate)
+        assertEquals(source.modifiedDate, summary.sourceModifiedDate)
     }
 
     // ====================================================
@@ -349,16 +447,17 @@ class LocoLaserTest {
 
     @Throws(IOException::class, ParseException::class)
     private fun prepareStateWhenLocalizationNotNeededBecauseNoChanges(): Summary {
-        platformResources!!.mSummaryMap = HashMap(2)
-        platformResources!!.mSummaryMap!!.put("en", FileSummary(23, "hash_en"))
-        platformResources!!.mSummaryMap!!.put("ru", FileSummary(2123123, "hash_ru"))
+        platformResources.mSummaryMap = HashMap<String, FileSummary>(2).apply {
+            put("en", FileSummary(23, "hash_en"))
+            put("ru", FileSummary(2123123, "hash_ru"))
+        }
 
         val jsonString = "{" +
-                "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(config!!.file).toJson() + "," +
-                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":" + source!!.modifiedDate + "," +
+                "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(config.file).toJson() + "," +
+                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":" + source.modifiedDate + "," +
                 "\"" + Summary.RESOURCE_FILES + "\":{" +
-                "\"en\":" + platformResources!!.mSummaryMap!!["en"]!!.toJson() + "," +
-                "\"ru\":" + platformResources!!.mSummaryMap!!["ru"]!!.toJson() + "}" +
+                "\"en\":" + platformResources.mSummaryMap?.get("en")?.toJson() + "," +
+                "\"ru\":" + platformResources.mSummaryMap?.get("ru")?.toJson() + "}" +
                 "}"
 
         val summary = Summary(tempFolder.newFile(),
@@ -392,9 +491,9 @@ class LocoLaserTest {
 
         override fun read(locales: Set<String>, extraParams: ExtraParams): ResMap {
             val resMap = ResMap()
-            if (mMap != null) {
+            mMap?.let { map ->
                 for (locale in locales) {
-                    resMap[locale] = ResLocale(mMap!![locale])
+                    resMap[locale] = ResLocale(map[locale])
                 }
             }
             return resMap
@@ -433,17 +532,16 @@ class LocoLaserTest {
             override var modifiedDate: Long) : Source(config) {
 
         var isClosed = false
-        var mMissedValues: List<Source.MissedValue>? = null
 
-        override fun read(): Source.ReadResult {
-            return Source.ReadResult(ResMap(mMap), mMissedValues)
+        override fun read(): ResMap {
+            return ResMap(mMap)
         }
 
         override fun write(resMap: ResMap) {
             if (mMap == null)
                 mMap = ResMap(resMap)
             else
-                mMap!!.merge(resMap)
+                mMap.merge(resMap)
         }
 
         override fun close() {

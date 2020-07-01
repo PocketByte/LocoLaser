@@ -32,7 +32,7 @@ import org.junit.Assert.assertTrue
  */
 class BaseTableSourceConfigParserTest {
 
-    private var mConfigParser: ConfigParser? = null
+    private lateinit var mConfigParser: ConfigParser
 
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
@@ -60,7 +60,7 @@ class BaseTableSourceConfigParserTest {
     fun testMinimalSource() {
         val sourceMap = prepareMinimalSourceMap()
         val file = prepareMockFile(null, sourceMap)
-        mConfigParser!!.fromFile(file)
+        mConfigParser.fromFile(file)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -69,7 +69,7 @@ class BaseTableSourceConfigParserTest {
         val sourceMap = prepareMinimalSourceMap()
         sourceMap.remove(BaseTableSourceConfigParser.COLUMN_KEY)
         val file = prepareMockFile(null, sourceMap)
-        mConfigParser!!.fromFile(file)
+        mConfigParser.fromFile(file)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -78,7 +78,7 @@ class BaseTableSourceConfigParserTest {
         val sourceMap = prepareMinimalSourceMap()
         sourceMap.remove(BaseTableSourceConfigParser.COLUMN_LOCALES)
         val file = prepareMockFile(null, sourceMap)
-        mConfigParser!!.fromFile(file)
+        mConfigParser.fromFile(file)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -87,16 +87,16 @@ class BaseTableSourceConfigParserTest {
         val sourceMap = prepareMinimalSourceMap()
         sourceMap.put(BaseTableSourceConfigParser.COLUMN_LOCALES, ArrayList<Any>())
         val file = prepareMockFile(null, sourceMap)
-        mConfigParser!!.fromFile(file)
+        mConfigParser.fromFile(file)
     }
 
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testConfigClass() {
         val file = prepareMockFile(null, prepareMinimalSourceMap())
-        val configs = mConfigParser!!.fromFile(file)
+        val configs = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
 
         val sourceConfig = configs[0].sourceConfig
         assertTrue(sourceConfig is BaseTableSourceConfig)
@@ -110,9 +110,9 @@ class BaseTableSourceConfigParserTest {
             val sourceMap = prepareMinimalSourceMap()
             sourceMap.put(BaseTableSourceConfigParser.COLUMN_KEY, keyColumn)
             val file = prepareMockFile(null, sourceMap)
-            val configs = mConfigParser!!.fromFile(file)
+            val configs = mConfigParser.fromFile(file)
 
-            assertEquals(1, configs.size.toLong())
+            assertEquals(1, configs.size)
 
             val sourceConfig = configs[0].sourceConfig as BaseTableSourceConfig?
             assertEquals(keyColumn, sourceConfig!!.keyColumn)
@@ -127,9 +127,9 @@ class BaseTableSourceConfigParserTest {
             val sourceMap = prepareMinimalSourceMap()
             sourceMap.put(BaseTableSourceConfigParser.COLUMN_QUANTITY, quantityColumn)
             val file = prepareMockFile(null, sourceMap)
-            val configs = mConfigParser!!.fromFile(file)
+            val configs = mConfigParser.fromFile(file)
 
-            assertEquals(1, configs.size.toLong())
+            assertEquals(1, configs.size)
 
             val sourceConfig = configs[0].sourceConfig as BaseTableSourceConfig?
             assertEquals(quantityColumn, sourceConfig!!.quantityColumn)
@@ -144,9 +144,9 @@ class BaseTableSourceConfigParserTest {
             val sourceMap = prepareMinimalSourceMap()
             sourceMap.put(BaseTableSourceConfigParser.COLUMN_COMMENT, commentColumn)
             val file = prepareMockFile(null, sourceMap)
-            val configs = mConfigParser!!.fromFile(file)
+            val configs = mConfigParser.fromFile(file)
 
-            assertEquals(1, configs.size.toLong())
+            assertEquals(1, configs.size)
 
             val sourceConfig = configs[0].sourceConfig as BaseTableSourceConfig?
             assertEquals(commentColumn, sourceConfig!!.commentColumn)
@@ -159,17 +159,17 @@ class BaseTableSourceConfigParserTest {
         val input = arrayOf(arrayOf("locale_1", "locale_3"), arrayOf("locale_2"))
         for (localeColumns in input) {
             val sourceMap = prepareMinimalSourceMap()
-            sourceMap.put(BaseTableSourceConfigParser.COLUMN_LOCALES, Arrays.asList(*localeColumns))
+            sourceMap[BaseTableSourceConfigParser.COLUMN_LOCALES] = listOf(*localeColumns)
             val file = prepareMockFile(null, sourceMap)
-            val configs = mConfigParser!!.fromFile(file)
+            val configs = mConfigParser.fromFile(file)
 
-            assertEquals(1, configs.size.toLong())
+            assertEquals(1, configs.size)
 
             val sourceConfig = configs[0].sourceConfig as BaseTableSourceConfig?
-            assertEquals(localeColumns.size.toLong(), sourceConfig!!.localeColumns!!.size.toLong())
+            assertEquals(localeColumns.size, sourceConfig?.localeColumns?.size)
 
             for (i in localeColumns.indices) {
-                assertTrue(sourceConfig.localeColumns!!.contains(localeColumns[i]))
+                assertTrue(sourceConfig?.localeColumns?.contains(localeColumns[i]) ?: false)
             }
         }
     }
@@ -180,9 +180,9 @@ class BaseTableSourceConfigParserTest {
         val file = prepareMultiSourceMockFile(null, Arrays.asList<Map<String, Any>>(
                 prepareMinimalSourceMap(),
                 prepareMinimalSourceMap()))
-        val configs = mConfigParser!!.fromFile(file)
+        val configs = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertEquals(SourceSetConfig::class.java, configs[0].sourceConfig!!.javaClass)
     }
 

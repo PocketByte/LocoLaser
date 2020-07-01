@@ -45,7 +45,7 @@ class QuantityTest {
     @Test
     @Throws(Exception::class)
     fun testQuantityOther() {
-        assertEquals(1, Quantity.QUANTITY_OTHER.size.toLong())
+        assertEquals(1, Quantity.QUANTITY_OTHER.size)
         assert(Quantity.QUANTITY_OTHER.contains(Quantity.OTHER))
     }
 }

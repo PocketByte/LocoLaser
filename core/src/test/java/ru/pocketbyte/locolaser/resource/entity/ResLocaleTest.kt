@@ -30,7 +30,7 @@ class ResLocaleTest {
         val resItem1_1_Original = resLocale1Original["key1"]!!
 
         assertNotNull(resItem1_1)
-        assertEquals(4, resItem1_1.values.size.toLong())
+        assertEquals(4, resItem1_1.values.size)
 
         // Check values from map 1
         assertNotEquals(resItem1_1_Original.valueForQuantity(Quantity.OTHER),
@@ -49,7 +49,7 @@ class ResLocaleTest {
         val resItem2_1 = resLocale1["key2"]!!
 
         assertNotNull(resItem2_1)
-        assertEquals(1, resItem2_1.values.size.toLong())
+        assertEquals(1, resItem2_1.values.size)
         assertEquals(resLocale1Original["key2"], resItem2_1)
 
         // ==============
@@ -59,7 +59,7 @@ class ResLocaleTest {
         val resItem3_1_Original = resLocale1Original["key3"]!!
 
         assertNotNull(resItem3_1)
-        assertEquals(3, resItem3_1.values.size.toLong())
+        assertEquals(3, resItem3_1.values.size)
 
         // Check values from map 1
         assertNotEquals(resItem3_1_Original.valueForQuantity(Quantity.OTHER),
@@ -75,7 +75,7 @@ class ResLocaleTest {
         val resItem4_1 = resLocale1["key4"]!!
 
         assertNotNull(resItem4_1)
-        assertEquals(3, resItem4_1.values.size.toLong())
+        assertEquals(3, resItem4_1.values.size)
         assertEquals(resLocale2["key4"], resItem4_1)
     }
 
@@ -95,7 +95,7 @@ class ResLocaleTest {
         val resItem1_1_Original = resLocale1Original["key1"]!!
 
         assertNotNull(resItem1_1)
-        assertEquals(1, resItem1_1.values.size.toLong())
+        assertEquals(1, resItem1_1.values.size)
 
         assertEquals(resItem1_1_Original.valueForQuantity(Quantity.FEW), resItem1_1.valueForQuantity(Quantity.FEW))
         assertNull(resItem1_1.valueForQuantity(Quantity.OTHER))
@@ -107,7 +107,7 @@ class ResLocaleTest {
         val resItem2_1 = resLocale1["key2"]!!
 
         assertNotNull(resItem2_1)
-        assertEquals(1, resItem2_1.values.size.toLong())
+        assertEquals(1, resItem2_1.values.size)
         assertEquals(resLocale1Original["key2"], resItem2_1)
 
         // ==============
@@ -116,7 +116,7 @@ class ResLocaleTest {
         val resItem3_1_Original = resLocale1Original["key3"]!!
 
         assertNotNull(resItem3_1)
-        assertEquals(2, resItem3_1.values.size.toLong())
+        assertEquals(2, resItem3_1.values.size)
 
         assertEquals(resItem3_1_Original.valueForQuantity(Quantity.MANY), resItem3_1.valueForQuantity(Quantity.MANY))
         assertEquals(resItem3_1_Original.valueForQuantity(Quantity.ZERO), resItem3_1.valueForQuantity(Quantity.ZERO))

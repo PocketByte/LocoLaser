@@ -22,9 +22,7 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
     companion object {
 
         fun parseMeta(metaString: String?): Map<String, String>? {
-            if (metaString == null || metaString.isBlank()) {
-                return null
-            } else {
+            return if (metaString != null && metaString.isNotBlank()) {
                 val metadata = mutableMapOf<String, String>()
                 metaString.split(";").forEach {
                     val metaParts = it.split("=")
@@ -32,8 +30,8 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
                         metadata[metaParts[0].trim()] = metaParts[1].trim()
                     }
                 }
-                return if (metadata.isNotEmpty()) metadata else null
-            }
+                if (metadata.isNotEmpty()) metadata else null
+            } else null
         }
     }
 
@@ -45,15 +43,55 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
     override val sourceConfig: BaseTableSourceConfig
         get() = super.sourceConfig as BaseTableSourceConfig
 
-    override fun read(): ReadResult {
+    private var keysRows: MutableMap<String, MutableMap<Quantity, Int>>? = null
+        get() {
+            if (field == null) {
 
+            }
+            return field
+        }
+
+    fun getRow(key: String, quantity: Quantity): Int? {
+        if (this.keysRows == null) {
+            val keysRows = mutableMapOf<String, MutableMap<Quantity, Int>>()
+
+            for (row in firstRow until rowsCount) {
+                val rowKey = getValue(columnIndexes.key, row)
+                if (rowKey?.isNotEmpty() == true) {
+                    val rowQuantity = getQuantity(row)
+                    (keysRows[rowKey]
+                        ?: mutableMapOf<Quantity, Int>().apply { keysRows[rowKey] = this }
+                    )[rowQuantity] = row
+                }
+            }
+            this.keysRows = keysRows
+        }
+        return keysRows?.get(key)?.get(quantity)
+    }
+
+    protected fun registerRowForKey(row: Int, key: String, quantity: Quantity) {
+        if (this.keysRows == null) {
+            this.keysRows = mutableMapOf()
+        }
+
+        val quantityMap = keysRows?.get(key)
+                ?: mutableMapOf<Quantity, Int>().apply { keysRows?.put(key, this) }
+
+        quantityMap[quantity] = row
+    }
+
+    override fun read(): ResMap? {
         val items = ResMap()
-        val missedValues = ArrayList<MissedValue>()
 
+        val keysRows = mutableMapOf<String, MutableMap<Quantity, Int>>()
         var row = firstRow
         while (rowsCount >= row) {
             val key = getValue(columnIndexes.key, row)
+            val quantity = getQuantity(row)
             if (key?.isNotEmpty() == true) {
+                (keysRows[key]
+                    ?: mutableMapOf<Quantity, Int>().apply { keysRows[key] = this }
+                )[quantity] = row
                 val comment: String? = if (columnIndexes.comment > 0) {
                     getValue(columnIndexes.comment, row)
                 } else { null }
@@ -66,18 +104,13 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
 
                     val localeCol = columnIndexes.locales[locale] ?: -1
 
-                    if (localeCol >= 0) {
+                    if (localeCol >= 0 && PluralUtils.quantityIsSupported(quantity, locale)) {
                         if (!items.containsKey(locale))
                             items[locale] = ResLocale()
 
                         val itemMap = items[locale]
 
                         val value = getValue(localeCol, row)
-
-                        var quantity = Quantity.OTHER
-                        if (columnIndexes.quantity > 0)
-                            quantity = PluralUtils.quantityFromString(
-                                    getValue(columnIndexes.quantity, row), locale) ?: quantity
 
                         if (value?.isNotEmpty() == true) {
 
@@ -87,13 +120,13 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
                                 itemMap?.put(item)
                             }
 
-                            val resValue = ResValue(sourceValueToValue(value), comment, quantity, metadata)
-                            resValue.location = CellLocation(this, localeCol, row)
+                            val resValue = ResValue(
+                                sourceValueToValue(value), comment, quantity,
+                                sourceValueToFormatParams(value), metadata
+                            )
                             item.addValue(resValue)
                         } else {
                             LogUtils.warn("\rValue not found! Locale= $locale, key= $key.")
-                            missedValues.add(MissedValue(key, locale, quantity,
-                                    CellLocation(this, localeCol, row)))
                         }
                     }
                 }
@@ -101,13 +134,15 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
             row++
         }
 
+        this.keysRows = keysRows
+
         if (items[PlatformResources.BASE_LOCALE] == null) {
             val firstLocale = columnIndexes.locales.entries.find { it.value >= 0 && items[it.key] != null }?.key
             if (firstLocale != null)
                 items[PlatformResources.BASE_LOCALE] = ResLocale(items[firstLocale])
         }
 
-        return ReadResult(items, missedValues)
+        return items
     }
 
 
@@ -129,7 +164,17 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
         return sourceValue
     }
 
-    class CellLocation(source: Source, val col: Int, val row: Int) : Source.ValueLocation(source)
+    open fun sourceValueToFormatParams(sourceValue: String): List<FormatParam>? {
+        return null
+    }
+
+    private fun getQuantity(row: Int): Quantity {
+        val quantity = if (columnIndexes.quantity > 0) {
+            PluralUtils.quantityFromString(getValue(columnIndexes.quantity, row))
+        } else null
+
+        return quantity ?: Quantity.OTHER
+    }
 
     class ColumnIndexes(
             val key: Int,

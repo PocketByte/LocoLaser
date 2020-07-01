@@ -5,7 +5,6 @@
 
 package ru.pocketbyte.locolaser.config.source
 
-import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 
 /**
@@ -16,14 +15,8 @@ abstract class Source(open val sourceConfig: SourceConfig) {
 
     abstract val modifiedDate: Long
 
-    abstract fun read(): ReadResult
+    abstract fun read(): ResMap?
     abstract fun write(resMap: ResMap)
 
     abstract fun close()
-
-    class ReadResult(val items: ResMap?, val missedValues: List<MissedValue>?)
-
-    class MissedValue(val key: String, val locale: String, val quantity: Quantity, val location: ValueLocation)
-
-    abstract class ValueLocation(val source: Source)
 }

@@ -8,6 +8,7 @@ package ru.pocketbyte.locolaser.resource
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.entity.filter
+import ru.pocketbyte.locolaser.resource.entity.merge
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 
 import java.io.File

@@ -151,13 +151,16 @@ open class ConfigParser
         val config = Config()
         config.file = file
         config.isForceImport = JsonParseUtils.getBoolean(configJson, FORCE_IMPORT, null, false)
-        config.conflictStrategy = parseConflictStrategy(JsonParseUtils.getString(configJson, CONFLICT_STRATEGY, null, false))
         config.isDuplicateComments = JsonParseUtils.getBoolean(configJson, DUPLICATE_COMMENTS, null, false)
         config.delay = JsonParseUtils.getLong(configJson, DELAY, null, false) * DELAY_MULT
         config.tempDir = JsonParseUtils.getFile(configJson, TEMP_DIR, null, false)
 
         config.sourceConfig = sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true)
         config.platform = platformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), true)
+
+        parseConflictStrategy(JsonParseUtils.getString(configJson, CONFLICT_STRATEGY, null, false))?.let {
+            config.conflictStrategy = it
+        }
 
         validate(config)
 
@@ -198,7 +201,9 @@ open class ConfigParser
                 config.isForceImport = true
 
             if (conflictStrategy != null)
-                config.conflictStrategy = parseConflictStrategy(conflictStrategy)
+                parseConflictStrategy(conflictStrategy)?.let {
+                    config.conflictStrategy = it
+                }
 
             if (delay != null)
                 config.delay = delay * DELAY_MULT

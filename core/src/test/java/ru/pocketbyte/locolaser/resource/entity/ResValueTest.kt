@@ -97,6 +97,6 @@ class ResValueTest {
         // Merge nulls
         assertSame(null.merge(item1), item1)
         assertSame(item1.merge(null), item1)
-        assertNull(null.merge(null))
+        assertNull((null as? ResValue).merge(null))
     }
 }

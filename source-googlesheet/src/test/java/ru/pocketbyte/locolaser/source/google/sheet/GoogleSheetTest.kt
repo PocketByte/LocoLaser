@@ -47,7 +47,7 @@ class GoogleSheetTest {
 
     @Test
     fun testValueArraysHasSameLength() {
-        assertEquals(TEST_VALUES.size.toLong(), TEST_SOURCE_VALUES.size.toLong())
+        assertEquals(TEST_VALUES.size, TEST_SOURCE_VALUES.size)
     }
 
     @Test

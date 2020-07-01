@@ -125,13 +125,13 @@ class Summary private constructor(file: File?) {
         return true
     }
 
-    fun isResourceLocaleChanged(resources: PlatformResources, locale: String): Boolean {
+    fun isResourceLocaleChanged(resources: PlatformResources?, locale: String): Boolean {
         val fileSummary = getResourceSummary(locale)
-        return fileSummary == null || fileSummary != resources.summaryForLocale(locale)
+        return fileSummary == null || fileSummary != resources?.summaryForLocale(locale)
     }
 
-    fun isConfigFileChanged(configFile: File): Boolean {
-        return configSummary == null || !configSummary!!.equalsToFile(configFile)
+    fun isConfigFileChanged(configFile: File?): Boolean {
+        return !(configSummary?.equalsToFile(configFile) ?: false)
     }
 
     fun setResourceSummary(locale: String, summary: FileSummary) {

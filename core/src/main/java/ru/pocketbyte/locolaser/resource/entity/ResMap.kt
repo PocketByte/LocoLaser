@@ -18,13 +18,6 @@ class ResMap() : HashMap<String, ResLocale>() {
         }
     }
 
-    fun merge(map: ResMap?): ResMap {
-        map?.forEach { locale, value ->
-            this[locale] = this[locale]?.merge(value) ?: value
-        }
-        return this
-    }
-
     fun remove(map: ResMap?): ResMap {
         map?.forEach { locale, removeItem ->
             val destinationItems = this[locale]
@@ -35,6 +28,16 @@ class ResMap() : HashMap<String, ResLocale>() {
         }
         return this
     }
+}
+
+fun ResMap?.merge(map: ResMap?): ResMap? {
+    if (this == null)
+        return map
+
+    map?.forEach { locale, value ->
+        this[locale] = this[locale]?.merge(value) ?: value
+    }
+    return this
 }
 
 fun ResMap.filter(filter: ((key: String) -> Boolean)?): ResMap {

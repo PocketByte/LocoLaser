@@ -79,7 +79,7 @@ class GoogleSheetConfigParserTest {
         val file = prepareMockFile(null, prepareMinimalSourceMap())
         val config = mConfigParser!!.fromFile(file)
 
-        assertEquals(1, config.size.toLong())
+        assertEquals(1, config.size)
 
         val sourceConfig = config[0].sourceConfig
         assertTrue(sourceConfig is GoogleSheetConfig)
@@ -95,7 +95,7 @@ class GoogleSheetConfigParserTest {
             val file = prepareMockFile(null, sourceMap)
             val config = mConfigParser!!.fromFile(file)
 
-            assertEquals(1, config.size.toLong())
+            assertEquals(1, config.size)
 
             val sourceConfig = config[0].sourceConfig as GoogleSheetConfig
             assertEquals(expectedValue, sourceConfig.id)
@@ -112,7 +112,7 @@ class GoogleSheetConfigParserTest {
             val file = prepareMockFile(null, sourceMap)
             val config = mConfigParser!!.fromFile(file)
 
-            assertEquals(1, config.size.toLong())
+            assertEquals(1, config.size)
 
             val sourceConfig = config[0].sourceConfig as GoogleSheetConfig
             assertEquals(expectedValue, sourceConfig.worksheetTitle)
@@ -129,7 +129,7 @@ class GoogleSheetConfigParserTest {
             val file = prepareMockFile(null, sourceMap)
             val config = mConfigParser!!.fromFile(file)
 
-            assertEquals(1, config.size.toLong())
+            assertEquals(1, config.size)
 
             val sourceConfig = config[0].sourceConfig as GoogleSheetConfig
             assertEquals(File(expectedValue).canonicalPath,

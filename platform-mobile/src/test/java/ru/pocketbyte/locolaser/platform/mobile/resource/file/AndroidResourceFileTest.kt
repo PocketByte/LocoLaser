@@ -293,7 +293,7 @@ class AndroidResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-                ResValue("value1_1", "Comment", Quantity.OTHER,
+                ResValue("value1_1", "Comment", Quantity.OTHER, null,
                         mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON)))
         )))
         resMap[testLocale] = resLocale
@@ -319,17 +319,17 @@ class AndroidResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-                ResValue("value1", "Comment", Quantity.OTHER,
+                ResValue("value1", "Comment", Quantity.OTHER, null,
                         mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON)))
         )))
         resLocale.put(prepareResItem("key2", arrayOf(
-                ResValue("value2", "Comment 2", Quantity.OTHER,
+                ResValue("value2", "Comment 2", Quantity.OTHER, null,
                         mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF)))
         )))
         resLocale.put(prepareResItem("key3", arrayOf(
-                ResValue("value3 1", null, Quantity.ONE,
+                ResValue("value3 1", null, Quantity.ONE, null,
                         mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON))),
-                ResValue("value3 2", null, Quantity.OTHER,
+                ResValue("value3 2", null, Quantity.OTHER, null,
                         mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF)))
         )))
         resMap[testLocale] = resLocale
@@ -363,9 +363,9 @@ class AndroidResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("string1", arrayOf(
-                ResValue("String", "Comment", Quantity.OTHER,
+                ResValue("String", "Comment", Quantity.OTHER, null,
                         mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
-                ResValue("String one", null, Quantity.ONE,
+                ResValue("String one", null, Quantity.ONE, null,
                         mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
                 ResValue("String two", null, Quantity.TWO))))
         resLocale.put(prepareResItem("string2", arrayOf(

@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser.config.source
 
 import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.entity.merge
 
 import java.util.ArrayList
 
@@ -23,19 +24,12 @@ class SourceSet(
                 .map { it.modifiedDate }
                 .max() ?: 0
 
-    override fun read(): ReadResult {
-        var missedValues: MutableList<MissedValue>? = null
+    override fun read(): ResMap? {
         var resMap: ResMap? = null
         for (source in mSources) {
-            val result = source.read()
-            if (result.missedValues != null) {
-                if (missedValues == null)
-                    missedValues = ArrayList()
-                missedValues.addAll(result.missedValues)
-            }
-            resMap = resMap?.merge(result.items) ?: ResMap(result.items)
+            resMap = resMap.merge(source.read())
         }
-        return ReadResult(resMap, missedValues)
+        return resMap
     }
 
     override fun write(resMap: ResMap) {

@@ -5,8 +5,6 @@
 
 package ru.pocketbyte.locolaser.resource.entity
 
-import ru.pocketbyte.locolaser.config.source.Source
-
 /**
  * @author Denis Shurygin
  */
@@ -15,12 +13,9 @@ class ResValue(
         /** Resource comment. */
         val comment: String?,
         val quantity: Quantity = Quantity.OTHER,
+        val formatParams: List<FormatParam>? = null,
         val meta: Map<String, String>? = null
 ) {
-    /**
-     * Source location where placed this resource item.
-     */
-    var location: Source.ValueLocation? = null
 
     override fun equals(other: Any?): Boolean {
         if (other is ResValue) {
@@ -43,7 +38,6 @@ class ResValue(
         var result = value.hashCode()
         result = 31 * result + (comment?.hashCode() ?: 0)
         result = 31 * result + quantity.hashCode()
-        result = 31 * result + (location?.hashCode() ?: 0)
         return result
     }
 
@@ -64,17 +58,38 @@ fun ResValue.metaIsNotEmpty(): Boolean {
     return !this.metaIsEmpty()
 }
 
+fun ResValue.formatParamsIsEmpty(): Boolean {
+    return this.formatParams == null || this.formatParams.isNotEmpty()
+}
+
+fun ResValue.formatParamsIsNotEmpty(): Boolean {
+    return !this.formatParamsIsEmpty()
+}
+
 fun ResValue?.merge(item: ResValue?): ResValue? {
     if (this == null) return item
     if (item == null) return this
 
-    if (this.metaIsNotEmpty()) {
-        return if (item.metaIsNotEmpty()) {
-            ResValue(item.value, item.comment, item.quantity,
-                    this.meta?.toMutableMap()?.apply { item.meta?.let { putAll(it) } })
+    val params: List<FormatParam>? = if (this.formatParams != null) {
+        if (item.formatParams != null && this.formatParams.size == item.formatParams.size) {
+            List(this.formatParams.size) {
+                this.formatParams.getOrNull(it).merge(item.formatParams.getOrNull(it))!!
+            }
         } else {
-            ResValue(item.value, item.comment, item.quantity, this.meta)
+            this.formatParams
         }
+    } else {
+        item.formatParams
     }
-    return item
+
+    val meta = if (item.metaIsNotEmpty()) {
+        if (this.metaIsNotEmpty()) {
+            this.meta?.toMutableMap()?.apply { item.meta?.let { putAll(it) } }
+        } else {
+            item.meta
+        }
+    } else {
+        this.meta
+    }
+    return ResValue(item.value, item.comment ?: this.comment, item.quantity, params, meta)
 }

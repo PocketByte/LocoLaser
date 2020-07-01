@@ -6,8 +6,8 @@ class EmptySource(sourceConfig: SourceConfig) : Source(sourceConfig) {
 
     override val modifiedDate: Long = 0
 
-    override fun read(): ReadResult {
-        return ReadResult(ResMap(), null)
+    override fun read(): ResMap? {
+        return ResMap()
     }
 
     override fun write(resMap: ResMap) {

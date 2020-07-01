@@ -22,7 +22,7 @@ class ResMapTest {
 
         assert(resMap1.merge(resMap2) === resMap1)
 
-        assertEquals(4, resMap1.size.toLong())
+        assertEquals(4, resMap1.size)
         assertEquals(prepareResLocale1().merge(prepareResLocale2()), resMap1["locale1"])
         assertEquals(prepareResLocale2().merge(prepareResLocale3()), resMap1["locale2"])
         assertEquals(prepareResLocale3(), resMap1["locale3"])
@@ -40,7 +40,7 @@ class ResMapTest {
 
         assert(resMap1.remove(resMap2) === resMap1)
 
-        assertEquals(3, resMap1.size.toLong())
+        assertEquals(3, resMap1.size)
         assertEquals(prepareResLocale1().remove(prepareResLocale2()), resMap1["locale1"])
         assertEquals(prepareResLocale2().remove(prepareResLocale3()), resMap1["locale2"])
         assertEquals(prepareResLocale3(), resMap1["locale3"])
