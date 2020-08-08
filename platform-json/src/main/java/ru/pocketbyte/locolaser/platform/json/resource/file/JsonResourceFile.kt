@@ -9,6 +9,9 @@ import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_LINKED_CONTAINER_FACTORY
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.JSON_PARSER
 import ru.pocketbyte.locolaser.utils.json.LinkedJSONObject
@@ -19,8 +22,6 @@ import java.util.regex.Pattern
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.io.BufferedReader
-
-
 
 /**
  * ResourceFile implementation for Android platform.
@@ -52,7 +53,9 @@ class JsonResourceFile(
         }
     }
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override val formattingType: FormattingType = WebFormattingType
+
+    override fun read(extraParams: ExtraParams?): ResMap? {
         if (!file.exists())
             return null
 
@@ -76,17 +79,17 @@ class JsonResourceFile(
                         val pluralKey = pluralMatch.group(1)
 
                         val item = result[pluralKey] ?: ResItem(pluralKey)
-                        item.addValue(ResValue(value, null, quantity))
+                        item.addValue(value, quantity)
                         result.put(item)
                     } else if (key.endsWith(PLURAL_0_KEY_POSTFIX)) {
                         val pluralKey = key.substring(0, key.length - PLURAL_0_KEY_POSTFIX.length)
 
                         val item = result[pluralKey] ?: ResItem(pluralKey)
-                        item.addValue(ResValue(value, null, Quantity.OTHER))
+                        item.addValue(value, Quantity.OTHER)
                         result.put(item)
                     } else {
                         val item = result[key] ?: ResItem(key)
-                        item.addValue(ResValue(value, null, Quantity.OTHER))
+                        item.addValue(value, Quantity.OTHER)
                         result.put(item)
                     }
                 }
@@ -122,18 +125,19 @@ class JsonResourceFile(
                 if (value.isHasQuantities) {
                     var isHasAnyQuantity = false
                     value.values.forEach {
-                        val index = PluralUtils.quantityIndexForLocale(it.quantity, mLocale)
+                        val resValue = formattingType.convert(it)
+                        val index = PluralUtils.quantityIndexForLocale(resValue.quantity, mLocale)
                         if (index != null) {
-                            rootJson[keyParts.last() + PLURAL_KEY_POSTFIX + index] = it.value
+                            rootJson[keyParts.last() + PLURAL_KEY_POSTFIX + index] = resValue.value
                             isHasAnyQuantity = true
                         }
                     }
                     if (!isHasAnyQuantity)
-                        value.valueForQuantity(Quantity.OTHER)?.value?.let {
-                            rootJson[keyParts.last() + PLURAL_KEY_POSTFIX + 0] = it
+                        value.valueForQuantity(Quantity.OTHER)?.let {
+                            rootJson[keyParts.last() + PLURAL_KEY_POSTFIX + 0] = formattingType.convert(it).value
                         }
                 } else {
-                    rootJson[keyParts.last()] = value.values[0].value
+                    rootJson[keyParts.last()] = formattingType.convert(value.values[0]).value
                 }
             }
 
@@ -141,10 +145,8 @@ class JsonResourceFile(
             try {
                 file.parentFile.mkdirs()
 
-
-
                 writer = BufferedWriter(OutputStreamWriter(FileOutputStream(file), "UTF-8"))
-                writer.write(JsonToStringUtils.toJSONString(json, indent))
+                writer.write(JsonToStringUtils.toJSONString(json, indent) ?: "{}")
                 writer.flush()
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -152,6 +154,12 @@ class JsonResourceFile(
                 writer?.close()
             }
         }
+    }
+
+    private fun ResItem.addValue(value: String, quantity: Quantity) {
+        val formattingArguments = formattingType.argumentsFromValue(value)
+        val formattingType = if (formattingArguments?.isEmpty() != false) NoFormattingType else formattingType
+        this.addValue(ResValue(value, null, quantity, formattingType, formattingArguments))
     }
 
     private fun getResItemsFromObject(keyPrefix: String, json: Map<Any?, Any?>): Map<String, String> {

@@ -5,18 +5,20 @@
 
 package ru.pocketbyte.locolaser.config.source
 
-import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.summary.FileSummary
 
 /**
  *
  * @author Denis Shurygin
  */
-abstract class Source(open val sourceConfig: SourceConfig) {
+abstract class Source(open val sourceConfig: SourceConfig): PlatformResources {
 
     abstract val modifiedDate: Long
 
-    abstract fun read(): ResMap?
-    abstract fun write(resMap: ResMap)
-
     abstract fun close()
+
+    override fun summaryForLocale(locale: String): FileSummary {
+        return FileSummary(0, null)
+    }
 }

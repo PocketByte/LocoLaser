@@ -8,6 +8,8 @@ import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.TextUtils
 import java.io.File
 import java.util.HashSet
@@ -24,7 +26,9 @@ abstract class BasePoetClassResourceFile(
 
     abstract fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override val formattingType: FormattingType = NoFormattingType
+
+    override fun read(extraParams: ExtraParams?): ResMap? {
         return null
     }
 

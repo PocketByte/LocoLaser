@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.resource
 
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.IOException
@@ -22,14 +23,16 @@ interface PlatformResources {
         const val BASE_LOCALE = "base"
     }
 
+    val formattingType: FormattingType
+
     /**
      * Read resources map from the resource files. Keys from the result map duplicate resource locale's.
      * @return Resources map. Keys from the map duplicate resource locale's.
      */
-    fun read(locales: Set<String>, extraParams: ExtraParams): ResMap
+    fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap?
 
     @Throws(IOException::class)
-    fun write(map: ResMap, extraParams: ExtraParams?)
+    fun write(resMap: ResMap, extraParams: ExtraParams?)
 
     fun summaryForLocale(locale: String): FileSummary
 }

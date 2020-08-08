@@ -5,6 +5,9 @@
 
 package ru.pocketbyte.locolaser.resource.entity
 
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+
 /**
  * @author Denis Shurygin
  */
@@ -13,7 +16,8 @@ class ResValue(
         /** Resource comment. */
         val comment: String?,
         val quantity: Quantity = Quantity.OTHER,
-        val formatParams: List<FormatParam>? = null,
+        val formattingType: FormattingType = NoFormattingType,
+        val formattingArguments: List<FormattingArgument>? = null,
         val meta: Map<String, String>? = null
 ) {
 
@@ -21,11 +25,16 @@ class ResValue(
         if (other is ResValue) {
             return isStringEquals(value, other.value) &&
                     isStringEquals(comment, other.comment) &&
-                    quantity === other.quantity && (
+                    quantity === other.quantity &&
+                    (
                         (metaIsEmpty() && other.metaIsEmpty()) ||
                         meta?.equals(other.meta) ?: false
+                    ) &&
+                    formattingType == other.formattingType &&
+                    (
+                        (formatArgumentsIsEmpty() && other.formatArgumentsIsEmpty()) ||
+                        formattingArguments?.equals(other.formattingArguments) ?: false
                     )
-
         }
         return super.equals(other)
     }
@@ -46,6 +55,8 @@ class ResValue(
                 "v=$value," +
                 "c=$comment," +
                 "q=$quantity," +
+                "f=${formattingType.javaClass.simpleName}," +
+                "fa=${formattingArguments?.joinToString { it.toString() }?.let { "[$it]" }}," +
                 "meta=$meta}"
     }
 }
@@ -58,28 +69,28 @@ fun ResValue.metaIsNotEmpty(): Boolean {
     return !this.metaIsEmpty()
 }
 
-fun ResValue.formatParamsIsEmpty(): Boolean {
-    return this.formatParams == null || this.formatParams.isNotEmpty()
+fun ResValue.formatArgumentsIsEmpty(): Boolean {
+    return this.formattingArguments == null || this.formattingArguments.isEmpty()
 }
 
 fun ResValue.formatParamsIsNotEmpty(): Boolean {
-    return !this.formatParamsIsEmpty()
+    return !this.formatArgumentsIsEmpty()
 }
 
 fun ResValue?.merge(item: ResValue?): ResValue? {
     if (this == null) return item
     if (item == null) return this
 
-    val params: List<FormatParam>? = if (this.formatParams != null) {
-        if (item.formatParams != null && this.formatParams.size == item.formatParams.size) {
-            List(this.formatParams.size) {
-                this.formatParams.getOrNull(it).merge(item.formatParams.getOrNull(it))!!
+    val arguments: List<FormattingArgument>? = if (this.formattingArguments != null) {
+        if (item.formattingArguments != null && this.formattingArguments.size == item.formattingArguments.size) {
+            List(this.formattingArguments.size) {
+                this.formattingArguments.getOrNull(it).merge(item.formattingArguments.getOrNull(it))!!
             }
         } else {
-            this.formatParams
+            this.formattingArguments
         }
     } else {
-        item.formatParams
+        item.formattingArguments
     }
 
     val meta = if (item.metaIsNotEmpty()) {
@@ -91,5 +102,5 @@ fun ResValue?.merge(item: ResValue?): ResValue? {
     } else {
         this.meta
     }
-    return ResValue(item.value, item.comment ?: this.comment, item.quantity, params, meta)
+    return ResValue(item.value, item.comment ?: this.comment, item.quantity, item.formattingType, arguments, meta)
 }

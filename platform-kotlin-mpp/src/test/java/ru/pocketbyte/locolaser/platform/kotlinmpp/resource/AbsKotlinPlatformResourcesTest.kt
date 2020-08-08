@@ -33,7 +33,7 @@ class AbsKotlinPlatformResourcesTest {
 
     private class AbsKotlinPlatformResourcesImpl(dir: File, name: String) : AbsKotlinPlatformResources(dir, name, null) {
 
-        override fun getResourceFiles(locales: Set<String>): Array<ResourceFile>? {
+        override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
             return null
         }
     }

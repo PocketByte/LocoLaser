@@ -8,6 +8,8 @@ package ru.pocketbyte.locolaser.platform.mobile.resource
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.IosPluralResourceFile
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.IosResourceFile
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 import java.io.File
 
@@ -26,8 +28,10 @@ class IosResources(
         const val PLURAL_RES_FILE_EXTENSION = ".stringsdict"
     }
 
-    override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
-        val localesArray = locales.toTypedArray()
+    override val formattingType: FormattingType = JavaFormattingType
+
+    override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
+        val localesArray = locales?.toTypedArray() ?: return null
         return Array(locales.size * 2) { i->
             val index: Int = i / 2
             if (i % 2 == 0) {

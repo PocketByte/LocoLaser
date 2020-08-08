@@ -33,7 +33,7 @@ class ResourceStreamFileTest {
     @Throws(IOException::class)
     fun init() {
         streamFile = object : ResourceStreamFile(tempFolder.newFile()) {
-            override fun read(extraParams: ExtraParams): ResMap? {
+            override fun read(extraParams: ExtraParams?): ResMap? {
                 return null
             }
 

@@ -9,6 +9,8 @@ import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.platform.PlatformConfig
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
@@ -23,7 +25,8 @@ class MockPlatformConfig : PlatformConfig {
     override val defaultTempDir = File("./")
 
     override val resources = object : PlatformResources {
-        override fun read(locales: Set<String>, extraParams: ExtraParams) = ResMap()
+        override val formattingType = NoFormattingType
+        override fun read(locales: Set<String>?, extraParams: ExtraParams?) = ResMap()
         override fun write(map: ResMap, extraParams: ExtraParams?) { }
         override fun summaryForLocale(locale: String) = FileSummary(0, null)
     }

@@ -8,6 +8,8 @@ package ru.pocketbyte.locolaser.platform.gettext.resource
 import ru.pocketbyte.locolaser.platform.gettext.resource.file.GetTextResourceFile
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
@@ -21,8 +23,10 @@ class GetTextResources(
         filter: ((key: String) -> Boolean)?
 ) : AbsPlatformResources(resourcesDir, fileName, filter) {
 
-    override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
-        val localesArray = locales.toTypedArray()
+    override val formattingType: FormattingType = NoFormattingType
+
+    override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
+        val localesArray = locales?.toTypedArray() ?: return null
         return Array(locales.size) { i ->
             GetTextResourceFile(getFileForLocale(localesArray[i]), localesArray[i])
         }

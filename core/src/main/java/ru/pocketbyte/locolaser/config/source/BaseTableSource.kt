@@ -5,13 +5,14 @@
 
 package ru.pocketbyte.locolaser.config.source
 
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.LogUtils
 import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.lang.StringBuilder
 
-import java.util.ArrayList
 import kotlin.math.max
 
 /**
@@ -80,7 +81,7 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
         quantityMap[quantity] = row
     }
 
-    override fun read(): ResMap? {
+    override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap? {
         val items = ResMap()
 
         val keysRows = mutableMapOf<String, MutableMap<Quantity, Int>>()
@@ -101,6 +102,7 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
                 } else { null }
 
                 for (locale in sourceConfig.locales) {
+                    if (locales != null && !locale.contains(locale)) continue
 
                     val localeCol = columnIndexes.locales[locale] ?: -1
 
@@ -120,9 +122,13 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
                                 itemMap?.put(item)
                             }
 
+                            val fixedValue = sourceValueToValue(value)
+                            val formattingArguments = formattingType.argumentsFromValue(fixedValue)
                             val resValue = ResValue(
-                                sourceValueToValue(value), comment, quantity,
-                                sourceValueToFormatParams(value), metadata
+                                fixedValue, comment, quantity,
+                                    if (formattingArguments?.isEmpty() != false) NoFormattingType
+                                        else formattingType,
+                                    formattingArguments, metadata
                             )
                             item.addValue(resValue)
                         } else {
@@ -162,10 +168,6 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
      */
     open fun sourceValueToValue(sourceValue: String): String {
         return sourceValue
-    }
-
-    open fun sourceValueToFormatParams(sourceValue: String): List<FormatParam>? {
-        return null
     }
 
     private fun getQuantity(row: Int): Quantity {

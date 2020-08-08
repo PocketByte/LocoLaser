@@ -3,11 +3,11 @@ package ru.pocketbyte.locolaser.platform.mobile.resource.file
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
-import ru.pocketbyte.locolaser.resource.entity.ResItem
-import ru.pocketbyte.locolaser.resource.entity.ResLocale
-import ru.pocketbyte.locolaser.resource.entity.ResMap
-import ru.pocketbyte.locolaser.resource.entity.ResValue
+import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.LogUtils
 import java.io.File
 import java.io.IOException
@@ -29,7 +29,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
             return string
                     .replace("\"", "\\\"")
                     .replace("\n", "\\n")
-                    .replace("%s".toRegex(), "%@")
+                    .replace("%s", "%@")
                     .replace("%([0-9]{1,})\\\$s".toRegex(), "%$1\\$@")
         }
 
@@ -37,7 +37,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
             return string
                     .replace("\\\"", "\"")
                     .replace("\\n", "\n")
-                    .replace("%@".toRegex(), "%s")
+                    .replace("%@", "%s")
                     .replace("%([0-9]{1,})\\$@".toRegex(), "%$1\\\$s")
         }
     }
@@ -46,7 +46,9 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
     @Throws(IOException::class)
     protected abstract fun writeKeyValueString(key: String, value: String)
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override val formattingType: FormattingType = JavaFormattingType
+
+    override fun read(extraParams: ExtraParams?): ResMap? {
         if (file.exists()) {
             val result = ResLocale()
 
@@ -106,7 +108,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                             isFind = keyValueMatcher.find()
                         } catch (e: StackOverflowError) {
                             isFind = false
-                            LogUtils.err("Unable to parse line ${Integer.toString(lineNumber)}"
+                            LogUtils.err("Unable to parse line $lineNumber"
                                     + " in resource file: ${this.file.absolutePath}"
                                     + "\nThe line will be removed from this resource file")
                         }
@@ -116,7 +118,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                             val value = keyValueMatcher.group(2)
 
                             val item = ResItem(key)
-                            item.addValue(ResValue(fromPlatformValue(value), comment?.toString()?.trim { it <= ' ' }))
+                            item.addValue(fromPlatformValue(value), comment?.toString()?.trim { it <= ' ' })
                             result.put(item)
                         }
                     }
@@ -165,8 +167,9 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                         isFirst = false
                     }
 
-                    val comment = resItem.values[0].comment
-                    val value = resItem.values[0].value
+                    val resValue = formattingType.convert(resItem.values[0])
+                    val comment = resValue.comment
+                    val value = resValue.value
 
                     if (comment != null && (extraParams == null || extraParams.duplicateComments || comment != value)) {
                         writeString(COMMENT_MULTILINE_START_2)
@@ -183,5 +186,14 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
         }
 
         close()
+    }
+
+    private fun ResItem.addValue(
+            value: String,
+            comment: String?
+    ) {
+        val formattingArguments = formattingType.argumentsFromValue(value)
+        val formattingType = if (formattingArguments?.isEmpty() != false) NoFormattingType else formattingType
+        this.addValue(ResValue(value, comment, Quantity.OTHER, formattingType, formattingArguments))
     }
 }

@@ -19,6 +19,8 @@ import org.junit.Assert.assertNotNull
 import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.AbsIosStringsResourceFileTest.Companion.PLATFORM_TEST_STRING
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.AbsIosStringsResourceFileTest.Companion.TEST_STRING
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 
 class IosPlistResourceFileTest {
 
@@ -53,6 +55,35 @@ class IosPlistResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testReadFormatted() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+                "/* Comment */\r\n" +
+                        " key1 = \"value1_1 %@\";\r\n" +
+                        "key2= \"value2_1 %1\$.2f\";")
+
+        val resourceFile = IosPlistResourceFile(testFile, testLocale)
+        val resMap = resourceFile.read(ExtraParams())
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_1 %s", "Comment", Quantity.OTHER, JavaFormattingType,
+                JavaFormattingType.argumentsFromValue("%s")
+            ))))
+        resLocale.put(prepareResItem("key2", arrayOf(
+            ResValue("value2_1 %1\$.2f", null, Quantity.OTHER, JavaFormattingType,
+                JavaFormattingType.argumentsFromValue("%1\$.2f")
+            ))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testWrite() {
         val testLocale = "ru"
         val redundantLocale = "base"
@@ -80,6 +111,60 @@ class IosPlistResourceFileTest {
                 "\r\n" +
                 "/* value2_1 */\r\n" +
                 "key2 = \"value2_1\";")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteFormatted() {
+        val testLocale = "ru"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+                ResValue("value1_1 %s", null, Quantity.OTHER,
+                        JavaFormattingType, JavaFormattingType.argumentsFromValue("%s")))))
+        resLocale.put(prepareResItem("key2", arrayOf(
+                ResValue("value2_1 %f", null, Quantity.OTHER,
+                        JavaFormattingType, JavaFormattingType.argumentsFromValue("%f")))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = IosPlistResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
+                "key1 = \"value1_1 %@\";\r\n" +
+                "\r\n" +
+                "key2 = \"value2_1 %f\";")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteWebFormatted() {
+        val testLocale = "ru"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+                ResValue("value1_1 {{s}}", null, Quantity.OTHER, WebFormattingType,
+                        listOf(FormattingArgument(null, null, parameters("s", "")))
+                ))))
+        resLocale.put(prepareResItem("key2", arrayOf(
+                ResValue("value2_1 {{amount}}", null, Quantity.OTHER, WebFormattingType,
+                        listOf(FormattingArgument("amount", 1, parameters("f", ".2")))
+                ))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = IosPlistResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.GENERATED_KEY_VALUE_PAIR_COMMENT + "\r\n\r\n" +
+                "key1 = \"value1_1 %@\";\r\n" +
+                "\r\n" +
+                "key2 = \"value2_1 %1\$.2f\";")
 
         assertEquals(expectedResult, readFile(testFile))
     }
@@ -127,7 +212,9 @@ class IosPlistResourceFileTest {
 
         val expectedMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("string1", arrayOf(ResValue(TEST_STRING, null, Quantity.OTHER))))
+        resLocale.put(prepareResItem("string1", arrayOf(
+            ResValue(TEST_STRING, null, Quantity.OTHER,
+                JavaFormattingType, JavaFormattingType.argumentsFromValue(TEST_STRING)))))
         expectedMap[testLocale] = resLocale
 
         assertEquals(expectedMap, resMap)
@@ -174,5 +261,12 @@ class IosPlistResourceFileTest {
         for (value in values)
             resItem.addValue(value)
         return resItem
+    }
+
+    private fun parameters(typeName: String, typeParameters: String): Map<String, String> {
+        return mapOf(
+            Pair(JavaFormattingType.PARAM_TYPE_NAME, typeName),
+            Pair(JavaFormattingType.PARAM_TYPE_PARAMETERS, typeParameters)
+        )
     }
 }

@@ -112,7 +112,7 @@ object LocoLaser {
 
             // =================================
             // Read source values
-            val sourceResMap = source.read()
+            val sourceResMap = source.read(null, ExtraParams())
 
             if (sourceResMap == null && config.conflictStrategy !== Config.ConflictStrategy.EXPORT_NEW_PLATFORM) {
                 LogUtils.info("Source is empty. Localization stopped.")
@@ -145,7 +145,7 @@ object LocoLaser {
                 }
 
                 if (mergedResMap != null && config.conflictStrategy.isExportStrategy) {
-                    source.write(mergedResMap)
+                    source.write(mergedResMap, null)
                 }
             } else {
                 mergedResMap = sourceResMap

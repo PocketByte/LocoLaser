@@ -14,6 +14,9 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 
 class JsonResourceFileTest {
 
@@ -60,14 +63,43 @@ class JsonResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testReadFormattedValue() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+                "{\r\n" +
+                    "    \"string1\":\"Formatted Value1: {{string}}\",\r\n" +
+                    "    \"string2\":\"Not Formatted Value2\"\r\n" +
+                    "}")
+
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resMap = resourceFile.read(ExtraParams())
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(
+                ResValue("Formatted Value1: {{string}}", null, Quantity.OTHER,
+                        WebFormattingType, WebFormattingType.argumentsFromValue("{{string}}")))))
+        // Values without formatting must be NoFormattingType
+        resLocale.put(prepareResItem("string2", arrayOf(
+                ResValue("Not Formatted Value2", null, Quantity.OTHER,
+                        NoFormattingType, null))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testSaveOrderWhenRead() {
         val testLocale = "ru"
         val testFile1 = prepareTestFile(
                 "{\r\n" +
-                        "    \"string1\":\"Value1\",\r\n" +
-                        "    \"string2\":\"Value2\",\r\n" +
-                        "    \"string3\":\"Value3\"\r\n" +
-                        "}")
+                    "    \"string1\":\"Value1\",\r\n" +
+                    "    \"string2\":\"Value2\",\r\n" +
+                    "    \"string3\":\"Value3\"\r\n" +
+                    "}")
 
         assertEquals(
             listOf("string1", "string2", "string3"),
@@ -76,10 +108,10 @@ class JsonResourceFileTest {
 
         val testFile2 = prepareTestFile(
                 "{\r\n" +
-                        "    \"string3\":\"Value1\",\r\n" +
-                        "    \"string2\":\"Value2\",\r\n" +
-                        "    \"string1\":\"Value3\"\r\n" +
-                        "}")
+                    "    \"string3\":\"Value1\",\r\n" +
+                    "    \"string2\":\"Value2\",\r\n" +
+                    "    \"string1\":\"Value3\"\r\n" +
+                    "}")
 
         assertEquals(
             listOf("string3", "string2", "string1"),
@@ -119,6 +151,39 @@ class JsonResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testReadFormattedPlural() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+                "{" +
+                    "\"key2\":\"value2_1\"," +
+                    "\"key1_plural_2\":\"value1_3 {{count}}\"," +
+                    "\"key1_plural_5\":\"{{string}} value1_1\"," +
+                    "\"key1_plural_0\":\"value1_2\"" +
+                    "}")
+
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resMap = resourceFile.read(ExtraParams())
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+                ResValue("{{string}} value1_1", null, Quantity.OTHER,
+                        WebFormattingType, WebFormattingType.argumentsFromValue("{{string}}")),
+                ResValue("value1_2", null, Quantity.ONE,
+                        NoFormattingType, null),
+                ResValue("value1_3 {{count}}", null, Quantity.MANY,
+                        WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}"))
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", null, Quantity.OTHER))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testWrite() {
         val testLocale = "ru"
         val redundantLocale = "base"
@@ -141,6 +206,48 @@ class JsonResourceFileTest {
         resourceFile.write(resMap, null)
 
         val expectedResult = "{\"key1\": \"value1_1\",\"key2\": \"value2_1\"}"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteFormatted() {
+        val testLocale = "ru"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+                ResValue("value1_1 {{count}}.", "Comment", Quantity.OTHER,
+                        WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}")))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = "{\"key1\": \"value1_1 {{count}}.\"}"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteJavaFormatted() {
+        val testLocale = "ru"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+                ResValue("value1_1 %s.", "Comment", Quantity.OTHER,
+                    JavaFormattingType, JavaFormattingType.argumentsFromValue("%s")?.map {
+                        FormattingArgument("javaString", it.index, it.parameters)
+                    }))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = "{\"key1\": \"value1_1 {{javaString}}.\"}"
 
         assertEquals(expectedResult, readFile(testFile))
     }
@@ -212,6 +319,70 @@ class JsonResourceFileTest {
                 "\"key1_plural_2\": \"value1_many\"," +
                 "\"key1_plural_3\": \"value1_other\"," +
                 "\"key2\": \"value2_1\"" +
+                "}"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWritePluralsFormatted() {
+        val testLocale = "ru"
+
+        val resMap = ResMap()
+
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+                ResValue("value1_many {{count}}", "Comment", Quantity.MANY,
+                        WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}")),
+                ResValue("value1_other {{count}}", "Comment", Quantity.OTHER,
+                        WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}"))
+        )))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        resourceFile.write(resMap, null)
+
+        val expectedResult =
+                "{" +
+                "\"key1_plural_2\": \"value1_many {{count}}\"," +
+                "\"key1_plural_3\": \"value1_other {{count}}\"" +
+                "}"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWritePluralsJavaFormatted() {
+        val testLocale = "ru"
+
+        val resMap = ResMap()
+
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_many %d, %s", "Comment", Quantity.MANY,
+                JavaFormattingType, JavaFormattingType.argumentsFromValue("%d %s")?.map {
+                    FormattingArgument(
+                        "some_${it.parameters?.get(JavaFormattingType.PARAM_TYPE_NAME) as? String}",
+                        it.index, it.parameters)
+                }),
+            ResValue("value1_other %1\$s", "Comment", Quantity.OTHER,
+                JavaFormattingType, JavaFormattingType.argumentsFromValue("%1\$s")?.map {
+                    FormattingArgument("javaString", it.index, it.parameters)
+                })
+        )))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        resourceFile.write(resMap, null)
+
+        val expectedResult =
+                "{" +
+                "\"key1_plural_2\": \"value1_many {{some_d}}, {{some_s}}\"," +
+                "\"key1_plural_3\": \"value1_other {{javaString}}\"" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))

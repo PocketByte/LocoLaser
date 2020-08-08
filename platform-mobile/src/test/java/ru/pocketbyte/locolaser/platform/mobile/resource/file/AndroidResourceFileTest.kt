@@ -21,6 +21,9 @@ import java.nio.file.Paths
 
 import org.junit.Assert.*
 import ru.pocketbyte.locolaser.config.duplicateComments
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 
 /**
  * @author Denis Shurygin
@@ -91,6 +94,40 @@ class AndroidResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testReadFormatted() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                        TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                        "<resources>\r\n" +
+                        "    /* Comment */\r\n" +
+                        "    <string name=\"string1\">Value1 %1\$s</string>\r\n" +
+                        "    <string name=\"string2\">Value2 %.2f</string>\r\n" +
+                        "    <string name=\"string3\">Value 3</string>\r\n" +
+                        "</resources>")
+
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        val resMap = resourceFile.read(ExtraParams())
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(
+            ResValue("Value1 %1\$s", null, Quantity.OTHER, JavaFormattingType,
+                listOf(FormattingArgument(null, 1, parameters("s", "")))))))
+        resLocale.put(prepareResItem("string2", arrayOf(
+            ResValue("Value2 %.2f", null, Quantity.OTHER, JavaFormattingType,
+                listOf(FormattingArgument(null, null, parameters("f", ".2")))))))
+        resLocale.put(prepareResItem("string3", arrayOf(
+            ResValue("Value 3", null, Quantity.OTHER, NoFormattingType, null))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testReadPlurals() {
         val testLocale = "en"
         val testFile = prepareTestFile(
@@ -130,6 +167,51 @@ class AndroidResourceFileTest {
                 ResValue("String 3", null, Quantity.OTHER),
                 ResValue("String 3 few", null, Quantity.FEW),
                 ResValue("String 3 zero", null, Quantity.ZERO))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testReadPluralsFormatted() {
+        val testLocale = "en"
+        val testFile = prepareTestFile(
+                (TemplateStr.XML_DECLARATION + "\r\n" +
+                        TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                        "<resources>\r\n" +
+                        "    /* Comment */\r\n" +
+                        "    <plurals name=\"string1\">\r\n" +
+                        "        <item quantity=\"other\">String %d</item>\r\n" +
+                        "        <item quantity=\"one\">String one</item>\r\n" +
+                        "        <item quantity=\"two\">String two</item>\r\n" +
+                        "    </plurals>\r\n" +
+                        "    <plurals name=\"string3\">\r\n" +
+                        "        /* Comment */\r\n" +
+                        "        <item quantity=\"other\">String 3 %d</item>\r\n" +
+                        "        <item quantity=\"few\">String 3 few %d</item>\r\n" +
+                        "        <item quantity=\"zero\">String 3 zero</item>\r\n" +
+                        "    </plurals>\r\n" +
+                        "</resources>"))
+
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        val resMap = resourceFile.read(ExtraParams())
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(
+            ResValue("String %d", null, Quantity.OTHER, JavaFormattingType,
+                listOf(FormattingArgument(null, null, parameters("d", "")))),
+            ResValue("String one", null, Quantity.ONE, NoFormattingType, null),
+            ResValue("String two", null, Quantity.TWO, NoFormattingType, null))))
+        resLocale.put(prepareResItem("string3", arrayOf(
+            ResValue("String 3 %d", null, Quantity.OTHER, JavaFormattingType,
+                listOf(FormattingArgument(null, null, parameters("d", "")))),
+            ResValue("String 3 few %d", null, Quantity.FEW, JavaFormattingType,
+                listOf(FormattingArgument(null, null, parameters("d", "")))),
+            ResValue("String 3 zero", null, Quantity.ZERO, NoFormattingType, null))))
         expectedMap[testLocale] = resLocale
 
         assertEquals(expectedMap, resMap)
@@ -216,6 +298,66 @@ class AndroidResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testWriteFormatted() {
+        val testLocale = "ru"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_1 %s", null, Quantity.OTHER, JavaFormattingType,
+                listOf(FormattingArgument(null, 1, parameters("s", "")))
+            ))))
+        resLocale.put(prepareResItem("key2", arrayOf(
+            ResValue("value2_1 %f", null, Quantity.OTHER, JavaFormattingType,
+                listOf(FormattingArgument(null, 3, parameters("f", ".5")))
+            ))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    <string name=\"key1\">value1_1 %s</string>\r\n" +
+                "    <string name=\"key2\">value2_1 %f</string>\r\n" +
+                "</resources>")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteWebFormatted() {
+        val testLocale = "ru"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_1 {{str}}", null, Quantity.OTHER, WebFormattingType,
+                listOf(FormattingArgument("str", 1, parameters("s", "")))
+            ))))
+        resLocale.put(prepareResItem("key2", arrayOf(
+            ResValue("value2_1 {{value}}", null, Quantity.OTHER, WebFormattingType,
+                listOf(FormattingArgument("value", 3, parameters("f", ".5")))
+            ))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    <string name=\"key1\">value1_1 %1\$s</string>\r\n" +
+                "    <string name=\"key2\">value2_1 %3\$.5f</string>\r\n" +
+                "</resources>")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testWriteWithWritingConfig() {
         val testLocale = "ru"
 
@@ -288,13 +430,57 @@ class AndroidResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testWritePluralsWebFormatted() {
+        val testLocale = "en"
+
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(
+            ResValue("String {{str}}", "Comment", Quantity.OTHER, WebFormattingType,
+                WebFormattingType.argumentsFromValue("{{str}}")),
+            ResValue("String one", null, Quantity.ONE),
+            ResValue("String two", null, Quantity.TWO))))
+        resLocale.put(prepareResItem("string3", arrayOf(
+            ResValue("String 3 {{count}}.", "Comment", Quantity.OTHER, WebFormattingType,
+                listOf(FormattingArgument("count", null, parameters("d", "")))
+            ),
+            ResValue("String {{count}} few", null, Quantity.FEW, WebFormattingType,
+                listOf(FormattingArgument("count", null, parameters("d", "")))
+            ),
+            ResValue("String 3 zero", null, Quantity.ZERO))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<resources>\r\n" +
+                "    <plurals name=\"string1\">\r\n" +
+                "        <item quantity=\"other\">String %s</item>\r\n" +
+                "        <item quantity=\"one\">String one</item>\r\n" +
+                "        <item quantity=\"two\">String two</item>\r\n" +
+                "    </plurals>\r\n" +
+                "    <plurals name=\"string3\">\r\n" +
+                "        <item quantity=\"other\">String 3 %d.</item>\r\n" +
+                "        <item quantity=\"few\">String %d few</item>\r\n" +
+                "        <item quantity=\"zero\">String 3 zero</item>\r\n" +
+                "    </plurals>\r\n" +
+                "</resources>")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testWriteMetaCDATA() {
         val testLocale = "ru"
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-                ResValue("value1_1", "Comment", Quantity.OTHER, null,
-                        mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON)))
+                ResValue("value1_1", "Comment", Quantity.OTHER,
+                        meta = mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON)))
         )))
         resMap[testLocale] = resLocale
 
@@ -319,18 +505,18 @@ class AndroidResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-                ResValue("value1", "Comment", Quantity.OTHER, null,
-                        mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON)))
+                ResValue("value1", "Comment", Quantity.OTHER,
+                        meta = mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON)))
         )))
         resLocale.put(prepareResItem("key2", arrayOf(
-                ResValue("value2", "Comment 2", Quantity.OTHER, null,
-                        mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF)))
+                ResValue("value2", "Comment 2", Quantity.OTHER,
+                        meta = mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF)))
         )))
         resLocale.put(prepareResItem("key3", arrayOf(
-                ResValue("value3 1", null, Quantity.ONE, null,
-                        mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON))),
-                ResValue("value3 2", null, Quantity.OTHER, null,
-                        mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF)))
+                ResValue("value3 1", null, Quantity.ONE,
+                        meta = mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON))),
+                ResValue("value3 2", null, Quantity.OTHER,
+                        meta = mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF)))
         )))
         resMap[testLocale] = resLocale
 
@@ -363,10 +549,10 @@ class AndroidResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("string1", arrayOf(
-                ResValue("String", "Comment", Quantity.OTHER, null,
-                        mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
-                ResValue("String one", null, Quantity.ONE, null,
-                        mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
+                ResValue("String", "Comment", Quantity.OTHER,
+                        meta = mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
+                ResValue("String one", null, Quantity.ONE,
+                        meta = mapOf(Pair(AndroidResourceFile.META_CDATA, AndroidResourceFile.META_CDATA_ON))),
                 ResValue("String two", null, Quantity.TWO))))
         resLocale.put(prepareResItem("string2", arrayOf(
                 ResValue("Value2", null, Quantity.OTHER))))
@@ -467,5 +653,12 @@ class AndroidResourceFileTest {
         for (value in values)
             resItem.addValue(value)
         return resItem
+    }
+
+    private fun parameters(typeName: String, typeParameters: String): Map<String, String> {
+        return mapOf(
+            Pair(JavaFormattingType.PARAM_TYPE_NAME, typeName),
+            Pair(JavaFormattingType.PARAM_TYPE_PARAMETERS, typeParameters)
+        )
     }
 }

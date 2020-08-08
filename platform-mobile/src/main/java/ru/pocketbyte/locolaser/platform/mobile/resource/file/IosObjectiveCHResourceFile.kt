@@ -39,7 +39,7 @@ class IosObjectiveCHResourceFile(file: File, private val mClassName: String) : B
         }
     }
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override fun read(extraParams: ExtraParams?): ResMap? {
         return null
     }
 

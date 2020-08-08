@@ -29,6 +29,8 @@ import java.io.PrintWriter
 import java.util.*
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import kotlin.collections.HashMap
 
 /**
@@ -487,12 +489,14 @@ class LocoLaserTest {
             var mSummaryMap: MutableMap<String, FileSummary>?
     ) : PlatformResources {
 
+        override val formattingType: FormattingType = NoFormattingType
+
         var mExtraParams: ExtraParams? = null
 
-        override fun read(locales: Set<String>, extraParams: ExtraParams): ResMap {
+        override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap {
             val resMap = ResMap()
             mMap?.let { map ->
-                for (locale in locales) {
+                locales?.forEach { locale ->
                     resMap[locale] = ResLocale(map[locale])
                 }
             }
@@ -531,13 +535,15 @@ class LocoLaserTest {
             var mMap: ResMap?,
             override var modifiedDate: Long) : Source(config) {
 
+        override val formattingType: FormattingType = NoFormattingType
+
         var isClosed = false
 
-        override fun read(): ResMap {
+        override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap? {
             return ResMap(mMap)
         }
 
-        override fun write(resMap: ResMap) {
+        override fun write(resMap: ResMap, extraParams: ExtraParams?) {
             if (mMap == null)
                 mMap = ResMap(resMap)
             else

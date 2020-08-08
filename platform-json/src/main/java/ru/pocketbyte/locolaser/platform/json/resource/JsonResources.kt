@@ -9,6 +9,8 @@ import ru.pocketbyte.locolaser.platform.json.resource.file.JsonResourceFile
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
@@ -23,8 +25,10 @@ class JsonResources(
         filter: ((key: String) -> Boolean)?
 ) : AbsPlatformResources(resourcesDir, fileName, filter) {
 
-    override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
-        val localesArray = locales.toTypedArray()
+    override val formattingType: FormattingType = WebFormattingType
+
+    override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
+        val localesArray = locales?.toTypedArray() ?: return null
         return Array(locales.size) { i ->
             JsonResourceFile(getFileForLocale(localesArray[i]), localesArray[i], indent)
         }

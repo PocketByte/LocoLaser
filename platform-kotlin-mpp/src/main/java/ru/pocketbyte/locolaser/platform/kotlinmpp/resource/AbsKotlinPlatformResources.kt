@@ -1,6 +1,8 @@
 package ru.pocketbyte.locolaser.platform.kotlinmpp.resource
 
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
 
@@ -15,6 +17,8 @@ abstract class AbsKotlinPlatformResources(
     companion object {
         const val KOTLIN_FILE_EXTENSION = ".kt"
     }
+
+    override val formattingType: FormattingType = NoFormattingType
 
     val className: String
     val classPackage: String

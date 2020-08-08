@@ -26,9 +26,9 @@ abstract class AbsPlatformResources(
         private val filter: ((key: String) -> Boolean)?
 ) : PlatformResources {
 
-    protected abstract fun getResourceFiles(locales: Set<String>): Array<ResourceFile>?
+    protected abstract fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>?
 
-    override fun read(locales: Set<String>, extraParams: ExtraParams): ResMap {
+    override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap {
         val resMap = ResMap()
         getResourceFiles(locales)?.forEach {
             resMap.merge(it.read(extraParams))

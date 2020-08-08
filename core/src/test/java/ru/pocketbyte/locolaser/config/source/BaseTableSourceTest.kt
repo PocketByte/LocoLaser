@@ -7,14 +7,15 @@ package ru.pocketbyte.locolaser.config.source
 
 import org.junit.Assert.*
 import org.junit.Test
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.testutils.mock.MockDataSet
 
-import java.util.Arrays
 import java.util.HashSet
 
-import ru.pocketbyte.locolaser.config.platform.PlatformConfig
 import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
 /**
  * @author Denis Shurygin
@@ -48,7 +49,7 @@ class BaseTableSourceTest {
         sourceConfig.localeColumns = HashSet(listOf("en", "ru"))
 
         val source = sourceConfig.open()
-        val result = source?.read()
+        val result = source?.read(null, null)
         assertNotNull(result)
 
         assertEquals(3, result!!.size) // 2 locales + base locale
@@ -101,7 +102,7 @@ class BaseTableSourceTest {
         sourceConfig.localeColumns = HashSet(listOf("ru"))
 
         val source = sourceConfig.open()
-        val result = source!!.read()
+        val result = source!!.read(null, null)
         assertNotNull(result)
 
         assertEquals(2, result?.size) // 1 locale + base locale
@@ -134,7 +135,7 @@ class BaseTableSourceTest {
         sourceConfig.localeColumns = HashSet(listOf("en"))
 
         val source = sourceConfig.open()
-        val result = source!!.read()
+        val result = source!!.read(null, null)
         assertNotNull(result)
 
         assertEquals(2, result?.size) // 1 locale + base locale
@@ -162,7 +163,7 @@ class BaseTableSourceTest {
         sourceConfig.localeColumns = HashSet(listOf("en", "ru"))
 
         val source = sourceConfig.open()
-        val result = source?.read()
+        val result = source?.read(null, null)
 
         val expectLocale = result?.get("en")
         val baseLocale = result?.get(PlatformResources.BASE_LOCALE)
@@ -182,7 +183,7 @@ class BaseTableSourceTest {
         sourceConfig.localeColumns = HashSet(listOf("en", "true_base", "ru"))
 
         val source = sourceConfig.open()
-        val result = source?.read()
+        val result = source?.read(null, null)
 
         val expectLocale = result?.get("true_base")
         val baseLocale = result?.get(PlatformResources.BASE_LOCALE)
@@ -203,7 +204,7 @@ class BaseTableSourceTest {
         sourceConfig.localeColumns = HashSet(locales.asList())
 
         val source = sourceConfig.open()
-        val result = source?.read()
+        val result = source?.read(null, null)
 
         val expectedMap = ResMap().apply {
             val meta1 = mapOf(Pair("meta_1", "data"))
@@ -211,20 +212,20 @@ class BaseTableSourceTest {
 
             put("base", ResLocale().apply {
                 put(ResItem("key1").apply {
-                    addValue(ResValue("value1_1", null, Quantity.OTHER, null, meta1))
-                    addValue(ResValue("value2", "Some comment", Quantity.ONE, null, null))
+                    addValue(ResValue("value1_1", null, Quantity.OTHER, meta = meta1))
+                    addValue(ResValue("value2", "Some comment", Quantity.ONE, meta = null))
                 })
                 put(ResItem("key2").apply {
-                    addValue(ResValue("value2_1", "Some comment", Quantity.OTHER, null, meta2))
+                    addValue(ResValue("value2_1", "Some comment", Quantity.OTHER, meta = meta2))
                 })
             })
             put("ru", ResLocale().apply {
                 put(ResItem("key1").apply {
-                    addValue(ResValue("value1_2", null, Quantity.OTHER, null, meta1))
-                    addValue(ResValue("value1_2", "Some comment", Quantity.ONE, null, null))
+                    addValue(ResValue("value1_2", null, Quantity.OTHER, meta = meta1))
+                    addValue(ResValue("value1_2", "Some comment", Quantity.ONE, meta = null))
                 })
                 put(ResItem("key2").apply {
-                    addValue(ResValue("value2_2", "Some comment", Quantity.OTHER, null, meta2))
+                    addValue(ResValue("value2_2", "Some comment", Quantity.OTHER, meta = meta2))
                 })
             })
         }
@@ -236,6 +237,8 @@ class BaseTableSourceTest {
             sourceConfig: BaseTableSourceConfig,
             private val mDataSet: MockDataSet
     ) : BaseTableSource(sourceConfig) {
+
+        override val formattingType: FormattingType = NoFormattingType
 
         override val firstRow: Int
             get() = 0
@@ -253,7 +256,7 @@ class BaseTableSourceTest {
         override val modifiedDate: Long
             get() = 0
 
-        override fun write(resMap: ResMap) {
+        override fun write(resMap: ResMap, extraParams: ExtraParams?) {
             // Do nothing
         }
 

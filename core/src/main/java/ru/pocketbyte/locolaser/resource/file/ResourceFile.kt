@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.resource.file
 
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 
 import java.io.*
 
@@ -17,11 +18,13 @@ import java.io.*
  */
 interface ResourceFile {
 
+    val formattingType: FormattingType
+
     /**
      * Read resources map from the resource file.
      * @return Map with resources.
      */
-    fun read(extraParams: ExtraParams): ResMap?
+    fun read(extraParams: ExtraParams?): ResMap?
 
     /**
      * Write resources map into resource files.

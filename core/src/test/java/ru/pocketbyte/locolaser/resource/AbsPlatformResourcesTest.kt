@@ -51,7 +51,7 @@ class AbsPlatformResourcesTest {
         val res2 = MockResourceFile(prepareResMap2())
 
         val resources = object : MockPlatformResources(resFolder!!, NAME, null) {
-            override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
+            override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
                 return arrayOf(res1, res2)
             }
         }
@@ -71,7 +71,7 @@ class AbsPlatformResourcesTest {
         val res2 = MockResourceFile(null)
 
         val resources = object : MockPlatformResources(resFolder!!, NAME, null) {
-            override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
+            override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
                 return arrayOf(res1, res2)
             }
         }
@@ -89,7 +89,7 @@ class AbsPlatformResourcesTest {
 
         val filter: ((key: String) -> Boolean)? = { it.contains("1") }
         val resources = object : MockPlatformResources(resFolder!!, NAME, filter) {
-            override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
+            override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
                 return arrayOf(res)
             }
         }

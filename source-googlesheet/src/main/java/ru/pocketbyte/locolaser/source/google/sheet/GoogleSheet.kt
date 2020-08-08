@@ -11,9 +11,12 @@ import com.google.gdata.data.batch.BatchUtils
 import com.google.gdata.data.spreadsheet.CellEntry
 import com.google.gdata.data.spreadsheet.CellFeed
 import com.google.gdata.util.ServiceException
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.source.BaseTableSource
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.utils.LogUtils
 
 import java.io.IOException
@@ -63,7 +66,9 @@ class GoogleSheet(
 
     override val modifiedDate = mWorksheetFacade.sheetEntry.updated.value
 
-    override fun write(resMap: ResMap) {
+    override val formattingType: FormattingType = JavaFormattingType
+
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         if (fetchCellsIfNeeded()) {
             var totalRows = mRowsCount
             val batchRequest = CellFeed()
@@ -74,12 +79,12 @@ class GoogleSheet(
                 if (localeColumn != null && localeColumn >= 0) {
                     for ((_, resItem) in resLocale) {
                         for (i in resItem.values.indices) {
-                            val resValue = resItem.values[i]
+                            val resValue = formattingType.convert(resItem.values[i])
                             val resRow = getRow(resItem.key, resValue.quantity)
                             // =====================================
                             // Prepare batch for found missed resMap
                             if (resRow != null) {
-                                if (getValue(localeColumn, resRow).isNullOrBlank()) {
+                                if (getValue(localeColumn, resRow)?.isBlank() == true) {
                                     CellEntry(getCell(localeColumn, resRow)!!).let { batchEntry ->
                                         batchEntry.changeInputValueLocal(valueToSourceValue(resValue.value))
                                         BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
@@ -183,7 +188,8 @@ class GoogleSheet(
                         for ((locale, resLocale) in resMap) {
                             val localeColumn = mColumnIndexes.locales[locale]
                             if (localeColumn != null && localeColumn >= 0) {
-                                resLocale[newRowKey]?.valueForQuantity(newRowQuantity)?.let { resValue ->
+                                resLocale[newRowKey]?.valueForQuantity(newRowQuantity)?.let {
+                                    val resValue = formattingType.convert(it)
                                     CellEntry(cellFeed.entries[
                                         entryIndex(localeColumn, row, mRowsCount)
                                     ]).let { batchEntry ->

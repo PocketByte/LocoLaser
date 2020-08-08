@@ -12,6 +12,9 @@ import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.File
 import java.io.IOException
@@ -37,6 +40,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
                     .replace("\"", "\\\"")
                     .replace("\n", "\\n")
                     .replace("<", "&lt;")
+                    .replace("%s", "%@")
         }
 
         fun fromPlatformValue(string: String): String {
@@ -44,6 +48,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
                     .replace("\\'", "'")
                     .replace("\\\"", "\"")
                     .replace("\\n", "\n")
+                    .replace("%@", "%s")
                     .replace("&lt;", "<")
         }
 
@@ -58,9 +63,19 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
             }
             return "file:$path"
         }
+
+        private const val LEVEL_NONE = 0
+        private const val LEVEL_DOC = 1
+        private const val LEVEL_ITEM_KEY = 2
+        private const val LEVEL_ITEM_DICT = 3
+        private const val LEVEL_ITEM_VALUE_DICT = 4
+        private const val LEVEL_ITEM_VALUE_KEY = 5
+        private const val LEVEL_ITEM_VALUE_STRING = 6
     }
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override val formattingType: FormattingType = JavaFormattingType
+
+    override fun read(extraParams: ExtraParams?): ResMap? {
         if (file.exists()) {
             val handler = IosXmlFileParser()
             val spf = SAXParserFactory.newInstance()
@@ -119,7 +134,10 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
                     // Searching format
                     var format = "f"
                     for (formatString in FORMAT_VARIANTS) {
-                        if (resItem.valueForQuantity(Quantity.OTHER)!!.value.contains(formatString)) {
+                        val resValue = resItem.valueForQuantity(Quantity.OTHER)?.let {
+                            formattingType.convert(it)
+                        }
+                        if (resValue != null && resValue.value.contains(formatString)) {
                             format = formatString.substring(1)
                             break
                         }
@@ -128,8 +146,8 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
                     writeString(format)
                     writeStringLn("</string>")
 
-                    for (resValue in resItem.values) {
-
+                    resItem.values.forEach {
+                        val resValue = formattingType.convert(it)
                         writeString("            <key>")
                         writeString(resValue.quantity.toString())
                         writeStringLn("</key>")
@@ -150,17 +168,18 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
         }
     }
 
-    private class IosXmlFileParser : DefaultHandler() {
+    private fun ResItem.addValue(
+            value: String,
+            comment: String?,
+            quantity: Quantity = Quantity.OTHER,
+            meta: Map<String, String>? = null
+    ) {
+        val formattingArguments = formattingType.argumentsFromValue(value)
+        val formattingType = if (formattingArguments?.isEmpty() != false) NoFormattingType else formattingType
+        this.addValue(ResValue(value, comment, quantity, formattingType, formattingArguments, meta))
+    }
 
-        companion object {
-            private const val LEVEL_NONE = 0
-            private const val LEVEL_DOC = 1
-            private const val LEVEL_ITEM_KEY = 2
-            private const val LEVEL_ITEM_DICT = 3
-            private const val LEVEL_ITEM_VALUE_DICT = 4
-            private const val LEVEL_ITEM_VALUE_KEY = 5
-            private const val LEVEL_ITEM_VALUE_STRING = 6
-        }
+    private inner class IosXmlFileParser : DefaultHandler() {
 
         val map = ResLocale()
         private var mItem: ResItem? = null
@@ -206,11 +225,12 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
 
         @Throws(SAXException::class)
         override fun characters(ch: CharArray?, start: Int, length: Int) {
+            if (ch == null) return
             when (mDocLevel) {
-                LEVEL_ITEM_KEY -> mValue!!.append(String(ch!!, start, length))
-                LEVEL_ITEM_VALUE_KEY -> mValue!!.append(String(ch!!, start, length))
+                LEVEL_ITEM_KEY -> mValue?.append(String(ch, start, length))
+                LEVEL_ITEM_VALUE_KEY -> mValue?.append(String(ch, start, length))
                 LEVEL_ITEM_VALUE_STRING -> if (mQuantity != null) {
-                    mValue!!.append(String(ch!!, start, length))
+                    mValue?.append(String(ch, start, length))
                 }
             }
         }
@@ -219,11 +239,11 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
         override fun endElement(uri: String?, localName: String?, qName: String?) {
             when (mDocLevel) {
                 LEVEL_ITEM_KEY -> {
-                    mItem = ResItem(mValue!!.toString())
+                    mItem = ResItem(mValue?.toString() ?: "")
                     mDocLevel = LEVEL_DOC
                 }
                 LEVEL_ITEM_VALUE_KEY -> {
-                    val quantityString = mValue!!.toString()
+                    val quantityString = mValue?.toString() ?: ""
                     if ("NSStringFormatSpecTypeKey" == quantityString || "NSStringFormatValueTypeKey" == quantityString) {
                         mQuantity = null
                     } else {
@@ -233,8 +253,8 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
                 }
                 LEVEL_ITEM_VALUE_STRING -> {
                     if (mQuantity != null && mItem != null) {
-                        mItem!!.addValue(ResValue(fromPlatformValue(mValue!!.toString()),
-                                mComment, mQuantity ?: Quantity.OTHER))
+                        mItem?.addValue(fromPlatformValue(mValue?.toString() ?: ""),
+                            mComment, mQuantity ?: Quantity.OTHER)
                     }
                     mQuantity = null
                     mDocLevel = LEVEL_ITEM_VALUE_DICT

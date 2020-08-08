@@ -2,6 +2,8 @@ package ru.pocketbyte.locolaser.testutils.mock
 
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
@@ -12,7 +14,9 @@ open class MockPlatformResources(
         filter: ((key: String) -> Boolean)?
 ) : AbsPlatformResources(resourcesDir, name, filter) {
 
-    override fun getResourceFiles(locales: Set<String>): Array<ResourceFile>? {
+    override val formattingType: FormattingType = NoFormattingType
+
+    override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
         return null
     }
 

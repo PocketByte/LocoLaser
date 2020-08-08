@@ -21,6 +21,8 @@ import java.nio.file.Paths
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 
 /**
  * @author Denis Shurygin
@@ -109,6 +111,80 @@ class IosPluralResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testReadPluralsFormatted() {
+        val testLocale = "en"
+        val testFile = prepareTestFile(
+                TemplateStr.XML_DECLARATION + "\r\n" +
+                    TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                    "<plist version=\"1.0\">\r\n" +
+                    "<dict>\r\n" +
+                    "    <key>string1</key>\r\n" +
+                    "    <dict>\r\n" +
+                    "        <key>NSStringLocalizedFormatKey</key>\r\n" +
+                    "        <string>%#@value@</string>\r\n" +
+                    "        <key>value</key>\r\n" +
+                    "        <dict>\r\n" +
+                    "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
+                    "            <string>NSStringPluralRuleType</string>\r\n" +
+                    "            <key>NSStringFormatValueTypeKey</key>\r\n" +
+                    "            <string>f</string>\r\n" +
+                    "            <key>one</key>\r\n" +
+                    "            <string>String one</string>\r\n" +
+                    "            <key>two</key>\r\n" +
+                    "            <string>String two</string>\r\n" +
+                    "            <key>other</key>\r\n" +
+                    "            <string>String %@</string>\r\n" +
+                    "        </dict>\r\n" +
+                    "    </dict>\r\n" +
+                    "    <key>string3</key>\r\n" +
+                    "    <dict>\r\n" +
+                    "        <key>NSStringLocalizedFormatKey</key>\r\n" +
+                    "        <string>%#@value@</string>\r\n" +
+                    "        <key>value</key>\r\n" +
+                    "        <dict>\r\n" +
+                    "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
+                    "            <string>NSStringPluralRuleType</string>\r\n" +
+                    "            <key>NSStringFormatValueTypeKey</key>\r\n" +
+                    "            <string>d</string>\r\n" +
+                    "            <key>zero</key>\r\n" +
+                    "            <string>String 3 zero</string>\r\n" +
+                    "            <key>few</key>\r\n" +
+                    "            <string>String %d few</string>\r\n" +
+                    "            <key>other</key>\r\n" +
+                    "            <string>String 3 %d.</string>\r\n" +
+                    "        </dict>\r\n" +
+                    "    </dict>\r\n" +
+                    "</dict>\r\n" +
+                    "</plist>")
+
+        val resourceFile = IosPluralResourceFile(testFile, testLocale)
+        val resMap = resourceFile.read(ExtraParams())
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(
+            ResValue("String one", null, Quantity.ONE),
+            ResValue("String two", null, Quantity.TWO),
+            ResValue("String %s", null, Quantity.OTHER, JavaFormattingType,
+                JavaFormattingType.argumentsFromValue("%s")
+            ))))
+        resLocale.put(prepareResItem("string3", arrayOf(
+            ResValue("String 3 zero", null, Quantity.ZERO),
+            ResValue("String %d few", null, Quantity.FEW, JavaFormattingType,
+                JavaFormattingType.argumentsFromValue("%d")
+            ),
+            ResValue("String 3 %d.", null, Quantity.OTHER, JavaFormattingType,
+                JavaFormattingType.argumentsFromValue("%d")
+            ))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testWritePlurals() {
         val testLocale = "en"
         val redundantLocale = "base"
@@ -178,6 +254,77 @@ class IosPluralResourceFileTest {
         assertEquals(expectedResult, readFile(testFile))
     }
 
+    @Test
+    @Throws(IOException::class)
+    fun testWritePluralsWebFormatted() {
+        val testLocale = "en"
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(
+            ResValue("String one", null, Quantity.ONE),
+            ResValue("String two", null, Quantity.TWO),
+            ResValue("String {{str}}", "Comment", Quantity.OTHER, WebFormattingType,
+                WebFormattingType.argumentsFromValue("{{str}}")
+            ))))
+        resLocale.put(prepareResItem("string3", arrayOf(
+            ResValue("String 3 zero", null, Quantity.ZERO),
+            ResValue("String {{count}} few", null, Quantity.FEW, WebFormattingType,
+                listOf(FormattingArgument("count", null, parameters("d", "")))
+            ),
+            ResValue("String 3 {{count}}.", "Comment", Quantity.OTHER, WebFormattingType,
+                listOf(FormattingArgument("count", null, parameters("d", "")))
+            ))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = IosPluralResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<plist version=\"1.0\">\r\n" +
+                "<dict>\r\n" +
+                "    <key>string1</key>\r\n" +
+                "    <dict>\r\n" +
+                "        <key>NSStringLocalizedFormatKey</key>\r\n" +
+                "        <string>%#@value@</string>\r\n" +
+                "        <key>value</key>\r\n" +
+                "        <dict>\r\n" +
+                "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
+                "            <string>NSStringPluralRuleType</string>\r\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\r\n" +
+                "            <string>f</string>\r\n" +
+                "            <key>one</key>\r\n" +
+                "            <string>String one</string>\r\n" +
+                "            <key>two</key>\r\n" +
+                "            <string>String two</string>\r\n" +
+                "            <key>other</key>\r\n" +
+                "            <string>String %@</string>\r\n" +
+                "        </dict>\r\n" +
+                "    </dict>\r\n" +
+                "    <key>string3</key>\r\n" +
+                "    <dict>\r\n" +
+                "        <key>NSStringLocalizedFormatKey</key>\r\n" +
+                "        <string>%#@value@</string>\r\n" +
+                "        <key>value</key>\r\n" +
+                "        <dict>\r\n" +
+                "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
+                "            <string>NSStringPluralRuleType</string>\r\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\r\n" +
+                "            <string>d</string>\r\n" +
+                "            <key>zero</key>\r\n" +
+                "            <string>String 3 zero</string>\r\n" +
+                "            <key>few</key>\r\n" +
+                "            <string>String %d few</string>\r\n" +
+                "            <key>other</key>\r\n" +
+                "            <string>String 3 %d.</string>\r\n" +
+                "        </dict>\r\n" +
+                "    </dict>\r\n" +
+                "</dict>\r\n" +
+                "</plist>")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
 
     @Test
     @Throws(IOException::class)
@@ -212,7 +359,9 @@ class IosPluralResourceFileTest {
 
         val expectedMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("string1", arrayOf(ResValue(testString, null, Quantity.OTHER))))
+        resLocale.put(prepareResItem("string1", arrayOf(
+            ResValue(testString, null, Quantity.OTHER,
+                JavaFormattingType, JavaFormattingType.argumentsFromValue(testString)))))
         expectedMap[testLocale] = resLocale
 
         assertEquals(expectedMap, resMap)
@@ -278,5 +427,12 @@ class IosPluralResourceFileTest {
         for (value in values)
             resItem.addValue(value)
         return resItem
+    }
+
+    private fun parameters(typeName: String, typeParameters: String): Map<String, String> {
+        return mapOf(
+            Pair(JavaFormattingType.PARAM_TYPE_NAME, typeName),
+            Pair(JavaFormattingType.PARAM_TYPE_PARAMETERS, typeParameters)
+        )
     }
 }

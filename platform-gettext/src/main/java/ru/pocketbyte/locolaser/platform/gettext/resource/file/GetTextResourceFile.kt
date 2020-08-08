@@ -12,6 +12,7 @@ import ru.pocketbyte.locolaser.resource.entity.ResLocale
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.entity.ResValue
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 import java.io.IOException
 import java.io.LineNumberReader
@@ -58,7 +59,9 @@ class GetTextResourceFile(file: File, private val mLocale: String) : ResourceStr
         }
     }
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override val formattingType = NoFormattingType
+
+    override fun read(extraParams: ExtraParams?): ResMap? {
         if (file.exists()) {
             val result = ResLocale()
 

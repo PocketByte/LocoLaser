@@ -181,8 +181,8 @@ class ResItemTest {
     @Test
     @Throws(Exception::class)
     fun testMergeWithMeta() {
-        val value1 = ResValue("value1", null, Quantity.OTHER, null, mapOf(Pair("DATA_2", "n3")))
-        val value2 = ResValue("value2", "Comment", Quantity.FEW, null, mapOf(Pair("DATA", "123"), Pair("MET_2", "55")))
+        val value1 = ResValue("value1", null, Quantity.OTHER, meta = mapOf(Pair("DATA_2", "n3")))
+        val value2 = ResValue("value2", "Comment", Quantity.FEW, meta = mapOf(Pair("DATA", "123"), Pair("MET_2", "55")))
         val value3 = ResValue("value3", "Comment2", Quantity.ZERO)
         resItem.addValue(value1)
         resItem.addValue(value2)
@@ -190,17 +190,17 @@ class ResItemTest {
 
         val resItem2 = ResItem(resItem.key + "_2") // Merge should work independent from res key
         val value4 = ResValue("value4", null, Quantity.OTHER)
-        val value5 = ResValue("value5", "Comment", Quantity.FEW, null, mapOf(Pair("MET", "val3"), Pair("DATA", "new")))
+        val value5 = ResValue("value5", "Comment", Quantity.FEW, meta = mapOf(Pair("MET", "val3"), Pair("DATA", "new")))
         resItem2.addValue(value4)
         resItem2.addValue(value5)
 
         assert(resItem.merge(resItem2) === resItem)
         assertEquals(3, resItem.values.size)
         assertEquals(
-                ResValue("value4", null, Quantity.OTHER, null, mapOf(Pair("DATA_2", "n3"))),
+                ResValue("value4", null, Quantity.OTHER, meta = mapOf(Pair("DATA_2", "n3"))),
                 resItem.valueForQuantity(Quantity.OTHER))
         assertEquals(
-                ResValue("value5", "Comment", Quantity.FEW, null, mapOf(Pair("MET", "val3"), Pair("MET_2", "55"), Pair("DATA", "new"))),
+                ResValue("value5", "Comment", Quantity.FEW, meta = mapOf(Pair("MET", "val3"), Pair("MET_2", "55"), Pair("DATA", "new"))),
                 resItem.valueForQuantity(Quantity.FEW))
         assertEquals(value3, resItem.valueForQuantity(Quantity.ZERO))
     }

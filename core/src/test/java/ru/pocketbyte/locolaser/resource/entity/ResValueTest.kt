@@ -8,6 +8,8 @@ package ru.pocketbyte.locolaser.resource.entity
 import org.junit.Test
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
 /**
  * @author Denis Shurygin
@@ -45,6 +47,29 @@ class ResValueTest {
                 ResValue("value1", null, meta = mapOf(Pair("Meta1", "v1"), Pair("Meta2", "value"))),
                 ResValue("value1", null, meta = mapOf(Pair("Meta1", "v1"), Pair("Meta2", "value"))))
 
+        assertEquals(
+                ResValue("value1", null, formattingType = NoFormattingType),
+                ResValue("value1", null))
+        assertEquals(
+                ResValue("value1", null, formattingType = JavaFormattingType),
+                ResValue("value1", null, formattingType = JavaFormattingType))
+
+        assertEquals(
+                ResValue("value1", null, formattingType = JavaFormattingType, formattingArguments = emptyList()),
+                ResValue("value1", null, formattingType = JavaFormattingType))
+
+        assertEquals(
+                ResValue("value1", null, formattingType = JavaFormattingType,
+                        formattingArguments = listOf(FormattingArgument("Arg1"))),
+                ResValue("value1", null, formattingType = JavaFormattingType,
+                        formattingArguments = listOf(FormattingArgument("Arg1"))))
+
+        assertEquals(
+                ResValue("value1", null, formattingType = JavaFormattingType,
+                        formattingArguments = listOf(FormattingArgument("Arg1"), FormattingArgument("Arg2"))),
+                ResValue("value1", null, formattingType = JavaFormattingType,
+                        formattingArguments = listOf(FormattingArgument("Arg1"), FormattingArgument("Arg2"))))
+
         assertNotEquals(
                 ResValue("value1", null),
                 ResValue("value2", null))
@@ -63,6 +88,22 @@ class ResValueTest {
         assertNotEquals(
                 ResValue("value1", null, meta = mapOf(Pair("Meta", "data"))),
                 ResValue("value1", null))
+
+        assertNotEquals(
+                ResValue("value1", null, formattingType = NoFormattingType),
+                ResValue("value1", null, formattingType = JavaFormattingType))
+
+        assertNotEquals(
+                ResValue("value1", null, formattingType = JavaFormattingType,
+                        formattingArguments = listOf(FormattingArgument("Arg1"))),
+                ResValue("value1", null, formattingType = JavaFormattingType,
+                        formattingArguments = listOf(FormattingArgument("Arg2"))))
+
+        assertNotEquals(
+                ResValue("value1", null, formattingType = JavaFormattingType,
+                        formattingArguments = listOf(FormattingArgument("Arg1"), FormattingArgument("Arg2"))),
+                ResValue("value1", null, formattingType = JavaFormattingType,
+                        formattingArguments = listOf(FormattingArgument("Arg1"))))
 
     }
 

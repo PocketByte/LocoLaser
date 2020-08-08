@@ -9,6 +9,8 @@ import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.AndroidResourceFile
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
@@ -22,8 +24,10 @@ class AndroidResources(
         filter: ((key: String) -> Boolean)?
 ) : AbsPlatformResources(resourcesDir, fileName, filter) {
 
-    override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
-        val localesArray = locales.toTypedArray()
+    override val formattingType: FormattingType = JavaFormattingType
+
+    override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
+        val localesArray = locales?.toTypedArray() ?: return null
         return Array(locales.size) { i ->
             AndroidResourceFile(getFileForLocale(localesArray[i]), localesArray[i])
         }

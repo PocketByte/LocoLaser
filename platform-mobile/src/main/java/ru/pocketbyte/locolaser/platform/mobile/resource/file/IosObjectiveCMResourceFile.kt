@@ -44,7 +44,7 @@ class IosObjectiveCMResourceFile(
         }
     }
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override fun read(extraParams: ExtraParams?): ResMap? {
         return null
     }
 

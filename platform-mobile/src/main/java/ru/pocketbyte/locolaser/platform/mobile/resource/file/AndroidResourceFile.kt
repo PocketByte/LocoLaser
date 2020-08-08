@@ -13,6 +13,9 @@ import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.platform.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.File
 import java.io.IOException
@@ -85,7 +88,9 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
         public const val XML_CDATA_POSTFIX = "]]>"
     }
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override val formattingType: FormattingType = JavaFormattingType
+
+    override fun read(extraParams: ExtraParams?): ResMap? {
         if (file.exists()) {
             val handler = AndroidXmlFileParser()
             val spf = SAXParserFactory.newInstance()
@@ -125,7 +130,7 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
             if (resItem != null) {
 
                 if (!resItem.isHasQuantities) {
-                    val resValue = resItem.values[0]
+                    val resValue = formattingType.convert(resItem.values[0])
                     val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
                     val comment = resValue.comment
                     val value = resValue.value
@@ -156,7 +161,8 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                     writeString(resItem.key.trim { it <= ' ' })
                     writeStringLn("\">")
 
-                    for (resValue in resItem.values) {
+                    resItem.values.forEach {
+                        val resValue = formattingType.convert(it)
                         val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
 
                         writeString("        <item quantity=\"")
@@ -176,7 +182,18 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
         close()
     }
 
-    private class AndroidXmlFileParser : DefaultHandler() {
+    private fun ResItem.addValue(
+            value: String,
+            comment: String?,
+            quantity: Quantity = Quantity.OTHER,
+            meta: Map<String, String>? = null
+    ) {
+        val formattingArguments = formattingType.argumentsFromValue(value)
+        val formattingType = if (formattingArguments?.isEmpty() != false) NoFormattingType else formattingType
+        this.addValue(ResValue(value, comment, quantity, formattingType, formattingArguments, meta))
+    }
+
+    private inner class AndroidXmlFileParser : DefaultHandler() {
         val map: ResLocale = ResLocale()
 
         private var mItem: ResItem? = null
@@ -225,12 +242,12 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
             val value = mValue
 
             if (item != null && value != null && "string" == qName) {
-                item.addValue(ResValue(mValue!!.toString(), mComment, meta = mMetaData))
+                item.addValue(mValue!!.toString(), mComment, meta = mMetaData)
                 map.put(item)
                 mItem = null
                 mMetaData = null
             } else if (item != null && value != null && "item" == qName && isPlural) {
-                item.addValue(ResValue(value.toString(), mComment, mQuantity ?: Quantity.OTHER, meta = mMetaData))
+                item.addValue(value.toString(), mComment, mQuantity ?: Quantity.OTHER, meta = mMetaData)
                 mMetaData = null
             } else if (item != null && "plurals" == qName && isPlural) {
                 map.put(item)

@@ -3,6 +3,8 @@ package ru.pocketbyte.locolaser.resource.file
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.PlatformResources
 import ru.pocketbyte.locolaser.resource.entity.*
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.TextUtils
 
 import java.io.File
@@ -21,6 +23,8 @@ abstract class BaseClassResourceFile(file: File) : ResourceStreamFile(file) {
         val type: String
     )
 
+    override val formattingType: FormattingType = NoFormattingType
+
     @Throws(IOException::class)
     protected abstract fun writeHeaderComment(resMap: ResMap, extraParams: ExtraParams?)
 
@@ -36,7 +40,7 @@ abstract class BaseClassResourceFile(file: File) : ResourceStreamFile(file) {
     @Throws(IOException::class)
     protected abstract fun writeClassFooter(resMap: ResMap, extraParams: ExtraParams?)
 
-    override fun read(extraParams: ExtraParams): ResMap? {
+    override fun read(extraParams: ExtraParams?): ResMap? {
         return null
     }
 

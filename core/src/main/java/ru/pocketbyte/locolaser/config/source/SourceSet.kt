@@ -5,39 +5,69 @@
 
 package ru.pocketbyte.locolaser.config.source
 
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.entity.merge
-
-import java.util.ArrayList
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.MixedFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.summary.FileSummary
+import kotlin.math.max
 
 /**
  * @author Denis Shurygin
  */
 class SourceSet(
         sourceConfig: SourceConfig,
-        private val mSources: Set<Source>,
-        private val mDefaultSource: Source
+        private val sources: Set<Source>,
+        private val default: Source
 ) : Source(sourceConfig) {
 
-    override val modifiedDate: Long
-        get() = mSources
-                .map { it.modifiedDate }
-                .max() ?: 0
+    override val formattingType: FormattingType
+        get() {
+            val firstItemType = if (sources.isEmpty()) {
+                NoFormattingType
+            } else {
+                sources.elementAt(0).formattingType
+            }
 
-    override fun read(): ResMap? {
-        var resMap: ResMap? = null
-        for (source in mSources) {
-            resMap = resMap.merge(source.read())
+            return if (sources.find { it.formattingType != firstItemType } != null) {
+                MixedFormattingType
+            } else {
+                firstItemType
+            }
         }
-        return resMap
+
+    override val modifiedDate: Long
+        get() = sources.fold(0L) { acc, source ->
+            max(acc, source.modifiedDate)
+        }
+
+    override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap? {
+        return sources.fold(null as? ResMap) { resMap, source ->
+            resMap.merge(source.read(locales, extraParams))
+        }
     }
 
-    override fun write(resMap: ResMap) {
-        mDefaultSource.write(resMap)
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
+        default.write(resMap, extraParams)
     }
 
     override fun close() {
-        for (source in mSources)
-            source.close()
+        sources.forEach { it.close() }
+    }
+
+    override fun summaryForLocale(locale: String): FileSummary {
+        var bytes: Long = 0
+        val hash = StringBuilder()
+
+        sources.forEach { source ->
+            source.summaryForLocale(locale).let {
+                bytes += it.bytes
+                hash.append(it.hash)
+            }
+        }
+
+        return FileSummary(bytes, hash.toString())
     }
 }

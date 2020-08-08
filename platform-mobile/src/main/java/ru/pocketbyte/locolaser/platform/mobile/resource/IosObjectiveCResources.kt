@@ -3,6 +3,8 @@ package ru.pocketbyte.locolaser.platform.mobile.resource
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.IosObjectiveCHResourceFile
 import ru.pocketbyte.locolaser.platform.mobile.resource.file.IosObjectiveCMResourceFile
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
@@ -19,6 +21,8 @@ class IosObjectiveCResources(
         const val OBJC_M_FILE_EXTENSION = ".m"
     }
 
+    override val formattingType: FormattingType = NoFormattingType
+
     private val objcHFile: File
         get() {
             val sourceDir = directory
@@ -33,7 +37,7 @@ class IosObjectiveCResources(
             return File(sourceDir, name + OBJC_M_FILE_EXTENSION)
         }
 
-    override fun getResourceFiles(locales: Set<String>): Array<ResourceFile> {
+    override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
         return arrayOf(IosObjectiveCHResourceFile(objcHFile, name), IosObjectiveCMResourceFile(objcMFile, name, tableName!!))
     }
 
