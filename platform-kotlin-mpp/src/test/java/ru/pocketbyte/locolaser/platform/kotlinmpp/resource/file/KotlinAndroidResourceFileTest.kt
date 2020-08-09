@@ -20,6 +20,40 @@ import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 
 class KotlinAndroidResourceFileTest {
 
+    companion object {
+        const val StringProviderStr =
+            "    interface StringProvider {\n" +
+            "        fun getString(key: String): String\n" +
+            "\n" +
+            "        fun getPluralString(key: String, count: Int): String\n" +
+            "    }\n" +
+            "\n" +
+            "    private class StringProviderImpl(private val context: Context) : StringProvider {\n" +
+            "        private val resIds: MutableMap<String, MutableMap<String, Int>> =\n" +
+            "                mutableMapOf<String, MutableMap<String, Int>>()\n" +
+            "\n" +
+            "        private fun getId(resName: String, defType: String): Int {\n" +
+            "            var resMap = resIds[defType]\n" +
+            "            if (resMap == null) {\n" +
+            "                resMap = mutableMapOf()\n" +
+            "                resIds[defType] = resMap\n" +
+            "            }\n" +
+            "            var resId = resMap[resName]\n" +
+            "            if (resId == null) {\n" +
+            "                resId = context.resources.getIdentifier(resName.trim { it <= ' ' }, defType, context.packageName)\n" +
+            "                resMap[resName] = resId\n" +
+            "            }\n" +
+            "            return resId\n" +
+            "        }\n" +
+            "\n" +
+            "        override fun getString(key: String): String = this.context.getString(getId(key, \"string\"))\n" +
+            "\n" +
+            "        override fun getPluralString(key: String, count: Int): String = this.context.resources.getQuantityString(getId(key, \"plurals\"), count)\n" +
+            "    }\n"
+        const val SecondConstructorsStr =
+            "    constructor(context: Context) : this(StringProviderImpl(context))\n"
+    }
+
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
 
@@ -53,28 +87,15 @@ class KotlinAndroidResourceFileTest {
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
                 "\n" +
-                "class $className(private val context: Context) {\n" +
-                "    private val resIds: MutableMap<String, MutableMap<String, Int>> =\n" +
-                "            mutableMapOf<String, MutableMap<String, Int>>()\n" +
-                "\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * value1_1 */\n" +
                 "    val key1: String\n" +
-                "        get() = this.context.getString(getId(\"key1\", \"string\"))\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
-                "    private fun getId(resName: String, defType: String): Int {\n" +
-                "        var resMap = resIds[defType]\n" +
-                "        if (resMap == null) {\n" +
-                "            resMap = mutableMapOf()\n" +
-                "            resIds[defType] = resMap\n" +
-                "        }\n" +
-                "        var resId = resMap[resName]\n" +
-                "        if (resId == null) {\n" +
-                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\n" +
-                "            resMap[resName] = resId\n" +
-                "        }\n" +
-                "        return resId\n" +
-                "    }\n" +
+                SecondConstructorsStr +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -102,27 +123,14 @@ class KotlinAndroidResourceFileTest {
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
                 "\n" +
-                "class $className(private val context: Context) {\n" +
-                "    private val resIds: MutableMap<String, MutableMap<String, Int>> =\n" +
-                "            mutableMapOf<String, MutableMap<String, Int>>()\n" +
-                "\n" +
-                "    private fun getId(resName: String, defType: String): Int {\n" +
-                "        var resMap = resIds[defType]\n" +
-                "        if (resMap == null) {\n" +
-                "            resMap = mutableMapOf()\n" +
-                "            resIds[defType] = resMap\n" +
-                "        }\n" +
-                "        var resId = resMap[resName]\n" +
-                "        if (resId == null) {\n" +
-                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\n" +
-                "            resMap[resName] = resId\n" +
-                "        }\n" +
-                "        return resId\n" +
-                "    }\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
+                SecondConstructorsStr +
                 "\n" +
                 "    /**\n" +
                 "     * value1_2 */\n" +
-                "    fun key1(count: Int): String = this.context.resources.getQuantityString(getId(\"key1\", \"plurals\"), count)\n" +
+                "    fun key1(count: Int): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -157,33 +165,20 @@ class KotlinAndroidResourceFileTest {
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
                 "\n" +
-                "class $className(private val context: Context) {\n" +
-                "    private val resIds: MutableMap<String, MutableMap<String, Int>> =\n" +
-                "            mutableMapOf<String, MutableMap<String, Int>>()\n" +
-                "\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * value1_2 */\n" +
                 "    val key1: String\n" +
-                "        get() = this.context.getString(getId(\"key1\", \"string\"))\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
                 "    /**\n" +
                 "     * value3_2 */\n" +
                 "    val key3: String\n" +
-                "        get() = this.context.getString(getId(\"key3\", \"string\"))\n" +
+                "        get() = this.stringProvider.getString(\"key3\")\n" +
                 "\n" +
-                "    private fun getId(resName: String, defType: String): Int {\n" +
-                "        var resMap = resIds[defType]\n" +
-                "        if (resMap == null) {\n" +
-                "            resMap = mutableMapOf()\n" +
-                "            resIds[defType] = resMap\n" +
-                "        }\n" +
-                "        var resId = resMap[resName]\n" +
-                "        if (resId == null) {\n" +
-                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\n" +
-                "            resMap[resName] = resId\n" +
-                "        }\n" +
-                "        return resId\n" +
-                "    }\n" +
+                SecondConstructorsStr +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -219,29 +214,16 @@ class KotlinAndroidResourceFileTest {
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
                 "\n" +
-                "class $className(private val context: Context) : StrInterface {\n" +
-                "    private val resIds: MutableMap<String, MutableMap<String, Int>> =\n" +
-                "            mutableMapOf<String, MutableMap<String, Int>>()\n" +
-                "\n" +
+                "class $className(private val stringProvider: StringProvider) : StrInterface {\n" +
                 "    override val key1: String\n" +
-                "        get() = this.context.getString(getId(\"key1\", \"string\"))\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
                 "    override val key3: String\n" +
-                "        get() = this.context.getString(getId(\"key3\", \"string\"))\n" +
+                "        get() = this.stringProvider.getString(\"key3\")\n" +
                 "\n" +
-                "    private fun getId(resName: String, defType: String): Int {\n" +
-                "        var resMap = resIds[defType]\n" +
-                "        if (resMap == null) {\n" +
-                "            resMap = mutableMapOf()\n" +
-                "            resIds[defType] = resMap\n" +
-                "        }\n" +
-                "        var resId = resMap[resName]\n" +
-                "        if (resId == null) {\n" +
-                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\n" +
-                "            resMap[resName] = resId\n" +
-                "        }\n" +
-                "        return resId\n" +
-                "    }\n" +
+                SecondConstructorsStr +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -272,30 +254,17 @@ class KotlinAndroidResourceFileTest {
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
                 "\n" +
-                "class $className(private val context: Context) {\n" +
-                "    private val resIds: MutableMap<String, MutableMap<String, Int>> =\n" +
-                "            mutableMapOf<String, MutableMap<String, Int>>()\n" +
-                "\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
                 " Wery Wery Wery Wery Wery Wery\n" +
                 "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment */\n" +
                 "    val key1: String\n" +
-                "        get() = this.context.getString(getId(\"key1\", \"string\"))\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
-                "    private fun getId(resName: String, defType: String): Int {\n" +
-                "        var resMap = resIds[defType]\n" +
-                "        if (resMap == null) {\n" +
-                "            resMap = mutableMapOf()\n" +
-                "            resIds[defType] = resMap\n" +
-                "        }\n" +
-                "        var resId = resMap[resName]\n" +
-                "        if (resId == null) {\n" +
-                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\n" +
-                "            resMap[resName] = resId\n" +
-                "        }\n" +
-                "        return resId\n" +
-                "    }\n" +
+                SecondConstructorsStr +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -325,32 +294,19 @@ class KotlinAndroidResourceFileTest {
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
                 "\n" +
-                "class $className(private val context: Context) {\n" +
-                "    private val resIds: MutableMap<String, MutableMap<String, Int>> =\n" +
-                "            mutableMapOf<String, MutableMap<String, Int>>()\n" +
-                "\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
                 "    val key1: String\n" +
-                "        get() = this.context.getString(getId(\"key1\", \"string\"))\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
-                "    private fun getId(resName: String, defType: String): Int {\n" +
-                "        var resMap = resIds[defType]\n" +
-                "        if (resMap == null) {\n" +
-                "            resMap = mutableMapOf()\n" +
-                "            resIds[defType] = resMap\n" +
-                "        }\n" +
-                "        var resId = resMap[resName]\n" +
-                "        if (resId == null) {\n" +
-                "            resId = context.resources.getIdentifier(resName, defType, context.packageName)\n" +
-                "            resMap[resName] = resId\n" +
-                "        }\n" +
-                "        return resId\n" +
-                "    }\n" +
+                SecondConstructorsStr +
                 "\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
-                "    fun key2(count: Int): String = this.context.resources.getQuantityString(getId(\"key2\", \"plurals\"), count)\n" +
+                "    fun key2(count: Int): String = this.stringProvider.getPluralString(\"key2\", count)\n" +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))

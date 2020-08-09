@@ -18,7 +18,7 @@ import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.kotlinmpp.resource.AbsKotlinPlatformResources
 import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 
-class KotlinIosResourceFileTest {
+class AbsKeyValuePoetClassResourceFileTest {
 
     companion object {
         const val StringProviderStr =
@@ -26,27 +26,7 @@ class KotlinIosResourceFileTest {
             "        fun getString(key: String): String\n" +
             "\n" +
             "        fun getPluralString(key: String, count: Int): String\n" +
-            "    }\n" +
-            "\n" +
-            "    private class StringProviderImpl(private val bundle: NSBundle, private val tableName: String) : StringProvider {\n" +
-            "        constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
-            "\n" +
-            "        constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
-            "\n" +
-            "        constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n" +
-            "\n" +
-            "        override fun getString(key: String): String = this.bundle.localizedStringForKey(key, \"\", this.tableName)\n" +
-            "\n" +
-            "        override fun getPluralString(key: String, count: Int): String = NSLocalizedPluralString(key, this.tableName, this.bundle, count) ?: key\n" +
             "    }\n"
-        const val SecondConstructorsStr =
-            "    constructor(bundle: NSBundle, tableName: String) : this(StringProviderImpl(bundle, tableName))\n" +
-            "\n" +
-            "    constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
-            "\n" +
-            "    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
-            "\n" +
-            "    constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n"
     }
 
     @Rule @JvmField
@@ -55,7 +35,7 @@ class KotlinIosResourceFileTest {
     @Test
     @Throws(IOException::class)
     fun testRead() {
-        val resourceFile = KotlinIosResourceFile(tempFolder.newFile(),
+        val resourceFile = AbsKeyValuePoetClassResourceFile(tempFolder.newFile(),
                 "Str", "com.package", null, null)
         assertNull(resourceFile.read(ExtraParams()))
     }
@@ -71,7 +51,7 @@ class KotlinIosResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
@@ -79,15 +59,12 @@ class KotlinIosResourceFileTest {
                 "\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
-                "import platform.Foundation.NSBundle\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * value1_1 */\n" +
                 "    val key1: String\n" +
                 "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                SecondConstructorsStr +
                 "\n" +
                 StringProviderStr +
                 "}\n"
@@ -106,7 +83,7 @@ class KotlinIosResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
@@ -114,12 +91,8 @@ class KotlinIosResourceFileTest {
                 "\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
-                "import localizedPlural.NSLocalizedPluralString\n" +
-                "import platform.Foundation.NSBundle\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
-                SecondConstructorsStr +
-                "\n" +
                 "    /**\n" +
                 "     * value1_2 */\n" +
                 "    fun key1(count: Int): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
@@ -148,7 +121,7 @@ class KotlinIosResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
@@ -156,7 +129,6 @@ class KotlinIosResourceFileTest {
                 "\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
-                "import platform.Foundation.NSBundle\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
@@ -168,8 +140,6 @@ class KotlinIosResourceFileTest {
                 "     * value3_2 */\n" +
                 "    val key3: String\n" +
                 "        get() = this.stringProvider.getString(\"key3\")\n" +
-                "\n" +
-                SecondConstructorsStr +
                 "\n" +
                 StringProviderStr +
                 "}\n"
@@ -195,17 +165,15 @@ class KotlinIosResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage,
-                "StrInterface", "com.interface")
+        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, "StrInterface", "com.some.package")
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import com.interface.StrInterface\n" +
+                "import com.some.package.StrInterface\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
-                "import platform.Foundation.NSBundle\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) : StrInterface {\n" +
                 "    override val key1: String\n" +
@@ -213,8 +181,6 @@ class KotlinIosResourceFileTest {
                 "\n" +
                 "    override val key3: String\n" +
                 "        get() = this.stringProvider.getString(\"key3\")\n" +
-                "\n" +
-                SecondConstructorsStr +
                 "\n" +
                 StringProviderStr +
                 "}\n"
@@ -235,7 +201,7 @@ class KotlinIosResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Strings"
         val classPackage = "ru.pocketbyte"
-        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
 
         resourceFile.write(resMap, null)
 
@@ -244,7 +210,6 @@ class KotlinIosResourceFileTest {
                 "\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
-                "import platform.Foundation.NSBundle\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
@@ -253,8 +218,6 @@ class KotlinIosResourceFileTest {
                 "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment */\n" +
                 "    val key1: String\n" +
                 "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                SecondConstructorsStr +
                 "\n" +
                 StringProviderStr +
                 "}\n"
@@ -275,7 +238,7 @@ class KotlinIosResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = KotlinIosResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
@@ -283,16 +246,12 @@ class KotlinIosResourceFileTest {
                 "\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
-                "import localizedPlural.NSLocalizedPluralString\n" +
-                "import platform.Foundation.NSBundle\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
                 "    val key1: String\n" +
                 "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                SecondConstructorsStr +
                 "\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
@@ -318,8 +277,8 @@ class KotlinIosResourceFileTest {
 
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
-            File(directory, classPackage.replace(".", "/")),
-            "$className${AbsKotlinPlatformResources.KOTLIN_FILE_EXTENSION}"
+                File(directory, classPackage.replace(".", "/")),
+                "$className${AbsKotlinPlatformResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 }

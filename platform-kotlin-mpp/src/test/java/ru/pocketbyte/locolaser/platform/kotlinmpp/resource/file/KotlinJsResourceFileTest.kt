@@ -20,6 +20,25 @@ import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 
 class KotlinJsResourceFileTest {
 
+    companion object {
+        const val StringProviderStr =
+            "    interface StringProvider {\n" +
+            "        fun getString(key: String): String\n" +
+            "\n" +
+            "        fun getPluralString(key: String, count: Int): String\n" +
+            "    }\n" +
+            "\n" +
+            "    private class StringProviderImpl(private val i18n: I18n) : StringProvider {\n" +
+            "        override fun getString(key: String): String = this.i18n.t(key)\n" +
+            "\n" +
+            "        override fun getPluralString(key: String, count: Int): String = this.i18n.t(\"\${key}_plural\", Plural(count))\n" +
+            "\n" +
+            "        data class Plural(val count: Int)\n" +
+            "    }\n"
+        const val SecondConstructorsStr =
+            "    constructor(i18n: I18n) : this(StringProviderImpl(i18n))\n"
+    }
+
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
 
@@ -49,13 +68,18 @@ class KotlinJsResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "\n" +
-                "class Str(private val i18n: I18n) {\n" +
+                "class Str(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * value1_1 */\n" +
                 "    val key1: String\n" +
-                "        get() = this.i18n.t(\"key1\")\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
+                "\n" +
+                SecondConstructorsStr +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -82,12 +106,14 @@ class KotlinJsResourceFileTest {
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "\n" +
-                "class $className(private val i18n: I18n) {\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
+                SecondConstructorsStr +
+                "\n" +
                 "    /**\n" +
                 "     * value1_2 */\n" +
-                "    fun key1(count: Int): String = this.i18n.t(\"key1_plural\", Plural(count))\n" +
+                "    fun key1(count: Int): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
                 "\n" +
-                "    data class Plural(val count: Int)\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -118,18 +144,23 @@ class KotlinJsResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "\n" +
-                "class $className(private val i18n: I18n) {\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * value1_2 */\n" +
                 "    val key1: String\n" +
-                "        get() = this.i18n.t(\"key1\")\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
                 "    /**\n" +
                 "     * value3_2 */\n" +
                 "    val key3: String\n" +
-                "        get() = this.i18n.t(\"key3\")\n" +
+                "        get() = this.stringProvider.getString(\"key3\")\n" +
+                "\n" +
+                SecondConstructorsStr +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -161,14 +192,19 @@ class KotlinJsResourceFileTest {
                 "\n" +
                 "import com.interface.StrInterface\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "\n" +
-                "class $className(private val i18n: I18n) : StrInterface {\n" +
+                "class $className(private val stringProvider: StringProvider) : StrInterface {\n" +
                 "    override val key1: String\n" +
-                "        get() = this.i18n.t(\"key1\")\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
                 "    override val key3: String\n" +
-                "        get() = this.i18n.t(\"key3\")\n" +
+                "        get() = this.stringProvider.getString(\"key3\")\n" +
+                "\n" +
+                SecondConstructorsStr +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -194,15 +230,20 @@ class KotlinJsResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "\n" +
-                "class $className(private val i18n: I18n) {\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
                 " Wery Wery Wery Wery Wery Wery\n" +
                 "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment */\n" +
                 "    val key1: String\n" +
-                "        get() = this.i18n.t(\"key1\")\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
+                "\n" +
+                SecondConstructorsStr +
+                "\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -231,17 +272,19 @@ class KotlinJsResourceFileTest {
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "\n" +
-                "class $className(private val i18n: I18n) {\n" +
+                "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
                 "    val key1: String\n" +
-                "        get() = this.i18n.t(\"key1\")\n" +
+                "        get() = this.stringProvider.getString(\"key1\")\n" +
+                "\n" +
+                SecondConstructorsStr +
                 "\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
-                "    fun key2(count: Int): String = this.i18n.t(\"key2_plural\", Plural(count))\n" +
+                "    fun key2(count: Int): String = this.stringProvider.getPluralString(\"key2\", count)\n" +
                 "\n" +
-                "    data class Plural(val count: Int)\n" +
+                StringProviderStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))

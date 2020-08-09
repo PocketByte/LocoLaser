@@ -2,9 +2,6 @@ package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.platform.kotlinmpp.extension.hasPlurals
-import ru.pocketbyte.locolaser.resource.entity.Quantity
-import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import java.io.File
 
@@ -14,22 +11,34 @@ class KotlinJsResourceFile(
         classPackage: String,
         private val interfaceName: String?,
         private val interfacePackage: String?
-): BasePoetClassResourceFile(file, className, classPackage) {
+): AbsKeyValuePoetClassResourceFile(file, className, classPackage, interfaceName, interfacePackage) {
+
+    companion object {
+        private val StringProviderImplClassName = ClassName("", "StringProviderImpl")
+        private val I18nClassName = ClassName("i18next", "I18n")
+    }
 
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
-        val builder = TypeSpec.classBuilder(className)
-                .addModifiers(KModifier.PUBLIC)
-                .primaryConstructor(
-                    FunSpec.constructorBuilder()
-                        .addParameter("private val i18n", ClassName("i18next", "I18n"))
-                        .build()
-                )
-        if (interfaceName != null && interfacePackage != null) {
-            builder.addSuperinterface(ClassName(interfacePackage, interfaceName))
-        }
+        return super.instantiateClassSpecBuilder(resMap, extraParams)
+            .addType(instantiateStringProviderClassSpecBuilder().build())
+            .addFunction(
+                FunSpec.constructorBuilder()
+                    .addParameter("i18n", I18nClassName)
+                    .callThisConstructor("${StringProviderImplClassName.simpleName()}(i18n)")
+                    .build()
+            )
+    }
 
-        if (resMap.hasPlurals) {
-            builder.addType(
+    private fun instantiateStringProviderClassSpecBuilder(): TypeSpec.Builder {
+        return TypeSpec.classBuilder(StringProviderImplClassName)
+            .addSuperinterface(StringProviderClassName)
+            .addModifiers(KModifier.PRIVATE)
+            .primaryConstructor(
+                FunSpec.constructorBuilder()
+                    .addParameter("private val i18n", I18nClassName)
+                    .build()
+            )
+            .addType(
                 TypeSpec.classBuilder("Plural")
                     .addModifiers(KModifier.DATA)
                     .primaryConstructor(
@@ -38,50 +47,22 @@ class KotlinJsResourceFile(
                             .build()
                     ).build()
             )
-        }
-
-        return builder
-    }
-
-    override fun instantiatePropertySpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
-    ): PropertySpec.Builder {
-        val builder = super
-            .instantiatePropertySpecBuilder(name, item, resMap, extraParams)
-            .getter(
-                FunSpec.getterBuilder()
-                    .addStatement("return this.i18n.t(\"${item.key}\")")
+            .addFunction(
+                FunSpec.builder("getString")
+                    .addModifiers(KModifier.OVERRIDE)
+                    .addParameter("key", String::class)
+                    .addStatement("return this.i18n.t(key)")
+                    .returns(String::class)
                     .build()
             )
-
-        if (interfaceName == null || interfacePackage == null) {
-            val valueOther = item.valueForQuantity(Quantity.OTHER)
-            if (valueOther?.value != null) {
-                builder.addKdoc("%L", wrapCommentString(valueOther.value))
-            }
-        } else {
-            builder.addModifiers(KModifier.OVERRIDE)
-        }
-
-        return builder
-    }
-
-    override fun instantiatePluralSpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
-    ): FunSpec.Builder {
-        val builder = super
-            .instantiatePluralSpecBuilder(name, item, resMap, extraParams)
-            .addStatement("return this.i18n.t(\"${item.key}_plural\", Plural(count))")
-
-        if (interfaceName == null || interfacePackage == null) {
-            val valueOther = item.valueForQuantity(Quantity.OTHER)
-            if (valueOther?.value != null) {
-                builder.addKdoc("%L", wrapCommentString(valueOther.value))
-            }
-        } else {
-            builder.addModifiers(KModifier.OVERRIDE)
-        }
-
-        return builder
+            .addFunction(
+                FunSpec.builder("getPluralString")
+                    .addModifiers(KModifier.OVERRIDE)
+                    .addParameter("key", String::class)
+                    .addParameter("count", Int::class)
+                    .addStatement("return this.i18n.t(\"\${key}_plural\", Plural(count))")
+                    .returns(String::class)
+                    .build()
+            )
     }
 }
