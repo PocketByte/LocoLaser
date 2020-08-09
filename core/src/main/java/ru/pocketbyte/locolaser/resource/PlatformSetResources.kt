@@ -38,9 +38,9 @@ class PlatformSetResources(
     }
 
     @Throws(IOException::class)
-    override fun write(map: ResMap, extraParams: ExtraParams?) {
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         resources.forEach {
-            it.write(map, extraParams)
+            it.write(resMap, extraParams)
         }
     }
 

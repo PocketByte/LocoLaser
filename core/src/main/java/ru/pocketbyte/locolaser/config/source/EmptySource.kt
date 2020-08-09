@@ -6,7 +6,7 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
-class EmptySource: Source() {
+class EmptySource: Source {
 
     override val formattingType: FormattingType = NoFormattingType
     override val modifiedDate: Long = 0
@@ -16,10 +16,6 @@ class EmptySource: Source() {
     }
 
     override fun write(resMap: ResMap, extraParams: ExtraParams?) {
-        // do nothing
-    }
-
-    override fun close() {
         // do nothing
     }
 

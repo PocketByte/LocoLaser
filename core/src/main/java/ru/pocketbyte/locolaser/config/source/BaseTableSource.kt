@@ -18,7 +18,7 @@ import kotlin.math.max
 /**
  * @author Denis Shurygin
  */
-abstract class BaseTableSource : Source() {
+abstract class BaseTableSource : Source {
 
     companion object {
 

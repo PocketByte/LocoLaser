@@ -388,12 +388,6 @@ class LocoLaserTest {
     }
 
     @Test
-    fun testSourceClose() {
-        assertTrue(LocoLaser.localize(config))
-        assertTrue(source.isClosed)
-    }
-
-    @Test
     @Throws(ParseException::class, IOException::class)
     fun testSaveSummary() {
         platformResources.mSummaryMap = HashMap<String, FileSummary>(2).apply {
@@ -533,11 +527,9 @@ class LocoLaserTest {
     private class MockSource(
         var mockMap: ResMap?,
         override var modifiedDate: Long
-    ) : Source() {
+    ) : Source {
 
         override val formattingType: FormattingType = NoFormattingType
-
-        var isClosed = false
 
         override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap? {
             return ResMap(mockMap)
@@ -548,12 +540,6 @@ class LocoLaserTest {
                 mockMap = ResMap(resMap)
             else
                 mockMap.merge(resMap)
-        }
-
-        override fun close() {
-            if (isClosed)
-                throw IllegalStateException("Source should be closed only once")
-            isClosed = true
         }
     }
 }

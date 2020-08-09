@@ -258,10 +258,6 @@ class BaseTableSourceTest {
         override fun write(resMap: ResMap, extraParams: ExtraParams?) {
             // Do nothing
         }
-
-        override fun close() {
-            // Do nothing
-        }
     }
 
     private class BaseTableSourceConfigImpl internal constructor(

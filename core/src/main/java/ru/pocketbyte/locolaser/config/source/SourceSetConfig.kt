@@ -27,8 +27,6 @@ class SourceSetConfig(
             val source = config.open()
             if (source == null) {
                 LogUtils.err("Failed to open source. Source: $config")
-                for (sourceToClose in sources)
-                    sourceToClose.close()
                 return null
             }
             sources.add(source)

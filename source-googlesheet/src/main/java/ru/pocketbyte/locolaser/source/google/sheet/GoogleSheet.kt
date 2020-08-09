@@ -222,10 +222,6 @@ class GoogleSheet(
         }
     }
 
-    override fun close() {
-        mQuery = null
-    }
-
     override val firstRow: Int
         get() {
             fetchCellsIfNeeded()

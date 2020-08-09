@@ -18,6 +18,8 @@ import java.nio.file.Paths
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
 /**
  * @author Denis Shurygin
@@ -33,6 +35,8 @@ class ResourceStreamFileTest {
     @Throws(IOException::class)
     fun init() {
         streamFile = object : ResourceStreamFile(tempFolder.newFile()) {
+            override val formattingType = NoFormattingType
+
             override fun read(extraParams: ExtraParams?): ResMap? {
                 return null
             }

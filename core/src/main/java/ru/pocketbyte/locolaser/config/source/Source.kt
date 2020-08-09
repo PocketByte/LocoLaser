@@ -12,11 +12,9 @@ import ru.pocketbyte.locolaser.summary.FileSummary
  *
  * @author Denis Shurygin
  */
-abstract class Source(): PlatformResources {
+interface Source: PlatformResources {
 
-    abstract val modifiedDate: Long
-
-    abstract fun close()
+    val modifiedDate: Long
 
     override fun summaryForLocale(locale: String): FileSummary {
         return FileSummary(0, null)

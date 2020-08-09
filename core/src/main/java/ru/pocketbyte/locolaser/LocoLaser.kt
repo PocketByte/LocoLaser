@@ -178,10 +178,6 @@ object LocoLaser {
             }
         }
 
-        // =================================
-        // Close sources
-        source.close()
-
         return true
     }
 }

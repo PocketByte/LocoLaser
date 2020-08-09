@@ -20,7 +20,7 @@ import kotlin.math.max
 class SourceSet(
     private val sources: Set<Source>,
     private val default: Source
-) : Source() {
+) : Source {
 
     override val formattingType: FormattingType
         get() {
@@ -50,10 +50,6 @@ class SourceSet(
 
     override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         default.write(resMap, extraParams)
-    }
-
-    override fun close() {
-        sources.forEach { it.close() }
     }
 
     override fun summaryForLocale(locale: String): FileSummary {
