@@ -6,7 +6,7 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 
-class EmptySource(sourceConfig: SourceConfig) : Source(sourceConfig) {
+class EmptySource: Source() {
 
     override val formattingType: FormattingType = NoFormattingType
     override val modifiedDate: Long = 0

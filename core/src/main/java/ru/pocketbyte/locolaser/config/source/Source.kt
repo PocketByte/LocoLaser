@@ -12,7 +12,7 @@ import ru.pocketbyte.locolaser.summary.FileSummary
  *
  * @author Denis Shurygin
  */
-abstract class Source(open val sourceConfig: SourceConfig): PlatformResources {
+abstract class Source(): PlatformResources {
 
     abstract val modifiedDate: Long
 

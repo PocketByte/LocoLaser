@@ -18,7 +18,7 @@ import kotlin.math.max
 /**
  * @author Denis Shurygin
  */
-abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sourceConfig) {
+abstract class BaseTableSource : Source() {
 
     companion object {
 
@@ -40,9 +40,6 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
     abstract val rowsCount: Int
     abstract fun getValue(col: Int, row: Int): String?
     abstract val columnIndexes: ColumnIndexes
-
-    override val sourceConfig: BaseTableSourceConfig
-        get() = super.sourceConfig as BaseTableSourceConfig
 
     private var keysRows: MutableMap<String, MutableMap<Quantity, Int>>? = null
         get() {
@@ -101,7 +98,7 @@ abstract class BaseTableSource(sourceConfig: BaseTableSourceConfig) : Source(sou
                     parseMeta(getValue(columnIndexes.metadata, row))
                 } else { null }
 
-                for (locale in sourceConfig.locales) {
+                for (locale in columnIndexes.locales.keys) {
                     if (locales != null && !locale.contains(locale)) continue
 
                     val localeCol = columnIndexes.locales[locale] ?: -1

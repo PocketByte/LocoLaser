@@ -28,9 +28,9 @@ import kotlin.collections.ArrayList
  * @author Denis Shurygin
  */
 class GoogleSheet(
-        private val mConfig: GoogleSheetConfig,
-        private val mWorksheetFacade: WorksheetFacade
-) : BaseTableSource(mConfig) {
+        private val sourceConfig: GoogleSheetConfig,
+        private val worksheetFacade: WorksheetFacade
+) : BaseTableSource() {
 
     companion object {
 
@@ -64,7 +64,7 @@ class GoogleSheet(
 
     private var mQuery: CellFeed? = null
 
-    override val modifiedDate = mWorksheetFacade.sheetEntry.updated.value
+    override val modifiedDate = worksheetFacade.sheetEntry.updated.value
 
     override val formattingType: FormattingType = JavaFormattingType
 
@@ -115,34 +115,34 @@ class GoogleSheet(
 
             try {
                 mQuery?.getLink(ILink.Rel.FEED_BATCH, ILink.Type.ATOM)?.let { batchLink ->
-                    mWorksheetFacade.batch(URL(batchLink.href), batchRequest)
+                    worksheetFacade.batch(URL(batchLink.href), batchRequest)
                 }
 
-                if (totalRows > mWorksheetFacade.rowCount) {
-                    mWorksheetFacade.rowCount = totalRows
+                if (totalRows > worksheetFacade.rowCount) {
+                    worksheetFacade.rowCount = totalRows
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
-                throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + mConfig.id)
+                throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
             } catch (e: ServiceException) {
                 e.printStackTrace()
-                throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + mConfig.id)
+                throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
             }
 
             if (totalRows > mRowsCount) {
                 val cellFeed: CellFeed = try {
-                    mWorksheetFacade.queryRange(
+                    worksheetFacade.queryRange(
                         mColumnIndexes.min,
                         mRowsCount + 1,
                         mColumnIndexes.max,
                         totalRows, true
-                    ) ?: throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + mConfig.id)
+                    ) ?: throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + mConfig.id)
+                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
                 } catch (e: ServiceException) {
                     e.printStackTrace()
-                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + mConfig.id)
+                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
                 }
 
                 for ((newRowKey, newRowQuantity) in newRows) {
@@ -207,13 +207,13 @@ class GoogleSheet(
 
                 try {
                     val batchLink = cellFeed.getLink(ILink.Rel.FEED_BATCH, ILink.Type.ATOM)
-                    mWorksheetFacade.batch(URL(batchLink.href), batchRequest)
+                    worksheetFacade.batch(URL(batchLink.href), batchRequest)
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + mConfig.id!!)
+                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id!!)
                 } catch (e: ServiceException) {
                     e.printStackTrace()
-                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + mConfig.id!!)
+                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id!!)
                 }
 
                 // Invalidate Query
@@ -267,7 +267,7 @@ class GoogleSheet(
             val ignoreRows = ArrayList<Int>()
             val indexColumnFeed: CellFeed?
             try {
-                indexColumnFeed = mWorksheetFacade.queryRange(1, -1, 1, -1, false)
+                indexColumnFeed = worksheetFacade.queryRange(1, -1, 1, -1, false)
             } catch (e: IOException) {
                 e.printStackTrace()
                 return false
@@ -299,7 +299,7 @@ class GoogleSheet(
 
             val titleRowFeed: CellFeed?
             try {
-                titleRowFeed = mWorksheetFacade.queryRange(-1, mTitleRow, -1, mTitleRow, false)
+                titleRowFeed = worksheetFacade.queryRange(-1, mTitleRow, -1, mTitleRow, false)
             } catch (e: IOException) {
                 e.printStackTrace()
                 return false
@@ -349,7 +349,7 @@ class GoogleSheet(
             LogUtils.info("Column Indexes: $mColumnIndexes")
 
             mRowsCount = try {
-                val list = mWorksheetFacade
+                val list = worksheetFacade
                         .queryRange(mColumnIndexes.key, mTitleRow + 1, mColumnIndexes.key, -1, false)!!
                         .entries
                 if (list.size > 0)
@@ -365,7 +365,7 @@ class GoogleSheet(
             }
 
             try {
-                mQuery = mWorksheetFacade
+                mQuery = worksheetFacade
                         .queryRange(mColumnIndexes.min, mTitleRow + 1, mColumnIndexes.max, mRowsCount, true)
             } catch (e: IOException) {
                 e.printStackTrace()

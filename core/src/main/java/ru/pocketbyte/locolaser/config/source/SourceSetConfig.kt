@@ -36,6 +36,6 @@ class SourceSetConfig(
             if (config === mDefaultSourceConfig)
                 defaultSource = source
         }
-        return SourceSet(this, sources, defaultSource!!)
+        return defaultSource?.let { SourceSet(sources, it) }
     }
 }

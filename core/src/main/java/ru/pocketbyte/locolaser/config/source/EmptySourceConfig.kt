@@ -12,6 +12,6 @@ class EmptySourceConfig : SourceConfig {
     override val locales: Set<String> = setOf(PlatformResources.BASE_LOCALE)
 
     override fun open(): Source? {
-        return EmptySource(this)
+        return EmptySource()
     }
 }

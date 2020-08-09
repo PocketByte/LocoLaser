@@ -234,9 +234,8 @@ class BaseTableSourceTest {
     }
 
     private class TableSourceImpl(
-            sourceConfig: BaseTableSourceConfig,
-            private val mDataSet: MockDataSet
-    ) : BaseTableSource(sourceConfig) {
+            private val dataSet: MockDataSet
+    ) : BaseTableSource() {
 
         override val formattingType: FormattingType = NoFormattingType
 
@@ -244,14 +243,14 @@ class BaseTableSourceTest {
             get() = 0
 
         override val rowsCount: Int
-            get() = mDataSet.size()
+            get() = dataSet.size()
 
         override fun getValue(col: Int, row: Int): String? {
-            return mDataSet[col, row]
+            return dataSet[col, row]
         }
 
         override val columnIndexes: ColumnIndexes
-            get() = mDataSet.columnIndexes
+            get() = dataSet.columnIndexes
 
         override val modifiedDate: Long
             get() = 0
@@ -266,14 +265,14 @@ class BaseTableSourceTest {
     }
 
     private class BaseTableSourceConfigImpl internal constructor(
-            private val mDataSet: MockDataSet
+            private val dataSet: MockDataSet
     ) : BaseTableSourceConfig() {
 
         override val type: String
             get() = "mock"
 
         override fun open(): Source? {
-            return TableSourceImpl(this, mDataSet)
+            return TableSourceImpl(dataSet)
         }
     }
 }

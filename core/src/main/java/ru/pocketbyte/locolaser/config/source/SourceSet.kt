@@ -18,10 +18,9 @@ import kotlin.math.max
  * @author Denis Shurygin
  */
 class SourceSet(
-        sourceConfig: SourceConfig,
-        private val sources: Set<Source>,
-        private val default: Source
-) : Source(sourceConfig) {
+    private val sources: Set<Source>,
+    private val default: Source
+) : Source() {
 
     override val formattingType: FormattingType
         get() {

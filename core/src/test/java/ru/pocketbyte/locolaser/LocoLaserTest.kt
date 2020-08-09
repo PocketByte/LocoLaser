@@ -135,7 +135,7 @@ class LocoLaserTest {
         }
 
         assertTrue(LocoLaser.localize(config))
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
     }
 
     @Test
@@ -162,10 +162,10 @@ class LocoLaserTest {
         }
 
         assertTrue(LocoLaser.localize(config))
-        assertNotEquals(platformResources.mMap, source.mMap)
+        assertNotEquals(platformResources.mMap, source.mockMap)
 
         platformResources.mMap?.get(locale)?.remove(newKey)
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
     }
 
     @Test
@@ -192,18 +192,18 @@ class LocoLaserTest {
         }
 
         assertTrue(LocoLaser.localize(config))
-        assertNotEquals(platformResources.mMap, source.mMap)
+        assertNotEquals(platformResources.mMap, source.mockMap)
 
         platformResources.mMap?.get(locale)?.remove(newKey)
-        assertNotEquals(platformResources.mMap, source.mMap)
+        assertNotEquals(platformResources.mMap, source.mockMap)
 
         platformResources.mMap?.get(locale)?.get(overriddenKey)?.let {
             // Check if overridden value is not changed
             assertEquals(overriddenValue, it.valueForQuantity(Quantity.OTHER)?.value)
 
             // Check that it's only one difference
-            source.mMap?.get(locale)?.put(it)
-            assertEquals(platformResources.mMap, source.mMap)
+            source.mockMap?.get(locale)?.put(it)
+            assertEquals(platformResources.mMap, source.mockMap)
         }
     }
 
@@ -231,9 +231,9 @@ class LocoLaserTest {
         }
 
         assertTrue(LocoLaser.localize(config))
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
 
-        source.mMap?.get(locale)?.run {
+        source.mockMap?.get(locale)?.run {
             assertTrue(containsKey(newKey))
             assertTrue(containsKey(overriddenKey))
         }
@@ -268,9 +268,9 @@ class LocoLaserTest {
         }
 
         assertTrue(LocoLaser.localize(config))
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
 
-        source.mMap?.get(locale)?.run {
+        source.mockMap?.get(locale)?.run {
             assertTrue(containsKey(newKey))
             assertTrue(containsKey(overriddenKey))
         }
@@ -290,12 +290,12 @@ class LocoLaserTest {
         val locale = "ru"
 
         platformResources.mMap = ResMap(mResMap)
-        assertNotNull(source.mMap?.get(locale)?.remove(missedKey))
+        assertNotNull(source.mockMap?.get(locale)?.remove(missedKey))
 
         assertTrue(LocoLaser.localize(config))
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
 
-        val missedItem = source.mMap?.get(locale)?.get(missedKey)
+        val missedItem = source.mockMap?.get(locale)?.get(missedKey)
         assertNotNull(missedItem)
     }
 
@@ -305,11 +305,11 @@ class LocoLaserTest {
     @Test
     fun testSimpleReadAndWrite() {
         assertNull(platformResources.mMap)
-        assertNotNull(source.mMap)
+        assertNotNull(source.mockMap)
 
         assertTrue(LocoLaser.localize(config))
 
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
     }
 
     @Test
@@ -339,7 +339,7 @@ class LocoLaserTest {
         config.isForceImport = true
         assertTrue(LocoLaser.localize(config))
         assertNotNull(platformResources.mMap)
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
     }
 
     @Test
@@ -355,7 +355,7 @@ class LocoLaserTest {
 
         assertTrue(LocoLaser.localize(config))
         assertNotNull(platformResources.mMap)
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
     }
 
     @Test
@@ -367,7 +367,7 @@ class LocoLaserTest {
 
         assertTrue(LocoLaser.localize(config))
         assertNotNull(platformResources.mMap)
-        assertEquals(platformResources.mMap, source.mMap)
+        assertEquals(platformResources.mMap, source.mockMap)
     }
 
     @Test
@@ -382,9 +382,9 @@ class LocoLaserTest {
 
         assertTrue(LocoLaser.localize(config))
         assertNotNull(platformResources.mMap)
-        assertNotEquals(platformResources.mMap, source.mMap)
+        assertNotEquals(platformResources.mMap, source.mockMap)
         assertEquals(1, platformResources.mMap?.size)
-        assertEquals(platformResources.mMap!![changedLocale], source.mMap!![changedLocale])
+        assertEquals(platformResources.mMap!![changedLocale], source.mockMap!![changedLocale])
     }
 
     @Test
@@ -520,7 +520,7 @@ class LocoLaserTest {
             private val mLocales: Set<String>
     ) : SourceConfig {
 
-        val mSource: MockSource = MockSource(this, ResMap(resMap), System.currentTimeMillis())
+        val mSource: MockSource = MockSource(ResMap(resMap), System.currentTimeMillis())
 
         override fun open(): Source? {
             return mSource
@@ -531,23 +531,23 @@ class LocoLaserTest {
     }
 
     private class MockSource(
-            config: SourceConfig,
-            var mMap: ResMap?,
-            override var modifiedDate: Long) : Source(config) {
+        var mockMap: ResMap?,
+        override var modifiedDate: Long
+    ) : Source() {
 
         override val formattingType: FormattingType = NoFormattingType
 
         var isClosed = false
 
         override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap? {
-            return ResMap(mMap)
+            return ResMap(mockMap)
         }
 
         override fun write(resMap: ResMap, extraParams: ExtraParams?) {
-            if (mMap == null)
-                mMap = ResMap(resMap)
+            if (mockMap == null)
+                mockMap = ResMap(resMap)
             else
-                mMap.merge(resMap)
+                mockMap.merge(resMap)
         }
 
         override fun close() {
