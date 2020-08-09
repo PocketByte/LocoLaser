@@ -7,10 +7,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
-import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinAndroidPlatformConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinBaseImplPlatformConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinIosPlatformConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinJsPlatformConfig
+import ru.pocketbyte.locolaser.platform.kotlinmpp.*
 import ru.pocketbyte.locolaser.platform.mobile.parser.BaseMobilePlatformConfigParser
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
 import java.io.File
@@ -38,6 +35,7 @@ class KotlinImplementationPlatformConfigParserTest {
         testPlatformConfigResource(KotlinAndroidPlatformConfig.TYPE)
         testPlatformConfigResource(KotlinIosPlatformConfig.TYPE)
         testPlatformConfigResource(KotlinJsPlatformConfig.TYPE)
+        testPlatformConfigResource(KotlinAbsKeyValuePlatformConfig.TYPE)
     }
 
     private fun testPlatformConfigResource(platform: String) {

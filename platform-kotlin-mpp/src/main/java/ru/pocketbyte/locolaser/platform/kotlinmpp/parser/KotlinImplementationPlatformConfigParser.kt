@@ -4,10 +4,7 @@ import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser
 import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinAndroidPlatformConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinBaseImplPlatformConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinIosPlatformConfig
-import ru.pocketbyte.locolaser.platform.kotlinmpp.KotlinJsPlatformConfig
+import ru.pocketbyte.locolaser.platform.kotlinmpp.*
 import ru.pocketbyte.locolaser.platform.mobile.parser.BaseMobilePlatformConfigParser
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
@@ -37,6 +34,8 @@ class KotlinImplementationPlatformConfigParser : BaseMobilePlatformConfigParser(
             return KotlinIosPlatformConfig()
         if (KotlinJsPlatformConfig.TYPE == type)
             return KotlinJsPlatformConfig()
+        if (KotlinAbsKeyValuePlatformConfig.TYPE == type)
+            return KotlinAbsKeyValuePlatformConfig()
 
         if (throwIfWrongType)
             throw InvalidConfigException("Unknown platform: $type")
