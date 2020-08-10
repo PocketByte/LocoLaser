@@ -53,10 +53,10 @@ class WebFormattingTypeTest {
             formattingArguments = JavaFormattingType.argumentsFromValue(string)
         )
         val expectedValue = ResValue(
-            "The string is '{{s1}}'", null,
+            "The string is '{{s}}'", null,
             formattingType = WebFormattingType,
             formattingArguments = JavaFormattingType.argumentsFromValue(string)?.map {
-                FormattingArgument("s1", it.index, it.parameters)
+                FormattingArgument("s", it.index, it.parameters)
             }
         )
         assertEquals(expectedValue, WebFormattingType.convert(value))

@@ -5,11 +5,14 @@ import org.apache.commons.lang3.text.WordUtils
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.nameForFormattingArgument
+import ru.pocketbyte.locolaser.resource.formatting.typeForFormattingArgument
 import ru.pocketbyte.locolaser.utils.TextUtils
 import java.io.File
 import java.util.HashSet
@@ -17,7 +20,8 @@ import java.util.HashSet
 abstract class BasePoetClassResourceFile(
         protected val directory: File,
         protected val className: String,
-        protected val classPackage: String
+        protected val classPackage: String,
+        override val formattingType: FormattingType = NoFormattingType
 ) : ResourceFile {
 
     companion object {
@@ -25,8 +29,6 @@ abstract class BasePoetClassResourceFile(
     }
 
     abstract fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder
-
-    override val formattingType: FormattingType = NoFormattingType
 
     override fun read(extraParams: ExtraParams?): ResMap? {
         return null
@@ -54,6 +56,12 @@ abstract class BasePoetClassResourceFile(
                             instantiatePropertySpecBuilder(propertyName, item, resMap, extraParams)
                                 .build()
                         )
+                        if (item.valueForQuantity(Quantity.OTHER)?.formattingArguments?.isEmpty() == false) {
+                            classSpec.addFunction(
+                                instantiateFormattedPropertySpecBuilder(propertyName, item, resMap, extraParams)
+                                    .build()
+                            )
+                        }
                     }
                 }
             }
@@ -65,11 +73,31 @@ abstract class BasePoetClassResourceFile(
         }
     }
 
-
     protected open fun instantiatePropertySpecBuilder(
             name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): PropertySpec.Builder {
         return PropertySpec.builder(name, String::class, KModifier.PUBLIC)
+    }
+
+    protected open fun instantiateFormattedPropertySpecBuilder(
+            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
+    ): FunSpec.Builder {
+        val builder = FunSpec.builder(name)
+                .returns(String::class)
+                .addModifiers(KModifier.PUBLIC)
+
+        val parametersStringBuilder = StringBuilder()
+        item.valueForQuantity(Quantity.OTHER)?.let { resValue ->
+            resValue.formattingArguments?.forEachIndexed { index, _ ->
+                val valueName = resValue.nameForFormattingArgument(index)
+                builder.addParameter(valueName, resValue.typeForFormattingArgument(index))
+
+                if (parametersStringBuilder.count() > 0)
+                    parametersStringBuilder.append(", ")
+                parametersStringBuilder.append(valueName)
+            }
+        }
+        return builder
     }
 
     protected open fun instantiatePluralSpecBuilder(

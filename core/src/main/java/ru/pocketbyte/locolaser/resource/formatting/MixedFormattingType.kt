@@ -5,6 +5,8 @@ import ru.pocketbyte.locolaser.resource.entity.ResValue
 
 object MixedFormattingType: FormattingType {
 
+    override val argumentsSubstitution = FormattingType.ArgumentsSubstitution.NO
+
     override fun argumentsFromValue(value: String): List<FormattingArgument>? {
         throw UnsupportedOperationException(
             "${MixedFormattingType::class.java.canonicalName} doesn't support value arguments parsing."

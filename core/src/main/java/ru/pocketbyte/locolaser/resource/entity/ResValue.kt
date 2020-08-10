@@ -81,16 +81,12 @@ fun ResValue?.merge(item: ResValue?): ResValue? {
     if (this == null) return item
     if (item == null) return this
 
-    val arguments: List<FormattingArgument>? = if (this.formattingArguments != null) {
-        if (item.formattingArguments != null && this.formattingArguments.size == item.formattingArguments.size) {
-            List(this.formattingArguments.size) {
-                this.formattingArguments.getOrNull(it).merge(item.formattingArguments.getOrNull(it))!!
-            }
-        } else {
-            this.formattingArguments
+    val arguments: List<FormattingArgument>? = if (item.formattingArguments != null) {
+        item.formattingArguments.mapIndexed { index, formattingArgument ->
+            this.formattingArguments?.getOrNull(index).merge(formattingArgument) ?: formattingArgument
         }
     } else {
-        item.formattingArguments
+        null
     }
 
     val meta = if (item.metaIsNotEmpty()) {

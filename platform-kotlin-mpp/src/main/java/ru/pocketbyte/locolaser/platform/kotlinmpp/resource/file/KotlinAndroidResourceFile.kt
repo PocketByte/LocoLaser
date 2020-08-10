@@ -3,6 +3,8 @@ package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import java.io.File
 
 class KotlinAndroidResourceFile(
@@ -10,8 +12,11 @@ class KotlinAndroidResourceFile(
         className: String,
         classPackage: String,
         interfaceName: String?,
-        interfacePackage: String?
-): AbsKeyValuePoetClassResourceFile(file, className, classPackage, interfaceName, interfacePackage) {
+        interfacePackage: String?,
+        formattingType: FormattingType = JavaFormattingType
+): AbsKeyValuePoetClassResourceFile(
+        file, className, classPackage, interfaceName, interfacePackage, formattingType
+) {
 
     companion object {
         private val StringProviderImplClassName = ClassName("", "StringProviderImpl")
@@ -50,6 +55,18 @@ class KotlinAndroidResourceFile(
                 ).initializer("mutableMapOf<String, MutableMap<String, Int>>()").build()
             )
             .addFunction(
+                instantiateStringProviderGetStringSpecBuilder()
+                    .addModifiers(KModifier.OVERRIDE)
+                    .addStatement("return this.context.getString(getId(key, \"string\"), *args)")
+                    .build()
+            )
+            .addFunction(
+                instantiateStringProviderGetPluralStringSpecBuilder()
+                    .addModifiers(KModifier.OVERRIDE)
+                    .addStatement("return this.context.resources.getQuantityString(getId(key, \"plurals\"), count, *args)")
+                    .build()
+            )
+            .addFunction(
                 FunSpec.builder("getId")
                     .addModifiers(KModifier.PRIVATE)
                     .addParameter("resName", String::class)
@@ -59,35 +76,19 @@ class KotlinAndroidResourceFile(
                         CodeBlock.builder()
                             .addStatement("var resMap = resIds[defType]")
                             .beginControlFlow("if (resMap == null)")
-                            .addStatement("resMap = mutableMapOf()")
-                            .addStatement("resIds[defType] = resMap")
+                                .addStatement("resMap = mutableMapOf()")
+                                .addStatement("resIds[defType] = resMap")
                             .endControlFlow()
-
                             .addStatement("var resId = resMap[resName]")
                             .beginControlFlow("if (resId == null)")
-                            .addStatement("resId = context.resources.getIdentifier(resName.trim { it <= ' ' }, defType, context.packageName)")
-                            .addStatement("resMap[resName] = resId")
+                                .addStatement("resId = context.resources.getIdentifier(")
+                                .addStatement("    resName.trim { it <= ' ' }, defType, context.packageName")
+                                .addStatement(")")
+                                .addStatement("resMap[resName] = resId")
                             .endControlFlow()
                             .addStatement("return resId")
                             .build()
                     ).build()
-            )
-            .addFunction(
-                FunSpec.builder("getString")
-                    .addModifiers(KModifier.OVERRIDE)
-                    .addParameter("key", String::class)
-                    .addStatement("return this.context.getString(getId(key, \"string\"))")
-                    .returns(String::class)
-                    .build()
-            )
-            .addFunction(
-                FunSpec.builder("getPluralString")
-                    .addModifiers(KModifier.OVERRIDE)
-                    .addParameter("key", String::class)
-                    .addParameter("count", Int::class)
-                    .addStatement("return this.context.resources.getQuantityString(getId(key, \"plurals\"), count)")
-                    .returns(String::class)
-                    .build()
             )
     }
 }

@@ -101,6 +101,8 @@ class JavaFormattingTypeTest {
         var convertToJavaCalls = 0
             private set
 
+        override val argumentsSubstitution = FormattingType.ArgumentsSubstitution.NO
+
         override fun argumentsFromValue(value: String): List<FormattingArgument> {
             throw UnsupportedOperationException()
         }

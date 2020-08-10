@@ -10,6 +10,8 @@ import ru.pocketbyte.locolaser.resource.entity.ResValue
  */
 object NoFormattingType: FormattingType {
 
+    override val argumentsSubstitution = FormattingType.ArgumentsSubstitution.NO
+
     override fun argumentsFromValue(value: String): List<FormattingArgument>? {
         return null
     }

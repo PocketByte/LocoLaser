@@ -10,6 +10,7 @@ import org.junit.Test
 import org.junit.Assert.*
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 
 /**
  * @author Denis Shurygin
@@ -139,5 +140,50 @@ class ResValueTest {
         assertSame(null.merge(item1), item1)
         assertSame(item1.merge(null), item1)
         assertNull((null as? ResValue).merge(null))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testMergeFormattingArguments() {
+        var item1 = ResValue("value1", null,
+                formattingType = JavaFormattingType,
+                formattingArguments = listOf(FormattingArgument(parameters = mapOf(Pair("param1", "v1")))))
+        var item2 = ResValue("value2", null,
+                formattingType = WebFormattingType,
+                formattingArguments = listOf(FormattingArgument(parameters = mapOf(Pair("param2", "v2")))))
+
+        assertEquals(
+                ResValue("value2", null,
+                    formattingType = WebFormattingType,
+                    formattingArguments = listOf(FormattingArgument(
+                            parameters = mapOf(Pair("param1", "v1"), Pair("param2", "v2")))))
+                , item1.merge(item2))
+
+        item1 = ResValue("value1", null,
+                formattingType = JavaFormattingType,
+                formattingArguments = listOf())
+        item2 = ResValue("value2", null,
+                formattingType = WebFormattingType,
+                formattingArguments = listOf(FormattingArgument(parameters = mapOf(Pair("param2", "v2")))))
+
+        assertEquals(
+                ResValue("value2", null,
+                        formattingType = WebFormattingType,
+                        formattingArguments = listOf(FormattingArgument(
+                                parameters = mapOf(Pair("param2", "v2")))))
+                , item1.merge(item2))
+
+        item1 = ResValue("value1", null,
+                formattingType = JavaFormattingType,
+                formattingArguments = listOf(FormattingArgument(parameters = mapOf(Pair("param1", "v1")))))
+        item2 = ResValue("value2", null,
+                formattingType = WebFormattingType,
+                formattingArguments = listOf())
+
+        assertEquals(
+                ResValue("value2", null,
+                        formattingType = WebFormattingType,
+                        formattingArguments = listOf())
+                , item1.merge(item2))
     }
 }

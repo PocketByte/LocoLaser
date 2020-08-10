@@ -3,6 +3,7 @@ package ru.pocketbyte.locolaser.resource.formatting
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.resource.entity.ResValue
 import java.util.*
+import kotlin.reflect.KClass
 
 object JavaFormattingType: FormattingType {
 
@@ -12,6 +13,8 @@ object JavaFormattingType: FormattingType {
     val pattern =
             "(^|[^\\\\])%(([0-9]+)\\\$)?([0-9|+|\\-|.|,|(|#|]*)([a|b|c|d|e|f|g|h|n|o|s|t|x][a-zA-Z]?)"
                     .toRegex(RegexOption.MULTILINE).toPattern()
+
+    override val argumentsSubstitution = FormattingType.ArgumentsSubstitution.BY_INDEX
 
     override fun argumentsFromValue(value: String): List<FormattingArgument>? {
         val matcher = pattern.matcher(value)
@@ -58,21 +61,21 @@ object JavaFormattingType: FormattingType {
         return builder.toString()
     }
 
-    private fun classFromName(name: String?): Class<*>? {
+    fun classFromName(name: String?): KClass<*>? {
         return when (name?.getOrNull(0)) {
-            'a' -> Double::class.java
-            'b' -> Boolean::class.java
-            'c' -> Char::class.java
-            'd' -> Long::class.java
-            'e' -> Double::class.java
-            'f' -> Double::class.java
-            'g' -> Double::class.java
-            'h' -> Long::class.java
+            'a' -> Double::class
+            'b' -> Boolean::class
+            'c' -> Char::class
+            'd' -> Long::class
+            'e' -> Double::class
+            'f' -> Double::class
+            'g' -> Double::class
+            'h' -> Long::class
             'n' -> null
-            'o' -> Long::class.java
-            's' -> String::class.java
-            't' -> Date::class.java
-            'x' -> Long::class.java
+            'o' -> Long::class
+            's' -> String::class
+            't' -> Date::class
+            'x' -> Long::class
             else -> null
         }
     }

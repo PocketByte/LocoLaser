@@ -11,6 +11,8 @@ object WebFormattingType: FormattingType {
     private val pattern = "\\{\\{(\\w+)(,\\s*(\\S+))?}}"
             .toRegex(RegexOption.MULTILINE).toPattern()
 
+    override val argumentsSubstitution = FormattingType.ArgumentsSubstitution.BY_NAME
+
     override fun argumentsFromValue(value: String): List<FormattingArgument>? {
         val matcher = pattern.matcher(value)
         val list = mutableListOf<FormattingArgument>()
@@ -41,11 +43,11 @@ object WebFormattingType: FormattingType {
             var lastIndex = 0
             val newValueBuilder = StringBuilder()
             val newArguments = mutableListOf<FormattingArgument>()
-            val arguments = value.formattingArguments?.iterator()
+            var index = 0
             do {
                 newValueBuilder.append(value.value.substring(lastIndex, matcher.start() + 1))
-                arguments?.next()?.let { argument ->
-                    val argumentName = nameForArgument(value, argument)
+                value.formattingArguments?.getOrNull(index)?.let { argument ->
+                    val argumentName =  value.nameForFormattingArgument(index)
                     val argumentFormat = formatForArgument(argument)
                     newValueBuilder.append("{{")
                     newValueBuilder.append(argumentName)
@@ -58,6 +60,7 @@ object WebFormattingType: FormattingType {
 
                     newArguments.add(FormattingArgument(argumentName, argument.index, argument.parameters))
                 }
+                index++
             } while (matcher.find())
 
             newValueBuilder.append(value.value.substring(lastIndex, value.value.length))
@@ -142,16 +145,6 @@ object WebFormattingType: FormattingType {
         else  {
             value.formattingType.convertToJava(value)
         }
-    }
-
-    private fun nameForArgument(value: ResValue, argument: FormattingArgument): String {
-        return argument.name ?: {
-            val javaName = (argument.parameters?.get(JavaFormattingType.PARAM_TYPE_NAME) as? String) ?: "value"
-            val index = argument.index ?:
-                value.formattingArguments?.indexOf(argument)?.let { it + 1 }
-
-            javaName + (index?.toString() ?: "")
-        }()
     }
 
     private fun formatForArgument(argument: FormattingArgument): String? {

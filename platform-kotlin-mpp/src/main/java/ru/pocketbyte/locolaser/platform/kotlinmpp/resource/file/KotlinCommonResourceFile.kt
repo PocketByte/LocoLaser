@@ -33,6 +33,21 @@ class KotlinCommonResourceFile(
         return builder
     }
 
+    override fun instantiateFormattedPropertySpecBuilder(
+            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
+    ): FunSpec.Builder {
+        val builder = super
+            .instantiateFormattedPropertySpecBuilder(name, item, resMap, extraParams)
+            .addModifiers(KModifier.ABSTRACT)
+
+        val valueOther = item.valueForQuantity(Quantity.OTHER)
+        if (valueOther?.value != null) {
+            builder.addKdoc("%L", wrapCommentString(valueOther.value))
+        }
+
+        return builder
+    }
+
     override fun instantiatePluralSpecBuilder(
             name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {

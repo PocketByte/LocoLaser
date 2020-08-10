@@ -4,6 +4,8 @@ import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.platform.kotlinmpp.extension.hasPlurals
 import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import java.io.File
 
 class KotlinIosResourceFile(
@@ -11,8 +13,11 @@ class KotlinIosResourceFile(
         className: String,
         classPackage: String,
         interfaceName: String?,
-        interfacePackage: String?
-): AbsKeyValuePoetClassResourceFile(file, className, classPackage, interfaceName, interfacePackage) {
+        interfacePackage: String?,
+        formattingType: FormattingType = JavaFormattingType
+): AbsKeyValuePoetClassResourceFile(
+        file, className, classPackage, interfaceName, interfacePackage, formattingType
+) {
 
     companion object {
         private val StringProviderImplClassName = ClassName("", "StringProviderImpl")
@@ -83,20 +88,15 @@ class KotlinIosResourceFile(
                     .build()
             )
             .addFunction(
-                FunSpec.builder("getString")
+                instantiateStringProviderGetStringSpecBuilder()
                     .addModifiers(KModifier.OVERRIDE)
-                    .addParameter("key", String::class)
                     .addStatement("return this.bundle.localizedStringForKey(key, \"\", this.tableName)")
-                    .returns(String::class)
                     .build()
             )
             .addFunction(
-                FunSpec.builder("getPluralString")
+                instantiateStringProviderGetPluralStringSpecBuilder()
                     .addModifiers(KModifier.OVERRIDE)
-                    .addParameter("key", String::class)
-                    .addParameter("count", Int::class)
                     .addStatement("return NSLocalizedPluralString(key, this.tableName, this.bundle, count) ?: key")
-                    .returns(String::class)
                     .build()
             )
     }

@@ -14,7 +14,8 @@ class KotlinAbsKeyValueResources(
     override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
         return arrayOf(AbsKeyValuePoetClassResourceFile(directory,
                 this.className, this.classPackage,
-                this.interfaceName, this.interfacePackage))
+                this.interfaceName, this.interfacePackage,
+                this.formattingType))
     }
 
 }

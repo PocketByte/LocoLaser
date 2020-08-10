@@ -5,6 +5,14 @@ import ru.pocketbyte.locolaser.resource.entity.ResValue
 
 interface FormattingType {
 
+    enum class ArgumentsSubstitution {
+        NO,
+        BY_INDEX,
+        BY_NAME
+    }
+
+    val argumentsSubstitution: ArgumentsSubstitution
+
     fun argumentsFromValue(value: String): List<FormattingArgument>?
 
     /**
