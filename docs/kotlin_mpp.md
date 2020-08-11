@@ -1,7 +1,9 @@
 # Platform: Kotlin Mobile Multiplatform
 
 ### Overview
-Kotlin Mobile Platform it's extension of LocoLaser. It generate common interface of repository with localized strings and also implements it for each platform. Currently it supports Android and iOS.<br>
+Kotlin Mobile Platform it's extension of LocoLaser.
+It generates the interface of common repository with strings resources and then implementations for each platform.
+Currently, it supports Android, iOS and JavaScript.<br>
 <br>
 Common interface example:
 ```Kotlin
@@ -9,42 +11,7 @@ interface StringRepository {
     val screen_main_hello_text: String
 }
 ```
-Android implementation example:
-```Kotlin
-public class AndroidStringRepository(private val context: Context): StringRepository {
-
-    private val resIds = mutableMapOf<String, MutableMap<String, Int>>()
-
-    override public val screen_main_hello_text: String
-        get() = this.context.getString(getId("screen_main_hello_text", "string"))
-
-    private fun getId(resName: String, defType: String): Int {
-        var resMap = resIds[defType]
-        if (resMap == null) {
-            resMap = mutableMapOf()
-            resIds[defType] = resMap
-        }
-
-        var resId = resMap[resName]
-        if (resId == null) {
-            resId = context.resources.getIdentifier(resName, defType, context.packageName)
-            resMap[resName] = resId
-        }
-        return resId
-    }
-}
-```
-iOS implementation example:
-```Kotlin
-public class IosStringRepository(private val bundle: NSBundle, private val tableName: String): StringRepository {
-    constructor(bundle: NSBundle) : this(bundle, "Localizable")
-    constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)
-    constructor() : this(NSBundle.mainBundle(), "Localizable")
-
-    override public val screen_main_hello_text: String
-        get() = this.bundle.localizedStringForKey("screen_main_hello_text", "", this.tableName)
-}
-```
+Each platform implements following interface using corresponded platform dependent features.
 
 ### Gradle dependency
 ```gradle
@@ -54,7 +21,8 @@ dependencies {
 ```
 
 ### Config
-Each class or interface that need to be generated should be described by separated platform config. Config can be defined by JSON object.<br>
+Each class or interface that need to be generated should be described by separated platform config.
+Config can be defined by JSON object.<br>
 <br>
 In general config of one source file should have following structure:
 ```
@@ -65,18 +33,19 @@ In general config of one source file should have following structure:
 }
 ```
 Properties description:<br>
-- **`type`** - String. Type of the platform. For common kotlin interface it should be `"kotlin-common"`
+- **`type`** - String. Type of the platform. For common kotlin interface it should be `"kotlin-common"`.
 - **`res_name`** - String. Desirable canonical name of repository interface or class implementation.
 - **`res_dir`** - String. Path to directory with interface or class file.
 
 ### Implementation Configs
-Android/iOS repository implementation config require one more additional parameter:
-- **`implements`** - String. Canonical name of repository interface that should be implemented. In most cases it will have same value that `res_name` from `"kotlin-common"` config.
+Repository implementation config require one more additional parameter:
+- **`implements`** - String. Canonical name of repository interface that should be implemented.
+ In most cases it will have the same value that `res_name` from `"kotlin-common"` config.
 
-So, Android/iOS config should have following structure:
+So, Android,iOS or JS config should have following structure:
 ```
 {
-    "type": ("kotlin-android" | "kotlin-ios"),
+    "type": ("kotlin-android" | "kotlin-ios", "kotlin-js"),
     "res_name" : (String value, Canonical Java name),
     "res_dir" : (Path to dir),
     "implements" : (String value, Canonical Java name)
@@ -98,8 +67,15 @@ For `"kotlin-ios"`:
 - **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.IosStringRepository"`
 - **`implements`** - `ru.pocketbyte.locolaser.kmpp.StringRepository`
 
+For `"kotlin-js"`:
+- **`res_dir`** - `"./src/jsMain/kotlin/"`
+- **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.JsStringRepository"`
+- **`implements`** - `ru.pocketbyte.locolaser.kmpp.StringRepository`
+
 ### Usage
-All configs of kotlin-mobile describes write only resources. So, to get list of strings of your application you should also add at least one config that describe resource that can be read. Here is the example of full config:
+All configs of kotlin-mobile describes write only resources.
+So, to get list of strings of your application you should also add at least one config that describe resource that can be read.
+Here is the example of full config:
 ```
 {
     "platform": [
@@ -133,7 +109,38 @@ All configs of kotlin-mobile describes write only resources. So, to get list of 
     "temp_dir": "./build/temp/"
 }
 ```
-This config has also description of [Android and iOS](mobile.md) resources. They are readable and Repository will be fulfilled by strings from this resource files.
+This config has also description of [Android and iOS](mobile.md) resources.
+They are readable and Repository will be fulfilled by strings from this resource files.
+
+### Custom Repository
+You able to implement your custom repository for any platform.
+To do it you should use type `kotlin-abs-key-value`.
+Then LocoLaser will generate implementation of abstract repository with interface `StringProvider`, which should be implemented and provided to repository class thru constructor.
+
+If you would to generate formatting functions for formatted strings you should provide formatting type thru the property **`formatting_type`**.
+
+It's the String property with one of the following values:
+- **`no`** - No formatting.
+- **`java`** - Java formatting. For example: `"Hello, %s."`
+- **`web`** - Java formatting. For example: `"Hello, {{user_name}}."`
+- **`(Canonical Class Name)`** - Canonical class name of implementation of interface `FormattingType`. Class can be implemented as Kotlin Object.
+
+So, Custom config should have following structure:
+```
+{
+    "type": "kotlin-abs-key-value",
+    "res_name" : (String value, Canonical Java name),
+    "res_dir" : (Path to dir),
+    "implements" : (String value, Canonical Java name),
+    "formatting_type" : (String value, Canonical Java name)
+}
+```
+
+Default values for `"kotlin-abs-key-value"`:
+- **`res_dir`** - `"./src/main/kotlin/"`
+- **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.AbsKeyValueStringRepository"`
+- **`implements`** - `"ru.pocketbyte.locolaser.kmpp.StringRepository"`
+- **`formatting_type`** - `"no"`
 
 ### Example project
 You can find example project in [locolaser-kotlin-mpp-example](https://github.com/PocketByte/locolaser-kotlin-mpp-example)
