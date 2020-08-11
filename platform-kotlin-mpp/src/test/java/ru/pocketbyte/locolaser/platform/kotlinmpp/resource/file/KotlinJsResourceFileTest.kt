@@ -23,17 +23,31 @@ class KotlinJsResourceFileTest {
     companion object {
         const val StringProviderStr =
             "    interface StringProvider {\n" +
-            "        fun getString(key: String): String\n" +
+            "        fun getString(key: String, vararg args: Pair<String, Any>): String\n" +
             "\n" +
-            "        fun getPluralString(key: String, count: Int): String\n" +
+            "        fun getPluralString(\n" +
+            "                key: String,\n" +
+            "                count: Int,\n" +
+            "                vararg args: Pair<String, Any>\n" +
+            "        ): String\n" +
             "    }\n" +
             "\n" +
             "    private class StringProviderImpl(private val i18n: I18n) : StringProvider {\n" +
-            "        override fun getString(key: String): String = this.i18n.t(key)\n" +
+            "        override fun getString(key: String, vararg args: Pair<String, Any>): String = this.i18n.t(key, dynamic(*args))\n" +
             "\n" +
-            "        override fun getPluralString(key: String, count: Int): String = this.i18n.t(\"\${key}_plural\", Plural(count))\n" +
+            "        override fun getPluralString(\n" +
+            "                key: String,\n" +
+            "                count: Int,\n" +
+            "                vararg args: Pair<String, Any>\n" +
+            "        ): String = this.i18n.t(\"\${key}_plural\", dynamic(Pair(\"count\", count), *args))\n" +
             "\n" +
-            "        data class Plural(val count: Int)\n" +
+            "        private fun dynamic(vararg args: Pair<String, Any>): dynamic {\n" +
+            "            val d: dynamic = object{}\n" +
+            "            args.forEach {\n" +
+            "                d[it.first] = it.second\n" +
+            "            }\n" +
+            "            return d\n" +
+            "        }\n" +
             "    }\n"
         const val SecondConstructorsStr =
             "    constructor(i18n: I18n) : this(StringProviderImpl(i18n))\n"
@@ -68,7 +82,9 @@ class KotlinJsResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
+                "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class Str(private val stringProvider: StringProvider) {\n" +
@@ -103,7 +119,9 @@ class KotlinJsResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
+                "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
@@ -144,7 +162,9 @@ class KotlinJsResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
+                "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
@@ -192,7 +212,9 @@ class KotlinJsResourceFileTest {
                 "\n" +
                 "import com.interface.StrInterface\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
+                "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) : StrInterface {\n" +
@@ -230,7 +252,9 @@ class KotlinJsResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
+                "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
@@ -269,7 +293,9 @@ class KotlinJsResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import i18next.I18n\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
+                "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +

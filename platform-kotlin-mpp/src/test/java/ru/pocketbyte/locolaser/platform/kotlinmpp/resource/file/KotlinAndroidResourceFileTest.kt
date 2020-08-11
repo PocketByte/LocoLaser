@@ -23,14 +23,26 @@ class KotlinAndroidResourceFileTest {
     companion object {
         const val StringProviderStr =
             "    interface StringProvider {\n" +
-            "        fun getString(key: String): String\n" +
+            "        fun getString(key: String, vararg args: Any): String\n" +
             "\n" +
-            "        fun getPluralString(key: String, count: Int): String\n" +
+            "        fun getPluralString(\n" +
+            "                key: String,\n" +
+            "                count: Int,\n" +
+            "                vararg args: Any\n" +
+            "        ): String\n" +
             "    }\n" +
             "\n" +
             "    private class StringProviderImpl(private val context: Context) : StringProvider {\n" +
             "        private val resIds: MutableMap<String, MutableMap<String, Int>> =\n" +
             "                mutableMapOf<String, MutableMap<String, Int>>()\n" +
+            "\n" +
+            "        override fun getString(key: String, vararg args: Any): String = this.context.getString(getId(key, \"string\"), *args)\n" +
+            "\n" +
+            "        override fun getPluralString(\n" +
+            "                key: String,\n" +
+            "                count: Int,\n" +
+            "                vararg args: Any\n" +
+            "        ): String = this.context.resources.getQuantityString(getId(key, \"plurals\"), count, *args)\n" +
             "\n" +
             "        private fun getId(resName: String, defType: String): Int {\n" +
             "            var resMap = resIds[defType]\n" +
@@ -40,15 +52,13 @@ class KotlinAndroidResourceFileTest {
             "            }\n" +
             "            var resId = resMap[resName]\n" +
             "            if (resId == null) {\n" +
-            "                resId = context.resources.getIdentifier(resName.trim { it <= ' ' }, defType, context.packageName)\n" +
+            "                resId = context.resources.getIdentifier(\n" +
+            "                    resName.trim { it <= ' ' }, defType, context.packageName\n" +
+            "                )\n" +
             "                resMap[resName] = resId\n" +
             "            }\n" +
             "            return resId\n" +
             "        }\n" +
-            "\n" +
-            "        override fun getString(key: String): String = this.context.getString(getId(key, \"string\"))\n" +
-            "\n" +
-            "        override fun getPluralString(key: String, count: Int): String = this.context.resources.getQuantityString(getId(key, \"plurals\"), count)\n" +
             "    }\n"
         const val SecondConstructorsStr =
             "    constructor(context: Context) : this(StringProviderImpl(context))\n"
@@ -83,6 +93,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
@@ -119,6 +130,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
@@ -161,6 +173,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
@@ -210,6 +223,7 @@ class KotlinAndroidResourceFileTest {
                 "\n" +
                 "import android.content.Context\n" +
                 "import com.some.package.StrInterface\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
@@ -250,6 +264,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +
@@ -290,6 +305,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import kotlin.collections.MutableMap\n" +

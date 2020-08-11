@@ -23,9 +23,13 @@ class KotlinIosResourceFileTest {
     companion object {
         const val StringProviderStr =
             "    interface StringProvider {\n" +
-            "        fun getString(key: String): String\n" +
+            "        fun getString(key: String, vararg args: Any): String\n" +
             "\n" +
-            "        fun getPluralString(key: String, count: Int): String\n" +
+            "        fun getPluralString(\n" +
+            "                key: String,\n" +
+            "                count: Int,\n" +
+            "                vararg args: Any\n" +
+            "        ): String\n" +
             "    }\n" +
             "\n" +
             "    private class StringProviderImpl(private val bundle: NSBundle, private val tableName: String) : StringProvider {\n" +
@@ -35,9 +39,13 @@ class KotlinIosResourceFileTest {
             "\n" +
             "        constructor() : this(NSBundle.mainBundle(), \"Localizable\")\n" +
             "\n" +
-            "        override fun getString(key: String): String = this.bundle.localizedStringForKey(key, \"\", this.tableName)\n" +
+            "        override fun getString(key: String, vararg args: Any): String = this.bundle.localizedStringForKey(key, \"\", this.tableName)\n" +
             "\n" +
-            "        override fun getPluralString(key: String, count: Int): String = NSLocalizedPluralString(key, this.tableName, this.bundle, count) ?: key\n" +
+            "        override fun getPluralString(\n" +
+            "                key: String,\n" +
+            "                count: Int,\n" +
+            "                vararg args: Any\n" +
+            "        ): String = NSLocalizedPluralString(key, this.tableName, this.bundle, count) ?: key\n" +
             "    }\n"
         const val SecondConstructorsStr =
             "    constructor(bundle: NSBundle, tableName: String) : this(StringProviderImpl(bundle, tableName))\n" +
@@ -77,6 +85,7 @@ class KotlinIosResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import platform.Foundation.NSBundle\n" +
@@ -112,6 +121,7 @@ class KotlinIosResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import localizedPlural.NSLocalizedPluralString\n" +
@@ -154,6 +164,7 @@ class KotlinIosResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import platform.Foundation.NSBundle\n" +
@@ -203,6 +214,7 @@ class KotlinIosResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import com.interface.StrInterface\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import platform.Foundation.NSBundle\n" +
@@ -242,6 +254,7 @@ class KotlinIosResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import platform.Foundation.NSBundle\n" +
@@ -281,6 +294,7 @@ class KotlinIosResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Int\n" +
                 "import kotlin.String\n" +
                 "import localizedPlural.NSLocalizedPluralString\n" +

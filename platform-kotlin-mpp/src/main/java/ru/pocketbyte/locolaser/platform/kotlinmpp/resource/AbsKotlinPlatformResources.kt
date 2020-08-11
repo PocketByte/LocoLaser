@@ -18,8 +18,6 @@ abstract class AbsKotlinPlatformResources(
         const val KOTLIN_FILE_EXTENSION = ".kt"
     }
 
-    override val formattingType: FormattingType = NoFormattingType
-
     val className: String
     val classPackage: String
     val classPackagePath: String

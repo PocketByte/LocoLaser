@@ -1,6 +1,8 @@
 package ru.pocketbyte.locolaser.platform.kotlinmpp
 
 import ru.pocketbyte.locolaser.platform.kotlinmpp.resource.KotlinAbsKeyValueResources
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
 class KotlinAbsKeyValuePlatformConfig : KotlinBaseImplPlatformConfig() {
 
@@ -10,11 +12,13 @@ class KotlinAbsKeyValuePlatformConfig : KotlinBaseImplPlatformConfig() {
 
     override val type =  TYPE
 
-    override val defaultResourcesPath = "./src/androidMain/kotlin/"
+    override val defaultResourcesPath = "./src/main/kotlin/"
     override val defaultResourceName  = "ru.pocketbyte.locolaser.kmpp.AbsKeyValueStringRepository"
     override val defaultInterfaceName = "ru.pocketbyte.locolaser.kmpp.StringRepository"
 
     override val resources
-        get() = KotlinAbsKeyValueResources(resourcesDir!!, resourceName!!, interfaceName!!, filter)
+        get() = KotlinAbsKeyValueResources(resourcesDir!!, resourceName!!, interfaceName!!, formattingType, filter)
+
+    var formattingType: FormattingType = NoFormattingType
 
 }

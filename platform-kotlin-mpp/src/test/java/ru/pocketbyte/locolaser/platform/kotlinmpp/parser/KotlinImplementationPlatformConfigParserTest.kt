@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.platform.kotlinmpp.parser
 
 import org.json.simple.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -10,6 +11,8 @@ import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
 import ru.pocketbyte.locolaser.platform.kotlinmpp.*
 import ru.pocketbyte.locolaser.platform.mobile.parser.BaseMobilePlatformConfigParser
 import ru.pocketbyte.locolaser.resource.AbsPlatformResources
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 import java.io.IOException
 
@@ -36,6 +39,22 @@ class KotlinImplementationPlatformConfigParserTest {
         testPlatformConfigResource(KotlinIosPlatformConfig.TYPE)
         testPlatformConfigResource(KotlinJsPlatformConfig.TYPE)
         testPlatformConfigResource(KotlinAbsKeyValuePlatformConfig.TYPE)
+    }
+
+    @Test
+    fun testKotlinAbsKeyValuePlatformConfig() {
+        var json = prepareTestPlatformJson(KotlinAbsKeyValuePlatformConfig.TYPE)
+        assertSame(
+            NoFormattingType,
+            (parser?.parse(json, true) as KotlinAbsKeyValuePlatformConfig).formattingType
+        )
+        json = prepareTestPlatformJson(KotlinAbsKeyValuePlatformConfig.TYPE).apply {
+            this[KotlinImplementationPlatformConfigParser.FORMATTING_TYPE] = "java"
+        }
+        assertSame(
+            JavaFormattingType,
+            (parser?.parse(json, true) as KotlinAbsKeyValuePlatformConfig).formattingType
+        )
     }
 
     private fun testPlatformConfigResource(platform: String) {

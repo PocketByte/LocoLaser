@@ -37,8 +37,8 @@ abstract class AbsPlatformResources(
     }
 
     @Throws(IOException::class)
-    override fun write(map: ResMap, extraParams: ExtraParams?) {
-        val filteredMap = map.filter(filter)
+    override fun write(resMap: ResMap, extraParams: ExtraParams?) {
+        val filteredMap = resMap.filter(filter)
         getResourceFiles(filteredMap.keys)?.forEach {
             it.write(filteredMap, extraParams)
         }

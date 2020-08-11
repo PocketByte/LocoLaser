@@ -7,6 +7,8 @@ import java.io.File
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
 class AbsKotlinImplementationPlatformResourcesTest {
 
@@ -44,6 +46,8 @@ class AbsKotlinImplementationPlatformResourcesTest {
             name: String,
             interfaceName: String?
     ) : AbsKotlinImplementationPlatformResources(dir, name, interfaceName, null) {
+
+        override val formattingType: FormattingType = NoFormattingType
 
         override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
             return null

@@ -10,9 +10,12 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.ContainerFactory
 import org.json.simple.parser.JSONParser
+import ru.pocketbyte.locolaser.resource.formatting.*
 
 import java.io.File
 import java.io.IOException
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
 /**
  * Utils class to parse JSON.
@@ -104,6 +107,33 @@ object JsonParseUtils {
         if (throwIfNull && jsonObject == null)
             throw InvalidConfigException("Property ${keyName(key, parentKey)} is not set.")
         return jsonObject
+    }
+
+    fun getFormattingType(json: JSONObject, key: String, parentKey: String? = null, throwIfNull: Boolean = false): FormattingType? {
+        val jsonObject = getObject(json, key, parentKey, throwIfNull)
+        if (jsonObject is String) {
+            return when(jsonObject) {
+                "java" -> JavaFormattingType
+                "web" -> WebFormattingType
+                "no" -> NoFormattingType
+                else -> {
+                    val clazz = Class.forName(jsonObject)
+                    val field: Field? = try {
+                        clazz.getDeclaredField("INSTANCE")
+                    } catch (e: NoSuchFieldException) {
+                        null
+                    }
+                    if (field != null && !Modifier.isPrivate(field.modifiers)) {
+                        field.get(null) as FormattingType
+                    } else {
+                        clazz.getDeclaredConstructor().newInstance() as FormattingType
+                    }
+                }
+            }
+        } else if (jsonObject != null) {
+            throw InvalidConfigException("Property ${keyName(key, parentKey)} must be a String.")
+        }
+        return null
     }
 
     private fun keyName(key: String, parent: String?): String {

@@ -6,6 +6,7 @@ import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.nameForFormattingArgument
 import java.io.File
 
@@ -15,7 +16,7 @@ open class AbsKeyValuePoetClassResourceFile(
         classPackage: String,
         private val interfaceName: String?,
         private val interfacePackage: String?,
-        formattingType: FormattingType
+        formattingType: FormattingType = NoFormattingType
 ): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
 
     companion object {

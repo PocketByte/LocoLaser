@@ -10,6 +10,7 @@ import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType.ArgumentsSubstitution
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.nameForFormattingArgument
 import ru.pocketbyte.locolaser.resource.formatting.typeForFormattingArgument
@@ -56,7 +57,8 @@ abstract class BasePoetClassResourceFile(
                             instantiatePropertySpecBuilder(propertyName, item, resMap, extraParams)
                                 .build()
                         )
-                        if (item.valueForQuantity(Quantity.OTHER)?.formattingArguments?.isEmpty() == false) {
+                        if (formattingType.argumentsSubstitution != ArgumentsSubstitution.NO &&
+                                item.valueForQuantity(Quantity.OTHER)?.formattingArguments?.isEmpty() == false) {
                             classSpec.addFunction(
                                 instantiateFormattedPropertySpecBuilder(propertyName, item, resMap, extraParams)
                                     .build()
