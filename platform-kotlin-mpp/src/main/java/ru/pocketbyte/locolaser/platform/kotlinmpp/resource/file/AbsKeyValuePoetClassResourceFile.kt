@@ -2,12 +2,13 @@ package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-import ru.pocketbyte.locolaser.resource.formatting.nameForFormattingArgument
+import ru.pocketbyte.locolaser.resource.formatting.anyName
 import java.io.File
 
 open class AbsKeyValuePoetClassResourceFile(
@@ -65,9 +66,10 @@ open class AbsKeyValuePoetClassResourceFile(
     }
 
     override fun instantiateFormattedPropertySpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
+            name: String, formattingArguments: List<FormattingArgument>,
+            item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
-        val builder = super.instantiateFormattedPropertySpecBuilder(name, item, resMap, extraParams)
+        val builder = super.instantiateFormattedPropertySpecBuilder(name, formattingArguments, item, resMap, extraParams)
 
         if (interfaceName == null || interfacePackage == null) {
             val valueOther = item.valueForQuantity(Quantity.OTHER)
@@ -78,29 +80,38 @@ open class AbsKeyValuePoetClassResourceFile(
             builder.addModifiers(KModifier.OVERRIDE)
         }
 
-        item.valueForQuantity(Quantity.OTHER)?.let { resValue ->
-            resValue.formattingArguments
-                ?.mapIndexed { index, _ ->
-                    val argumentName = resValue.nameForFormattingArgument(index)
-                    when (formattingType.argumentsSubstitution) {
-                        FormattingType.ArgumentsSubstitution.BY_NAME -> "Pair(\"$argumentName\", $argumentName)"
-                        else -> argumentName
-                    }
-                }
-                ?.joinToString()
-        }?.let { parametersString ->
-            builder.addStatement("return this.stringProvider.getString(\"${item.key}\", $parametersString)")
+        formattingArguments.mapIndexed { index, argument ->
+            val argumentName = argument.anyName(index)
+            when (formattingType.argumentsSubstitution) {
+                FormattingType.ArgumentsSubstitution.BY_NAME -> "Pair(\"$argumentName\", $argumentName)"
+                else -> argumentName
+            }
+        }.joinToString()
+        .let {
+            builder.addStatement("return this.stringProvider.getString(\"${item.key}\", $it)")
         }
 
         return builder
     }
 
     override fun instantiatePluralSpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
+            name: String, formattingArguments: List<FormattingArgument>,
+            item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
+        val resValue = item.valueForQuantity(Quantity.OTHER)
+                ?: throw IllegalArgumentException("item must have OTHER quantity")
         val builder = super
-            .instantiatePluralSpecBuilder(name, item, resMap, extraParams)
-            .addStatement("return this.stringProvider.getPluralString(\"${item.key}\", count)")
+            .instantiatePluralSpecBuilder(name, formattingArguments, item, resMap, extraParams)
+            .addStatement("return this.stringProvider.getPluralString(\"${item.key}\", ${
+                formattingArguments.mapIndexed { index, argument ->
+                    if (index == 0) return@mapIndexed "count"
+                    val argumentName = argument.anyName(index)
+                    when (formattingType.argumentsSubstitution) {
+                        FormattingType.ArgumentsSubstitution.BY_NAME -> "Pair(\"$argumentName\", $argumentName)"
+                        else -> argumentName
+                    }
+                }.joinToString()
+            })")
 
         if (interfaceName == null || interfacePackage == null) {
             val valueOther = item.valueForQuantity(Quantity.OTHER)
@@ -150,7 +161,7 @@ open class AbsKeyValuePoetClassResourceFile(
     protected fun instantiateStringProviderGetPluralStringSpecBuilder(): FunSpec.Builder {
         val builder = FunSpec.builder("getPluralString")
                 .addParameter("key", String::class)
-                .addParameter("count", Int::class)
+                .addParameter("count", Long::class)
                 .returns(String::class)
 
         when (formattingType.argumentsSubstitution) {

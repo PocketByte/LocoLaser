@@ -25,7 +25,7 @@ class AbsKeyValuePoetClassResourceFileTest {
             "    interface StringProvider {\n" +
             "        fun getString(key: String): String\n" +
             "\n" +
-            "        fun getPluralString(key: String, count: Int): String\n" +
+            "        fun getPluralString(key: String, count: Long): String\n" +
             "    }\n"
     }
 
@@ -57,7 +57,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Int\n" +
+                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
@@ -89,13 +89,13 @@ class AbsKeyValuePoetClassResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Int\n" +
+                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
                 "     * value1_2 */\n" +
-                "    fun key1(count: Int): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
+                "    fun key1(count: Long): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
                 "\n" +
                 StringProviderStr +
                 "}\n"
@@ -127,7 +127,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Int\n" +
+                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
@@ -172,7 +172,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import com.some.package.StrInterface\n" +
-                "import kotlin.Int\n" +
+                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) : StrInterface {\n" +
@@ -208,7 +208,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Int\n" +
+                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
@@ -244,7 +244,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Int\n" +
+                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
@@ -255,7 +255,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
-                "    fun key2(count: Int): String = this.stringProvider.getPluralString(\"key2\", count)\n" +
+                "    fun key2(count: Long): String = this.stringProvider.getPluralString(\"key2\", count)\n" +
                 "\n" +
                 StringProviderStr +
                 "}\n"

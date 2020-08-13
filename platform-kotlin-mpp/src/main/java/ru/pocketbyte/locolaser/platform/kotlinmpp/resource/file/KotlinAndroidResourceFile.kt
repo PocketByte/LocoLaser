@@ -63,7 +63,7 @@ class KotlinAndroidResourceFile(
             .addFunction(
                 instantiateStringProviderGetPluralStringSpecBuilder()
                     .addModifiers(KModifier.OVERRIDE)
-                    .addStatement("return this.context.resources.getQuantityString(getId(key, \"plurals\"), count, *args)")
+                    .addStatement("return this.context.resources.getQuantityString(getId(key, \"plurals\"), count.toInt(), count, *args)")
                     .build()
             )
             .addFunction(

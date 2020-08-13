@@ -11,6 +11,10 @@ interface FormattingType {
         BY_NAME
     }
 
+    companion object {
+        const val PARAM_CLASS = "class"
+    }
+
     val argumentsSubstitution: ArgumentsSubstitution
 
     fun argumentsFromValue(value: String): List<FormattingArgument>?

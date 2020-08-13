@@ -63,8 +63,8 @@ class KotlinJsResourceFile(
                     .beginControlFlow("args.forEach")
                     .addStatement("d[it.first] = it.second")
                     .endControlFlow()
-                    .addStatement("return d")
-                    .returns(ClassName("", "dynamic"))
+                    .addStatement("return d as Any")
+                    .returns(Any::class)
                     .build()
             )
     }

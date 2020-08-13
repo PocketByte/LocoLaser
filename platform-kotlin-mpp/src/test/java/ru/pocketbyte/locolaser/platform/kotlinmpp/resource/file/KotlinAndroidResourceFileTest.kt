@@ -21,13 +21,20 @@ import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 class KotlinAndroidResourceFileTest {
 
     companion object {
+        const val CommonImportsStr =
+                "import kotlin.Any\n" +
+                "import kotlin.Int\n" +
+                "import kotlin.Long\n" +
+                "import kotlin.String\n" +
+                "import kotlin.collections.MutableMap\n"
+
         const val StringProviderStr =
             "    interface StringProvider {\n" +
             "        fun getString(key: String, vararg args: Any): String\n" +
             "\n" +
             "        fun getPluralString(\n" +
             "                key: String,\n" +
-            "                count: Int,\n" +
+            "                count: Long,\n" +
             "                vararg args: Any\n" +
             "        ): String\n" +
             "    }\n" +
@@ -40,9 +47,9 @@ class KotlinAndroidResourceFileTest {
             "\n" +
             "        override fun getPluralString(\n" +
             "                key: String,\n" +
-            "                count: Int,\n" +
+            "                count: Long,\n" +
             "                vararg args: Any\n" +
-            "        ): String = this.context.resources.getQuantityString(getId(key, \"plurals\"), count, *args)\n" +
+            "        ): String = this.context.resources.getQuantityString(getId(key, \"plurals\"), count.toInt(), count, *args)\n" +
             "\n" +
             "        private fun getId(resName: String, defType: String): Int {\n" +
             "            var resMap = resIds[defType]\n" +
@@ -93,10 +100,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Int\n" +
-                "import kotlin.String\n" +
-                "import kotlin.collections.MutableMap\n" +
+                CommonImportsStr +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
@@ -130,17 +134,14 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Int\n" +
-                "import kotlin.String\n" +
-                "import kotlin.collections.MutableMap\n" +
+                CommonImportsStr +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 SecondConstructorsStr +
                 "\n" +
                 "    /**\n" +
                 "     * value1_2 */\n" +
-                "    fun key1(count: Int): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
+                "    fun key1(count: Long): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
                 "\n" +
                 StringProviderStr +
                 "}\n"
@@ -173,10 +174,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Int\n" +
-                "import kotlin.String\n" +
-                "import kotlin.collections.MutableMap\n" +
+                CommonImportsStr +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
@@ -223,10 +221,7 @@ class KotlinAndroidResourceFileTest {
                 "\n" +
                 "import android.content.Context\n" +
                 "import com.some.package.StrInterface\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Int\n" +
-                "import kotlin.String\n" +
-                "import kotlin.collections.MutableMap\n" +
+                CommonImportsStr +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) : StrInterface {\n" +
                 "    override val key1: String\n" +
@@ -264,10 +259,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Int\n" +
-                "import kotlin.String\n" +
-                "import kotlin.collections.MutableMap\n" +
+                CommonImportsStr +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
@@ -305,10 +297,7 @@ class KotlinAndroidResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import android.content.Context\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Int\n" +
-                "import kotlin.String\n" +
-                "import kotlin.collections.MutableMap\n" +
+                CommonImportsStr +
                 "\n" +
                 "class $className(private val stringProvider: StringProvider) {\n" +
                 "    /**\n" +
@@ -320,7 +309,7 @@ class KotlinAndroidResourceFileTest {
                 "\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
-                "    fun key2(count: Int): String = this.stringProvider.getPluralString(\"key2\", count)\n" +
+                "    fun key2(count: Long): String = this.stringProvider.getPluralString(\"key2\", count)\n" +
                 "\n" +
                 StringProviderStr +
                 "}\n"

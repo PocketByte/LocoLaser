@@ -47,7 +47,7 @@ object WebFormattingType: FormattingType {
             do {
                 newValueBuilder.append(value.value.substring(lastIndex, matcher.start() + 1))
                 value.formattingArguments?.getOrNull(index)?.let { argument ->
-                    val argumentName =  value.nameForFormattingArgument(index)
+                    val argumentName =  argument.anyName(index)
                     val argumentFormat = formatForArgument(argument)
                     newValueBuilder.append("{{")
                     newValueBuilder.append(argumentName)

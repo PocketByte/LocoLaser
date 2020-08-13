@@ -3,17 +3,16 @@ package ru.pocketbyte.locolaser.platform.kotlinmpp.resource.file
 import com.squareup.kotlinpoet.*
 import org.apache.commons.lang3.text.WordUtils
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.exception.InvalidValueException
 import ru.pocketbyte.locolaser.platform.kotlinmpp.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.resource.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
-import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.*
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType.ArgumentsSubstitution
-import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-import ru.pocketbyte.locolaser.resource.formatting.nameForFormattingArgument
-import ru.pocketbyte.locolaser.resource.formatting.typeForFormattingArgument
 import ru.pocketbyte.locolaser.utils.TextUtils
 import java.io.File
 import java.util.HashSet
@@ -48,21 +47,54 @@ abstract class BasePoetClassResourceFile(
                     keysSet.add(propertyName)
 
                     if (item.isHasQuantities) {
-                        classSpec.addFunction(
-                            instantiatePluralSpecBuilder(propertyName, item, resMap, extraParams)
-                                .build()
-                        )
+                        val resItem = item.valueForQuantity(Quantity.OTHER)
+                        val formattingArguments = sortFormattingArguments(resItem?.formattingArguments)
+                        val countArgument = formattingArguments?.firstOrNull()
+
+                        if (countArgument != null) {
+                            val type = countArgument.parameterClass()
+                            if (type == Int::class || type == Long::class) {
+                                classSpec.addFunction(
+                                    instantiatePluralSpecBuilder(
+                                        propertyName, formattingArguments,
+                                        item, resMap, extraParams
+                                    ).build()
+                                )
+                            } else {
+                                throw InvalidValueException(
+                                    "Invalid plural string. " +
+                                    "The first argument must be integer. " +
+                                    "String= ${resItem?.value}")
+                            }
+                        } else {
+                            classSpec.addFunction(
+                                instantiatePluralSpecBuilder(
+                                    propertyName,
+                                    listOf(FormattingArgument(
+                                        "count", 1,
+                                        mapOf(Pair(FormattingType.PARAM_CLASS, Long::class))
+                                    )),
+                                    item, resMap, extraParams
+                                ).build()
+                            )
+                        }
                     } else {
                         classSpec.addProperty(
                             instantiatePropertySpecBuilder(propertyName, item, resMap, extraParams)
                                 .build()
                         )
-                        if (formattingType.argumentsSubstitution != ArgumentsSubstitution.NO &&
-                                item.valueForQuantity(Quantity.OTHER)?.formattingArguments?.isEmpty() == false) {
-                            classSpec.addFunction(
-                                instantiateFormattedPropertySpecBuilder(propertyName, item, resMap, extraParams)
-                                    .build()
+                        if (formattingType.argumentsSubstitution != ArgumentsSubstitution.NO) {
+                            val formattingArguments = sortFormattingArguments(
+                                item.valueForQuantity(Quantity.OTHER)?.formattingArguments
                             )
+                            if (formattingArguments?.isEmpty() == false) {
+                                classSpec.addFunction(
+                                    instantiateFormattedPropertySpecBuilder(
+                                        propertyName, formattingArguments,
+                                        item, resMap, extraParams
+                                    ).build()
+                                )
+                            }
                         }
                     }
                 }
@@ -82,33 +114,41 @@ abstract class BasePoetClassResourceFile(
     }
 
     protected open fun instantiateFormattedPropertySpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
+            name: String, formattingArguments: List<FormattingArgument>,
+            item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
-        val builder = FunSpec.builder(name)
-                .returns(String::class)
-                .addModifiers(KModifier.PUBLIC)
-
-        val parametersStringBuilder = StringBuilder()
-        item.valueForQuantity(Quantity.OTHER)?.let { resValue ->
-            resValue.formattingArguments?.forEachIndexed { index, _ ->
-                val valueName = resValue.nameForFormattingArgument(index)
-                builder.addParameter(valueName, resValue.typeForFormattingArgument(index))
-
-                if (parametersStringBuilder.count() > 0)
-                    parametersStringBuilder.append(", ")
-                parametersStringBuilder.append(valueName)
+        val resValue = item.valueForQuantity(Quantity.OTHER)
+                ?: throw IllegalArgumentException("item must have OTHER quantity")
+        return FunSpec.builder(name)
+            .returns(String::class)
+            .addModifiers(KModifier.PUBLIC)
+            .apply {
+                formattingArguments.forEachIndexed { index, argument ->
+                    addParameter(
+                        argument.anyName(index),
+                        argument.parameterClass()
+                    )
+                }
             }
-        }
-        return builder
     }
 
     protected open fun instantiatePluralSpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
+            name: String, formattingArguments: List<FormattingArgument>,
+            item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
+        val resValue = item.valueForQuantity(Quantity.OTHER)
+                ?: throw IllegalArgumentException("item must have OTHER quantity")
         return FunSpec.builder(name)
-            .addParameter("count", Int::class)
             .returns(String::class)
             .addModifiers(KModifier.PUBLIC)
+            .apply {
+                formattingArguments.forEachIndexed { index, argument ->
+                    addParameter(
+                        if (index == 0) "count" else argument.anyName(index),
+                        argument.parameterClass()
+                    )
+                }
+            }
     }
 
     protected open fun instantiateFileSpecBuilder(
@@ -121,4 +161,13 @@ abstract class BasePoetClassResourceFile(
     protected fun wrapCommentString(string: String): String {
         return WordUtils.wrap(string, MAX_LINE_SIZE, "\n", true)
     }
+
+    private fun sortFormattingArguments(
+            formattingArguments: List<FormattingArgument>?
+    ): List<FormattingArgument>? = formattingArguments?.sortedWith(Comparator { o1, o2 ->
+        if (o1.index != null || o2.index != null) {
+            return@Comparator (o1.index ?: Int.MAX_VALUE) - (o2.index ?: Int.MAX_VALUE)
+        }
+        0
+    })
 }
