@@ -122,7 +122,7 @@ If you would to generate formatting functions for formatted strings you should p
 It's the String property with one of the following values:
 - **`no`** - No formatting.
 - **`java`** - Java formatting. For example: `"Hello, %s."`
-- **`web`** - Java formatting. For example: `"Hello, {{user_name}}."`
+- **`web`** - Web formatting. For example: `"Hello, {{user_name}}."`
 - **`(Canonical Class Name)`** - Canonical class name of implementation of interface `FormattingType`. Class can be implemented as Kotlin Object.
 
 So, Custom config should have following structure:
