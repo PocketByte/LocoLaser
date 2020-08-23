@@ -1,7 +1,7 @@
 package ru.pocketbyte.locolaser.resource.file
 
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
@@ -46,7 +46,7 @@ abstract class BaseClassResourceFile(file: File) : ResourceStreamFile(file) {
 
     @Throws(IOException::class)
     override fun write(resMap: ResMap, extraParams: ExtraParams?) {
-        val locale = resMap[PlatformResources.BASE_LOCALE]
+        val locale = resMap[Resources.BASE_LOCALE]
         if (locale != null) {
             open()
             writeHeaderComment(resMap, extraParams)

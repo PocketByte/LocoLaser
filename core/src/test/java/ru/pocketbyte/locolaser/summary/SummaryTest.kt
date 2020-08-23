@@ -13,8 +13,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.Config
-import ru.pocketbyte.locolaser.config.platform.PlatformConfig
-import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 
 import java.io.File
 import java.io.IOException
@@ -24,7 +23,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import ru.pocketbyte.locolaser.testutils.mock.MockPlatformResources
+import ru.pocketbyte.locolaser.testutils.mock.MockResources
 
 /**
  * @author Denis Shurygin
@@ -50,7 +49,6 @@ class SummaryTest {
     fun testConstructorFromJson() {
         val jsonString = "{" +
                 "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(123, "test").toJson() + "," +
-                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":23132123," +
                 "\"" + Summary.RESOURCE_FILES + "\":{" +
                 "\"en\":" + FileSummary(1233, "test1").toJson() + "," +
                 "\"ru\":" + FileSummary(1263, "test2").toJson() + "}" +
@@ -62,7 +60,6 @@ class SummaryTest {
 
         assertEquals(file.canonicalPath, summary.file!!.canonicalPath)
         assertEquals(FileSummary(123, "test"), summary.configSummary)
-        assertEquals(23132123, summary.sourceModifiedDate)
         assertEquals(FileSummary(1233, "test1"), summary.getResourceSummary("en"))
         assertEquals(FileSummary(1263, "test2"), summary.getResourceSummary("ru"))
         assertNull(summary.getResourceSummary("none"))
@@ -76,14 +73,12 @@ class SummaryTest {
 
         var jsonString = "{" +
                 "\"" + Summary.CONFIG_FILE + "\":[1,2,3]," +
-                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":1," +
                 "\"" + Summary.RESOURCE_FILES + "\":1" +
                 "}"
         var json = JSON_PARSER.parse(jsonString) as JSONObject
         Summary(tempFolder.newFile(), json)
 
         jsonString = "{" +
-                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":[[0], {\"key\": 431231}, [1, \"str\"]]" +
                 "\"" + Summary.RESOURCE_FILES + "\":{" +
                 "\"en\": 1," +
                 "\"ru\": [\"Str\", 1]}" +
@@ -98,16 +93,6 @@ class SummaryTest {
     @Throws(ParseException::class, IOException::class)
     fun testConstructorNullFile() {
         Summary(null, JSONObject())
-    }
-
-    @Test
-    @Throws(IOException::class)
-    fun testSetGetSourceModifiedDate() {
-        val summary = Summary(tempFolder.newFile(), JSONObject())
-        assertEquals(0, summary.sourceModifiedDate)
-
-        summary.sourceModifiedDate = 1234567
-        assertEquals(1234567, summary.sourceModifiedDate)
     }
 
     @Test
@@ -146,10 +131,8 @@ class SummaryTest {
     @Test
     @Throws(ParseException::class, IOException::class)
     fun testSave() {
-
         val jsonString = "{" +
                 "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(4123, "test").toJson() + "," +
-                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":23132123," +
                 "\"" + Summary.RESOURCE_FILES + "\":{" +
                 "\"en\":" + FileSummary(1233, "test1").toJson() + "," +
                 "\"ru\":" + FileSummary(1263, "test2").toJson() + "}" +
@@ -170,13 +153,12 @@ class SummaryTest {
         val config = Config()
         config.file = prepareTestFile("{}")
         config.tempDir = tempFolder.newFolder()
-        config.platform = MockPlatformResources(
+        config.platform = MockResources(
                 File(System.getProperty("user.dir"), "temp/"),
-                "mock", null) as? PlatformConfig
+                "mock", null) as? ResourcesConfig
 
         val jsonString = (JSON_PARSER.parse("{" +
                 "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(config.file).toJson() + "," +
-                "\"" + Summary.SOURCE_MODIFIED_DATE + "\":23132123," +
                 "\"" + Summary.RESOURCE_FILES + "\":{" +
                 "\"en\":" + FileSummary(1233, "test1").toJson() + "," +
                 "\"ru\":" + FileSummary(1263, "test2").toJson() + "}" +

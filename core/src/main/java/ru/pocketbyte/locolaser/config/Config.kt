@@ -5,8 +5,8 @@
 
 package ru.pocketbyte.locolaser.config
 
-import ru.pocketbyte.locolaser.config.platform.PlatformConfig
-import ru.pocketbyte.locolaser.config.source.SourceConfig
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
+import ru.pocketbyte.locolaser.resource.Resources
 
 import java.io.File
 
@@ -53,7 +53,7 @@ class Config {
     /**
      * Source that contain resources.
      */
-    var sourceConfig: SourceConfig? = null
+    var sourceConfig: ResourcesConfig? = null
         set(value) {
             (field as? Child)?.parent = null
             field = value
@@ -62,7 +62,7 @@ class Config {
     /**
      * Platform that contain logic of resource creation.
      */
-    var platform: PlatformConfig? = null
+    var platform: ResourcesConfig? = null
         set(value) {
             (field as? Child)?.parent = null
             field = value
@@ -83,6 +83,11 @@ class Config {
         set(value) { conflictStrategyInner = value }
 
     private var conflictStrategyInner: ConflictStrategy? = null
+
+    /**
+     * List of locales that should be localized.
+     */
+    var locales: Set<String> = setOf(Resources.BASE_LOCALE)
 
     /**
      * Define time in milliseconds that define delay for next localization.

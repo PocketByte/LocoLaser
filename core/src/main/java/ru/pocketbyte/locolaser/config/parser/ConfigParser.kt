@@ -31,8 +31,8 @@ open class ConfigParser
  * @param platformConfigParser Parser of the platform config.
  */
 (
-    private val sourceConfigParser: SourceConfigParser<*>,
-    private val platformConfigParser: PlatformConfigParser<*>
+        private val sourceConfigParser: ResourcesConfigParser<*>,
+        private val platformConfigParser: ResourcesConfigParser<*>
 ) {
 
     companion object {
@@ -41,6 +41,7 @@ open class ConfigParser
         const val PLATFORM = "platform"
         const val WORK_DIR = "work_dir"
         const val TEMP_DIR = "temp_dir"
+        const val LOCALES = "locales"
 
         const val FORCE_IMPORT = "force_import"
         const val CONFLICT_STRATEGY = "conflict_strategy"
@@ -158,6 +159,9 @@ open class ConfigParser
         config.sourceConfig = sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true)
         config.platform = platformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), true)
 
+        config.locales = JsonParseUtils.getStrings(configJson, LOCALES, null, true)?.toSet() ?:
+                throw InvalidConfigException("\"$LOCALES\" is not set.")
+
         parseConflictStrategy(JsonParseUtils.getString(configJson, CONFLICT_STRATEGY, null, false))?.let {
             config.conflictStrategy = it
         }
@@ -173,6 +177,8 @@ open class ConfigParser
             throw InvalidConfigException("\"$PLATFORM\" is not set.")
         if (config.sourceConfig == null)
             throw InvalidConfigException("\"$SOURCE\" is not set.")
+        if (config.locales.isEmpty())
+            throw InvalidConfigException("\"$LOCALES\" must contain at least one item.")
     }
 
     class ConfigArgsParser {

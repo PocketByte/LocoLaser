@@ -5,7 +5,7 @@
 
 package ru.pocketbyte.locolaser.testutils.mock
 
-import ru.pocketbyte.locolaser.config.source.BaseTableSource
+import ru.pocketbyte.locolaser.resource.BaseTableResources
 
 import java.util.ArrayList
 import java.util.HashMap
@@ -17,14 +17,14 @@ class MockDataSet(locales: Array<String>) {
 
     private val mDataList = ArrayList<DataRow>()
     private val mLocalesCount: Int = locales.size
-    val columnIndexes: BaseTableSource.ColumnIndexes
+    val columnIndexes: BaseTableResources.ColumnIndexes
 
     init {
         val localeIndexes = HashMap<String, Int>(locales.size)
         for (i in 0 until mLocalesCount)
             localeIndexes[locales[i]] = 5 + i
 
-        columnIndexes = BaseTableSource.ColumnIndexes(1, 2, 3, localeIndexes, 4)
+        columnIndexes = BaseTableResources.ColumnIndexes(1, 2, 3, 4, localeIndexes)
     }
 
     fun add(key: String, quantity: String?, comment: String?, locales: Array<String?>, metadata: String?) {

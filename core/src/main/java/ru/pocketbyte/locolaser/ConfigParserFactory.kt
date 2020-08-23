@@ -21,29 +21,24 @@ class ConfigParserFactory {
 
     @Throws(ClassNotFoundException::class, IllegalAccessException::class, InstantiationException::class, IOException::class)
     private fun getFromClassLoader(): ConfigParser {
-        val platformConfigParsers = LinkedHashSet<PlatformConfigParser<*>>()
-        val sourceConfigParsers = LinkedHashSet<SourceConfigParser<*>>()
+        val configParsers = LinkedHashSet<ResourcesConfigParser<*>>()
 
         for (url in jarUrls) {
-            readPlatformConfigParsers(url)
-                    .mapTo(platformConfigParsers) {
-                        Class.forName(it).newInstance() as PlatformConfigParser<*>
-                    }
-
-            readSourceConfigParsers(url)
-                    .mapTo(sourceConfigParsers) {
-                        Class.forName(it).newInstance() as SourceConfigParser<*>
+            readResourcesConfigParsers(url)
+                    .mapTo(configParsers) {
+                        Class.forName(it).newInstance() as ResourcesConfigParser<*>
                     }
         }
 
-        if (platformConfigParsers.size == 0)
-            throw RuntimeException("Platform Config parser not found")
+        if (configParsers.size == 0)
+            throw RuntimeException("Resource Config parser not found")
 
-        sourceConfigParsers.add(EmptySourceConfigParser())
+        configParsers.add(EmptySourceConfigParser())
 
         return ConfigParser(
-                SourceSetConfigParser(sourceConfigParsers),
-                PlatformSetConfigParser(platformConfigParsers))
+            sourceConfigParser = ResourcesSetConfigParser(configParsers, hasMainConfig = true),
+            platformConfigParser = ResourcesSetConfigParser(configParsers, hasMainConfig = false)
+        )
     }
 
     // jdk9
@@ -77,12 +72,8 @@ class ConfigParserFactory {
             throw RuntimeException("Failed to read list of execution jars")
         }
 
-    private fun readPlatformConfigParsers(jarUrl: URL): List<String> {
-        return readLines(jarUrl, "/META-INF/platform_configs")
-    }
-
-    private fun readSourceConfigParsers(jarUrl: URL): List<String> {
-        return readLines(jarUrl, "/META-INF/source_configs")
+    private fun readResourcesConfigParsers(jarUrl: URL): List<String> {
+        return readLines(jarUrl, "/META-INF/resources_configs")
     }
 
     private fun readLines(jarUrl: URL, filePath: String): List<String> {

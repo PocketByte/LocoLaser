@@ -10,6 +10,7 @@ import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.entity.merge
 import ru.pocketbyte.locolaser.summary.Summary
+import ru.pocketbyte.locolaser.summary.plus
 import ru.pocketbyte.locolaser.utils.LogUtils
 import java.io.IOException
 import java.util.*
@@ -37,13 +38,9 @@ object LocoLaser {
         if (config == null)
             throw IllegalArgumentException("Config must be not null")
 
-        val sourceConfig = config.sourceConfig ?: throw IllegalArgumentException("Config source must be not null")
-        val platform = config.platform ?: throw IllegalArgumentException("Config platform must be not null")
-
-        val resources = platform.resources
-
         val summary = Summary.loadSummary(config)
-        val isConfigFileChanged = summary == null || summary.isConfigFileChanged(config.file)
+        val isConfigFileChanged = summary?.isConfigFileChanged(config.file) ?: true
+        val isRefreshAll = config.isForceImport || isConfigFileChanged
 
         if (summary != null) {
             if (config.isForceImport)
@@ -58,35 +55,23 @@ object LocoLaser {
 
         LogUtils.info("Conflict strategy: " + config.conflictStrategy.toString())
 
-        var isRefreshAll = config.isForceImport || isConfigFileChanged
+        val sourceConfig = config.sourceConfig ?: throw IllegalArgumentException("Config source must be not null")
+        val platformConfig = config.platform ?: throw IllegalArgumentException("Config platform must be not null")
 
-        val source = sourceConfig.open() ?: return false
-
-        val sourceModifiedDate = source.modifiedDate
-
-        val isSourceChanged = summary == null
-                || summary.sourceModifiedDate == 0L
-                || sourceModifiedDate != summary.sourceModifiedDate
-
-        if (summary != null)
-            summary.sourceModifiedDate = sourceModifiedDate
-
-        if (!isRefreshAll) {
-            if (isSourceChanged) {
-                LogUtils.info("Source was changed. All resource files will be refreshed.")
-                isRefreshAll = true
-            } else
-                LogUtils.info("Source have not been changed since the last import. Only modified resource files will be refreshed.")
-        }
+        val resources = platformConfig.resources
+        val source = sourceConfig.resources ?: return false
 
         // Prepare resource files
         var isHaveFileToTranslate = false
         val resourcesToIgnore = HashSet<String>() // set of locales
         val resourcesToLocalize = HashSet<String>() // set of locales
-        for (locale in sourceConfig.locales) {
+        for (locale in config.locales) {
             if (!resourcesToLocalize.contains(locale)) {
-                val isResourceFileChanged = summary == null || summary.isResourceLocaleChanged(resources, locale)
-                if (isRefreshAll || isResourceFileChanged) {
+                val isLocaleChanged =
+                        isRefreshAll ||
+                        summary == null ||
+                        summary.isLocaleChanged(resources, source, locale)
+                if (isLocaleChanged) {
                     isHaveFileToTranslate = true
                     resourcesToLocalize.add(locale)
                     resourcesToIgnore.remove(locale)
@@ -112,7 +97,7 @@ object LocoLaser {
 
             // =================================
             // Read source values
-            val sourceResMap = source.read(null, ExtraParams())
+            val sourceResMap = source.read(config.locales, ExtraParams())
 
             if (sourceResMap == null && config.conflictStrategy !== Config.ConflictStrategy.EXPORT_NEW_PLATFORM) {
                 LogUtils.info("Source is empty. Localization stopped.")
@@ -165,7 +150,9 @@ object LocoLaser {
                     // entry.key = locale, entry.value = strings of the locale
                     if (resourcesToLocalize.contains(locale)) {
                         // Getting new summary
-                        summary?.setResourceSummary(locale, resources.summaryForLocale(locale))
+                        (resources.summaryForLocale(locale) + source.summaryForLocale(locale))?.let {
+                            summary?.setResourceSummary(locale, it)
+                        }
                     }
                 }
             }

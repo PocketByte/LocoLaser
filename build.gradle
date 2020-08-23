@@ -27,7 +27,7 @@ buildscript {
 allprojects {
 
     sourceCompatibility = 1.7
-    version = '1.5.0'
+    version = '1.6.0'
 
     configurations {
         // dependencies from this configuration will not be included in final jar file

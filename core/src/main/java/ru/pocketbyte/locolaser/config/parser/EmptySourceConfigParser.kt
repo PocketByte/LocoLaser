@@ -1,14 +1,14 @@
 package ru.pocketbyte.locolaser.config.parser
 
-import ru.pocketbyte.locolaser.config.source.EmptySourceConfig
+import ru.pocketbyte.locolaser.config.resources.EmptyResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 
-class EmptySourceConfigParser : SourceConfigParser<EmptySourceConfig> {
+class EmptySourceConfigParser : ResourcesConfigParser<EmptyResourcesConfig> {
 
     @Throws(InvalidConfigException::class)
-    override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): EmptySourceConfig? {
-        if (EmptySourceConfig.TYPE == sourceObject) {
-            return EmptySourceConfig()
+    override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): EmptyResourcesConfig? {
+        if (EmptyResourcesConfig.TYPE == sourceObject) {
+            return EmptyResourcesConfig()
         }
 
         if (throwIfWrongType)

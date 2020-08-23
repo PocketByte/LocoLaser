@@ -8,9 +8,9 @@ package ru.pocketbyte.locolaser.config.parser
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.SOURCE
-import ru.pocketbyte.locolaser.config.source.BaseTableSourceConfig
-import ru.pocketbyte.locolaser.config.source.SourceConfig
-import ru.pocketbyte.locolaser.config.source.SourceSetConfig
+import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.BaseTableResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
@@ -19,13 +19,12 @@ import java.util.HashSet
 /**
  * @author Denis Shurygin
  */
-abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceConfig> : SourceConfigParser<SourceConfig> {
+abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableResourcesConfig> : ResourcesConfigParser<ResourcesConfig> {
 
     companion object {
         const val TYPE = "type"
         const val COLUMN_KEY = "column_key"
         const val COLUMN_QUANTITY = "column_quantity"
-        const val COLUMN_LOCALES = "column_locales"
         const val COLUMN_COMMENT = "column_comment"
         const val COLUMN_METADATA = "column_metadata"
     }
@@ -48,12 +47,12 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceCo
      * @throws InvalidConfigException
      */
     @Throws(InvalidConfigException::class)
-    override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): SourceConfig? {
+    override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig? {
         if (sourceObject is JSONObject) {
             return parseFromJson(sourceObject)
         } else if (sourceObject is JSONArray) {
-            var defaultConfig: SourceConfig? = null
-            val configs = HashSet<SourceConfig>(sourceObject.size)
+            var defaultConfig: ResourcesConfig? = null
+            val configs = HashSet<ResourcesConfig>(sourceObject.size)
             for (item in sourceObject) {
                 if (item is JSONObject) {
                     val config = parseFromJson(item)
@@ -64,7 +63,7 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceCo
                 } else
                     throw InvalidConfigException("Source array must contain JSONObjects.")
             }
-            return SourceSetConfig(configs, defaultConfig)
+            return ResourcesSetConfig(configs, defaultConfig)
         } else if (throwIfWrongType) {
             throw InvalidConfigException("Source must be a JSONObject or JSONArray.")
         }
@@ -93,19 +92,11 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableSourceCo
         source.quantityColumn = JsonParseUtils.getString(configJson, COLUMN_QUANTITY, SOURCE, false)
         source.commentColumn = JsonParseUtils.getString(configJson, COLUMN_COMMENT, SOURCE, false)
         source.metadataColumn = JsonParseUtils.getString(configJson, COLUMN_METADATA, SOURCE, false)
-
-        val locales = JsonParseUtils.getStrings(configJson, COLUMN_LOCALES, SOURCE, true)
-        if (locales != null)
-            source.localeColumns = HashSet(locales)
     }
 
     @Throws(InvalidConfigException::class)
     protected open fun validate(source: SourceConfigClass) {
         if (source.keyColumn?.isEmpty() != false)
             throw InvalidConfigException("\"$SOURCE.$COLUMN_KEY\" is not set.")
-        if (source.localeColumns == null)
-            throw InvalidConfigException("\"$SOURCE.$COLUMN_KEY\" is not set.")
-        if (source.localeColumns?.size == 0)
-            throw InvalidConfigException("\"$SOURCE.$COLUMN_LOCALES\" must contain at least one item.")
     }
 }
