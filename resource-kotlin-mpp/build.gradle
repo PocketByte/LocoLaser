@@ -14,7 +14,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "com.squareup:kotlinpoet:$kotlin_poet_version"
     noJarCompile project(':core')
-    noJarCompile project(':platform-mobile')
+    noJarCompile project(':resource-mobile')
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
@@ -55,7 +55,7 @@ publishing {
                 // Add mobile module dependency
                 def mobileDependency = dependencies.appendNode('dependency')
                 mobileDependency.appendNode('groupId', 'ru.pocketbyte.locolaser')
-                mobileDependency.appendNode('artifactId', 'platform-mobile')
+                mobileDependency.appendNode('artifactId', 'resource-mobile')
                 mobileDependency.appendNode('version', project.version)
                 mobileDependency.appendNode('scope', 'runtime')
 
@@ -84,7 +84,7 @@ bintray {
 
     pkg {
         repo = 'maven'
-        name = 'locolaser-platform-kotlin-mpp'
+        name = "locolaser-${project.name}"
         userOrg = 'pocketbyte'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/PocketByte/LocoLaser.git'

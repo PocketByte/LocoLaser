@@ -85,7 +85,7 @@ publishing {
         locolaserPublication(MavenPublication) {
             from components.java
             groupId 'ru.pocketbyte.locolaser'
-            artifactId 'source-googlesheet'
+            artifactId project.name
             version project.version
             pom.withXml {
                 def root = asNode()
@@ -117,7 +117,7 @@ bintray {
     
     pkg {
         repo = 'maven'
-        name = 'locolaser-source-googlesheet'
+        name = "locolaser-${project.name}"
         userOrg = 'pocketbyte'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/PocketByte/LocoLaser.git'
