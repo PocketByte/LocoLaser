@@ -7,7 +7,7 @@ package ru.pocketbyte.locolaser.resource.file
 
 import org.junit.*
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 
 import java.io.*
@@ -18,6 +18,8 @@ import java.nio.file.Paths
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
 /**
  * @author Denis Shurygin
@@ -33,12 +35,14 @@ class ResourceStreamFileTest {
     @Throws(IOException::class)
     fun init() {
         streamFile = object : ResourceStreamFile(tempFolder.newFile()) {
-            override fun read(): ResMap? {
+            override val formattingType = NoFormattingType
+
+            override fun read(extraParams: ExtraParams?): ResMap? {
                 return null
             }
 
             @Throws(IOException::class)
-            override fun write(resMap: ResMap, writingConfig: WritingConfig?) {
+            override fun write(resMap: ResMap, extraParams: ExtraParams?) {
 
             }
         }
@@ -105,7 +109,7 @@ class ResourceStreamFileTest {
         streamFile!!.writeString("2")
 
         val result = Files.readAllLines(Paths.get(streamFile!!.file.toURI()), Charset.defaultCharset())
-        assertEquals(2, result.size.toLong())
+        assertEquals(2, result.size)
         assertEquals("1", result[0])
         assertEquals("2", result[1])
     }
@@ -119,7 +123,7 @@ class ResourceStreamFileTest {
         streamFile!!.writeString("2")
 
         val result = Files.readAllLines(Paths.get(streamFile!!.file.toURI()), Charset.defaultCharset())
-        assertEquals(2, result.size.toLong())
+        assertEquals(2, result.size)
         assertEquals("1", result[0])
         assertEquals("2", result[1])
     }

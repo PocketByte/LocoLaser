@@ -5,23 +5,15 @@
 
 package ru.pocketbyte.locolaser.config
 
-import ru.pocketbyte.locolaser.config.platform.PlatformConfig
-import ru.pocketbyte.locolaser.config.source.SourceConfig
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
+import ru.pocketbyte.locolaser.resource.Resources
 
 import java.io.File
-import java.io.IOException
 
 /**
  * Configuration object that contain information about localization rules.
  *
  * @author Denis Shurygin
- */
-// =================================================================================================================
-// ============ Constructors =======================================================================================
-// =================================================================================================================
-
-/**
- * Construct new configuration object.
  */
 class Config {
 
@@ -37,102 +29,75 @@ class Config {
         /** Keep new platform resources if source doesn't contain this resources.  */
         KEEP_NEW_PLATFORM("keep_new_platform"),
 
+        /** Keep platform resources even if source contain this resources.  */
+        KEEP_PLATFORM("keep_platform"),
+
         /** New platform resources should be exported into source if source doesn't contain this resources.  */
-        EXPORT_NEW_PLATFORM("export_new_platform");
+        EXPORT_NEW_PLATFORM("export_new_platform"),
+
+        /** Platform resources should be exported into source even if source contain this resources. */
+        EXPORT_PLATFORM("export_platform");
 
         override fun toString(): String {
             return strValue
         }
+
+        val isExportStrategy: Boolean
+            get() = this == EXPORT_NEW_PLATFORM || this == EXPORT_PLATFORM
     }
 
-    // =================================================================================================================
-    // ============ Getters ============================================================================================
-    // =================================================================================================================
-
     /**
-     * Gets file from which this config was read.
-     * @return File from which this config was read.
-     */
-    // =================================================================================================================
-    // ============ Public methods =====================================================================================
-    // =================================================================================================================
-
-    // =================================================================================================================
-    // ============ Setters ============================================================================================
-    // =================================================================================================================
-
-    /**
-     * Sets file from which this config was read.
-     * @param file File from which this config was read.
+     * File from which this config was read.
      */
     var file: File? = null
     /**
-     * Gets source that contain resources.
-     * @return Source that contain resources.
+     * Source that contain resources.
      */
-    /**
-     * Sets source that contain resources.
-     * @param sourceConfig Source that contain resources.
-     */
-    var sourceConfig: SourceConfig? = null
-        set(sourceConfig) {
-            if (this.sourceConfig is Child)
-                (this.sourceConfig as Child).parent = null
-
-            field = sourceConfig
-
-            if (this.sourceConfig is Child)
-                (this.sourceConfig as Child).parent = this
+    var sourceConfig: ResourcesConfig? = null
+        set(value) {
+            (field as? Child)?.parent = null
+            field = value
+            (value as? Child)?.parent = this
         }
     /**
-     * Gets platform that contain logic of resource creation.
-     * @return Platform that contain logic of resource creation.
+     * Platform that contain logic of resource creation.
      */
-    /**
-     * Sets platform that contain logic of resource creation.
-     * @param platform Platform that contain logic of resource creation.
-     */
-    var platform: PlatformConfig? = null
-        set(platform) {
-            if (this.platform is Child)
-                (this.platform as Child).parent = null
-
-            field = platform
-
-            if (this.platform is Child)
-                (this.platform as Child).parent = this
+    var platform: ResourcesConfig? = null
+        set(value) {
+            (field as? Child)?.parent = null
+            field = value
+            (value as? Child)?.parent = this
         }
     /**
-     * Gets if import should be forced even if this is not necessary.
-     * @return True if import should be forced, false otherwise.
-     */
-    /**
-     * Sets if import should be forced even if this is not necessary. Default value: false.
-     * @param isForceImport True if import should be forced, false otherwise.
+     * Define if import should be forced even if this is not necessary.
+     * True if import should be forced, false otherwise.
      */
     var isForceImport: Boolean = false
     /**
-     * Gets which strategy should be processed for conflicts.
-     * @return Strategy which should be processed for conflicts.
+     * Strategy that should be used for merge conflicts.
+     * Default value: REMOVE_PLATFORM.
+     * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
      */
+    var conflictStrategy: ConflictStrategy
+        get() = conflictStrategyInner ?: ConflictStrategy.KEEP_NEW_PLATFORM
+        set(value) { conflictStrategyInner = value }
+
+    private var conflictStrategyInner: ConflictStrategy? = null
+
     /**
-     * Sets which strategy should be processed for conflicts. Default value: REMOVE_PLATFORM.
-     * @param strategy see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
+     * List of locales that should be localized.
      */
-    var conflictStrategy: ConflictStrategy? = null
-        get() = if (field == null) ConflictStrategy.KEEP_NEW_PLATFORM else field
+    var locales: Set<String> = setOf(Resources.BASE_LOCALE)
+
     /**
-     * Gets time in milliseconds that define delay for next localization. Localization will executed not more often the specified delay. If force import switch on delay will be ignored.
-     * @return Time in milliseconds that define delay for next localization.
-     */
-    /**
-     * Sets time in milliseconds that define delay for next localization. Localization will executed not more often the specified delay. If force import switch on delay will be ignored.
-     * @param delay Time in milliseconds that define delay for next localization.
+     * Define time in milliseconds that define delay for next localization.
+     * Localization will executed not more often the specified delay.
+     * If force import switched on delay will be ignored.
      */
     var delay: Long = 0
+
     /**
-     * Sets temporary directory.
-     * @param file Temporary directory.
+     * Define temporary directory.
      */
     var tempDir: File? = null
         get() {
@@ -141,19 +106,15 @@ class Config {
             return field
         }
 
-    val writingConfig = WritingConfig()
+    val extraParams = ExtraParams()
 
     /**
-     * Gets if comment should be written even if it equal resource value.
-     * @return True if comment should be written even if it equal resource value, false otherwise.
-     */
-    /**
-     * Sets if comment should be written even if it equal resource value. Default value: false.
-     * @param isDuplicateComments True if comment should be written even if it equal resource value, false otherwise.
+     * Define if comment should be written even if it equal resource value.
+     * True if comment should be written even if it equal resource value, false otherwise.
      */
     var isDuplicateComments: Boolean
-        get() = writingConfig.isDuplicateComments
+        get() = extraParams.duplicateComments
         set(isDuplicateComments) {
-            writingConfig.isDuplicateComments = isDuplicateComments
+            extraParams.duplicateComments = isDuplicateComments
         }
 }

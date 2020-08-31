@@ -7,7 +7,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
+import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.platform.ini.IniPlatformConfig
 import java.io.File
@@ -62,7 +62,7 @@ class IniPlatformConfigParserTest {
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJsonNoType() {
         val json = prepareTestPlatformJson()
-        json.remove(PlatformConfigParser.PLATFORM_TYPE)
+        json.remove(ResourcesConfigParser.RESOURCE_TYPE)
 
         parser!!.parse(json, true)
     }
@@ -71,7 +71,7 @@ class IniPlatformConfigParserTest {
     @Throws(InvalidConfigException::class)
     fun testFromJsonOnlyType() {
         val json = JSONObject()
-        json[PlatformConfigParser.PLATFORM_TYPE] = IniPlatformConfig.TYPE
+        json[ResourcesConfigParser.RESOURCE_TYPE] = IniPlatformConfig.TYPE
         val config = parser!!.parse(json, true)
 
         assertNotNull(config)
@@ -86,7 +86,7 @@ class IniPlatformConfigParserTest {
 
     private fun prepareTestPlatformJson(): JSONObject {
         val json = JSONObject()
-        json[PlatformConfigParser.PLATFORM_TYPE] = IniPlatformConfig.TYPE
+        json[ResourcesConfigParser.RESOURCE_TYPE] = IniPlatformConfig.TYPE
         json[IniPlatformConfigParser.RESOURCE_NAME] = "test_res"
         json[IniPlatformConfigParser.RESOURCES_DIR] = "test_res_dir"
         return json

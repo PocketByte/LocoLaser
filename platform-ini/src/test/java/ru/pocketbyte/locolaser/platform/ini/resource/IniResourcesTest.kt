@@ -18,10 +18,10 @@ class IniResourcesTest {
     fun testWriteAndRead() {
         val resMap1 = prepareResMap()
 
-        val resources = IniResources(tempFolder.newFolder(), "test")
+        val resources = IniResources(tempFolder.newFolder(), "test", null)
         resources.write(resMap1, null)
 
-        val resMap2 = resources.read(resMap1.keys)
+        val resMap2 = resources.read(resMap1.keys, null)
 
         assertNotNull(resMap2)
         assertEquals(resMap1, resMap2)

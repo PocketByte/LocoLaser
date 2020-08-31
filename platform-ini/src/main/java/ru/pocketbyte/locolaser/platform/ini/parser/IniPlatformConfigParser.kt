@@ -2,13 +2,13 @@ package ru.pocketbyte.locolaser.platform.ini.parser
 
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser
-import ru.pocketbyte.locolaser.config.parser.PlatformConfigParser
-import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
+import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
+import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.platform.ini.IniPlatformConfig
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
-class IniPlatformConfigParser : PlatformConfigParser<BasePlatformConfig> {
+class IniPlatformConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
     companion object {
         const val RESOURCE_NAME = "res_name"
@@ -16,15 +16,15 @@ class IniPlatformConfigParser : PlatformConfigParser<BasePlatformConfig> {
     }
 
     @Throws(InvalidConfigException::class)
-    override fun parse(platformObject: Any?, throwIfWrongType: Boolean): BasePlatformConfig? {
+    override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): BaseResourcesConfig? {
 
-        if (platformObject is String) {
-            if (checkType(platformObject as String?, throwIfWrongType))
+        if (resourceObject is String) {
+            if (checkType(resourceObject as String?, throwIfWrongType))
                 return IniPlatformConfig()
-        } else if (platformObject is JSONObject) {
-            val platformJSON = platformObject as JSONObject?
+        } else if (resourceObject is JSONObject) {
+            val platformJSON = resourceObject as JSONObject?
 
-            if (checkType(JsonParseUtils.getString(platformJSON!!, PlatformConfigParser.PLATFORM_TYPE, ConfigParser.PLATFORM, true), throwIfWrongType)) {
+            if (checkType(JsonParseUtils.getString(platformJSON!!, ResourcesConfigParser.RESOURCE_TYPE, ConfigParser.PLATFORM, true), throwIfWrongType)) {
                 val platform = IniPlatformConfig()
 
                 platform.resourceName = JsonParseUtils.getString(

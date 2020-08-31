@@ -1,10 +1,10 @@
 rootProject.name = 'locolaser'
 
 include 'core'
-include 'source-googlesheet'
-include 'platform-mobile'
-include 'platform-gettext'
-include 'platform-json'
+include 'resource-googlesheet'
+include 'resource-mobile'
+include 'resource-gettext'
+include 'resource-json'
+include 'resource-kotlin-mpp'
 include 'platform-ini'
-include 'platform-kotlin-mobile'
 

@@ -4,7 +4,8 @@ import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.entity.*
 import java.io.File
 import java.io.IOException
@@ -28,7 +29,7 @@ class IniResourceFileTest {
 
         val resourceFile = IniResourceFile(testFile, localesSet("en"))
 
-        assertNull(resourceFile.read())
+        assertNull(resourceFile.read(null))
     }
 
     @Test
@@ -44,7 +45,7 @@ class IniResourceFileTest {
                         "string3 = Value 3")
 
         val resourceFile = IniResourceFile(testFile, localesSet(testLocale))
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(null)
 
         assertNotNull(resMap)
 
@@ -75,7 +76,7 @@ class IniResourceFileTest {
                         "string3 = Value 3 ru"))
 
         val resourceFile = IniResourceFile(testFile, localesSet(testLocale1, testLocale2))
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(null)
 
         assertNotNull(resMap)
 
@@ -106,7 +107,7 @@ class IniResourceFileTest {
                         "   string1    =   Value1  "))
 
         val resourceFile = IniResourceFile(testFile, localesSet(testLocale))
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(null)
 
         assertNotNull(resMap)
 
@@ -128,7 +129,7 @@ class IniResourceFileTest {
                         "ru_section_string = Ru Section"))
 
         val resourceFile = IniResourceFile(testFile, localesSet(testLocale))
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(null)
 
         assertNotNull(resMap)
 
@@ -152,7 +153,7 @@ class IniResourceFileTest {
                         "unreadMessages[other] = You have {{n}} unread messages"))
 
         val resourceFile = IniResourceFile(testFile, localesSet(testLocale))
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(null)
 
         assertNotNull(resMap)
 
@@ -193,7 +194,7 @@ class IniResourceFileTest {
                         "plural_comment[other] = {{n}} Plural (no comment)"))
 
         val resourceFile = IniResourceFile(testFile, localesSet(testLocale))
-        val resMap = resourceFile.read()
+        val resMap = resourceFile.read(null)
 
         assertNotNull(resMap)
 
@@ -254,12 +255,12 @@ class IniResourceFileTest {
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
         resMap[testLocale] = resLocale
 
-        val writingConfig = WritingConfig()
-        writingConfig.isDuplicateComments = false
+        val extraParams = ExtraParams()
+        extraParams.duplicateComments = false
 
         val testFile = tempFolder.newFile()
         val resourceFile = IniResourceFile(testFile, localesSet(testLocale))
-        resourceFile.write(resMap, writingConfig)
+        resourceFile.write(resMap, extraParams)
 
         val expectedResult = (IniResourceFile.GENERATED_COMMENT + "\r\n\r\n" +
                 "[ru]\r\n" +

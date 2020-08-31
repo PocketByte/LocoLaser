@@ -13,19 +13,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.Config
-import ru.pocketbyte.locolaser.config.platform.PlatformConfig
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.testutils.mock.MockPlatformConfig
-import ru.pocketbyte.locolaser.testutils.mock.MockTableSourceConfig
+import ru.pocketbyte.locolaser.testutils.mock.MockResourcesConfig
+import ru.pocketbyte.locolaser.testutils.mock.MockTableResourcesConfig
 
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
-import java.util.Arrays
 import java.util.HashMap
 
 import org.junit.Assert.*
 import ru.pocketbyte.locolaser.config.Config.ConflictStrategy.*
+import ru.pocketbyte.locolaser.resource.Resources
 
 
 /**
@@ -33,41 +33,34 @@ import ru.pocketbyte.locolaser.config.Config.ConflictStrategy.*
  */
 class ConfigParserTest {
 
-    private var mConfigParser: ConfigParser? = null
+    private lateinit var mConfigParser: ConfigParser
 
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
 
     @Before
     fun init() {
-        val sourceConfigParser = object : SourceConfigParser<MockTableSourceConfig> {
-
+        val mockParser = object : ResourcesConfigParser<ResourcesConfig> {
             @Throws(InvalidConfigException::class)
-            override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): MockTableSourceConfig {
-                return MockTableSourceConfig()
+            override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig {
+                return MockResourcesConfig()
             }
         }
-        val platformConfigParser = object : PlatformConfigParser<PlatformConfig> {
-            @Throws(InvalidConfigException::class)
-            override fun parse(platformObject: Any?, throwIfWrongType: Boolean): PlatformConfig {
-                return MockPlatformConfig()
-            }
-        }
-        mConfigParser = ConfigParser(sourceConfigParser, platformConfigParser)
+        mConfigParser = ConfigParser(mockParser, mockParser)
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testNoSource() {
         val file = prepareMockFileNoSource()
-        mConfigParser!!.fromFile(file)
+        mConfigParser.fromFile(file)
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testNoPlatform() {
         val file = prepareMockFileNoPlatform()
-        mConfigParser!!.fromFile(file)
+        mConfigParser.fromFile(file)
     }
 
     @Test
@@ -75,17 +68,17 @@ class ConfigParserTest {
     fun testConfigsArray() {
         val delay1: Long = 141
         val map1 = HashMap<String, Any>()
-        map1.put(ConfigParser.DELAY, delay1)
+        map1[ConfigParser.DELAY] = delay1
 
         val delay2: Long = 873
         val map2 = HashMap<String, Any>()
-        map2.put(ConfigParser.DELAY, delay2)
+        map2[ConfigParser.DELAY] = delay2
 
         val file = prepareMockFileWithArray(map1, map2)
 
-        val configs = mConfigParser!!.fromFile(file)
+        val configs = mConfigParser.fromFile(file)
 
-        assertEquals(2, configs.size.toLong())
+        assertEquals(2, configs.size)
 
         assertNotNull(configs[0])
         assertNotNull(configs[1])
@@ -99,9 +92,9 @@ class ConfigParserTest {
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testDefaultValues() {
         val file = prepareMockFile(null)
-        val configs = mConfigParser!!.fromFile(file)
+        val configs = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
 
         val config = configs[0]
 
@@ -118,20 +111,20 @@ class ConfigParserTest {
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testJsonForceImport() {
         val map = HashMap<String, Any>()
-        map.put(ConfigParser.FORCE_IMPORT, true)
+        map[ConfigParser.FORCE_IMPORT] = true
 
         var file = prepareMockFile(map)
-        var configs: List<Config> = mConfigParser!!.fromFile(file)
+        var configs: List<Config> = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertTrue(configs[0].isForceImport)
 
-        map.put(ConfigParser.FORCE_IMPORT, false)
+        map[ConfigParser.FORCE_IMPORT] = false
 
         file = prepareMockFile(map)
-        configs = mConfigParser!!.fromFile(file)
+        configs = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertFalse(configs[0].isForceImport)
     }
 
@@ -139,20 +132,20 @@ class ConfigParserTest {
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testJsonDuplicateComments() {
         val map = HashMap<String, Any>()
-        map.put(ConfigParser.DUPLICATE_COMMENTS, true)
+        map[ConfigParser.DUPLICATE_COMMENTS] = true
 
         var file = prepareMockFile(map)
-        var configs: List<Config> = mConfigParser!!.fromFile(file)
+        var configs: List<Config> = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertTrue(configs[0].isDuplicateComments)
 
-        map.put(ConfigParser.DUPLICATE_COMMENTS, false)
+        map[ConfigParser.DUPLICATE_COMMENTS] = false
 
         file = prepareMockFile(map)
-        configs = mConfigParser!!.fromFile(file)
+        configs = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertFalse(configs[0].isDuplicateComments)
     }
 
@@ -161,10 +154,10 @@ class ConfigParserTest {
     fun testJsonWorkDir() {
         val newWorkDir = "./new/work/dir"
         val map = HashMap<String, Any>()
-        map.put(ConfigParser.WORK_DIR, newWorkDir)
+        map[ConfigParser.WORK_DIR] = newWorkDir
 
         val file = prepareMockFile(map)
-        mConfigParser!!.fromFile(file)
+        mConfigParser.fromFile(file)
 
         assertEquals(File(file.parentFile, newWorkDir).canonicalPath, System.getProperty("user.dir"))
     }
@@ -174,12 +167,12 @@ class ConfigParserTest {
     fun testJsonTempDir() {
         val tempDir = "./new/work/dir"
         val map = HashMap<String, Any>()
-        map.put(ConfigParser.TEMP_DIR, tempDir)
+        map[ConfigParser.TEMP_DIR] = tempDir
 
         val file = prepareMockFile(map)
-        val configs = mConfigParser!!.fromFile(file)
+        val configs = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertEquals(File(tempDir).canonicalPath, configs[0].tempDir!!.canonicalPath)
     }
 
@@ -187,18 +180,18 @@ class ConfigParserTest {
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testDefaultTempDir() {
         val file = prepareMockFile(HashMap())
-        val configs = mConfigParser!!.fromFile(file)
+        val configs = mConfigParser.fromFile(file)
 
-        val expected = MockPlatformConfig().defaultTempDir
+        val expected = MockResourcesConfig().defaultTempDir
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertEquals(expected.canonicalPath, configs[0].tempDir!!.canonicalPath)
     }
 
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testJsonConflictStrategy() {
-        val list = Arrays.asList<Pair<String, Config.ConflictStrategy>>(
+        val list = listOf(
                 Pair(REMOVE_PLATFORM.strValue, REMOVE_PLATFORM),
                 Pair(KEEP_NEW_PLATFORM.strValue, KEEP_NEW_PLATFORM),
                 Pair(EXPORT_NEW_PLATFORM.strValue, EXPORT_NEW_PLATFORM)
@@ -206,12 +199,12 @@ class ConfigParserTest {
 
         for ((first, second) in list) {
             val map = HashMap<String, Any>()
-            map.put(ConfigParser.CONFLICT_STRATEGY, first)
+            map[ConfigParser.CONFLICT_STRATEGY] = first
 
             val file = prepareMockFile(map)
-            val configs = mConfigParser!!.fromFile(file)
+            val configs = mConfigParser.fromFile(file)
 
-            assertEquals(1, configs.size.toLong())
+            assertEquals(1, configs.size)
             assertEquals(second, configs[0].conflictStrategy)
         }
     }
@@ -221,12 +214,12 @@ class ConfigParserTest {
     fun testJsonDelay() {
         val delay: Long = 1
         val map = HashMap<String, Any>()
-        map.put(ConfigParser.DELAY, delay)
+        map[ConfigParser.DELAY] = delay
 
         val file = prepareMockFile(map)
-        val configs = mConfigParser!!.fromFile(file)
+        val configs = mConfigParser.fromFile(file)
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertEquals(delay * ConfigParser.DELAY_MULT, configs[0].delay)
     }
 
@@ -234,32 +227,32 @@ class ConfigParserTest {
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testFromArguments() {
         val file = prepareMockFile(null)
-        val configs = mConfigParser!!.fromArguments(arrayOf(file.absolutePath))
+        val configs = mConfigParser.fromArguments(arrayOf(file.absolutePath))
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertNotNull(configs[0])
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testFromArgumentsNoArguments() {
-        mConfigParser!!.fromArguments(arrayOf())
+        mConfigParser.fromArguments(arrayOf())
     }
 
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testArgumentForce() {
         val map = HashMap<String, Any>()
-        map.put(ConfigParser.FORCE_IMPORT, false)
+        map[ConfigParser.FORCE_IMPORT] = false
 
         val file = prepareMockFile(map)
 
-        var configs: List<Config> = mConfigParser!!.fromArguments(arrayOf(file.absolutePath, "--force"))
-        assertEquals(1, configs.size.toLong())
+        var configs: List<Config> = mConfigParser.fromArguments(arrayOf(file.absolutePath, "--force"))
+        assertEquals(1, configs.size)
         assertTrue(configs[0].isForceImport)
 
-        configs = mConfigParser!!.fromArguments(arrayOf(file.absolutePath, "--f"))
-        assertEquals(1, configs.size.toLong())
+        configs = mConfigParser.fromArguments(arrayOf(file.absolutePath, "--f"))
+        assertEquals(1, configs.size)
         assertTrue(configs[0].isForceImport)
     }
 
@@ -267,17 +260,17 @@ class ConfigParserTest {
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testArgumentConflictStrategy() {
         val map = HashMap<String, Any>()
-        map.put(ConfigParser.CONFLICT_STRATEGY, KEEP_NEW_PLATFORM.strValue)
+        map[ConfigParser.CONFLICT_STRATEGY] = KEEP_NEW_PLATFORM.strValue
 
         val file = prepareMockFile(map)
 
-        var configs: List<Config> = mConfigParser!!.fromArguments(
+        var configs: List<Config> = mConfigParser.fromArguments(
                 arrayOf(file.absolutePath, "-cs", EXPORT_NEW_PLATFORM.strValue))
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
         assertEquals(EXPORT_NEW_PLATFORM, configs[0].conflictStrategy)
 
-        configs = mConfigParser!!.fromArguments(arrayOf(file.absolutePath, "-cs ", REMOVE_PLATFORM.strValue))
-        assertEquals(1, configs.size.toLong())
+        configs = mConfigParser.fromArguments(arrayOf(file.absolutePath, "-cs ", REMOVE_PLATFORM.strValue))
+        assertEquals(1, configs.size)
         assertEquals(REMOVE_PLATFORM, configs[0].conflictStrategy)
     }
 
@@ -288,10 +281,37 @@ class ConfigParserTest {
 
         val file = prepareMockFile(null)
 
-        val configs = mConfigParser!!.fromArguments(
-                arrayOf(file.absolutePath, "-delay", java.lang.Long.toString(delay)))
-        assertEquals(1, configs.size.toLong())
+        val configs = mConfigParser.fromArguments(
+                arrayOf(file.absolutePath, "-delay", delay.toString()))
+        assertEquals(1, configs.size)
         assertEquals(delay * ConfigParser.DELAY_MULT, configs[0].delay)
+    }
+
+    @Test
+    @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
+    fun testArgumentTempDir() {
+        val tempDir = "./some_dir/another/temp/"
+
+        val file = prepareMockFile(null)
+
+        val configs = mConfigParser.fromArguments(
+                arrayOf(file.absolutePath, "-tempDir", tempDir))
+
+        assertEquals(File(tempDir).canonicalPath, configs[0].tempDir?.canonicalPath)
+    }
+
+    @Test
+    @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
+    fun testArgumentWorkDir() {
+        val workDir = "./subDir"
+        val expectedTemp = File(workDir, MockResourcesConfig().defaultTempDir.path).canonicalPath
+
+        val file = prepareMockFile(null)
+
+        val configs = mConfigParser.fromArguments(
+                arrayOf(file.absolutePath, "-workDir", workDir))
+
+        assertEquals(expectedTemp, configs[0].tempDir?.canonicalPath)
     }
 
     @Test
@@ -301,11 +321,11 @@ class ConfigParserTest {
 
         val file = prepareMockFile(null)
 
-        val configs = mConfigParser!!.fromArguments(
+        val configs = mConfigParser.fromArguments(
                 arrayOf(file.absolutePath, "--force", "-cs", EXPORT_NEW_PLATFORM.strValue,
-                        "-delay", java.lang.Long.toString(delay)))
+                        "-delay", delay.toString()))
 
-        assertEquals(1, configs.size.toLong())
+        assertEquals(1, configs.size)
 
         val config = configs[0]
         assertTrue(config.isForceImport)
@@ -313,12 +333,55 @@ class ConfigParserTest {
         assertEquals(delay * ConfigParser.DELAY_MULT, config.delay)
     }
 
+
+    @Test(expected = InvalidConfigException::class)
+    @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
+    fun testNoLocaleColumns() {
+        val file = prepareMockFile(mapOf(
+            Pair(ConfigParser.LOCALES, null)
+        ))
+        mConfigParser.fromFile(file)
+    }
+
+    @Test(expected = InvalidConfigException::class)
+    @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
+    fun testEmptyLocaleColumns() {
+        val file = prepareMockFile(mapOf(
+            Pair(ConfigParser.LOCALES, JSONArray())
+        ))
+        mConfigParser.fromFile(file)
+    }
+
+    @Test
+    @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
+    fun testLocaleColumns() {
+        val input = arrayOf(arrayOf("locale_1", "locale_3"), arrayOf("locale_2"))
+        for (localeColumns in input) {
+            val file = prepareMockFile(mapOf(
+                Pair(ConfigParser.LOCALES, JSONArray().apply {
+                    addAll(localeColumns)
+                })
+            ))
+
+            val configs = mConfigParser.fromFile(file)
+
+            assertEquals(1, configs.size)
+            assertEquals(localeColumns.toSet(), configs[0].locales)
+        }
+    }
+
     @Throws(IOException::class)
-    private fun prepareMockFile(configMap: Map<String, Any>?): File {
+    private fun prepareMockFile(configMap: Map<String, Any?>?): File {
         val file = tempFolder.newFile()
         val json = if (configMap != null) JSONObject(configMap) else JSONObject()
-        json.put(ConfigParser.PLATFORM, "mock")
-        json.put(ConfigParser.SOURCE, "mock")
+        json[ConfigParser.PLATFORM] = "mock"
+        json[ConfigParser.SOURCE] = "mock"
+
+        if (configMap?.contains(ConfigParser.LOCALES) != true) {
+            json[ConfigParser.LOCALES] = JSONArray().apply {
+                add(Resources.BASE_LOCALE)
+            }
+        }
 
         val writer = PrintWriter(file)
         writer.write(json.toJSONString())
@@ -335,8 +398,15 @@ class ConfigParserTest {
 
         for (map in configMaps) {
             val json = JSONObject(map)
-            json.put(ConfigParser.PLATFORM, "mock")
-            json.put(ConfigParser.SOURCE, "mock")
+            json[ConfigParser.PLATFORM] = "mock"
+            json[ConfigParser.SOURCE] = "mock"
+
+            if (!map.contains(ConfigParser.LOCALES)) {
+                json[ConfigParser.LOCALES] = JSONArray().apply {
+                    add(Resources.BASE_LOCALE)
+                }
+            }
+
             jsonArray.add(json)
         }
 
@@ -352,7 +422,7 @@ class ConfigParserTest {
     private fun prepareMockFileNoSource(): File {
         val file = tempFolder.newFile()
         val json = JSONObject()
-        json.put(ConfigParser.PLATFORM, "mock")
+        json[ConfigParser.PLATFORM] = "mock"
 
         PrintWriter(file).apply {
             write(json.toJSONString())
@@ -366,7 +436,7 @@ class ConfigParserTest {
     private fun prepareMockFileNoPlatform(): File {
         val file = tempFolder.newFile()
         val json = JSONObject()
-        json.put(ConfigParser.SOURCE, "mock")
+        json[ConfigParser.SOURCE] = "mock"
 
         PrintWriter(file).apply {
             write(json.toJSONString())

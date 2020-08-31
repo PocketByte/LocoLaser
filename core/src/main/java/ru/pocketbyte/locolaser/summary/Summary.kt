@@ -6,8 +6,8 @@
 package ru.pocketbyte.locolaser.summary
 
 import ru.pocketbyte.locolaser.config.Config
-import ru.pocketbyte.locolaser.resource.PlatformResources
-import ru.pocketbyte.locolaser.utils.JsonParseUtils
+import ru.pocketbyte.locolaser.resource.Resources
+import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 import org.json.simple.JSONObject
 import org.json.simple.parser.ParseException
 
@@ -23,7 +23,6 @@ import java.util.HashMap
 class Summary private constructor(file: File?) {
 
     companion object {
-        const val SOURCE_MODIFIED_DATE = "SOURCE_MODIFIED_DATE"
         const val CONFIG_FILE = "CONFIG_FILE"
         const val RESOURCE_FILES = "RESOURCE_FILES"
 
@@ -55,7 +54,7 @@ class Summary private constructor(file: File?) {
 
                 if (summaryFile != null)
                     try {
-                        val reader = FileReader(summaryFile)
+                        val reader = BufferedReader(InputStreamReader(FileInputStream(summaryFile), "UTF-8"))
                         summary = Summary(summaryFile, JsonParseUtils.JSON_PARSER.parse(reader) as JSONObject)
                         reader.close()
                     } catch (e: ParseException) {
@@ -79,7 +78,6 @@ class Summary private constructor(file: File?) {
     var configSummary: FileSummary? = null
         private set
 
-    var sourceModifiedDate: Long = 0
     private val mResourceSummaries = HashMap<String, FileSummary>()
 
     init {
@@ -100,7 +98,6 @@ class Summary private constructor(file: File?) {
     constructor(file: File?, json: JSONObject?) : this(file) {
 
         if (json != null) {
-            sourceModifiedDate = (json[SOURCE_MODIFIED_DATE] as? Number)?.toLong() ?: sourceModifiedDate
             configSummary = (json[CONFIG_FILE] as? JSONObject)?.let { FileSummary(it) } ?: configSummary
 
             (json[RESOURCE_FILES] as? JSONObject)?.entries
@@ -125,13 +122,19 @@ class Summary private constructor(file: File?) {
         return true
     }
 
-    fun isResourceLocaleChanged(resources: PlatformResources, locale: String): Boolean {
-        val fileSummary = getResourceSummary(locale)
-        return fileSummary == null || fileSummary != resources.summaryForLocale(locale)
+    fun isLocaleChanged(
+            resources: Resources?,
+            sources: Resources?,
+            locale: String
+    ): Boolean {
+        val fileSummary = getResourceSummary(locale) ?: return true
+        val resourcesSummary = resources?.summaryForLocale(locale)
+        val sourcesSummary = sources?.summaryForLocale(locale)
+        return fileSummary != (resourcesSummary + sourcesSummary)
     }
 
-    fun isConfigFileChanged(configFile: File): Boolean {
-        return configSummary == null || !configSummary!!.equalsToFile(configFile)
+    fun isConfigFileChanged(configFile: File?): Boolean {
+        return !(configSummary?.equalsToFile(configFile) ?: false)
     }
 
     fun setResourceSummary(locale: String, summary: FileSummary) {
@@ -165,7 +168,6 @@ class Summary private constructor(file: File?) {
         val json = JSONObject()
 
         json[CONFIG_FILE] = configSummary!!.toJson()
-        json[SOURCE_MODIFIED_DATE] = sourceModifiedDate
 
         val resourceFilesJson = JSONObject()
         for (local in mResourceSummaries.keys) {

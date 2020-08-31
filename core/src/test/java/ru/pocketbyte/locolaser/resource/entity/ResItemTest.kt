@@ -15,20 +15,20 @@ import org.junit.Assert.*
  */
 class ResItemTest {
 
-    private var resKey: String? = null
-    private var resItem: ResItem? = null
+    private lateinit var resKey: String
+    private lateinit var resItem: ResItem
 
     @Before
     fun init() {
         resKey = "res_key"
-        resItem = ResItem(resKey!!)
+        resItem = ResItem(resKey)
     }
 
     @Test
     @Throws(Exception::class)
     fun testItemConstructor() {
-        assertEquals(resKey, resItem!!.key)
-        assertEquals(0, resItem!!.values.size.toLong())
+        assertEquals(resKey, resItem.key)
+        assertEquals(0, resItem.values.size)
     }
 
     @Test
@@ -36,10 +36,10 @@ class ResItemTest {
     fun testAddValue() {
         val value = ResValue("value", null, Quantity.OTHER)
 
-        assert(resItem!!.addValue(value))
+        assert(resItem.addValue(value))
 
-        assertEquals(1, resItem!!.values.size.toLong())
-        assertEquals(value, resItem!!.values[0])
+        assertEquals(1, resItem.values.size)
+        assertEquals(value, resItem.values[0])
     }
 
     @Test
@@ -48,12 +48,12 @@ class ResItemTest {
         val value1 = ResValue("value1", null, Quantity.FEW)
         val value2 = ResValue("value2", "Comment", Quantity.FEW)
 
-        assert(resItem!!.addValue(value1))
-        assert(!resItem!!.addValue(value2))
+        assert(resItem.addValue(value1))
+        assert(!resItem.addValue(value2))
 
-        assertEquals(1, resItem!!.values.size.toLong())
-        assertNotEquals(value1, resItem!!.values[0])
-        assertEquals(value2, resItem!!.values[0])
+        assertEquals(1, resItem.values.size)
+        assertNotEquals(value1, resItem.values[0])
+        assertEquals(value2, resItem.values[0])
     }
 
     @Test
@@ -62,13 +62,13 @@ class ResItemTest {
         val value1 = ResValue("value1", null, Quantity.MANY)
         val value2 = ResValue("value2", "Comment", Quantity.FEW)
 
-        assert(resItem!!.addValue(value1))
-        assert(resItem!!.addValue(value2))
+        assert(resItem.addValue(value1))
+        assert(resItem.addValue(value2))
 
-        assertEquals(2, resItem!!.values.size.toLong())
+        assertEquals(2, resItem.values.size)
 
-        assertEquals(value1, resItem!!.values[0])
-        assertEquals(value2, resItem!!.values[1])
+        assertEquals(value1, resItem.values[0])
+        assertEquals(value2, resItem.values[1])
     }
 
     @Test
@@ -77,12 +77,12 @@ class ResItemTest {
         val value1 = ResValue("value1", null, Quantity.MANY)
         val value2 = ResValue("value2", "Comment", Quantity.FEW)
 
-        resItem!!.addValue(value1)
-        resItem!!.addValue(value2)
+        resItem.addValue(value1)
+        resItem.addValue(value2)
 
-        assertEquals(value1, resItem!!.valueForQuantity(value1.quantity))
-        assertEquals(value2, resItem!!.valueForQuantity(value2.quantity))
-        assertNull(resItem!!.valueForQuantity(Quantity.ONE))
+        assertEquals(value1, resItem.valueForQuantity(value1.quantity))
+        assertEquals(value2, resItem.valueForQuantity(value2.quantity))
+        assertNull(resItem.valueForQuantity(Quantity.ONE))
     }
 
     @Test
@@ -91,19 +91,19 @@ class ResItemTest {
         val value1 = ResValue("value1", null, Quantity.MANY)
         val value2 = ResValue("value2", "Comment", Quantity.FEW)
 
-        resItem!!.addValue(value1)
-        resItem!!.addValue(value2)
+        resItem.addValue(value1)
+        resItem.addValue(value2)
 
-        assert(resItem!!.removeValue(value1))
-        assertEquals(1, resItem!!.values.size.toLong())
-        assertNull(resItem!!.valueForQuantity(value1.quantity))
-        assertEquals(value2, resItem!!.valueForQuantity(value2.quantity))
-        assertEquals(value2, resItem!!.values[0])
+        assert(resItem.removeValue(value1))
+        assertEquals(1, resItem.values.size)
+        assertNull(resItem.valueForQuantity(value1.quantity))
+        assertEquals(value2, resItem.valueForQuantity(value2.quantity))
+        assertEquals(value2, resItem.values[0])
 
-        assert(!resItem!!.removeValue(value1))
-        assertEquals(1, resItem!!.values.size.toLong())
-        assertEquals(value2, resItem!!.valueForQuantity(value2.quantity))
-        assertEquals(value2, resItem!!.values[0])
+        assert(!resItem.removeValue(value1))
+        assertEquals(1, resItem.values.size)
+        assertEquals(value2, resItem.valueForQuantity(value2.quantity))
+        assertEquals(value2, resItem.values[0])
     }
 
     @Test
@@ -112,41 +112,41 @@ class ResItemTest {
         val value1 = ResValue("value1", null, Quantity.MANY)
         val value2 = ResValue("value2", "Comment", Quantity.FEW)
 
-        resItem!!.addValue(value1)
-        resItem!!.addValue(value2)
+        resItem.addValue(value1)
+        resItem.addValue(value2)
 
-        assertEquals(value1, resItem!!.removeValueForQuantity(value1.quantity))
-        assertEquals(1, resItem!!.values.size.toLong())
-        assertNull(resItem!!.valueForQuantity(value1.quantity))
-        assertEquals(value2, resItem!!.valueForQuantity(value2.quantity))
-        assertEquals(value2, resItem!!.values[0])
+        assertEquals(value1, resItem.removeValueForQuantity(value1.quantity))
+        assertEquals(1, resItem.values.size)
+        assertNull(resItem.valueForQuantity(value1.quantity))
+        assertEquals(value2, resItem.valueForQuantity(value2.quantity))
+        assertEquals(value2, resItem.values[0])
 
-        assertNull(resItem!!.removeValueForQuantity(value1.quantity))
-        assertEquals(1, resItem!!.values.size.toLong())
-        assertEquals(value2, resItem!!.valueForQuantity(value2.quantity))
-        assertEquals(value2, resItem!!.values[0])
+        assertNull(resItem.removeValueForQuantity(value1.quantity))
+        assertEquals(1, resItem.values.size)
+        assertEquals(value2, resItem.valueForQuantity(value2.quantity))
+        assertEquals(value2, resItem.values[0])
     }
 
     @Test
     @Throws(Exception::class)
     fun testIsHasQuantities() {
-        assert(!resItem!!.isHasQuantities)
+        assert(!resItem.isHasQuantities)
 
-        resItem!!.addValue(ResValue("Value1", null, Quantity.OTHER))
+        resItem.addValue(ResValue("Value1", null, Quantity.OTHER))
 
-        assert(!resItem!!.isHasQuantities)
+        assert(!resItem.isHasQuantities)
 
-        resItem!!.addValue(ResValue("Value1", null, Quantity.MANY))
+        resItem.addValue(ResValue("Value1", null, Quantity.MANY))
 
-        assert(resItem!!.isHasQuantities)
+        assert(resItem.isHasQuantities)
 
-        resItem!!.removeValueForQuantity(Quantity.OTHER)
+        resItem.removeValueForQuantity(Quantity.OTHER)
 
-        assert(resItem!!.isHasQuantities)
+        assert(resItem.isHasQuantities)
 
-        resItem!!.removeValueForQuantity(Quantity.MANY)
+        resItem.removeValueForQuantity(Quantity.MANY)
 
-        assert(!resItem!!.isHasQuantities)
+        assert(!resItem.isHasQuantities)
     }
 
     @Test
@@ -155,11 +155,11 @@ class ResItemTest {
         val value1 = ResValue("value1", null, Quantity.OTHER)
         val value2 = ResValue("value2", "Comment", Quantity.FEW)
         val value3 = ResValue("value3", "Comment2", Quantity.ZERO)
-        resItem!!.addValue(value1)
-        resItem!!.addValue(value2)
-        resItem!!.addValue(value3)
+        resItem.addValue(value1)
+        resItem.addValue(value2)
+        resItem.addValue(value3)
 
-        val resItem2 = ResItem(resItem!!.key + "_") // Merge should work independent from res key
+        val resItem2 = ResItem(resItem.key + "_") // Merge should work independent from res key
         val value4 = ResValue("value4", null, Quantity.OTHER)
         val value5 = ResValue("value5", "Comment", Quantity.FEW)
         val value6 = ResValue("value6", "Comment2", Quantity.TWO)
@@ -167,15 +167,42 @@ class ResItemTest {
         resItem2.addValue(value5)
         resItem2.addValue(value6)
 
-        assert(resItem!!.merge(resItem2) === resItem)
+        assert(resItem.merge(resItem2) === resItem)
 
-        assertEquals(4, resItem!!.values.size.toLong())
-        assertNotEquals(value1, resItem!!.valueForQuantity(Quantity.OTHER))
-        assertNotEquals(value2, resItem!!.valueForQuantity(Quantity.FEW))
-        assertEquals(value3, resItem!!.valueForQuantity(Quantity.ZERO))
-        assertEquals(value4, resItem!!.valueForQuantity(Quantity.OTHER))
-        assertEquals(value5, resItem!!.valueForQuantity(Quantity.FEW))
-        assertEquals(value6, resItem!!.valueForQuantity(Quantity.TWO))
+        assertEquals(4, resItem.values.size)
+        assertNotEquals(value1, resItem.valueForQuantity(Quantity.OTHER))
+        assertNotEquals(value2, resItem.valueForQuantity(Quantity.FEW))
+        assertEquals(value3, resItem.valueForQuantity(Quantity.ZERO))
+        assertEquals(value4, resItem.valueForQuantity(Quantity.OTHER))
+        assertEquals(value5, resItem.valueForQuantity(Quantity.FEW))
+        assertEquals(value6, resItem.valueForQuantity(Quantity.TWO))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testMergeWithMeta() {
+        val value1 = ResValue("value1", null, Quantity.OTHER, meta = mapOf(Pair("DATA_2", "n3")))
+        val value2 = ResValue("value2", "Comment", Quantity.FEW, meta = mapOf(Pair("DATA", "123"), Pair("MET_2", "55")))
+        val value3 = ResValue("value3", "Comment2", Quantity.ZERO)
+        resItem.addValue(value1)
+        resItem.addValue(value2)
+        resItem.addValue(value3)
+
+        val resItem2 = ResItem(resItem.key + "_2") // Merge should work independent from res key
+        val value4 = ResValue("value4", null, Quantity.OTHER)
+        val value5 = ResValue("value5", "Comment", Quantity.FEW, meta = mapOf(Pair("MET", "val3"), Pair("DATA", "new")))
+        resItem2.addValue(value4)
+        resItem2.addValue(value5)
+
+        assert(resItem.merge(resItem2) === resItem)
+        assertEquals(3, resItem.values.size)
+        assertEquals(
+                ResValue("value4", null, Quantity.OTHER, meta = mapOf(Pair("DATA_2", "n3"))),
+                resItem.valueForQuantity(Quantity.OTHER))
+        assertEquals(
+                ResValue("value5", "Comment", Quantity.FEW, meta = mapOf(Pair("MET", "val3"), Pair("MET_2", "55"), Pair("DATA", "new"))),
+                resItem.valueForQuantity(Quantity.FEW))
+        assertEquals(value3, resItem.valueForQuantity(Quantity.ZERO))
     }
 
     @Test

@@ -78,12 +78,11 @@ class ResItem(
     fun merge(item: ResItem?): ResItem {
         if (item != null) {
             for (value2 in item.mutableValues) {
-
                 val value1 = this.valueForQuantity(value2.quantity)
                 if (value1 != null) {
                     this.removeValue(value1)
                 }
-                this.addValue(value2)
+                value1.merge(value2)?.let { this.addValue(it) }
             }
         }
         return this

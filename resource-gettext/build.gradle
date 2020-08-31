@@ -1,0 +1,108 @@
+apply plugin: "org.jetbrains.kotlin.jvm"
+apply plugin: 'kotlin'
+apply plugin: "maven-publish"
+apply plugin: 'com.jfrog.bintray'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    noJarCompile project(':core')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+
+jar {
+    // Include all libraries into result JAR file.
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+task generateJavadocs(type: Javadoc) {
+    source {
+        sourceSets.main.allJava
+    }
+    failOnError = false
+}
+
+task sourceDoc(type: Jar, dependsOn: generateJavadocs) {
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        locolaserPublication(MavenPublication) {
+            from components.java
+            groupId 'ru.pocketbyte.locolaser'
+            artifactId project.name
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.remove(root.get('dependencies'))
+                def dependencies = root.appendNode('dependencies')
+
+                // Add core dependency
+                def coreDependency = dependencies.appendNode('dependency')
+                coreDependency.appendNode('groupId', 'ru.pocketbyte.locolaser')
+                coreDependency.appendNode('artifactId', 'core')
+                coreDependency.appendNode('version', project.version)
+                coreDependency.appendNode('scope', 'runtime')
+            }
+            artifact sourceJar {
+                classifier "sources"
+            }
+            artifact sourceDoc {
+                classifier "javadoc"
+            }
+        }
+    }
+}
+
+bintray {
+    publish = project.bintray_publish
+    override = project.bintray_override
+    user = project.bintray_user
+    key = project.bintray_key
+
+    pkg {
+        repo = 'maven'
+        name = "locolaser-${project.name}"
+        userOrg = 'pocketbyte'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/PocketByte/LocoLaser.git'
+        websiteUrl = 'https://github.com/PocketByte/LocoLaser'
+        issueTrackerUrl = 'https://github.com/PocketByte/LocoLaser/issue'
+        version {
+            name = project.version
+            desc = 'Implementation of platform for LocoLaser tool to work with gettext resources.'
+            released  = new Date()
+            vcsTag = project.version
+            gpg.passphrase = project.properties.get("bintray.publish.gpgPassphrase")
+        }
+        publications = ['locolaserPublication']
+    }
+}
+buildscript {
+    ext.kotlin_version = '1.2.71'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

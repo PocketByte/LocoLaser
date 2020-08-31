@@ -1,10 +1,10 @@
 package ru.pocketbyte.locolaser.platform.ini
 
-import ru.pocketbyte.locolaser.config.platform.BasePlatformConfig
+import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.platform.ini.resource.IniResources
-import ru.pocketbyte.locolaser.resource.PlatformResources
+import ru.pocketbyte.locolaser.resource.Resources
 
-class IniPlatformConfig : BasePlatformConfig() {
+class IniPlatformConfig : BaseResourcesConfig() {
 
     companion object {
         const val TYPE = "ini"
@@ -22,7 +22,7 @@ class IniPlatformConfig : BasePlatformConfig() {
     override val defaultResourceName: String
         get() = "data"
 
-    override val resources: PlatformResources
-        get() = IniResources(resourcesDir!!, resourceName!!)
+    override val resources: Resources
+        get() = IniResources(resourcesDir!!, resourceName!!, filter)
 
 }

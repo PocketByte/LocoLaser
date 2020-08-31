@@ -6,17 +6,12 @@
 package ru.pocketbyte.locolaser
 
 import ru.pocketbyte.locolaser.config.Config
-import ru.pocketbyte.locolaser.config.platform.PlatformConfig
-import ru.pocketbyte.locolaser.config.source.Source
-import ru.pocketbyte.locolaser.config.source.SourceConfig
-import ru.pocketbyte.locolaser.resource.PlatformResources
-import ru.pocketbyte.locolaser.resource.entity.ResLocale
+import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
-import ru.pocketbyte.locolaser.resource.entity.ResValue
-import ru.pocketbyte.locolaser.resource.entity.ResItem
+import ru.pocketbyte.locolaser.resource.entity.merge
 import ru.pocketbyte.locolaser.summary.Summary
+import ru.pocketbyte.locolaser.summary.plus
 import ru.pocketbyte.locolaser.utils.LogUtils
-
 import java.io.IOException
 import java.util.*
 
@@ -42,16 +37,10 @@ object LocoLaser {
     private fun localizeInner(config: Config?): Boolean {
         if (config == null)
             throw IllegalArgumentException("Config must be not null")
-        if (config.platform == null)
-            throw IllegalArgumentException("Config platform must be not null")
-        if (config.sourceConfig == null)
-            throw IllegalArgumentException("Config source must be not null")
-
-        val platform = config.platform
-        val resources = platform!!.resources
 
         val summary = Summary.loadSummary(config)
-        val isConfigFileChanged = summary == null || summary.isConfigFileChanged(config.file!!)
+        val isConfigFileChanged = summary?.isConfigFileChanged(config.file) ?: true
+        val isRefreshAll = config.isForceImport || isConfigFileChanged
 
         if (summary != null) {
             if (config.isForceImport)
@@ -64,38 +53,25 @@ object LocoLaser {
             }
         }
 
-        LogUtils.info("Conflict strategy: " + config.conflictStrategy!!.toString())
+        LogUtils.info("Conflict strategy: " + config.conflictStrategy.toString())
 
-        var isRefreshAll = config.isForceImport || isConfigFileChanged
+        val sourceConfig = config.sourceConfig ?: throw IllegalArgumentException("Config source must be not null")
+        val platformConfig = config.platform ?: throw IllegalArgumentException("Config platform must be not null")
 
-        val sourceConfig = config.sourceConfig
-        val source = sourceConfig!!.open() ?: return false
-
-        val sourceModifiedDate = source.modifiedDate
-
-        val isSourceChanged = summary == null
-                || summary.sourceModifiedDate == 0L
-                || sourceModifiedDate != summary.sourceModifiedDate
-
-        if (summary != null)
-            summary.sourceModifiedDate = sourceModifiedDate
-
-        if (!isRefreshAll) {
-            if (isSourceChanged) {
-                LogUtils.info("Source was changed. All resource files will be refreshed.")
-                isRefreshAll = true
-            } else
-                LogUtils.info("Source have not been changed since the last import. Only modified resource files will be refreshed.")
-        }
+        val resources = platformConfig.resources
+        val source = sourceConfig.resources ?: return false
 
         // Prepare resource files
         var isHaveFileToTranslate = false
         val resourcesToIgnore = HashSet<String>() // set of locales
         val resourcesToLocalize = HashSet<String>() // set of locales
-        for (locale in sourceConfig.locales) {
+        for (locale in config.locales) {
             if (!resourcesToLocalize.contains(locale)) {
-                val isResourceFileChanged = summary == null || summary.isResourceLocaleChanged(resources, locale)
-                if (isRefreshAll || isResourceFileChanged) {
+                val isLocaleChanged =
+                        isRefreshAll ||
+                        summary == null ||
+                        summary.isLocaleChanged(resources, source, locale)
+                if (isLocaleChanged) {
                     isHaveFileToTranslate = true
                     resourcesToLocalize.add(locale)
                     resourcesToIgnore.remove(locale)
@@ -121,9 +97,7 @@ object LocoLaser {
 
             // =================================
             // Read source values
-            val result = source.read()
-            val missedList = result.missedValues
-            var sourceResMap = result.items
+            val sourceResMap = source.read(config.locales, ExtraParams())
 
             if (sourceResMap == null && config.conflictStrategy !== Config.ConflictStrategy.EXPORT_NEW_PLATFORM) {
                 LogUtils.info("Source is empty. Localization stopped.")
@@ -132,92 +106,54 @@ object LocoLaser {
 
             // Remove ignored resources
             for (locale in resourcesToIgnore) {
-                sourceResMap!!.remove(locale)
+                sourceResMap?.remove(locale)
             }
 
+            var mergedResMap: ResMap? = null
             // =================================
             // Export local resources if needed
             if (config.conflictStrategy !== Config.ConflictStrategy.REMOVE_PLATFORM) {
 
                 // Read local files
-                val oldResMap = resources.read(resourcesToLocalize).remove(sourceResMap)
+                val localResMap = resources.read(resourcesToLocalize, ExtraParams())
 
-                // First part. Find missed values
-                val foundResMaps = HashMap<Source, ResMap>()
-                if (missedList != null)
-                    for (missed in missedList) {
-                        val oldResLocale = oldResMap[missed.locale]
-                        if (oldResLocale != null) {
-                            val oldResItem = oldResLocale[missed.key]
-                            if (oldResItem != null) {
-
-                                val oldResValue = oldResItem.valueForQuantity(missed.quantity)
-
-                                if (oldResValue != null) {
-                                    oldResValue.location = missed.location
-
-                                    var foundResMap: ResMap? = foundResMaps[missed.location.source]
-
-                                    if (foundResMap == null) {
-                                        foundResMap = ResMap()
-                                        foundResMaps[missed.location.source] = foundResMap
-                                    }
-                                    var foundResLocale: ResLocale? = foundResMap[missed.locale]
-                                    if (foundResLocale == null) {
-                                        foundResLocale = ResLocale()
-                                        foundResMap[missed.locale] = foundResLocale
-                                    }
-
-                                    var foundResItem: ResItem? = foundResLocale[oldResItem.key]
-                                    if (foundResItem == null) {
-                                        foundResItem = ResItem(oldResItem.key)
-                                        foundResLocale.put(foundResItem)
-                                    }
-
-                                    foundResItem.addValue(oldResValue)
-                                    oldResItem.removeValue(oldResValue)
-
-                                    if (oldResItem.values.isEmpty())
-                                        oldResLocale.remove(oldResItem.key)
-                                }
-                            }
-                        }
+                when (config.conflictStrategy) {
+                    Config.ConflictStrategy.KEEP_NEW_PLATFORM,
+                    Config.ConflictStrategy.EXPORT_NEW_PLATFORM -> {
+                        mergedResMap = localResMap.merge(sourceResMap)
                     }
-                for ((key, value) in foundResMaps) {
-                    if (config.conflictStrategy === Config.ConflictStrategy.EXPORT_NEW_PLATFORM && value.size > 0) {
-                        // Key is Source
-                        key.write(value)
+                    Config.ConflictStrategy.KEEP_PLATFORM,
+                    Config.ConflictStrategy.EXPORT_PLATFORM -> {
+                        mergedResMap = sourceResMap.merge(localResMap)
                     }
-
-                    // Save into new map
-                    sourceResMap = sourceResMap?.merge(value) ?: value
+                    else -> { /* Do nothing */ }
                 }
 
-                // Second part. Export other values into the first source.
-                if (config.conflictStrategy === Config.ConflictStrategy.EXPORT_NEW_PLATFORM && oldResMap.size > 0) {
-                    source.write(oldResMap)
+                if (mergedResMap != null && config.conflictStrategy.isExportStrategy) {
+                    source.write(mergedResMap, null)
                 }
-
-                // Save other local items into map
-                sourceResMap = oldResMap.merge(sourceResMap)
+            } else {
+                mergedResMap = sourceResMap
             }
 
             // =================================
             // Write resource files
-            try {
-                resources.write(sourceResMap!!, config.writingConfig)
-            } catch (e: IOException) {
-                LogUtils.err(e)
-                return false
-            }
+            if (mergedResMap != null) {
+                try {
+                    resources.write(mergedResMap, config.extraParams)
+                } catch (e: IOException) {
+                    LogUtils.err(e)
+                    return false
+                }
 
-            for ((locale) in sourceResMap) {
-                // entry.key = locale, entry.value = strings of the locale
-
-                if (resourcesToLocalize.contains(locale)) {
-
-                    // Getting new summary
-                    summary?.setResourceSummary(locale, resources.summaryForLocale(locale))
+                for ((locale) in mergedResMap) {
+                    // entry.key = locale, entry.value = strings of the locale
+                    if (resourcesToLocalize.contains(locale)) {
+                        // Getting new summary
+                        (resources.summaryForLocale(locale) + source.summaryForLocale(locale))?.let {
+                            summary?.setResourceSummary(locale, it)
+                        }
+                    }
                 }
             }
 
@@ -228,10 +164,6 @@ object LocoLaser {
                 summary.save()
             }
         }
-
-        // =================================
-        // Close sources
-        source.close()
 
         return true
     }

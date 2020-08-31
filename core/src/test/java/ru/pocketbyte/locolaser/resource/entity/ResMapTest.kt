@@ -22,7 +22,7 @@ class ResMapTest {
 
         assert(resMap1.merge(resMap2) === resMap1)
 
-        assertEquals(4, resMap1.size.toLong())
+        assertEquals(4, resMap1.size)
         assertEquals(prepareResLocale1().merge(prepareResLocale2()), resMap1["locale1"])
         assertEquals(prepareResLocale2().merge(prepareResLocale3()), resMap1["locale2"])
         assertEquals(prepareResLocale3(), resMap1["locale3"])
@@ -40,7 +40,7 @@ class ResMapTest {
 
         assert(resMap1.remove(resMap2) === resMap1)
 
-        assertEquals(3, resMap1.size.toLong())
+        assertEquals(3, resMap1.size)
         assertEquals(prepareResLocale1().remove(prepareResLocale2()), resMap1["locale1"])
         assertEquals(prepareResLocale2().remove(prepareResLocale3()), resMap1["locale2"])
         assertEquals(prepareResLocale3(), resMap1["locale3"])
@@ -60,6 +60,32 @@ class ResMapTest {
     fun testCloneNullMap() {
         val resMap = ResMap(null)
         assertTrue(resMap.isEmpty())
+    }
+
+    @Test
+    fun testFilter() {
+        val resMap = prepareResMap1().filter { it.contains("3") ||it.contains("1")  }
+
+        val locale1 = resMap["locale1"]
+        assertEquals(2, locale1!!.size)
+        assertNotNull(locale1["key1"])
+        assertNull(locale1["key2"])
+        assertNotNull(locale1["key3"])
+        assertNull(locale1["key4"])
+
+        val locale2 = resMap["locale2"]
+        assertEquals(2, locale2!!.size)
+        assertNotNull(locale2["key1"])
+        assertNull(locale2["key2"])
+        assertNotNull(locale2["key3"])
+        assertNull(locale2["key4"])
+
+        val locale3 = resMap["locale3"]
+        assertEquals(1, locale3!!.size)
+        assertNotNull(locale3["key1"])
+        assertNull(locale3["key2"])
+        assertNull(locale3["key3"])
+        assertNull(locale3["key4"])
     }
 
     private fun prepareResMap1(): ResMap {

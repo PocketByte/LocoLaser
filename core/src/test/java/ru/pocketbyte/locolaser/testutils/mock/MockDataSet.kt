@@ -5,7 +5,7 @@
 
 package ru.pocketbyte.locolaser.testutils.mock
 
-import ru.pocketbyte.locolaser.config.source.BaseTableSource
+import ru.pocketbyte.locolaser.resource.BaseTableResources
 
 import java.util.ArrayList
 import java.util.HashMap
@@ -17,18 +17,18 @@ class MockDataSet(locales: Array<String>) {
 
     private val mDataList = ArrayList<DataRow>()
     private val mLocalesCount: Int = locales.size
-    val columnIndexes: BaseTableSource.ColumnIndexes
+    val columnIndexes: BaseTableResources.ColumnIndexes
 
     init {
         val localeIndexes = HashMap<String, Int>(locales.size)
         for (i in 0 until mLocalesCount)
-            localeIndexes[locales[i]] = 4 + i
+            localeIndexes[locales[i]] = 5 + i
 
-        columnIndexes = BaseTableSource.ColumnIndexes(1, 2, 3, localeIndexes)
+        columnIndexes = BaseTableResources.ColumnIndexes(1, 2, 3, 4, localeIndexes)
     }
 
-    fun add(key: String, quantity: String?, comment: String?, locales: Array<String?>) {
-        mDataList.add(DataRow(key, quantity, comment, locales))
+    fun add(key: String, quantity: String?, comment: String?, locales: Array<String?>, metadata: String?) {
+        mDataList.add(DataRow(key, quantity, comment, locales, metadata))
     }
 
     operator fun get(col: Int, row: Int): String? {
@@ -38,8 +38,9 @@ class MockDataSet(locales: Array<String>) {
                 1 -> return dataRow.key
                 2 -> return dataRow.quantity
                 3 -> return dataRow.comment
-                else -> if (col >= 4 && col - 4 < dataRow.locales.size) {
-                    return dataRow.locales[col - 4]
+                4 -> return dataRow.metadata
+                else -> if (col >= 5 && col - 5 < dataRow.locales.size) {
+                    return dataRow.locales[col - 5]
                 }
             }
         }
@@ -50,5 +51,11 @@ class MockDataSet(locales: Array<String>) {
         return mDataList.size
     }
 
-    private class DataRow(val key: String, val quantity: String?, val comment: String?, val locales: Array<String?>)
+    private class DataRow(
+            val key: String,
+            val quantity: String?,
+            val comment: String?,
+            val locales: Array<String?>,
+            val metadata: String?
+    )
 }

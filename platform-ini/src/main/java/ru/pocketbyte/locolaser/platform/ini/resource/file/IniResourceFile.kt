@@ -1,8 +1,12 @@
 package ru.pocketbyte.locolaser.platform.ini.resource.file
 
-import ru.pocketbyte.locolaser.config.WritingConfig
+import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.File
 import java.io.IOException
@@ -12,7 +16,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.regex.Pattern
 
-class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStreamFile(file) {
+class IniResourceFile(file:File, private val mLocales:Set<String>?):ResourceStreamFile(file) {
 
     companion object {
 
@@ -40,7 +44,9 @@ class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStrea
         }
     }
 
-    override fun read():ResMap? {
+    override val formattingType: FormattingType = JavaFormattingType
+
+    override fun read(extraParams: ExtraParams?):ResMap? {
         if (file.exists())
         {
             val resMap = ResMap()
@@ -69,7 +75,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStrea
                             if (localeMatcher.find() && localeMatcher.groupCount() == 1) {
                                 currentLocale = localeMatcher.group(1)
 
-                                if (!mLocales.contains(currentLocale)) {
+                                if (mLocales?.contains(currentLocale) != true) {
                                     currentLocale = null
                                     continue
                                 }
@@ -106,8 +112,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStrea
                                     val value = pluralValueMatcher.group(3)
                                     if (key == pluralItem.key && quantity != null && value != null) {
                                         val commentString = comment?.toString()
-                                        pluralItem.addValue(ResValue(
-                                                fromPlatformValue(value), commentString, quantity))
+                                        pluralItem.addValue(value, commentString, quantity)
                                     }
                                     comment = null
                                     continue
@@ -133,7 +138,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStrea
                             if (keyValueMatcher.find() && keyValueMatcher.groupCount() == 2) {
                                 val commentString = comment?.toString()
                                 val item = ResItem(keyValueMatcher.group(1))
-                                item.addValue(ResValue(fromPlatformValue(keyValueMatcher.group(2)), commentString))
+                                item.addValue(keyValueMatcher.group(2), commentString, Quantity.OTHER)
                                 currentLocaleMap.put(item)
                                 comment = null
                                 continue
@@ -155,17 +160,14 @@ class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStrea
         return null
     }
 
-
-
     @Throws(IOException::class)
-    override fun write(resMap:ResMap, writingConfig:WritingConfig?) {
+    override fun write(resMap:ResMap, extraParams: ExtraParams?) {
         open()
 
         writeStringLn(GENERATED_COMMENT)
         writeln()
 
-        for (locale in mLocales)
-        {
+        for (locale in mLocales ?: return) {
 
             writeString("[")
             writeString(locale)
@@ -185,7 +187,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStrea
 
                         for (value in resItem.values)
                         {
-                            if (isCommentShouldBeWritten(value, writingConfig))
+                            if (isCommentShouldBeWritten(value, extraParams))
                             {
                                 writeString(COMMENT_SINGLE_LINE)
                                 writeString(" ")
@@ -203,7 +205,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStrea
                         val value = resItem.valueForQuantity(Quantity.OTHER)
                         if (value != null)
                         {
-                            if (isCommentShouldBeWritten(value, writingConfig))
+                            if (isCommentShouldBeWritten(value, extraParams))
                             {
                                 writeString(COMMENT_SINGLE_LINE)
                                 writeString(" ")
@@ -221,7 +223,13 @@ class IniResourceFile(file:File, private val mLocales:Set<String>):ResourceStrea
         close()
     }
 
-    private fun isCommentShouldBeWritten(value:ResValue, writingConfig:WritingConfig?):Boolean {
-        return value.comment != null && (writingConfig == null || writingConfig.isDuplicateComments || value.comment != value.value)
+    private fun isCommentShouldBeWritten(value:ResValue, extraParams: ExtraParams?):Boolean {
+        return value.comment != null && (extraParams?.duplicateComments != false || value.comment != value.value)
+    }
+
+    private fun ResItem.addValue(value: String, comment: String?, quantity: Quantity) {
+        val formattingArguments = formattingType.argumentsFromValue(value)
+        val formattingType = if (formattingArguments?.isEmpty() != false) NoFormattingType else formattingType
+        this.addValue(ResValue(value, comment, quantity, formattingType, formattingArguments))
     }
 }
