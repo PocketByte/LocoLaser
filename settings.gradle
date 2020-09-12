@@ -6,5 +6,5 @@ include 'resource-mobile'
 include 'resource-gettext'
 include 'resource-json'
 include 'resource-kotlin-mpp'
-include 'platform-ini'
+include 'resource-ini'
 

@@ -1,6 +1,6 @@
-package ru.pocketbyte.locolaser.platform.ini.resource
+package ru.pocketbyte.locolaser.ini.resource
 
-import ru.pocketbyte.locolaser.platform.ini.resource.file.IniResourceFile
+import ru.pocketbyte.locolaser.ini.resource.file.IniResourceFile
 import ru.pocketbyte.locolaser.resource.AbsResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType

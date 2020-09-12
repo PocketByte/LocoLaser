@@ -1,4 +1,4 @@
-package ru.pocketbyte.locolaser.platform.ini.resource.file
+package ru.pocketbyte.locolaser.ini.resource.file
 
 import org.junit.Assert.*
 import org.junit.Rule

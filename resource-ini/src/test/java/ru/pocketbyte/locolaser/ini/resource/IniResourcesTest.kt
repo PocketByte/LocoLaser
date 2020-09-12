@@ -1,4 +1,4 @@
-package ru.pocketbyte.locolaser.platform.ini.resource
+package ru.pocketbyte.locolaser.ini.resource
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull

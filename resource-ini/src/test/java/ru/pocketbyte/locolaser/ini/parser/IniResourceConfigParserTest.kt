@@ -1,4 +1,4 @@
-package ru.pocketbyte.locolaser.platform.ini.parser
+package ru.pocketbyte.locolaser.ini.parser
 
 import org.json.simple.JSONObject
 import org.junit.Assert.assertEquals
@@ -9,22 +9,22 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.platform.ini.IniPlatformConfig
+import ru.pocketbyte.locolaser.ini.IniPlatformConfig
 import java.io.File
 import java.io.IOException
 import java.util.*
 
-class IniPlatformConfigParserTest {
+class IniResourceConfigParserTest {
 
     @JvmField @Rule
     var tempFolder = TemporaryFolder()
 
-    private var parser: IniPlatformConfigParser? = null
+    private var parser: IniResourceConfigParser? = null
 
     @Before
     @Throws(IOException::class)
     fun init() {
-        parser = IniPlatformConfigParser()
+        parser = IniResourceConfigParser()
 
         val workDir = tempFolder.newFolder()
         System.setProperty("user.dir", workDir.canonicalPath)
@@ -87,8 +87,8 @@ class IniPlatformConfigParserTest {
     private fun prepareTestPlatformJson(): JSONObject {
         val json = JSONObject()
         json[ResourcesConfigParser.RESOURCE_TYPE] = IniPlatformConfig.TYPE
-        json[IniPlatformConfigParser.RESOURCE_NAME] = "test_res"
-        json[IniPlatformConfigParser.RESOURCES_DIR] = "test_res_dir"
+        json[IniResourceConfigParser.RESOURCE_NAME] = "test_res"
+        json[IniResourceConfigParser.RESOURCES_DIR] = "test_res_dir"
         return json
     }
 }

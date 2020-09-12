@@ -1,14 +1,14 @@
-package ru.pocketbyte.locolaser.platform.ini.parser
+package ru.pocketbyte.locolaser.ini.parser
 
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.platform.ini.IniPlatformConfig
+import ru.pocketbyte.locolaser.ini.IniPlatformConfig
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
-class IniPlatformConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
+class IniResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
     companion object {
         const val RESOURCE_NAME = "res_name"
