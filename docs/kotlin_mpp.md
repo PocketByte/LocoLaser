@@ -16,7 +16,7 @@ Each platform implements following interface using corresponded platform depende
 ### Gradle dependency
 ```gradle
 dependencies {
-    localize 'ru.pocketbyte.locolaser:platform-kotlin-mobile:1.4.0'
+    localize 'ru.pocketbyte.locolaser:resource-kotlin-mobile:2.0.0'
 }
 ```
 
@@ -106,6 +106,7 @@ Here is the example of full config:
         }
     ],
     "source": "null",
+    "locales" : ["base"],
     "temp_dir": "./build/temp/"
 }
 ```

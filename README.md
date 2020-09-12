@@ -1,11 +1,12 @@
 # LocoLaser
-LocoLaser - Localization tool to import localized strings from external source to your project. Utility support following platforms and sources:
-- Platform Android: strings.xml
-- Platform iOS: Localizable.strings
-- Platform GetText: messages.pom
-- Platform Java Script i18next: strings.json
-- Platform Kotlin Multiplatfor: Generates repository classes for Android, iOS, macOS and JavaSript that can be used in common code.
-- Source Google Sheets
+LocoLaser - Localization tool to import localized strings from external source to your project. Utility support following resource types:
+- Android resources: strings.xml
+- iOS resources: Localizable.strings
+- GetText resources: messages.pom
+- Java Script i18next: strings.json
+- Kotlin Multiplatfor: Generates repository classes for Android, iOS, macOS and JavaSript that can be used in common code.
+- Google Sheets
+- INI File
 
 
 ##### Related Git's
@@ -22,9 +23,9 @@ Example of Android config that gets strings from Google Sheets:
     "source" : {
         "type" : "googlesheet",
         "column_key" : "key",
-        "column_locales" : ["en", "fi"],
         "id" : "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
     },
+    "locales" : ["en", "fi"],
     "delay" : 30
 }
 ```

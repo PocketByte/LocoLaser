@@ -1,14 +1,14 @@
-# Platform: Android and iOS
+# Resorces: Android and iOS
 
 ### Gradle dependency
 ```gradle
 dependencies {
-    localize 'ru.pocketbyte.locolaser:platform-mobile:1.4.0'
+    localize 'ru.pocketbyte.locolaser:resource-mobile:2.0.0'
 }
 ```
 
 ### Config
-Mobile Platform can be defined by single string or by JSON object. In case of string you can use following values:
+Mobile Resources can be defined by single string or by JSON object. In case of string you can use following values:
 - *`android`* - Adroid platform (Android XML Resource files). Default temp folder: "./build/tmp/";
 - *`ios`* - iOS platform. (iOS string resource files). Default temp folder: "../DerivedData/LocoLaserTemp/".
 
@@ -53,14 +53,12 @@ Properties description:<br>
 Example of iOS config that generates Swift Class (*`Str.swift`*) depends on String resources:
 ```json
 {
-    "platform" : [
-        "ios",
-        {
-            "type" : "ios_swift",
-            "res_dir": "./utils/"
-        }
-    ],
-    "source" : null,
+    "platform" : {
+        "type" : "ios_swift",
+        "res_dir": "./utils/"
+    },
+    "source" : "ios",
+    "locales" : ["base"],
     "delay" : 30
 }
 ```

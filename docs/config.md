@@ -1,10 +1,11 @@
 # LocoLaser Config
 
-Config is a file with JSON object that must contain configuration of platform and source:
+Config is a file with JSON object that must contain configuration of resources (platform and source):
 ```
 {
     "platform" : (String, JSON object or Array of Strings and JSON objects),
     "source" : (String, JSON object or Array of Strings and JSON objects),
+    "locales" : (Array of strings),
     "conflict_strategy" : (
         "remove_platform"   |
         "keep_new_platform" |
@@ -17,19 +18,23 @@ Config is a file with JSON object that must contain configuration of platform an
     "delay" : (Integer value)
 }
 ```
-##### Platform
-Platform can be defined by single string("android", "ios" etc.), by JSON object that represent configured platform or 
-by Array of platforms that can contain both Strings and JSON objects.<br>
-Currently LocoLaser support following platforms:
-- [Platform: Android and iOS](mobile.md)
-- [Platform: Kotlin Mobile Multiplatform](kotlin_mpp.md)
-##### Source
-Source can be defined by single string("android", "ios" etc.), by JSON object that represent configured platform or by Array of sources.<br>
-Currently LocoLaser support following sources:
-- [Source: Google Sheet](google_sheet.md)
-- Source: **NULL** (Also you able to use string **`null`** to define empty source)
+##### Resources
+Resource can be defined by single string("android", "ios" etc.), by JSON object that represent configured resource or 
+by Array of resources that can contain both Strings and JSON objects.<br>
+Currently LocoLaser support following resources:
+- [Android and iOS](mobile.md)
+- [Kotlin Mobile Multiplatform](kotlin_mpp.md)
+- JavaScript (by i18next)
+- GetText
+- INI file
+- [Google Sheet](google_sheet.md)
+- **NULL** (Also you able to use string **`null`** to define empty resource)
+
+Any Resource can be used as a Platform or as a Source.
+Configuration fields **`platform`** and **`source`** are mandatory, so you could provide at least one of them. If you wouldn't you should use **NULL** Resource type.
 
 ##### Other config properties
+- **`locales`** - Array of String. List of locales that should be handled by LocoLaser. Mandatory field. You can use keyword `base` to specify base locale.
 - **`work_dir`** - String. Path to work directory. Other related paths will be related to this work dir. By default is directory of the configuration file.
 - **`temp_dir`** - String. Path to directory for temporary files. By default will used default temp folder of the first platform.
 - **`force_import`** - Boolean. Import doesn't execute without a need, but if `force_import` is `true` import will be executed any way.
@@ -47,9 +52,9 @@ Currently LocoLaser support following sources:
     "source" : {
         "type" : "googlesheet",
         "column_key" : "key",
-        "column_locales" : ["en", "fi"],
         "id" : "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
     },
+    "locales" : ["en", "fi"],
     "delay" : 30
 }
 ```
