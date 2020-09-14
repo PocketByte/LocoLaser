@@ -7,10 +7,6 @@ apply plugin: 'com.jfrog.bintray'
 
 mainClassName = "ru.pocketbyte.locolaser.Main"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     compile 'com.googlecode.json-simple:json-simple:1.1.1'

@@ -5,10 +5,6 @@ apply plugin: 'com.jfrog.bintray'
 
 def kotlin_poet_version = '0.7.0'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -98,24 +94,5 @@ bintray {
             gpg.passphrase = project.properties.get("bintray.publish.gpgPassphrase")
         }
         publications = ['locolaserPublication']
-    }
-}
-buildscript {
-    ext.kotlin_version = '1.2.71'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
