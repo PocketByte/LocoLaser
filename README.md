@@ -8,6 +8,8 @@ LocoLaser - Localization tool to import localized strings from external source t
 - Google Sheets
 - INI File
 
+##### Migration to 2.0.0
+Please read [Migration instruction](docs/migration.md) to migrate to version 2.0.0
 
 ##### Related Git's
 Gradle plugin: https://github.com/PocketByte/locolaser-gradle-plugin<br>
