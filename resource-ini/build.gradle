@@ -34,7 +34,7 @@ publishing {
     publications {
         locolaserPublication(MavenPublication) {
             from components.java
-            groupId 'ru.pocketbyte.locolaser'
+            groupId project.group_id
             artifactId project.name
             version project.version
             pom.withXml {

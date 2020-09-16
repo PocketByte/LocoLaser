@@ -9,7 +9,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.ini.IniPlatformConfig
+import ru.pocketbyte.locolaser.ini.IniResourceConfig
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -33,10 +33,10 @@ class IniResourceConfigParserTest {
     @Test
     @Throws(InvalidConfigException::class)
     fun testFromString() {
-        val config = parser!!.parse(IniPlatformConfig.TYPE, true)
+        val config = parser!!.parse(IniResourceConfig.TYPE, true)
 
         assertNotNull(config)
-        assertEquals(IniPlatformConfig::class.java, config!!.javaClass)
+        assertEquals(IniResourceConfig::class.java, config!!.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -51,7 +51,7 @@ class IniResourceConfigParserTest {
         val config = parser!!.parse(prepareTestPlatformJson(), true)
 
         assertNotNull(config)
-        assertEquals(IniPlatformConfig::class.java, config!!.javaClass)
+        assertEquals(IniResourceConfig::class.java, config!!.javaClass)
 
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
@@ -71,11 +71,11 @@ class IniResourceConfigParserTest {
     @Throws(InvalidConfigException::class)
     fun testFromJsonOnlyType() {
         val json = JSONObject()
-        json[ResourcesConfigParser.RESOURCE_TYPE] = IniPlatformConfig.TYPE
+        json[ResourcesConfigParser.RESOURCE_TYPE] = IniResourceConfig.TYPE
         val config = parser!!.parse(json, true)
 
         assertNotNull(config)
-        assertEquals(IniPlatformConfig::class.java, config!!.javaClass)
+        assertEquals(IniResourceConfig::class.java, config!!.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -86,7 +86,7 @@ class IniResourceConfigParserTest {
 
     private fun prepareTestPlatformJson(): JSONObject {
         val json = JSONObject()
-        json[ResourcesConfigParser.RESOURCE_TYPE] = IniPlatformConfig.TYPE
+        json[ResourcesConfigParser.RESOURCE_TYPE] = IniResourceConfig.TYPE
         json[IniResourceConfigParser.RESOURCE_NAME] = "test_res"
         json[IniResourceConfigParser.RESOURCES_DIR] = "test_res_dir"
         return json

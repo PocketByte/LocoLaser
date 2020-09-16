@@ -4,7 +4,7 @@ import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.ini.resource.IniResources
 import ru.pocketbyte.locolaser.resource.Resources
 
-class IniPlatformConfig : BaseResourcesConfig() {
+class IniResourceConfig : BaseResourcesConfig() {
 
     companion object {
         const val TYPE = "ini"
@@ -17,7 +17,7 @@ class IniPlatformConfig : BaseResourcesConfig() {
         get() = "./build/tmp/"
 
     override val defaultResourcesPath: String
-        get() = ".//"
+        get() = "./"
 
     override val defaultResourceName: String
         get() = "data"
