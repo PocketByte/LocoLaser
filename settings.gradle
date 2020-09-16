@@ -7,4 +7,5 @@ include 'resource-gettext'
 include 'resource-json'
 include 'resource-kotlin-mpp'
 include 'resource-ini'
+include 'resource-properties'
 
