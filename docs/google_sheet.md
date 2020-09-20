@@ -33,7 +33,7 @@ Each field in JSON has following purpose:
 You can use keyword `base` to specify base locale. If base locale not set or column with base locale not exists, first locale in provided locales list will import as base locale also.
 
 #### Example
-Here is theexample of LocoLaser config where as a source used Google Sheet
+Here is the example of LocoLaser config where as a source used Google Sheet
 ```json
 {
     "platform" : "android",

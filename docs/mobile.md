@@ -1,4 +1,4 @@
-# Resorces: Android and iOS
+# Resources: Android and iOS
 
 ### Gradle dependency
 ```gradle
