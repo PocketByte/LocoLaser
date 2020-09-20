@@ -26,7 +26,7 @@ class MockResourcesConfig : ResourcesConfig {
     override val resources = object : Resources {
         override val formattingType = NoFormattingType
         override fun read(locales: Set<String>?, extraParams: ExtraParams?) = ResMap()
-        override fun write(map: ResMap, extraParams: ExtraParams?) { }
+        override fun write(resMap: ResMap, extraParams: ExtraParams?) { }
         override fun summaryForLocale(locale: String) = FileSummary(0, null)
     }
 

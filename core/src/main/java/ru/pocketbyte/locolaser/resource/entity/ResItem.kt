@@ -90,9 +90,8 @@ class ResItem(
 
     override fun equals(other: Any?): Boolean {
         if (other is ResItem) {
-            val item = other as ResItem?
-            if (item!!.key == key && item.mutableValues.size == mutableValues.size) {
-                return item.values.none { it != valueForQuantity(it.quantity) }
+            if (other.key == key && other.mutableValues.size == mutableValues.size) {
+                return other.values.none { it != valueForQuantity(it.quantity) }
             }
         }
         return super.equals(other)

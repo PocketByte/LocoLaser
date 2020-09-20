@@ -98,7 +98,7 @@ open class AbsKeyValuePoetClassResourceFile(
             name: String, formattingArguments: List<FormattingArgument>,
             item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
-        val resValue = item.valueForQuantity(Quantity.OTHER)
+        item.valueForQuantity(Quantity.OTHER)
                 ?: throw IllegalArgumentException("item must have OTHER quantity")
         val builder = super
             .instantiatePluralSpecBuilder(name, formattingArguments, item, resMap, extraParams)

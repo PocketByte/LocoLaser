@@ -42,18 +42,18 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableResource
     /**
      * Parse Source from JSON object.
      *
-     * @param sourceObject JSON object that contain source config properties.
+     * @param resourceObject JSON object that contain source config properties.
      * @return Parsed source object.
      * @throws InvalidConfigException
      */
     @Throws(InvalidConfigException::class)
-    override fun parse(sourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig? {
-        if (sourceObject is JSONObject) {
-            return parseFromJson(sourceObject)
-        } else if (sourceObject is JSONArray) {
+    override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig? {
+        if (resourceObject is JSONObject) {
+            return parseFromJson(resourceObject)
+        } else if (resourceObject is JSONArray) {
             var defaultConfig: ResourcesConfig? = null
-            val configs = HashSet<ResourcesConfig>(sourceObject.size)
-            for (item in sourceObject) {
+            val configs = HashSet<ResourcesConfig>(resourceObject.size)
+            for (item in resourceObject) {
                 if (item is JSONObject) {
                     val config = parseFromJson(item)
                     configs.add(config)

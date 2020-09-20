@@ -68,11 +68,13 @@ task publishAll(dependsOn: test) {
 
 afterEvaluate {
     publishAll.dependsOn ":core:bintrayUpload"
-    publishAll.dependsOn ":platform-mobile:bintrayUpload"
-    publishAll.dependsOn ":platform-kotlin-mpp:bintrayUpload"
-    publishAll.dependsOn ":platform-gettext:bintrayUpload"
-    publishAll.dependsOn ":platform-json:bintrayUpload"
-    publishAll.dependsOn ":source-googlesheet:bintrayUpload"
+    publishAll.dependsOn ":resource-mobile:bintrayUpload"
+    publishAll.dependsOn ":resource-kotlin-mpp:bintrayUpload"
+    publishAll.dependsOn ":resource-gettext:bintrayUpload"
+    publishAll.dependsOn ":resource-json:bintrayUpload"
+    publishAll.dependsOn ":resource-googlesheet:bintrayUpload"
+    publishAll.dependsOn ":resource-ini:bintrayUpload"
+    publishAll.dependsOn ":resource-properties:bintrayUpload"
 }
 compileKotlin {
     kotlinOptions {

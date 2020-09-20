@@ -35,8 +35,8 @@ class ResMapTest {
         val resMap1 = prepareResMap1()
         val resMap2 = prepareResMap2()
 
-        resMap1.put("locale5", prepareResLocale1())
-        resMap2.put("locale5", prepareResLocale1())
+        resMap1["locale5"] = prepareResLocale1()
+        resMap2["locale5"] = prepareResLocale1()
 
         assert(resMap1.remove(resMap2) === resMap1)
 
@@ -90,17 +90,17 @@ class ResMapTest {
 
     private fun prepareResMap1(): ResMap {
         val resMap = ResMap()
-        resMap.put("locale1", prepareResLocale1())
-        resMap.put("locale2", prepareResLocale2())
-        resMap.put("locale3", prepareResLocale3())
+        resMap["locale1"] = prepareResLocale1()
+        resMap["locale2"] = prepareResLocale2()
+        resMap["locale3"] = prepareResLocale3()
         return resMap
     }
 
     private fun prepareResMap2(): ResMap {
         val resMap = ResMap()
-        resMap.put("locale1", prepareResLocale2())
-        resMap.put("locale2", prepareResLocale3())
-        resMap.put("locale4", prepareResLocale1())
+        resMap["locale1"] = prepareResLocale2()
+        resMap["locale2"] = prepareResLocale3()
+        resMap["locale4"] = prepareResLocale1()
         return resMap
     }
 

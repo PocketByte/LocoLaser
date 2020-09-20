@@ -59,7 +59,7 @@ object LocoLaser {
         val platformConfig = config.platform ?: throw IllegalArgumentException("Config platform must be not null")
 
         val resources = platformConfig.resources
-        val source = sourceConfig.resources ?: return false
+        val source = sourceConfig.resources
 
         // Prepare resource files
         var isHaveFileToTranslate = false

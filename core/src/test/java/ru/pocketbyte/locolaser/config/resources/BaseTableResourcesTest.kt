@@ -49,7 +49,7 @@ class BaseTableResourcesTest {
         sourceConfig.keyColumn = "key"
 
         val source = sourceConfig.resources
-        val result = source?.read(setOf("en", "ru"), null)
+        val result = source.read(setOf("en", "ru"), null)
         assertNotNull(result)
 
         assertEquals(3, result!!.size) // 2 locales + base locale
@@ -101,7 +101,7 @@ class BaseTableResourcesTest {
         sourceConfig.keyColumn = "key"
 
         val source = sourceConfig.resources
-        val result = source?.read(setOf(Resources.BASE_LOCALE, "ru"), null)
+        val result = source.read(setOf(Resources.BASE_LOCALE, "ru"), null)
         assertNotNull(result)
 
         assertEquals(2, result?.size) // 1 locale + base locale
@@ -133,7 +133,7 @@ class BaseTableResourcesTest {
         sourceConfig.keyColumn = "key"
 
         val source = sourceConfig.resources
-        val result = source?.read(setOf(Resources.BASE_LOCALE, "en"), null)
+        val result = source.read(setOf(Resources.BASE_LOCALE, "en"), null)
         assertNotNull(result)
 
         assertEquals(2, result?.size) // 1 locale + base locale
@@ -160,7 +160,7 @@ class BaseTableResourcesTest {
         sourceConfig.keyColumn = "key"
 
         val source = sourceConfig.resources
-        val result = source?.read(setOf(Resources.BASE_LOCALE, "ru", "en"), null)
+        val result = source.read(setOf(Resources.BASE_LOCALE, "ru", "en"), null)
 
         val expectLocale = result?.get("en")
         val baseLocale = result?.get(Resources.BASE_LOCALE)
@@ -179,7 +179,7 @@ class BaseTableResourcesTest {
         sourceConfig.keyColumn = "key"
 
         val source = sourceConfig.resources
-        val result = source?.read(setOf(Resources.BASE_LOCALE, "en", "true_base", "ru"), null)
+        val result = source.read(setOf(Resources.BASE_LOCALE, "en", "true_base", "ru"), null)
 
         val expectLocale = result?.get("true_base")
         val baseLocale = result?.get(Resources.BASE_LOCALE)
@@ -199,7 +199,7 @@ class BaseTableResourcesTest {
         sourceConfig.keyColumn = "key"
 
         val source = sourceConfig.resources
-        val result = source?.read(setOf(Resources.BASE_LOCALE, "ru"), null)
+        val result = source.read(setOf(Resources.BASE_LOCALE, "ru"), null)
 
         val expectedMap = ResMap().apply {
             val meta1 = mapOf(Pair("meta_1", "data"))

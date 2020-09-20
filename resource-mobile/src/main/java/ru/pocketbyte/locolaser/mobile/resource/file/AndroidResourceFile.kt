@@ -50,20 +50,20 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
         }
 
         fun toPlatformValue(string: String): String {
-            var string = string
+            var result = string
                     .replace("'", "\\'")
                     .replace("\"", "\\\"")
                     .replace("\n", "\\n")
                     .replace("@", "\\@")
                     .replace("&", "&amp;")
                     .replace("<", "&lt;")
-            if (string.startsWith("?"))
-                string = "\\" + string
-            return string
+            if (result.startsWith("?"))
+                result = "\\" + result
+            return result
         }
 
         fun fromPlatformValue(string: String): String {
-            var string = string
+            var result = string
                     .replace("\\'", "'")
                     .replace("\\\"", "\"")
                     .replace("\\n", "\n")
@@ -71,10 +71,10 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                     .replace("&amp;", "&")
                     .replace("&lt;", "<")
 
-            if (string.startsWith("\\?"))
-                string = string.substring(1)
+            if (result.startsWith("\\?"))
+                result = result.substring(1)
 
-            return string
+            return result
         }
 
         public const val META_CDATA = "xml-cdata"

@@ -10,7 +10,7 @@ fun FormattingArgument.anyName(position: Int): String {
 
     val javaName = (this.parameters?.get(JavaFormattingType.PARAM_TYPE_NAME) as? String) ?: "arg"
     val index = this.index ?: (position + 1)
-    return javaName + (index.toString() ?: "")
+    return javaName + index.toString()
 }
 
 fun FormattingArgument.parameterClass(): KClass<*> {

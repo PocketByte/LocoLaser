@@ -73,7 +73,7 @@ object JsonToStringUtils {
                 sb.appendIndent(indent, space)
             }
 
-            (iter.next() as Map.Entry<*, *>)?.let { entry ->
+            (iter.next() as Map.Entry<*, *>).let { entry ->
                 toJSONString(entry.key.toString(), entry.value, sb, indent, space + indent)
             }
         }
@@ -133,7 +133,7 @@ object JsonToStringUtils {
                 '/' -> sb.append("\\/")
                 else ->
                     //Reference: http://www.unicode.org/versions/Unicode5.1.0/
-                    if (ch in '\u0000'..'\u001F' || ch in '\u007F'..'\u009F' || ch >= '\u2000' && ch <= '\u20FF') {
+                    if (ch in '\u0000'..'\u001F' || ch in '\u007F'..'\u009F' || ch in '\u2000'..'\u20FF') {
                         val ss = Integer.toHexString(ch.toInt())
                         sb.append("\\u")
                         for (k in 0 until 4 - ss.length) {
