@@ -28,7 +28,7 @@ Properties description:<br>
 
 ### Plurals
 Plurals are supported in JSON resource implementation but with some restrictions.
-Keys for plural string should be in following pattern "<key>_plural_<quantity>", where:
+Keys for plural string should be in following pattern `"<key>_plural_<quantity>"`, where:
 - **`<key>`** - Is the key of the string.
 - **`<quantity>`** - Numeric representation of quantity. To get more details please refer to official documentation of i18next.
 
