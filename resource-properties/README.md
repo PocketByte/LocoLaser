@@ -8,7 +8,7 @@ dependencies {
 ```
 
 ### Config
-Properties Resources can be defined by single string or by JSON object. In case of string you can use value "properties".<br>
+Properties Resources can be defined by single string or by JSON object. In case of string you can use value `"properties"`.<br>
 JSON object should has following structure:
 ```
 {
@@ -18,14 +18,14 @@ JSON object should has following structure:
 }
 ```
 Properties description:<br>
-- **`type`** - String. Type of the resource. In case of Properties should be used value "properties".
-- **`res_name`** - String. Resource file name. Default value: "strings".
-- **`res_dir`** - String. Path to resources directory. Default value: "./locales/".
+- **`type`** - String. Type of the resource. In case of Properties should be used value `"properties"`.
+- **`res_name`** - String. Resource file name. Default value: `"strings"`.
+- **`res_dir`** - String. Path to resources directory. Default value: `"./locales/"`.
 
 ### Plurals
 Plurals are not supported in Properties resource implementation. All quantities except OTHER will be ignored.
 
-#### Example
+### Example
 Here is the example of LocoLaser config where as a platform used Properties file.
 ```json
 {

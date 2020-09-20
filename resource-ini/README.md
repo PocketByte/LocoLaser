@@ -8,7 +8,7 @@ dependencies {
 ```
 
 ### Config
-INI Resources can be defined by single string or by JSON object. In case of string you can use value "ini".<br>
+INI Resources can be defined by single string or by JSON object. In case of string you can use value `"ini"`.<br>
 JSON object should has following structure:
 ```
 {
@@ -18,14 +18,14 @@ JSON object should has following structure:
 }
 ```
 Properties description:<br>
-- **`type`** - String. Type of the resource. In case of INI should be used value "ini".
-- **`res_name`** - String. Resource file name. Default value: "data".
-- **`res_dir`** - String. Path to resources directory. Default value: "./".
+- **`type`** - String. Type of the resource. In case of INI should be used value `"ini"`.
+- **`res_name`** - String. Resource file name. Default value: `"data"`.
+- **`res_dir`** - String. Path to resources directory. Default value: `"./"`.
 
 ### Plurals
 Plurals are fully supported in INI resource implementation.
 
-#### Example
+### Example
 Here is the example of LocoLaser config where as a platform used INI file.
 ```json
 {

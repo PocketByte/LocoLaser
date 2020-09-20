@@ -8,7 +8,7 @@ dependencies {
 ```
 
 ### Config
-GetText Resources can be defined by single string or by JSON object. In case of string you can use value "gettext".<br>
+GetText Resources can be defined by single string or by JSON object. In case of string you can use value `"gettext"`.<br>
 JSON object should has following structure:
 ```
 {
@@ -19,15 +19,15 @@ JSON object should has following structure:
 }
 ```
 Properties description:<br>
-- **`type`** - String. Type of the resource. In case of GetText should be used value "gettext".
-- **`res_name`** - String. Resource file name. Default value: "messages".
-- **`res_dir`** - String. Path to resources directory. Default value: "./languages/".
+- **`type`** - String. Type of the resource. In case of GetText should be used value `"gettext"`.
+- **`res_name`** - String. Resource file name. Default value: `"messages"`.
+- **`res_dir`** - String. Path to resources directory. Default value: `"./languages/"`.
 - **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource. By default no filter.
 
 ### Plurals
 Plurals are not supported in GetText resource implementation. All quantities except OTHER will be ignored.
 
-#### Example
+### Example
 Here is the example of LocoLaser config where as a platform used GetText.
 ```json
 {

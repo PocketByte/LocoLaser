@@ -9,8 +9,8 @@ dependencies {
 
 ### Config
 Mobile Resources can be defined by single string or by JSON object. In case of string you can use following values:
-- *`android`* - Adroid platform (Android XML Resource files). Default temp folder: "./build/tmp/";
-- *`ios`* - iOS platform. (iOS string resource files). Default temp folder: "../DerivedData/LocoLaserTemp/".
+- *`android`* - Adroid platform (Android XML Resource files). Default temp folder: `"./build/tmp/"`;
+- *`ios`* - iOS platform. (iOS string resource files). Default temp folder: `"../DerivedData/LocoLaserTemp/"`.
 
 JSON object should has following structure:
 ```
@@ -22,13 +22,13 @@ JSON object should has following structure:
 }
 ```
 Properties description:<br>
-- **`type`** - String. Type of the platform ("android" or "ios").
+- **`type`** - String. Type of the platform (`"android"` or `"ios"`).
 - **`res_name`** - String. Resource name.
-  * Default Android: "strings",
-  * Default iOS: "Localizable".
+  * Default Android: `"strings"`,
+  * Default iOS: `"Localizable"`.
 - **`res_dir`** - String. Path to resources directory.
-  * Default Android: "./src/main/res/",
-  * Default iOS: "./".
+  * Default Android: `"./src/main/res/"`,
+  * Default iOS: `"./"`.
 - **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource. By default no filter.
 
 ### Code generation
@@ -66,7 +66,7 @@ Example of iOS config that generates Swift Class (*`Str.swift`*) depends on Stri
 ```
 
 ### Metadata
-Android also handle following metadata of the string: "formatted=(true|false)" and "xml-cdata=(true|false)".
-If metadata "formatted" exists the string xml element will contain "formatted" attribute.
-If metadata "xml-cdata" equal true the string will be surrounded by CDATA bracers.
+Android also handle following metadata of the string: `"formatted=(true|false)"` and `"xml-cdata=(true|false)"`.
+If metadata `"formatted"` exists the string xml element will contain `"formatted"` attribute.
+If metadata `"xml-cdata"` equal true the string will be surrounded by CDATA bracers.
 **IMPORTANT NOTE**: Except of other metadata "xml-cdata" can't be read from resource file and can be provided only from external source, for example, from metadata column in [Google Sheet](../resource-googlesheet/google_sheet.md).

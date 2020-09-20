@@ -11,8 +11,8 @@ All maven artifacts of resources now has prefix "resource". So following depende
 `source-googlesheet`     -> `resource-googlesheet`<br>
 
 #### List of Locales 
-Google Sheet config now has no field "column_locales". This field moved to the general layer and renamed to "locales".<br>
-**IMPORTANT**: Field "locales" are mandatory! If you want to use only base locale you could provide value `["base"]`.
+Google Sheet config now has no field `"column_locales"`. This field moved to the general layer and renamed to `"locales"`.<br>
+**IMPORTANT**: Field `"locales"` are mandatory! If you want to use only base locale you could provide value `["base"]`.
 
 Version 1.5.*
 ```json
