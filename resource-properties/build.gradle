@@ -75,7 +75,7 @@ bintray {
         issueTrackerUrl = 'https://github.com/PocketByte/LocoLaser/issue'
         version {
             name = project.version
-            desc = 'Implementation of platform for LocoLaser tool to work with ini resources.'
+            desc = 'Implementation of platform for LocoLaser tool to work with properties resources.'
             released  = new Date()
             vcsTag = project.version
             gpg.passphrase = project.properties.get("bintray.publish.gpgPassphrase")
