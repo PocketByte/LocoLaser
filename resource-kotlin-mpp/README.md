@@ -29,13 +29,15 @@ In general config of one source file should have following structure:
 {
     "type": ("kotlin-common" | "kotlin-android" | "kotlin-ios"),
     "res_name" : (String value, Canonical Java name),
-    "res_dir" : (Path to dir)
+    "res_dir" : (Path to dir),
+    "filter" : (String value)
 }
 ```
 Properties description:<br>
 - **`type`** - String. Type of the platform. For common kotlin interface it should be `"kotlin-common"`.
 - **`res_name`** - String. Desirable canonical name of repository interface or class implementation.
 - **`res_dir`** - String. Path to directory with interface or class file.
+- **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource. By default no filter.
 
 ### Implementation Configs
 Repository implementation config require one more additional parameter:
@@ -48,6 +50,7 @@ So, Android,iOS or JS config should have following structure:
     "type": ("kotlin-android" | "kotlin-ios", "kotlin-js"),
     "res_name" : (String value, Canonical Java name),
     "res_dir" : (Path to dir),
+    "filter" : (String value),
     "implements" : (String value, Canonical Java name)
 }
 ```
@@ -132,6 +135,7 @@ So, Custom config should have following structure:
     "type": "kotlin-abs-key-value",
     "res_name" : (String value, Canonical Java name),
     "res_dir" : (Path to dir),
+    "filter" : (String value),
     "implements" : (String value, Canonical Java name),
     "formatting_type" : (String value, Canonical Java name)
 }
@@ -140,6 +144,7 @@ So, Custom config should have following structure:
 Default values for `"kotlin-abs-key-value"`:
 - **`res_dir`** - `"./src/main/kotlin/"`
 - **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.AbsKeyValueStringRepository"`
+- **`filter`** - By default no filter.
 - **`implements`** - `"ru.pocketbyte.locolaser.kmpp.StringRepository"`
 - **`formatting_type`** - `"no"`
 

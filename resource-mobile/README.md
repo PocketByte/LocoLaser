@@ -17,7 +17,8 @@ JSON object should has following structure:
 {
     "type" : ("android" | "ios"),
     "res_name" : (String value),
-    "res_dir" : (Path to dir)
+    "res_dir" : (Path to dir),
+    "filter" : (String value)
 }
 ```
 Properties description:<br>
@@ -28,6 +29,7 @@ Properties description:<br>
 - **`res_dir`** - String. Path to resources directory.
   * Default Android: "./src/main/res/",
   * Default iOS: "./".
+- **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource. By default no filter.
 
 ### Code generation
 Also, in case of iOS platform you able to use platforms that generate a special Class files that simplify work with string resources. Code generaton config has following structure:
