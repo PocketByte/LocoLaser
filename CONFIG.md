@@ -24,9 +24,10 @@ by Array of resources that can contain both Strings and JSON objects.<br>
 Currently LocoLaser support following resources:
 - [Android and iOS](resource-mobile/README.md)
 - [Kotlin Mobile Multiplatform](resource-kotlin-mpp/README.md)
-- JavaScript (by i18next)
-- GetText
-- INI file
+- [JavaScript (by i18next)](resource-json/README.md)
+- [GetText](resource-gettext/README.md)
+- [INI file](resource-ini/README.md)
+- [Properties file](resource-properties/README.md)
 - [Google Sheet](resource-googlesheet/README.md)
 - **NULL** (Also you able to use string **`null`** to define empty resource)
 
