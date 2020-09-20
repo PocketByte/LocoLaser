@@ -22,12 +22,12 @@ Config is a file with JSON object that must contain configuration of resources (
 Resource can be defined by single string("android", "ios" etc.), by JSON object that represent configured resource or 
 by Array of resources that can contain both Strings and JSON objects.<br>
 Currently LocoLaser support following resources:
-- [Android and iOS](mobile.md)
-- [Kotlin Mobile Multiplatform](kotlin_mpp.md)
+- [Android and iOS](resource-mobile/README.md)
+- [Kotlin Mobile Multiplatform](resource-kotlin-mpp/README.md)
 - JavaScript (by i18next)
 - GetText
 - INI file
-- [Google Sheet](google_sheet.md)
+- [Google Sheet](resource-googlesheet/README.md)
 - **NULL** (Also you able to use string **`null`** to define empty resource)
 
 Any Resource can be used as a Platform or as a Source.

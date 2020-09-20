@@ -110,7 +110,7 @@ Here is the example of full config:
     "temp_dir": "./build/temp/"
 }
 ```
-This config has also description of [Android and iOS](mobile.md) resources.
+This config has also description of [Android and iOS](../resource-mobile/README.md) resources.
 They are readable and Repository will be fulfilled by strings from this resource files.
 
 ### Custom Repository
