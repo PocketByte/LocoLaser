@@ -4,7 +4,7 @@ LocoLaser - Localization tool to import localized strings from external source t
 - iOS resources: Localizable.strings
 - GetText resources: messages.pom
 - Java Script i18next: strings.json
-- Kotlin Multiplatfor: Generates repository classes for Android, iOS, macOS and JavaSript that can be used in common code.
+- Kotlin Multiplatform: Generates repository classes for Android, iOS, macOS and JavaSript that can be used in common code.
 - Google Sheets
 - INI File
 
