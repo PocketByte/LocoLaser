@@ -79,10 +79,10 @@ publishing {
                 url = 'https://github.com/PocketByte/LocoLaser'
 
                 issueManagement {
-                    url = "https://github.com/PocketByte/kotlin-kydra-log/issues"
+                    url = "https://github.com/PocketByte/LocoLaser/issues"
                 }
                 scm {
-                    url = "https://github.com/PocketByte/kotlin-kydra-log.git"
+                    url = "https://github.com/PocketByte/LocoLaser.git"
                 }
 
                 developers {
