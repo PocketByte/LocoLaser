@@ -73,7 +73,7 @@ fun ResValue.formatArgumentsIsEmpty(): Boolean {
     return this.formattingArguments == null || this.formattingArguments.isEmpty()
 }
 
-fun ResValue.formatParamsIsNotEmpty(): Boolean {
+fun ResValue.formatArgumentsIsNotEmpty(): Boolean {
     return !this.formatArgumentsIsEmpty()
 }
 

@@ -151,7 +151,7 @@ class IosPluralResourceFileTest {
                     "            <key>few</key>\r\n" +
                     "            <string>String %d few</string>\r\n" +
                     "            <key>other</key>\r\n" +
-                    "            <string>String 3 %d.</string>\r\n" +
+                    "            <string>String 3 %1\$d.</string>\r\n" +
                     "        </dict>\r\n" +
                     "    </dict>\r\n" +
                     "</dict>\r\n" +
@@ -175,8 +175,8 @@ class IosPluralResourceFileTest {
             ResValue("String %d few", null, Quantity.FEW, JavaFormattingType,
                 JavaFormattingType.argumentsFromValue("%d")
             ),
-            ResValue("String 3 %d.", null, Quantity.OTHER, JavaFormattingType,
-                JavaFormattingType.argumentsFromValue("%d")
+            ResValue("String 3 %1\$d.", null, Quantity.OTHER, JavaFormattingType,
+                JavaFormattingType.argumentsFromValue("%1\$d")
             ))))
         expectedMap[testLocale] = resLocale
 
@@ -221,7 +221,7 @@ class IosPluralResourceFileTest {
                 "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
                 "            <string>NSStringPluralRuleType</string>\r\n" +
                 "            <key>NSStringFormatValueTypeKey</key>\r\n" +
-                "            <string>f</string>\r\n" +
+                "            <string>d</string>\r\n" +
                 "            <key>other</key>\r\n" +
                 "            <string>String</string>\r\n" +
                 "            <key>one</key>\r\n" +
@@ -239,13 +239,144 @@ class IosPluralResourceFileTest {
                 "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
                 "            <string>NSStringPluralRuleType</string>\r\n" +
                 "            <key>NSStringFormatValueTypeKey</key>\r\n" +
-                "            <string>f</string>\r\n" +
+                "            <string>d</string>\r\n" +
                 "            <key>other</key>\r\n" +
                 "            <string>String 3</string>\r\n" +
                 "            <key>few</key>\r\n" +
                 "            <string>String 3 few</string>\r\n" +
                 "            <key>zero</key>\r\n" +
                 "            <string>String 3 zero</string>\r\n" +
+                "        </dict>\r\n" +
+                "    </dict>\r\n" +
+                "</dict>\r\n" +
+                "</plist>")
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWritePluralsFormatted() {
+        val testLocale = "base"
+
+        val resMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(
+            prepareResItem(
+                "string1", arrayOf(
+                    ResValue("String", "Comment", Quantity.OTHER),
+                    ResValue("String %d", null, Quantity.ONE,
+                        JavaFormattingType, JavaFormattingType.argumentsFromValue("%d")
+                    )
+                )
+            )
+        )
+        resLocale.put(
+            prepareResItem(
+                "string2", arrayOf(
+                    ResValue("String", "Comment", Quantity.OTHER),
+                    ResValue("String %f", null, Quantity.ONE,
+                        JavaFormattingType, JavaFormattingType.argumentsFromValue("%f")
+                    )
+                )
+            )
+        )
+        resLocale.put(
+            prepareResItem(
+                "string3", arrayOf(
+                    ResValue("String %1\$d", "Comment", Quantity.OTHER,
+                        JavaFormattingType, JavaFormattingType.argumentsFromValue("%1\$d")
+                    ),
+                    ResValue("String two %1\$d", null, Quantity.TWO,
+                        JavaFormattingType, JavaFormattingType.argumentsFromValue("%1\$d")
+                    )
+                )
+            )
+        )
+        resLocale.put(
+            prepareResItem(
+                "string4", arrayOf(
+                    ResValue("String %1\$f.2", "Comment", Quantity.OTHER,
+                        JavaFormattingType, JavaFormattingType.argumentsFromValue("%1\$f.2")
+                    ),
+                    ResValue("String few %1\$f.2", null, Quantity.FEW,
+                        JavaFormattingType, JavaFormattingType.argumentsFromValue("%1\$f.2")
+                    )
+                )
+            )
+        )
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = IosPluralResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
+                TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
+                "<plist version=\"1.0\">\r\n" +
+                "<dict>\r\n" +
+                "    <key>string1</key>\r\n" +
+                "    <dict>\r\n" +
+                "        <key>NSStringLocalizedFormatKey</key>\r\n" +
+                "        <string>%#@value@</string>\r\n" +
+                "        <key>value</key>\r\n" +
+                "        <dict>\r\n" +
+                "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
+                "            <string>NSStringPluralRuleType</string>\r\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\r\n" +
+                "            <string>d</string>\r\n" +
+                "            <key>other</key>\r\n" +
+                "            <string>String</string>\r\n" +
+                "            <key>one</key>\r\n" +
+                "            <string>String %d</string>\r\n" +
+                "        </dict>\r\n" +
+                "    </dict>\r\n" +
+                "    <key>string2</key>\r\n" +
+                "    <dict>\r\n" +
+                "        <key>NSStringLocalizedFormatKey</key>\r\n" +
+                "        <string>%#@value@</string>\r\n" +
+                "        <key>value</key>\r\n" +
+                "        <dict>\r\n" +
+                "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
+                "            <string>NSStringPluralRuleType</string>\r\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\r\n" +
+                "            <string>f</string>\r\n" +
+                "            <key>other</key>\r\n" +
+                "            <string>String</string>\r\n" +
+                "            <key>one</key>\r\n" +
+                "            <string>String %f</string>\r\n" +
+                "        </dict>\r\n" +
+                "    </dict>\r\n" +
+                "    <key>string3</key>\r\n" +
+                "    <dict>\r\n" +
+                "        <key>NSStringLocalizedFormatKey</key>\r\n" +
+                "        <string>%#@value@</string>\r\n" +
+                "        <key>value</key>\r\n" +
+                "        <dict>\r\n" +
+                "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
+                "            <string>NSStringPluralRuleType</string>\r\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\r\n" +
+                "            <string>d</string>\r\n" +
+                "            <key>other</key>\r\n" +
+                "            <string>String %1\$d</string>\r\n" +
+                "            <key>two</key>\r\n" +
+                "            <string>String two %1\$d</string>\r\n" +
+                "        </dict>\r\n" +
+                "    </dict>\r\n" +
+                "    <key>string4</key>\r\n" +
+                "    <dict>\r\n" +
+                "        <key>NSStringLocalizedFormatKey</key>\r\n" +
+                "        <string>%#@value@</string>\r\n" +
+                "        <key>value</key>\r\n" +
+                "        <dict>\r\n" +
+                "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
+                "            <string>NSStringPluralRuleType</string>\r\n" +
+                "            <key>NSStringFormatValueTypeKey</key>\r\n" +
+                "            <string>f</string>\r\n" +
+                "            <key>other</key>\r\n" +
+                "            <string>String %1\$f.2</string>\r\n" +
+                "            <key>few</key>\r\n" +
+                "            <string>String few %1\$f.2</string>\r\n" +
                 "        </dict>\r\n" +
                 "    </dict>\r\n" +
                 "</dict>\r\n" +
@@ -293,7 +424,7 @@ class IosPluralResourceFileTest {
                 "            <key>NSStringFormatSpecTypeKey</key>\r\n" +
                 "            <string>NSStringPluralRuleType</string>\r\n" +
                 "            <key>NSStringFormatValueTypeKey</key>\r\n" +
-                "            <string>f</string>\r\n" +
+                "            <string>@</string>\r\n" +
                 "            <key>one</key>\r\n" +
                 "            <string>String one</string>\r\n" +
                 "            <key>two</key>\r\n" +

@@ -28,12 +28,6 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
 
     companion object {
 
-        private val FORMAT_VARIANTS = arrayOf(
-                "%d", "%D", "%u", "%U",
-                "%x", "%X", "%o", "%O",
-                "%f", "%F", "%e", "%E",
-                "%g", "%G", "%a", "%A")
-
         fun toPlatformValue(string: String): String {
             return string
                     .replace("'", "\\'")
@@ -71,6 +65,8 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
         private const val LEVEL_ITEM_VALUE_DICT = 4
         private const val LEVEL_ITEM_VALUE_KEY = 5
         private const val LEVEL_ITEM_VALUE_STRING = 6
+
+        private const val DEFAULT_PLURAL_FORMATTING = "d"
     }
 
     override val formattingType: FormattingType = JavaFormattingType
@@ -132,16 +128,24 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
                     writeStringLn("            <key>NSStringFormatValueTypeKey</key>")
 
                     // Searching format
-                    var format = "f"
-                    for (formatString in FORMAT_VARIANTS) {
-                        val resValue = resItem.valueForQuantity(Quantity.OTHER)?.let {
-                            formattingType.convert(it)
-                        }
-                        if (resValue != null && resValue.value.contains(formatString)) {
-                            format = formatString.substring(1)
-                            break
+                    var formattedResValue = resItem.valueForQuantity(Quantity.OTHER)
+                    if (formattedResValue?.formatArgumentsIsNotEmpty() != true) {
+                        formattedResValue = Quantity.values().find {
+                            it != Quantity.OTHER && resItem.valueForQuantity(it)?.formatArgumentsIsNotEmpty() == true
+                        }?.let {
+                            resItem.valueForQuantity(it)
                         }
                     }
+
+                    var format = formattedResValue?.let { formattingType.convert(it) }
+                            ?.formattingArguments
+                            ?.firstOrNull()
+                            ?.parameters
+                            ?.get(JavaFormattingType.PARAM_TYPE_NAME) as? String
+                            ?: DEFAULT_PLURAL_FORMATTING
+
+                    if (format == "s") format = "@"
+
                     writeString("            <string>")
                     writeString(format)
                     writeStringLn("</string>")
