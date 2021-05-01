@@ -121,13 +121,7 @@ You able to implement your custom repository for any platform.
 To do it you should use type `kotlin-abs-key-value`.
 Then LocoLaser will generate implementation of abstract repository with interface `StringProvider`, which should be implemented and provided to repository class thru constructor.
 
-If you would to generate formatting functions for formatted strings you should provide formatting type thru the property **`formatting_type`**.
-
-It's the String property with one of the following values:
-- **`no`** - No formatting.
-- **`java`** - Java formatting. For example: `"Hello, %s."`
-- **`web`** - Web formatting. For example: `"Hello, {{user_name}}."`
-- **`(Canonical Class Name)`** - Canonical class name of implementation of interface `FormattingType`. Class can be implemented as Kotlin Object.
+If you would to generate formatting functions for formatted strings you should provide formatting type thru the property **`formatting_type`**. See more details in [FORMATTING_TYPE.md](../FORMATTING_TYPE.md).
 
 So, Custom config should have following structure:
 ```

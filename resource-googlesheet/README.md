@@ -17,7 +17,8 @@ Google Sheet source config is a JSON object that has following structure:
     "column_quantity" : (String value),
     "column_comment" : (String value),
     "column_metadata" : (String value),
-    "credential_file" : (Path to file)
+    "credential_file" : (Path to file),
+    "formatting_type" : (String value, Canonical Java name)
 }
 ```
 Each field in JSON has following purpose:
@@ -29,6 +30,7 @@ Each field in JSON has following purpose:
 - **`column_comment`** - String. Column title which contain comment. Not necessary property, by default no comments.
 - **`column_metadata`** - String. Column title which contain Metadata of the row. Not necessary property, by default no metadata. Pattern of the metadata cell value: "[key_name_1]=[value];[key_name_2]=[value];...".
 - **`credential_file`** - String. Path to OAUth credential file. See tutorial [Google Sheet Credential File](credential_file_tut/README.md).
+- **`formatting_type`** - String. Values formatting type. Default value `java`. See more details in [FORMATTING_TYPE.md](../FORMATTING_TYPE.md).
 
 You can use keyword `base` to specify base locale. If base locale not set or column with base locale not exists, first locale in provided locales list will import as base locale also.
 

@@ -512,8 +512,8 @@ class LocoLaserTest {
         }
 
         @Throws(IOException::class)
-        override fun write(map: ResMap, extraParams: ExtraParams?) {
-            mMap = ResMap(map)
+        override fun write(resMap: ResMap, extraParams: ExtraParams?) {
+            mMap = ResMap(resMap)
             mExtraParams = extraParams
         }
 

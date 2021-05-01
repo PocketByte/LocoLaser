@@ -29,7 +29,8 @@ import kotlin.collections.ArrayList
  */
 class GoogleSheet(
         private val sourceConfig: GoogleSheetConfig,
-        private val worksheetFacade: WorksheetFacade
+        private val worksheetFacade: WorksheetFacade,
+        override val formattingType: FormattingType
 ) : BaseTableResources() {
 
     companion object {
@@ -54,8 +55,6 @@ class GoogleSheet(
     private var mRowsCount = 0
 
     private var mQuery: CellFeed? = null
-
-    override val formattingType: FormattingType = JavaFormattingType
 
     override fun summaryForLocale(locale: String): FileSummary {
         return FileSummary(0, worksheetFacade.sheetEntry.updated.value.toString())

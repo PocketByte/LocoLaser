@@ -10,6 +10,8 @@ import com.google.gdata.data.spreadsheet.SpreadsheetEntry
 import com.google.gdata.data.spreadsheet.WorksheetEntry
 import ru.pocketbyte.locolaser.config.resources.BaseTableResourcesConfig
 import ru.pocketbyte.locolaser.google.utils.GoogleSheetGlobalPool
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import java.io.File
 
 /**
@@ -29,6 +31,8 @@ class GoogleSheetConfig : BaseTableResourcesConfig() {
     var worksheetTitle: String? = null
     var credentialFile: File? = null
 
+    var formattingType: FormattingType = JavaFormattingType
+
     override val type = TYPE
 
     override val defaultTempDir: File = File("./temp/")
@@ -45,7 +49,8 @@ class GoogleSheetConfig : BaseTableResourcesConfig() {
                                 get() = GoogleSheetGlobalPool.getSheetEntry(id, service)
                             override val worksheetEntry: WorksheetEntry
                                 get() = GoogleSheetGlobalPool.getWorksheet(sheetEntry, worksheetTitle)
-                        }
+                        },
+                    formattingType
                 )
             } ?: throw IllegalStateException("Sheet ID is not set")
         }

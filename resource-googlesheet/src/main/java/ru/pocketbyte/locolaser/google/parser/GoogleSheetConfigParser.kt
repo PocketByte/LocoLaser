@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.google.parser
 
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.BaseTableSourceConfigParser
+import ru.pocketbyte.locolaser.config.parser.ConfigParser
 import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.SOURCE
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.google.sheet.GoogleSheetConfig
@@ -22,6 +23,7 @@ class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>()
         const val SHEET_ID = "id"
         const val SHEET_WORKSHEET_TITLE = "worksheet_title"
         const val SHEET_CREDENTIAL_FILE = "credential_file"
+        const val FORMATTING_TYPE = "formatting_type"
     }
 
     @Throws(InvalidConfigException::class)
@@ -33,15 +35,21 @@ class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>()
     }
 
     @Throws(InvalidConfigException::class)
-    override fun fillFromJSON(source: GoogleSheetConfig, configJson: JSONObject) {
-        super.fillFromJSON(source, configJson)
-        source.id = getString(configJson, SHEET_ID, SOURCE, true)
+    override fun fillFromJSON(config: GoogleSheetConfig, configJson: JSONObject) {
+        super.fillFromJSON(config, configJson)
+        config.id = getString(configJson, SHEET_ID, SOURCE, true)
 
-        source.worksheetTitle = getString(
+        config.worksheetTitle = getString(
                 configJson, SHEET_WORKSHEET_TITLE, SOURCE, false)
 
-        source.credentialFile = JsonParseUtils.getFile(
+        config.credentialFile = JsonParseUtils.getFile(
                 configJson, SHEET_CREDENTIAL_FILE, SOURCE, false)
+
+        JsonParseUtils.getFormattingType(
+            configJson, FORMATTING_TYPE, ConfigParser.PLATFORM, false
+        )?.let {
+            config.formattingType = it
+        }
     }
 
     @Throws(InvalidConfigException::class)
