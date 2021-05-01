@@ -14,6 +14,13 @@ import java.util.LinkedHashSet
 
 class ConfigParserFactory {
 
+    companion object {
+        private const val DEFAULT_JVM_VERSION = 8
+        private const val VERSION_OFFSET = 44
+    }
+
+    private var jvmVersion: Int? = null
+
     @Throws(Exception::class)
     fun get(): ConfigParser {
         return getFromClassLoader()
@@ -55,7 +62,14 @@ class ConfigParserFactory {
                     val fieldUnsafe = Unsafe::class.java.getDeclaredField("theUnsafe")
                     fieldUnsafe.isAccessible = true
                     val unsafe = fieldUnsafe.get(null) as Unsafe
-                    val ucpField = classLoader.javaClass.getDeclaredField("ucp")
+
+                    var ucpOwner: Class<*> = classLoader.javaClass;
+                    // Field removed in 16, but still exists in parent class "BuiltinClassLoader"
+                    if (getJvmVersion() >= 16)
+                        ucpOwner = ucpOwner.superclass;
+
+                    val ucpField = ucpOwner.getDeclaredField("ucp");
+
                     val ucpFieldOffset = unsafe.objectFieldOffset(ucpField)
                     val ucpObject = unsafe.getObject(classLoader, ucpFieldOffset)
                     val pathField = ucpField.type.getDeclaredField("path")
@@ -98,5 +112,30 @@ class ConfigParserFactory {
         }
 
         return lines
+    }
+
+    private fun getJvmVersion(): Int {
+        if (jvmVersion == null) {
+            // Check for class version, ez
+            var property = System.getProperty("java.class.version", "")
+            if (property.isNotEmpty()) {
+                jvmVersion = property.toFloatOrNull()?.let { (it - VERSION_OFFSET).toInt() }
+            }
+
+            if (jvmVersion == null) {
+                property = System.getProperty("java.vm.specification.version", "")
+                if (property.contains(".")) {
+                    jvmVersion = property.substring(property.indexOf('.') + 1).toFloat().toInt()
+                } else if (property.isNotEmpty()) {
+                    jvmVersion = property.toInt()
+                }
+            }
+        }
+
+        if (jvmVersion == null) {
+            jvmVersion = DEFAULT_JVM_VERSION
+        }
+
+        return jvmVersion ?: DEFAULT_JVM_VERSION
     }
 }
