@@ -1,7 +1,8 @@
-package ru.pocketbyte.locolaser.mobile
+package ru.pocketbyte.locolaser
 
 import ru.pocketbyte.locolaser.config.ConfigResourceBuilder
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
+import ru.pocketbyte.locolaser.mobile.*
 
 fun ConfigResourceBuilder.android(action: BaseResourcesConfigBuilder.() -> Unit) {
     val resourcesConfig = AndroidResourcesConfig()

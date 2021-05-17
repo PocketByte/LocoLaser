@@ -2,10 +2,10 @@ import ru.pocketbyte.locolaser.gettext
 import ru.pocketbyte.locolaser.googlesheet
 import ru.pocketbyte.locolaser.ini
 import ru.pocketbyte.locolaser.json
-import ru.pocketbyte.locolaser.kotlinmpp.kotlinCommon
-import ru.pocketbyte.locolaser.kotlinmpp.kotlinMultiplatform
-import ru.pocketbyte.locolaser.mobile.android
-import ru.pocketbyte.locolaser.mobile.ios
+import ru.pocketbyte.locolaser.kotlinCommon
+import ru.pocketbyte.locolaser.kotlinMultiplatform
+import ru.pocketbyte.locolaser.android
+import ru.pocketbyte.locolaser.ios
 import ru.pocketbyte.locolaser.plugin.localize
 import ru.pocketbyte.locolaser.plugin.resourceConfigAction
 import ru.pocketbyte.locolaser.properties
