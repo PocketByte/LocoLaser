@@ -9,8 +9,8 @@ class KotlinCommonResourcesConfigParser : BaseMobileResourcesConfigParser() {
 
     @Throws(InvalidConfigException::class)
     override fun platformByType(type: String?, throwIfWrongType: Boolean): BaseResourcesConfig? {
-        if (ru.pocketbyte.locolaser.kotlinmpp.KotlinCommonResourcesConfig.TYPE == type)
-            return ru.pocketbyte.locolaser.kotlinmpp.KotlinCommonResourcesConfig()
+        if (KotlinCommonResourcesConfig.TYPE == type)
+            return KotlinCommonResourcesConfig()
 
         if (throwIfWrongType)
             throw InvalidConfigException("Unknown platform: $type")

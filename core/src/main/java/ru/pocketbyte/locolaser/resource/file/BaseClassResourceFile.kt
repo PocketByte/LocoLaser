@@ -66,8 +66,6 @@ abstract class BaseClassResourceFile(file: File) : ResourceStreamFile(file) {
                     }
 
                     writeProperty(extraParams, propertyName, item)
-
-                    var arguments = mutableListOf<Pair<Int, String>>()
                 }
             }
 

@@ -55,7 +55,7 @@ object LocoLaser {
 
         LogUtils.info("Conflict strategy: " + config.conflictStrategy.toString())
 
-        val sourceConfig = config.sourceConfig ?: throw IllegalArgumentException("Config source must be not null")
+        val sourceConfig = config.source ?: throw IllegalArgumentException("Config source must be not null")
         val platformConfig = config.platform ?: throw IllegalArgumentException("Config platform must be not null")
 
         val resources = platformConfig.resources

@@ -9,3 +9,6 @@ include 'resource-kotlin-mpp'
 include 'resource-ini'
 include 'resource-properties'
 
+include 'plugin'
+include 'playground'
+

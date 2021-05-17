@@ -23,9 +23,10 @@ object OAuth2Helper {
 
     private const val TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
     private const val AUTH_URL = "https://accounts.google.com/o/oauth2/auth"
-    private val SCOPES = Arrays.asList(
+    private val SCOPES = listOf(
             "https://spreadsheets.google.com/feeds",
-            "https://www.googleapis.com/auth/drive.readonly")
+            "https://www.googleapis.com/auth/drive.readonly"
+    )
 
     private const val DOMAIN = "127.0.0.1"
 

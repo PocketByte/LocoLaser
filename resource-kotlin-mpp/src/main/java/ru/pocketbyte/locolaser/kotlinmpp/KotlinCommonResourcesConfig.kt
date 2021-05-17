@@ -9,7 +9,7 @@ class KotlinCommonResourcesConfig : BaseResourcesConfig() {
         const val TYPE = "kotlin-common"
     }
 
-    override val type = ru.pocketbyte.locolaser.kotlinmpp.KotlinCommonResourcesConfig.Companion.TYPE
+    override val type = TYPE
 
     override val defaultTempDirPath   = "./build/tmp/"
     override val defaultResourcesPath = "./src/commonMain/kotlin/"

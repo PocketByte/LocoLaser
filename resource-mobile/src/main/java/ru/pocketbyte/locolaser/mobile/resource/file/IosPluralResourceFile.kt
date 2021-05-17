@@ -169,6 +169,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
             // Close and write footer
             writeStringLn("</dict>")
             writeString("</plist>")
+            close()
         }
     }
 

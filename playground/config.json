@@ -1,0 +1,9 @@
+{
+    "platform": {
+        "type": "android",
+        "res_dir": "./strings/"
+    },
+    "source": "null",
+    "duplicate_comment":false,
+    "locales":["base", "ru"]
+}

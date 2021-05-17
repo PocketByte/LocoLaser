@@ -4,7 +4,7 @@ import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 
 abstract class KotlinBaseImplResourcesConfig : BaseResourcesConfig() {
 
-    var interfaceName: String? = null
+    var implements: String? = null
         get() = if (field != null) field else defaultInterfaceName
 
     abstract val defaultInterfaceName: String

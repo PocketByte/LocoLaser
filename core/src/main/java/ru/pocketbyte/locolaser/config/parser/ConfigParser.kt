@@ -113,6 +113,7 @@ open class ConfigParser
     fun fromFile(file: File, workDir: File? = null): List<Config> {
         LogUtils.info("Reading config file " + file.canonicalPath)
 
+        @Suppress("NAME_SHADOWING")
         val file = File(file.canonicalPath)
 
         if (workDir != null)
@@ -156,7 +157,7 @@ open class ConfigParser
         config.delay = JsonParseUtils.getLong(configJson, DELAY, null, false) * DELAY_MULT
         config.tempDir = JsonParseUtils.getFile(configJson, TEMP_DIR, null, false)
 
-        config.sourceConfig = sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true)
+        config.source = sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true)
         config.platform = platformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), true)
 
         config.locales = JsonParseUtils.getStrings(configJson, LOCALES, null, true)?.toSet() ?:
@@ -175,7 +176,7 @@ open class ConfigParser
     private fun validate(config: Config) {
         if (config.platform == null)
             throw InvalidConfigException("\"$PLATFORM\" is not set.")
-        if (config.sourceConfig == null)
+        if (config.source == null)
             throw InvalidConfigException("\"$SOURCE\" is not set.")
         if (config.locales.isEmpty())
             throw InvalidConfigException("\"$LOCALES\" must contain at least one item.")

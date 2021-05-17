@@ -1,14 +1,16 @@
 {
-    "platform": "android",
+    "platform": {
+        "type": "android",
+        "res_dir": "./strings/"
+    },
     "source": {
         "type":"googlesheet",
         "column_key":"key",
-        "column_locales":["base", "ru"],
         "column_comment":"base",
         "column_quantity":"quantity",
         "id":"1JZxUcu30BjxLwHg12bdHTxjDgsGFX9HA9zC4Jd8cuUM",
         "worksheet_title":"Strings"
     },
     "duplicate_comment":false,
-    "work_dir":"../out/android/"
+    "locales":["base", "ru"]
 }

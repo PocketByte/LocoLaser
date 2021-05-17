@@ -5,16 +5,12 @@
 
 package ru.pocketbyte.locolaser.config.parser
 
-import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.SOURCE
-import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.BaseTableResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
-
-import java.util.HashSet
 
 /**
  * @author Denis Shurygin
@@ -37,7 +33,7 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableResource
      * @throws InvalidConfigException if source type is unknown.
      */
     @Throws(InvalidConfigException::class)
-    protected abstract fun sourceByType(type: String?): SourceConfigClass
+    protected abstract fun sourceByType(type: String?, throwIfWrongType: Boolean): SourceConfigClass?
 
     /**
      * Parse Source from JSON object.
@@ -49,21 +45,7 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableResource
     @Throws(InvalidConfigException::class)
     override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig? {
         if (resourceObject is JSONObject) {
-            return parseFromJson(resourceObject)
-        } else if (resourceObject is JSONArray) {
-            var defaultConfig: ResourcesConfig? = null
-            val configs = HashSet<ResourcesConfig>(resourceObject.size)
-            for (item in resourceObject) {
-                if (item is JSONObject) {
-                    val config = parseFromJson(item)
-                    configs.add(config)
-
-                    if (defaultConfig == null)
-                        defaultConfig = config
-                } else
-                    throw InvalidConfigException("Source array must contain JSONObjects.")
-            }
-            return ResourcesSetConfig(configs, defaultConfig)
+            return parseFromJson(resourceObject, throwIfWrongType)
         } else if (throwIfWrongType) {
             throw InvalidConfigException("Source must be a JSONObject or JSONArray.")
         }
@@ -71,9 +53,9 @@ abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableResource
     }
 
     @Throws(InvalidConfigException::class)
-    protected fun parseFromJson(configJson: JSONObject): SourceConfigClass {
+    protected fun parseFromJson(configJson: JSONObject, throwIfWrongType: Boolean): SourceConfigClass? {
         val type = JsonParseUtils.getString(configJson, TYPE, SOURCE, false)
-        val source = sourceByType(type)
+        val source = sourceByType(type, throwIfWrongType) ?: return null
         fillFromJSON(source, configJson)
         validate(source)
         return source

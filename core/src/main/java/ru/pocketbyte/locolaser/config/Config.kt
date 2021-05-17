@@ -53,7 +53,7 @@ class Config {
     /**
      * Source that contain resources.
      */
-    var sourceConfig: ResourcesConfig? = null
+    var source: ResourcesConfig? = null
         set(value) {
             (field as? Child)?.parent = null
             field = value

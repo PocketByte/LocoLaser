@@ -81,7 +81,7 @@ class LocoLaserTest {
         config = Config()
         config.file = File(workDir, "config.json")
         config.platform = platformConfig
-        config.sourceConfig = sourceConfig
+        config.source = sourceConfig
         config.locales = setOf("en", "ru")
 
         // Write config file to make it not empty
@@ -110,7 +110,7 @@ class LocoLaserTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testNullSources() {
-        config.sourceConfig = null
+        config.source = null
         LocoLaser.localize(config)
     }
 

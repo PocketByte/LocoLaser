@@ -25,7 +25,6 @@ import java.util.*
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
 import ru.pocketbyte.locolaser.resource.Resources
 
 /**
@@ -43,7 +42,7 @@ class BaseTableResourcesConfigParserTest {
         val sourceConfigParser = object : BaseTableSourceConfigParser<MockTableResourcesConfig>() {
 
             @Throws(InvalidConfigException::class)
-            override fun sourceByType(type: String?): MockTableResourcesConfig {
+            override fun sourceByType(type: String?, throwIfWrongType: Boolean): MockTableResourcesConfig {
                 return MockTableResourcesConfig()
             }
         }
@@ -81,7 +80,7 @@ class BaseTableResourcesConfigParserTest {
 
         assertEquals(1, configs.size)
 
-        val sourceConfig = configs[0].sourceConfig
+        val sourceConfig = configs[0].source
         assertTrue(sourceConfig is BaseTableResourcesConfig)
     }
 
@@ -97,7 +96,7 @@ class BaseTableResourcesConfigParserTest {
 
             assertEquals(1, configs.size)
 
-            val sourceConfig = configs[0].sourceConfig as BaseTableResourcesConfig?
+            val sourceConfig = configs[0].source as BaseTableResourcesConfig?
             assertEquals(keyColumn, sourceConfig!!.keyColumn)
         }
     }
@@ -114,7 +113,7 @@ class BaseTableResourcesConfigParserTest {
 
             assertEquals(1, configs.size)
 
-            val sourceConfig = configs[0].sourceConfig as BaseTableResourcesConfig?
+            val sourceConfig = configs[0].source as BaseTableResourcesConfig?
             assertEquals(quantityColumn, sourceConfig!!.quantityColumn)
         }
     }
@@ -131,21 +130,9 @@ class BaseTableResourcesConfigParserTest {
 
             assertEquals(1, configs.size)
 
-            val sourceConfig = configs[0].sourceConfig as BaseTableResourcesConfig?
+            val sourceConfig = configs[0].source as BaseTableResourcesConfig?
             assertEquals(commentColumn, sourceConfig!!.commentColumn)
         }
-    }
-
-    @Test
-    @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
-    fun testMultiSource() {
-        val file = prepareMultiSourceMockFile(null, listOf<Map<String, Any>>(
-            prepareMinimalSourceMap(), prepareMinimalSourceMap())
-        )
-        val configs = mConfigParser.fromFile(file)
-
-        assertEquals(1, configs.size)
-        assertEquals(ResourcesSetConfig::class.java, configs[0].sourceConfig!!.javaClass)
     }
 
     private fun prepareMinimalSourceMap(): MutableMap<String, Any> {
@@ -164,37 +151,6 @@ class BaseTableResourcesConfigParserTest {
             val sourceJson = JSONObject(sourceMap)
             sourceJson[BaseTableSourceConfigParser.TYPE] = "mock"
             json[ConfigParser.SOURCE] = sourceJson
-        } else {
-            json[ConfigParser.SOURCE] = "mock"
-        }
-
-        if (configMap?.contains(ConfigParser.LOCALES) != true) {
-            json[ConfigParser.LOCALES] = JSONArray().apply {
-                add(Resources.BASE_LOCALE)
-            }
-        }
-
-        val writer = PrintWriter(file)
-        writer.write(json.toJSONString())
-        writer.flush()
-        writer.close()
-        return file
-    }
-
-    @Throws(IOException::class)
-    private fun prepareMultiSourceMockFile(configMap: Map<String, Any>?, sourceMaps: List<Map<String, Any>>?): File {
-        val file = tempFolder.newFile()
-        val json = if (configMap != null) JSONObject(configMap) else JSONObject()
-        json[ConfigParser.PLATFORM] = "mock"
-
-        if (sourceMaps != null) {
-            val sourceArray = JSONArray()
-            for (sourceMap in sourceMaps) {
-                val sourceJson = JSONObject(sourceMap)
-                sourceJson[BaseTableSourceConfigParser.TYPE] = "mock"
-                sourceArray.add(sourceJson)
-            }
-            json[ConfigParser.SOURCE] = sourceArray
         } else {
             json[ConfigParser.SOURCE] = "mock"
         }

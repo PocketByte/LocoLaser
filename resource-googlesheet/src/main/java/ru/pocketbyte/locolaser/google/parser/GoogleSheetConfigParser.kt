@@ -27,9 +27,14 @@ class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>()
     }
 
     @Throws(InvalidConfigException::class)
-    override fun sourceByType(type: String?): GoogleSheetConfig {
-        if (type != null && type != GoogleSheetConfig.TYPE)
-            throw InvalidConfigException("Source type is \"$type\", but expected \"${GoogleSheetConfig.TYPE}\".")
+    override fun sourceByType(type: String?, throwIfWrongType: Boolean): GoogleSheetConfig? {
+        if (type != null && type != GoogleSheetConfig.TYPE) {
+            if (throwIfWrongType) {
+                throw InvalidConfigException("Source type is \"$type\", but expected \"${GoogleSheetConfig.TYPE}\".")
+            } else {
+                return null
+            }
+        }
 
         return GoogleSheetConfig()
     }
