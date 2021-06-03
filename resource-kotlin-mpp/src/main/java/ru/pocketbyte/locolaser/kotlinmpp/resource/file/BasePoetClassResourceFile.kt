@@ -18,7 +18,7 @@ import java.io.File
 import java.util.HashSet
 
 abstract class BasePoetClassResourceFile(
-        protected val directory: File,
+        _directory: File,
         protected val className: String,
         protected val classPackage: String,
         override val formattingType: FormattingType = NoFormattingType
@@ -28,6 +28,8 @@ abstract class BasePoetClassResourceFile(
         private const val MAX_LINE_SIZE = 120 - 6
     }
 
+    protected val directory = File(_directory.canonicalPath)
+
     abstract fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder
 
     override fun read(extraParams: ExtraParams?): ResMap? {
@@ -35,8 +37,12 @@ abstract class BasePoetClassResourceFile(
     }
 
     override fun write(resMap: ResMap, extraParams: ExtraParams?) {
+        println("Writing $classPackage.$className into ${directory.canonicalPath}")
         val locale = resMap[Resources.BASE_LOCALE]
         if (locale != null) {
+
+            println("Locale: $locale")
+
             val classSpec = instantiateClassSpecBuilder(resMap, extraParams)
 
             val keysSet = HashSet<String>()

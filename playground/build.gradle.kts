@@ -1,14 +1,7 @@
-import ru.pocketbyte.locolaser.gettext
 import ru.pocketbyte.locolaser.googlesheet
-import ru.pocketbyte.locolaser.ini
-import ru.pocketbyte.locolaser.json
-import ru.pocketbyte.locolaser.kotlinCommon
 import ru.pocketbyte.locolaser.kotlinMultiplatform
-import ru.pocketbyte.locolaser.android
-import ru.pocketbyte.locolaser.ios
 import ru.pocketbyte.locolaser.plugin.localize
 import ru.pocketbyte.locolaser.plugin.resourceConfigAction
-import ru.pocketbyte.locolaser.properties
 
 buildscript {
     repositories {
@@ -34,6 +27,8 @@ plugins.apply("ru.pocketbyte.locolaser")
 version = "unspecified"
 
 localize {
+    configFromFile("JsonConfig", "config.json")
+
     val googleSheetConfiguration = resourceConfigAction {
         googlesheet {
             id = "1JZxUcu30BjxLwHg12bdHTxjDgsGFX9HA9zC4Jd8cuUM"
@@ -45,35 +40,31 @@ localize {
     }
     config {
         platform {
-//            kotlinMultiplatform {
-//                srcDir = File("./res/kmpp/")
-//                common()
-//                android()
-//                ios()
-//                js()
+            kotlinMultiplatform {
+                srcDir = File("./res/kmpp/")
+                repositoryInterface = "com.example.SuperString"
+                repositoryClass = "com.example.SuperStringImpl"
+                android(); ios(); js()
+            }
+//            json {
+//                resourcesDir("./res/json")
+//                indent = 2
 //            }
-
-            kotlinCommon {
-                resourcesDir("./res/kmpp/common")
-            }
-            json {
-                resourcesDir("./res/json")
-            }
-            gettext {
-                resourcesDir("./res/gettext")
-            }
-            ini {
-                resourcesDir("./res/ini")
-            }
-            properties {
-                resourcesDir("./res/properties")
-            }
-            android {
-                resourcesDir("./res/android")
-            }
-            ios {
-                resourcesDir("./res/ios")
-            }
+//            gettext {
+//                resourcesDir("./res/gettext")
+//            }
+//            ini {
+//                resourcesDir("./res/ini")
+//            }
+//            properties {
+//                resourcesDir("./res/properties")
+//            }
+//            android {
+//                resourcesDir("./res/android")
+//            }
+//            ios {
+//                resourcesDir("./res/ios")
+//            }
         }
         source.googleSheetConfiguration()
         isDuplicateComments = false

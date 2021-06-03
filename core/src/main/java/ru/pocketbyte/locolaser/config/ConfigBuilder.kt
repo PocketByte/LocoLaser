@@ -35,7 +35,7 @@ class ConfigBuilder(
         action(platform)
     }
 
-    val source: ConfigResourceBuilder = object : ConfigResourceBuilder() {
+    val source: ConfigResourceBuilder = object : ConfigResourceBuilder(true) {
         override var config: ResourcesConfig?
             get() = this@ConfigBuilder.config.source
             set(value) { this@ConfigBuilder.config.source = value}

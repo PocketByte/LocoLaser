@@ -13,8 +13,8 @@ class KotlinMultiplatformResourcesConfigBuilder {
         var filter: ((key: String) -> Boolean)? = null
     }
 
-    var interfaceName: String? = null
-    var implementationName: String? = null
+    var repositoryInterface: String? = null
+    var repositoryClass: String? = null
     var srcDir: File? = null
     var filter: ((key: String) -> Boolean)? = null
 
@@ -57,14 +57,13 @@ class KotlinMultiplatformResourcesConfigBuilder {
         val iosConfig = if (iosPlatform != null) KotlinIosResourcesConfig() else null
         val jsConfig = if (jsPlatform != null) KotlinJsResourcesConfig() else null
 
-        interfaceName?.also {
+        repositoryInterface?.also {
             commonConfig.resourceName = it
         }
 
-        implementationName?.also { className ->
+        repositoryClass?.also { className ->
             val applyAction: (it: KotlinBaseImplResourcesConfig) -> Unit = {
                 it.resourceName = className
-                it.implements = commonConfig.resourceName
             }
             androidConfig?.also { applyAction(it) }
             iosConfig?.also { applyAction(it) }
@@ -88,12 +87,15 @@ class KotlinMultiplatformResourcesConfigBuilder {
         }
         androidPlatform?.also {
             androidConfig?.fillFrom(it)
+            androidConfig?.implements = commonConfig.resourceName
         }
         iosPlatform?.also {
             iosConfig?.fillFrom(it)
+            iosConfig?.implements = commonConfig.resourceName
         }
         jsPlatform?.also {
             jsConfig?.fillFrom(it)
+            jsConfig?.implements = commonConfig.resourceName
         }
 
         return ResourcesSetConfig(
