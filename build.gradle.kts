@@ -20,6 +20,11 @@ allprojects {
     version = LibraryInfo.version
     group = LibraryInfo.group
 
+    configurations {
+        // dependencies from this configuration will not be included in final jar file
+        val noJarCompile by creating
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()

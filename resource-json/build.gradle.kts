@@ -7,14 +7,23 @@ plugins {
     id("signing")
 }
 
+configurations { compile.get().extendsFrom(named("noJarCompile").get()) }
+
 dependencies {
-    implementation(project(":core"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    add("noJarCompile", project(":core"))
+    compile("org.jetbrains.kotlin:kotlin-stdlib")
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
     testCompile("junit:junit:4.12")
 }
 
 tasks {
+    jar {
+        // Include all libraries into result JAR file.
+        from(
+            (configurations.compile.get() - configurations.named("noJarCompile").get())
+                .map { if(it.isDirectory()) { it } else { zipTree(it) }})
+    }
+
     create("sourceJar", Jar::class) {
         from(sourceSets.main.get().allSource)
         archiveClassifier.set("sources")
