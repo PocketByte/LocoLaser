@@ -1,5 +1,4 @@
-import ru.pocketbyte.locolaser.googlesheet
-import ru.pocketbyte.locolaser.kotlinMultiplatform
+import ru.pocketbyte.locolaser.*
 import ru.pocketbyte.locolaser.plugin.localize
 import ru.pocketbyte.locolaser.plugin.resourceConfigAction
 
@@ -10,15 +9,15 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin:2.1.0")
-        classpath("ru.pocketbyte.locolaser:core:2.1.0")
-        classpath("ru.pocketbyte.locolaser:resource-gettext:2.1.0")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.1.0")
-        classpath("ru.pocketbyte.locolaser:resource-ini:2.1.0")
-        classpath("ru.pocketbyte.locolaser:resource-json:2.1.0")
-        classpath("ru.pocketbyte.locolaser:resource-kotlin-mpp:2.1.0")
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.1.0")
-        classpath("ru.pocketbyte.locolaser:resource-properties:2.1.0")
+        classpath("ru.pocketbyte.locolaser:plugin:2.2.0")
+        classpath("ru.pocketbyte.locolaser:core:2.2.0")
+        classpath("ru.pocketbyte.locolaser:resource-gettext:2.2.0")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.2.0")
+        classpath("ru.pocketbyte.locolaser:resource-ini:2.2.0")
+        classpath("ru.pocketbyte.locolaser:resource-json:2.2.0")
+        classpath("ru.pocketbyte.locolaser:resource-kotlin-mpp:2.2.0")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:2.2.0")
+        classpath("ru.pocketbyte.locolaser:resource-properties:2.2.0")
     }
 }
 
@@ -46,25 +45,25 @@ localize {
                 repositoryClass = "com.example.SuperStringImpl"
                 android(); ios(); js()
             }
-//            json {
-//                resourcesDir("./res/json")
-//                indent = 2
-//            }
-//            gettext {
-//                resourcesDir("./res/gettext")
-//            }
-//            ini {
-//                resourcesDir("./res/ini")
-//            }
-//            properties {
-//                resourcesDir("./res/properties")
-//            }
-//            android {
-//                resourcesDir("./res/android")
-//            }
-//            ios {
-//                resourcesDir("./res/ios")
-//            }
+            json {
+                resourcesDir("./res/json")
+                indent = 2
+            }
+            gettext {
+                resourcesDir("./res/gettext")
+            }
+            ini {
+                resourcesDir("./res/ini")
+            }
+            properties {
+                resourcesDir("./res/properties")
+            }
+            android {
+                resourcesDir("./res/android")
+            }
+            ios {
+                resourcesDir("./res/ios")
+            }
         }
         source.googleSheetConfiguration()
         isDuplicateComments = false
