@@ -6,13 +6,15 @@ import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.ConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.EmptyResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
+import ru.pocketbyte.locolaser.plugin.utils.firstCharToUpperCase
 import java.io.File
 
-open class LocalizationConfigContainer {
+open class LocalizationConfigContainer(
+    private val project: Project
+) {
 
     private val configParser by lazy { ConfigParserFactory().get() }
 
-    lateinit var project: Project
     private val configs: HashMap<String?, Set<LocalizeTask>> = HashMap()
 
     fun add(name: String?, configProvider: () -> Config) {
@@ -91,13 +93,5 @@ open class LocalizationConfigContainer {
 
     private fun localizeExportNewTaskName(configName: String?): String {
         return "localize${configName.firstCharToUpperCase()}ExportNew"
-    }
-
-    private fun String?.firstCharToUpperCase(): String {
-        return when {
-            this?.isEmpty() != false -> ""
-            length == 1 -> toUpperCase()
-            else -> substring(0, 1).toUpperCase() + substring(1)
-        }
     }
 }
