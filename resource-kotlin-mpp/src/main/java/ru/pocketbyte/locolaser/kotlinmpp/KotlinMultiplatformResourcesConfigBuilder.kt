@@ -7,51 +7,123 @@ import java.io.File
 
 class KotlinMultiplatformResourcesConfigBuilder {
 
-    class PlatformBuilder {
-        var className: String? = null
+    open class BaseKmpBuilder {
+        /**
+         * Path to directory with source code.
+         */
         var sourcesDir: File? = null
+
+        /**
+         * Filter function.
+         * If defined, only strings that suits the filter will be added as Repository fields.
+         */
         var filter: ((key: String) -> Boolean)? = null
+
+        /**
+         * If defined, only strings with keys that matches RegExp will be added as Repository fields.
+         * @param regExp RegExp String. Only strings with keys that matches RegExp will be added as Repository fields.
+         */
+        fun filter(regExp: String) {
+            filter = BaseResourcesConfig.regExFilter(regExp)
+        }
     }
 
-    var repositoryInterface: String? = null
-    var repositoryClass: String? = null
-    var srcDir: File? = null
-    var filter: ((key: String) -> Boolean)? = null
+    class KmpInterfaceBuilder: BaseKmpBuilder() {
+        /**
+         * Canonical name of the Repository interface that should be generated.
+         */
+        var interfaceName: String? = null
+    }
 
+    class KmpClassBuilder: BaseKmpBuilder() {
+        /**
+         * Canonical name of the Repository class that should be generated.
+         */
+        var className: String? = null
+    }
+
+    /**
+     * Canonical name of the Repository interface that should be implemented by generated classes.
+     * If empty there will no interfaces implemented by generated Repository classes.
+     */
+    var repositoryInterface: String? = null
+
+    /**
+     * Canonical name of the Repository class that should be generated for each platform.
+     */
+    var repositoryClass: String? = null
+
+    /**
+     * Path to src directory.
+     */
+    var srcDir: File? = null
+
+    /**
+     * Path to src directory.
+     */
     fun srcDir(path: String) {
         srcDir = File(path)
     }
 
-    private var commonPlatform: PlatformBuilder? = null
-    private var androidPlatform: PlatformBuilder? = null
-    private var iosPlatform: PlatformBuilder? = null
-    private var jsPlatform: PlatformBuilder? = null
+    /**
+     * Filter function.
+     * If defined, only strings that suits the filter will be added as Repository fields.
+     */
+    var filter: ((key: String) -> Boolean)? = null
 
-    fun common(action: PlatformBuilder.() -> Unit = {}) {
-        commonPlatform = PlatformBuilder().apply {
+    /**
+     * If defined, only strings with keys that matches RegExp will be added as Repository fields.
+     * @param regExp RegExp String. Only strings with keys that matches RegExp will be added as Repository fields.
+     */
+    fun filter(regExp: String) {
+        filter = BaseResourcesConfig.regExFilter(regExp)
+    }
+
+    private var commonPlatform: KmpInterfaceBuilder? = null
+    private var androidPlatform: KmpClassBuilder? = null
+    private var iosPlatform: KmpClassBuilder? = null
+    private var jsPlatform: KmpClassBuilder? = null
+
+    /**
+     * Configure Repository interface in common module.
+     */
+    fun common(action: KmpInterfaceBuilder.() -> Unit = {}) {
+        commonPlatform = KmpInterfaceBuilder().apply {
             action(this)
         }
     }
 
-    fun android(action: PlatformBuilder.() -> Unit = {}) {
-        androidPlatform = PlatformBuilder().apply {
+    /**
+     * Configure Repository implementation for Android platform.
+     * There is no Android implementation will be generated if Android platform wasn't be configured.
+     */
+    fun android(action: KmpClassBuilder.() -> Unit = {}) {
+        androidPlatform = KmpClassBuilder().apply {
             action(this)
         }
     }
 
-    fun ios(action: PlatformBuilder.() -> Unit = {}) {
-        iosPlatform = PlatformBuilder().apply {
+    /**
+     * Configure Repository implementation for iOS platform.
+     * There is no iOS implementation will be generated if iOS platform wasn't be configured.
+     */
+    fun ios(action: KmpClassBuilder.() -> Unit = {}) {
+        iosPlatform = KmpClassBuilder().apply {
             action(this)
         }
     }
 
-    fun js(action: PlatformBuilder.() -> Unit = {}) {
-        jsPlatform = PlatformBuilder().apply {
+    /**
+     * Configure Repository implementation for JS platform.
+     * There is no JS implementation will be generated if JS platform wasn't be configured.
+     */
+    fun js(action: KmpClassBuilder.() -> Unit = {}) {
+        jsPlatform = KmpClassBuilder().apply {
             action(this)
         }
     }
 
-    internal fun toResourcesConfig(): ResourcesConfig {
+    internal fun build(): ResourcesConfig {
         val commonConfig = KotlinCommonResourcesConfig()
         val androidConfig = if (androidPlatform != null) KotlinAndroidResourcesConfig() else null
         val iosConfig = if (iosPlatform != null) KotlinIosResourcesConfig() else null
@@ -108,8 +180,12 @@ class KotlinMultiplatformResourcesConfigBuilder {
         )
     }
 
-    private fun BaseResourcesConfig.fillFrom(platformBuilder: PlatformBuilder) {
-        platformBuilder.className?.let { resourceName = it }
+    private fun BaseResourcesConfig.fillFrom(platformBuilder: BaseKmpBuilder) {
+        if (platformBuilder is KmpInterfaceBuilder) {
+            platformBuilder.interfaceName?.let { resourceName = it }
+        } else if (platformBuilder is KmpClassBuilder) {
+            platformBuilder.className?.let { resourceName = it }
+        }
         platformBuilder.sourcesDir?.let { resourcesDir = it }
         platformBuilder.filter?.let {
             val parentFiler = filter

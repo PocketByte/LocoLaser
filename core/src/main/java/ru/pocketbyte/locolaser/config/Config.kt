@@ -85,7 +85,8 @@ class Config {
     private var conflictStrategyInner: ConflictStrategy? = null
 
     /**
-     * List of locales that should be localized.
+     * Set of locales that should be handled by LocoLaser.
+     * You can use [Resources.BASE_LOCALE] to specify base locale.
      */
     var locales: Set<String> = setOf(Resources.BASE_LOCALE)
 

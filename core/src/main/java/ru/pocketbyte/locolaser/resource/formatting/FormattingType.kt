@@ -6,8 +6,21 @@ import ru.pocketbyte.locolaser.resource.entity.ResValue
 interface FormattingType {
 
     enum class ArgumentsSubstitution {
+        /**
+         * No substitution. Any formatting functionality will be omitted.
+         */
         NO,
+
+        /**
+         * Arguments substitution by index. Typical for formatting used in Java.
+         * For example: "Hello %1$s. My name is %1$s"
+         */
         BY_INDEX,
+
+        /**
+         * Arguments substitution by name. Typical for formatting used in Web.
+         * For example: "Hello {{user_name}}. My name is {{admin_name}}"
+         */
         BY_NAME
     }
 

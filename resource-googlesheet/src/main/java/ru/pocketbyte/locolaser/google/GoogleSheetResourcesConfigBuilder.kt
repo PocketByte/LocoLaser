@@ -9,22 +9,40 @@ class GoogleSheetResourcesConfigBuilder(
     private val config: GoogleSheetConfig
 ): BaseTableResourcesConfigBuilder(config) {
 
+    /**
+     * ID of the Google Sheet.
+     * You can get it from sheet url (https://docs.google.com/spreadsheets/d/{{sheet_id}}).
+     */
     var id: String?
         get() = config.id
         set(value) {config.id = value }
 
+    /**
+     * Title of the worksheet with localized strings.
+     * Not necessary property, by default will be used first worksheet of the sheet.
+     */
     var worksheetTitle: String?
         get() = config.worksheetTitle
         set(value) {config.worksheetTitle = value }
 
+    /**
+     * Path to OAUth credential file.
+     */
     var credentialFile: File?
         get() = config.credentialFile
         set(value) {config.credentialFile = value }
 
+    /**
+     * Path to OAUth credential file.
+     */
     fun credentialFile(path: String) {
         credentialFile = File(path)
     }
 
+    /**
+     * Values formatting type.
+     * Default value [ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType].
+     */
     var formattingType: FormattingType
         get() = config.formattingType
         set(value) {config.formattingType = value }

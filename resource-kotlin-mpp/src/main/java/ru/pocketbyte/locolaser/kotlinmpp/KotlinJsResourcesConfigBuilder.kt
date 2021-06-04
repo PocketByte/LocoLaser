@@ -1,5 +1,5 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
 class KotlinJsResourcesConfigBuilder(
-        private val config: KotlinJsResourcesConfig
+        config: KotlinJsResourcesConfig
 ): KotlinBaseImplResourcesConfigBuilder(config)
