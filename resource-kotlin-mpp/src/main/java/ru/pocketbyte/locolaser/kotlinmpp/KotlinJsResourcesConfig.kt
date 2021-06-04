@@ -10,7 +10,7 @@ class KotlinJsResourcesConfig : KotlinBaseImplResourcesConfig() {
 
     override val type = TYPE
 
-    override val defaultResourcesPath = "./src/jsMain/kotlin/"
+    override val defaultResourcesPath = "./build/generated/src/jsMain/kotlin/"
     override val defaultResourceName  = "ru.pocketbyte.locolaser.kmpp.JsStringRepository"
     override val defaultInterfaceName = "ru.pocketbyte.locolaser.kmpp.StringRepository"
 

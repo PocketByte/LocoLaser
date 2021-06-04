@@ -12,7 +12,7 @@ class KotlinCommonResourcesConfig : BaseResourcesConfig() {
     override val type = TYPE
 
     override val defaultTempDirPath   = "./build/tmp/"
-    override val defaultResourcesPath = "./src/commonMain/kotlin/"
+    override val defaultResourcesPath = "./build/generated/src/commonMain/kotlin/"
     override val defaultResourceName  = "ru.pocketbyte.locolaser.kmpp.StringRepository"
 
     override val resources

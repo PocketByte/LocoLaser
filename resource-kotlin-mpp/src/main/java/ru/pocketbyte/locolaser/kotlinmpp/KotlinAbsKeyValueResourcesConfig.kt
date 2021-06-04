@@ -12,7 +12,7 @@ class KotlinAbsKeyValueResourcesConfig : KotlinBaseImplResourcesConfig() {
 
     override val type = TYPE
 
-    override val defaultResourcesPath = "./src/main/kotlin/"
+    override val defaultResourcesPath = "./build/generated/src/main/kotlin/"
     override val defaultResourceName  = "ru.pocketbyte.locolaser.kmpp.AbsKeyValueStringRepository"
     override val defaultInterfaceName = "ru.pocketbyte.locolaser.kmpp.StringRepository"
 
