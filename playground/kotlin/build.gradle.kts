@@ -9,15 +9,16 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin:2.2.0")
-        classpath("ru.pocketbyte.locolaser:core:2.2.0")
-        classpath("ru.pocketbyte.locolaser:resource-gettext:2.2.0")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.2.0")
-        classpath("ru.pocketbyte.locolaser:resource-ini:2.2.0")
-        classpath("ru.pocketbyte.locolaser:resource-json:2.2.0")
-        classpath("ru.pocketbyte.locolaser:resource-kotlin-mpp:2.2.0")
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.2.0")
-        classpath("ru.pocketbyte.locolaser:resource-properties:2.2.0")
+        val localaserVersion = "2.2.1"
+        classpath("ru.pocketbyte.locolaser:plugin:$localaserVersion")
+        classpath("ru.pocketbyte.locolaser:core:$localaserVersion")
+        classpath("ru.pocketbyte.locolaser:resource-gettext:$localaserVersion")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:$localaserVersion")
+        classpath("ru.pocketbyte.locolaser:resource-ini:$localaserVersion")
+        classpath("ru.pocketbyte.locolaser:resource-json:$localaserVersion")
+        classpath("ru.pocketbyte.locolaser:resource-kotlin-mpp:$localaserVersion")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:$localaserVersion")
+        classpath("ru.pocketbyte.locolaser:resource-properties:$localaserVersion")
     }
 }
 
