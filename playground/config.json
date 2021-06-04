@@ -2,7 +2,7 @@
     "platform": [
         {
             "type": "kotlin-common",
-            "res_dir" : "./res/kmpp/common"
+            "res_dir" : "./build/res/kmpp/common"
         }
     ],
     "source": {
