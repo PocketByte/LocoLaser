@@ -14,8 +14,16 @@ fun FormattingArgument.anyName(position: Int): String {
 }
 
 fun FormattingArgument.parameterClass(): KClass<*> {
-    return (parameters?.get(FormattingType.PARAM_CLASS) as? KClass<*>) ?:
-           (parameters?.get(JavaFormattingType.PARAM_TYPE_NAME) as? String)?.let {
-                JavaFormattingType.classFromName(it)
-            } ?: String::class
+    (parameters?.get(FormattingType.PARAM_CLASS) as? KClass<*>)?.let {
+        return it
+    }
+    (parameters?.get(JavaFormattingType.PARAM_TYPE_NAME) as? String)?.let { paramName ->
+        JavaFormattingType.classFromName(paramName)?.let {
+            return it
+        }
+    }
+    if (name?.toLowerCase() == "count") {
+        return Long::class
+    }
+    return String::class
 }
