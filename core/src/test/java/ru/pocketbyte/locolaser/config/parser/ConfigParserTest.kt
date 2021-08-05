@@ -16,7 +16,6 @@ import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.testutils.mock.MockResourcesConfig
-import ru.pocketbyte.locolaser.testutils.mock.MockTableResourcesConfig
 
 import java.io.File
 import java.io.IOException
@@ -83,8 +82,8 @@ class ConfigParserTest {
         assertNotNull(configs[0])
         assertNotNull(configs[1])
 
-        assertEquals(delay1 * ConfigParser.DELAY_MULT, configs[0].delay)
-        assertEquals(delay2 * ConfigParser.DELAY_MULT, configs[1].delay)
+        assertEquals(delay1, configs[0].delay)
+        assertEquals(delay2, configs[1].delay)
 
     }
 
@@ -220,7 +219,7 @@ class ConfigParserTest {
         val configs = mConfigParser.fromFile(file)
 
         assertEquals(1, configs.size)
-        assertEquals(delay * ConfigParser.DELAY_MULT, configs[0].delay)
+        assertEquals(delay, configs[0].delay)
     }
 
     @Test
@@ -284,7 +283,7 @@ class ConfigParserTest {
         val configs = mConfigParser.fromArguments(
                 arrayOf(file.absolutePath, "-delay", delay.toString()))
         assertEquals(1, configs.size)
-        assertEquals(delay * ConfigParser.DELAY_MULT, configs[0].delay)
+        assertEquals(delay, configs[0].delay)
     }
 
     @Test
@@ -330,7 +329,7 @@ class ConfigParserTest {
         val config = configs[0]
         assertTrue(config.isForceImport)
         assertEquals(EXPORT_NEW_PLATFORM, config.conflictStrategy)
-        assertEquals(delay * ConfigParser.DELAY_MULT, config.delay)
+        assertEquals(delay, config.delay)
     }
 
 

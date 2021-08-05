@@ -91,7 +91,7 @@ class Config {
     var locales: Set<String> = setOf(Resources.BASE_LOCALE)
 
     /**
-     * Define time in milliseconds that define delay for next localization.
+     * Define time in minutes that define delay for next localization.
      * Localization will executed not more often the specified delay.
      * If force import switched on delay will be ignored.
      */

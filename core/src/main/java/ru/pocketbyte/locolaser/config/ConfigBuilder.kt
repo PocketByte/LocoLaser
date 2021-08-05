@@ -46,7 +46,7 @@ open class ConfigBuilder(
         set(value) { config.locales = value }
 
     /**
-     * Define time in milliseconds that define delay for next localization.
+     * Define time in minutes that define delay for next localization.
      * Localization will executed not more often the specified delay.
      * If force import switched on delay will be ignored.
      */

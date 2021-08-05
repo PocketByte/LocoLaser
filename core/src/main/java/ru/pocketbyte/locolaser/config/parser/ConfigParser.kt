@@ -49,12 +49,6 @@ open class ConfigParser
         const val TRIM_UNSUPPORTED_QUANTITIES = "trim_unsupported_quantities"
         const val DELAY = "delay"
 
-        /**
-         * Config delay defined in minutes but code use time in milliseconds.
-         * So delay value from config must multiplied by this value.
-         */
-        internal const val DELAY_MULT: Long = 60000
-
         @Throws(InvalidConfigException::class)
         private fun parseConflictStrategy(strategy: String?): Config.ConflictStrategy? {
             if (strategy == null)
@@ -153,10 +147,19 @@ open class ConfigParser
     private fun fromJsonObject(file: File, configJson: JSONObject): Config {
         val config = Config()
         config.file = file
-        config.isForceImport = JsonParseUtils.getBoolean(configJson, FORCE_IMPORT, null, false)
-        config.isDuplicateComments = JsonParseUtils.getBoolean(configJson, DUPLICATE_COMMENTS, null, false)
-        config.trimUnsupportedQuantities = JsonParseUtils.getBoolean(configJson, TRIM_UNSUPPORTED_QUANTITIES, null, true)
-        config.delay = JsonParseUtils.getLong(configJson, DELAY, null, false) * DELAY_MULT
+
+        JsonParseUtils.getBoolean(configJson, FORCE_IMPORT, null, false)?.let {
+            config.isForceImport = it
+        }
+        JsonParseUtils.getBoolean(configJson, DUPLICATE_COMMENTS, null, false)?.let {
+            config.isDuplicateComments = it
+        }
+        JsonParseUtils.getBoolean(configJson, TRIM_UNSUPPORTED_QUANTITIES, null, false)?.let {
+            config.trimUnsupportedQuantities = it
+        }
+        JsonParseUtils.getLong(configJson, DELAY, null, false)?.let {
+            config.delay = it
+        }
         config.tempDir = JsonParseUtils.getFile(configJson, TEMP_DIR, null, false)
 
         config.source = sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true)
@@ -215,7 +218,7 @@ open class ConfigParser
                 }
 
             if (delay != null)
-                config.delay = delay * DELAY_MULT
+                config.delay = delay
 
             if (tempDir != null)
                 config.tempDir = File(File(tempDir).canonicalPath)
