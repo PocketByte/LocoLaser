@@ -15,8 +15,8 @@ dependencies {
 }
 
 pluginBundle {
-    website = "https://github.com/PocketByte/locolaser-gradle-plugin"
-    vcsUrl = "https://github.com/PocketByte/locolaser-gradle-plugin"
+    website = "https://github.com/PocketByte/LocoLaser/"
+    vcsUrl = "https://github.com/PocketByte/LocoLaser/"
     description = "Plugin for LocoLaser"
     tags = listOf("localization", "tool")
 }

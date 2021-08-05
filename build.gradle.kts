@@ -11,7 +11,7 @@ buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${BuildVersion.kotlin}")
         classpath("com.github.dcendents:android-maven-gradle-plugin:1.4.1")
-        classpath("com.gradle.publish:plugin-publish-plugin:0.9.7")
+        classpath("com.gradle.publish:plugin-publish-plugin:0.14.0")
     }
 }
 
