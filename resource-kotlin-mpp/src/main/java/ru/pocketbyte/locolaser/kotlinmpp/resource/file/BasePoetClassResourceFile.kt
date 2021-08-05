@@ -37,12 +37,8 @@ abstract class BasePoetClassResourceFile(
     }
 
     override fun write(resMap: ResMap, extraParams: ExtraParams?) {
-        println("Writing $classPackage.$className into ${directory.canonicalPath}")
         val locale = resMap[Resources.BASE_LOCALE]
         if (locale != null) {
-
-            println("Locale: $locale")
-
             val classSpec = instantiateClassSpecBuilder(resMap, extraParams)
 
             val keysSet = HashSet<String>()
