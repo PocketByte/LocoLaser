@@ -15,9 +15,9 @@ open class LocalizationConfigContainer(
 
     private val configParser by lazy { ConfigParserFactory().get() }
 
-    private val configs: HashMap<String?, Set<LocalizeTask>> = HashMap()
+    private val configs: HashMap<String, Set<LocalizeTask>> = HashMap()
 
-    fun add(name: String?, configProvider: () -> Config) {
+    fun add(name: String, configProvider: () -> Config) {
         var tasks = configs[name]
         if (tasks == null || tasks.isEmpty()) {
             tasks = createTasksForConfig(name)
@@ -31,33 +31,37 @@ open class LocalizationConfigContainer(
         }
     }
 
-    fun config(name: String?, configSetup: ConfigBuilder.() -> Unit) {
+    fun config(name: String, configSetup: ConfigBuilder.() -> Unit) {
         add(name) {
             Config().apply {
-                platform = EmptyResourcesConfig()
-                source = EmptyResourcesConfig()
                 configSetup(ConfigBuilder(this))
+                if (platform == null) {
+                    platform = EmptyResourcesConfig()
+                }
+                if (source == null) {
+                    source = EmptyResourcesConfig()
+                }
             }
         }
     }
 
     fun config(configSetup: ConfigBuilder.() -> Unit) {
-        config(null, configSetup)
+        config("", configSetup)
     }
 
     fun configFromFile(file: String) {
-        configFromFile(null, File(file))
+        configFromFile("", File(file))
     }
 
-    fun configFromFile(name: String?, file: String) {
+    fun configFromFile(name: String, file: String) {
         configFromFile(name, File(file))
     }
 
     fun configFromFile(file: File, workDir: File? = null) {
-        configFromFile(null, file, workDir)
+        configFromFile("", file, workDir)
     }
 
-    fun configFromFile(name: String?, file: File, workDir: File? = null) {
+    fun configFromFile(name: String, file: File, workDir: File? = null) {
         add(name) {
             val configs: List<Config> = configParser.fromFile(file, workDir)
             when {
