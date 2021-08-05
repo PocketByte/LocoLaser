@@ -436,6 +436,84 @@ class LocoLaserTest {
         assertEquals(FileSummary(2123019, "p_hash_rus_hash_ru"), summary.getResourceSummary("ru"))
     }
 
+    @Test
+    fun testNoTrimUnsupportedQuantities() {
+        val pluralItem = ResItem("value3").apply {
+            addValue(ResValue("value ZERO", null, quantity = Quantity.ZERO))
+            addValue(ResValue("value ONE", null, quantity = Quantity.ONE))
+            addValue(ResValue("value TWO", null, quantity = Quantity.TWO))
+            addValue(ResValue("value FEW", null, quantity = Quantity.FEW))
+            addValue(ResValue("value MANY", null, quantity = Quantity.MANY))
+            addValue(ResValue("value OTHER", null, quantity = Quantity.OTHER))
+        }
+        source.mockMap?.get("ru")?.put(pluralItem)
+        source.mockMap?.get("en")?.put(pluralItem)
+
+        config.trimUnsupportedQuantities = false
+
+        assertTrue(LocoLaser.localize(config))
+
+        assertEquals(
+            ResItem("value3").apply {
+                addValue(ResValue("value ZERO", null, quantity = Quantity.ZERO))
+                addValue(ResValue("value ONE", null, quantity = Quantity.ONE))
+                addValue(ResValue("value TWO", null, quantity = Quantity.TWO))
+                addValue(ResValue("value FEW", null, quantity = Quantity.FEW))
+                addValue(ResValue("value MANY", null, quantity = Quantity.MANY))
+                addValue(ResValue("value OTHER", null, quantity = Quantity.OTHER))
+            },
+            platformResources.mMap?.get("ru")?.get("value3")
+        )
+
+        assertEquals(
+            ResItem("value3").apply {
+                addValue(ResValue("value ZERO", null, quantity = Quantity.ZERO))
+                addValue(ResValue("value ONE", null, quantity = Quantity.ONE))
+                addValue(ResValue("value TWO", null, quantity = Quantity.TWO))
+                addValue(ResValue("value FEW", null, quantity = Quantity.FEW))
+                addValue(ResValue("value MANY", null, quantity = Quantity.MANY))
+                addValue(ResValue("value OTHER", null, quantity = Quantity.OTHER))
+            },
+            platformResources.mMap?.get("en")?.get("value3")
+        )
+    }
+
+    @Test
+    fun testTrimUnsupportedQuantities() {
+        val pluralItem = ResItem("value3").apply {
+            addValue(ResValue("value ZERO", null, quantity = Quantity.ZERO))
+            addValue(ResValue("value ONE", null, quantity = Quantity.ONE))
+            addValue(ResValue("value TWO", null, quantity = Quantity.TWO))
+            addValue(ResValue("value FEW", null, quantity = Quantity.FEW))
+            addValue(ResValue("value MANY", null, quantity = Quantity.MANY))
+            addValue(ResValue("value OTHER", null, quantity = Quantity.OTHER))
+        }
+        source.mockMap?.get("ru")?.put(pluralItem)
+        source.mockMap?.get("en")?.put(pluralItem)
+
+        config.trimUnsupportedQuantities = true
+
+        assertTrue(LocoLaser.localize(config))
+
+        assertEquals(
+            ResItem("value3").apply {
+                addValue(ResValue("value ONE", null, quantity = Quantity.ONE))
+                addValue(ResValue("value FEW", null, quantity = Quantity.FEW))
+                addValue(ResValue("value MANY", null, quantity = Quantity.MANY))
+                addValue(ResValue("value OTHER", null, quantity = Quantity.OTHER))
+            },
+            platformResources.mMap?.get("ru")?.get("value3")
+        )
+
+        assertEquals(
+            ResItem("value3").apply {
+                addValue(ResValue("value ONE", null, quantity = Quantity.ONE))
+                addValue(ResValue("value OTHER", null, quantity = Quantity.OTHER))
+            },
+            platformResources.mMap?.get("en")?.get("value3")
+        )
+    }
+
     // ====================================================
     // Private classes and methods
 

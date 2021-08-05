@@ -5,9 +5,6 @@
 
 package ru.pocketbyte.locolaser.resource.entity
 
-import ru.pocketbyte.locolaser.utils.LogUtils
-import ru.pocketbyte.locolaser.utils.TextUtils
-
 /**
  * @author Denis Shurygin
  */

@@ -10,8 +10,6 @@ import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.LogUtils
 import ru.pocketbyte.locolaser.utils.PluralUtils
-import java.lang.StringBuilder
-
 import kotlin.math.max
 
 /**
@@ -41,12 +39,6 @@ abstract class BaseTableResources : Resources {
     abstract val columnIndexes: ColumnIndexes
 
     private var keysRows: MutableMap<String, MutableMap<Quantity, Int>>? = null
-        get() {
-            if (field == null) {
-
-            }
-            return field
-        }
 
     fun getRow(key: String, quantity: Quantity): Int? {
         if (this.keysRows == null) {
@@ -100,7 +92,7 @@ abstract class BaseTableResources : Resources {
                 locales?.forEach { locale ->
                     val localeCol = columnIndexes.indexesMap[locale] ?: -1
 
-                    if (localeCol >= 0 && PluralUtils.quantityIsSupported(quantity, locale)) {
+                    if (localeCol >= 0) {
                         if (!items.containsKey(locale))
                             items[locale] = ResLocale()
 

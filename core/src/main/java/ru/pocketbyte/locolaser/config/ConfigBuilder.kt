@@ -39,7 +39,7 @@ open class ConfigBuilder(
 
     /**
      * Set of locales that should be handled by LocoLaser.
-     * You can use [Resources.BASE_LOCALE] to specify base locale.
+     * You can use [ru.pocketbyte.locolaser.resource.Resources.BASE_LOCALE] to specify base locale.
      */
     var locales: Set<String>
         get() = config.locales
@@ -97,5 +97,15 @@ open class ConfigBuilder(
         get() = extraParams.duplicateComments
         set(isDuplicateComments) {
             extraParams.duplicateComments = isDuplicateComments
+        }
+
+    /**
+     * Define if unsupported quantities should be throw away if is not supported by locale.
+     * True if unsupported quantities should be throw away, false otherwise.
+     */
+    var ExtraParams.trimUnsupportedQuantities: Boolean
+        get() = extraParams.trimUnsupportedQuantities
+        set(value) {
+            extraParams.trimUnsupportedQuantities = value
         }
 }

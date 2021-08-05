@@ -46,6 +46,7 @@ open class ConfigParser
         const val FORCE_IMPORT = "force_import"
         const val CONFLICT_STRATEGY = "conflict_strategy"
         const val DUPLICATE_COMMENTS = "duplicate_comments"
+        const val TRIM_UNSUPPORTED_QUANTITIES = "trim_unsupported_quantities"
         const val DELAY = "delay"
 
         /**
@@ -154,6 +155,7 @@ open class ConfigParser
         config.file = file
         config.isForceImport = JsonParseUtils.getBoolean(configJson, FORCE_IMPORT, null, false)
         config.isDuplicateComments = JsonParseUtils.getBoolean(configJson, DUPLICATE_COMMENTS, null, false)
+        config.trimUnsupportedQuantities = JsonParseUtils.getBoolean(configJson, TRIM_UNSUPPORTED_QUANTITIES, null, true)
         config.delay = JsonParseUtils.getLong(configJson, DELAY, null, false) * DELAY_MULT
         config.tempDir = JsonParseUtils.getFile(configJson, TEMP_DIR, null, false)
 

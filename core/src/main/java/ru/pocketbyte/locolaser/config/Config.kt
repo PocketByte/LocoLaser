@@ -115,7 +115,17 @@ class Config {
      */
     var isDuplicateComments: Boolean
         get() = extraParams.duplicateComments
-        set(isDuplicateComments) {
-            extraParams.duplicateComments = isDuplicateComments
+        set(value) {
+            extraParams.duplicateComments = value
+        }
+
+    /**
+     * Define if unsupported quantities should be throw away if is not supported by locale.
+     * True if unsupported quantities should be throw away, false otherwise.
+     */
+    var trimUnsupportedQuantities: Boolean
+        get() = extraParams.trimUnsupportedQuantities
+        set(value) {
+            extraParams.trimUnsupportedQuantities = value
         }
 }

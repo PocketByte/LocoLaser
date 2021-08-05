@@ -12,6 +12,7 @@ import ru.pocketbyte.locolaser.resource.entity.merge
 import ru.pocketbyte.locolaser.summary.Summary
 import ru.pocketbyte.locolaser.summary.plus
 import ru.pocketbyte.locolaser.utils.LogUtils
+import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.IOException
 import java.util.*
 
@@ -129,11 +130,19 @@ object LocoLaser {
                     else -> { /* Do nothing */ }
                 }
 
+                if (config.trimUnsupportedQuantities) {
+                    mergedResMap?.trimUnsupportedQuantities()
+                }
+
                 if (mergedResMap != null && config.conflictStrategy.isExportStrategy) {
                     source.write(mergedResMap, null)
                 }
             } else {
                 mergedResMap = sourceResMap
+
+                if (config.trimUnsupportedQuantities) {
+                    mergedResMap?.trimUnsupportedQuantities()
+                }
             }
 
             // =================================
@@ -166,5 +175,20 @@ object LocoLaser {
         }
 
         return true
+    }
+
+    private fun ResMap.trimUnsupportedQuantities() {
+        forEach { (locale, localeMap) ->
+            PluralUtils.quantitiesForLocale(locale)?.let { supportedQuantities ->
+                localeMap.forEach { _, resItem ->
+                    for (i in resItem.values.size - 1 downTo 0) {
+                        val value = resItem.values[i]
+                        if (!supportedQuantities.contains(value.quantity)) {
+                            resItem.removeValue(value)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
