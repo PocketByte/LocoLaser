@@ -122,34 +122,6 @@ class BaseTableResourcesTest {
     }
 
     @Test
-    @Throws(Exception::class)
-    fun testReadNotSupportedQuantity() {
-        val dataSet = MockDataSet(arrayOf("en"))
-        dataSet.add("key1", null, null, arrayOf("value1"), null)
-        dataSet.add("key1", Quantity.ZERO.toString(), null, arrayOf("value2"), null)
-        dataSet.add("key1", Quantity.FEW.toString(), null, arrayOf("value3"), null)
-
-        val sourceConfig = BaseTableResourcesConfigImpl(dataSet)
-        sourceConfig.keyColumn = "key"
-
-        val source = sourceConfig.resources
-        val result = source.read(setOf(Resources.BASE_LOCALE, "en"), null)
-        assertNotNull(result)
-
-        assertEquals(2, result?.size) // 1 locale + base locale
-
-        val resLocaleEn = result?.get("en")
-        assertNotNull(resLocaleEn)
-
-        val resItem1 = resLocaleEn?.get("key1")
-        assertNotNull(resItem1)
-
-        // EN locale support only ONE and OTHER quantities
-        assertEquals(1, resItem1?.values?.size)
-        assertNotNull(resItem1?.valueForQuantity(Quantity.OTHER))
-    }
-
-    @Test
     fun testReadDefaultLocale1() {
         val dataSet = MockDataSet(arrayOf("en", "ru"))
         dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"), null)
