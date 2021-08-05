@@ -3,15 +3,15 @@ Starting from version 2.0.0 all Platforms and Sources become Resources, so you c
 For example you can use iOS strings as a Source to generate Swift Class.
 
 #### Dependencies
-All maven artifacts of resources now has prefix "resource". So following dependencies should be changed:<br>
-`platform-mobile`        -> `resource-mobile`<br>
-`platform-kotlin-mobile` -> `resource-kotlin-mobile`<br>
-`platform-json`          -> `resource-json`<br>
-`platform-gettext`       -> `resource-gettext`<br>
-`source-googlesheet`     -> `resource-googlesheet`<br>
+All maven artifacts of resources now has prefix "resource". So following dependencies should be changed:  
+`platform-mobile`        -> `resource-mobile`  
+`platform-kotlin-mobile` -> `resource-kotlin-mobile`  
+`platform-json`          -> `resource-json`  
+`platform-gettext`       -> `resource-gettext`  
+`source-googlesheet`     -> `resource-googlesheet`  
 
 #### List of Locales 
-Google Sheet config now has no field `"column_locales"`. This field moved to the general layer and renamed to `"locales"`.<br>
+Google Sheet config now has no field `"column_locales"`. This field moved to the general layer and renamed to `"locales"`.  
 **IMPORTANT**: Field `"locales"` are mandatory! If you want to use only base locale you could provide value `["base"]`.
 
 Version 1.5.*

@@ -1,5 +1,6 @@
 # LocoLaser
-LocoLaser - Localization tool to import localized strings from external source to your project. Utility support following resource types:
+LocoLaser - Localization tool to import localized strings from external source to your project.
+Utility support following resource types:
 - Android resources: strings.xml
 - iOS resources: Localizable.strings
 - GetText resources: messages.pom
@@ -12,12 +13,13 @@ LocoLaser - Localization tool to import localized strings from external source t
 Please read [Migration instruction](docs/migration.md) to migrate to version 2.0.0
 
 ##### Related Git's
-Gradle plugin: https://github.com/PocketByte/locolaser-gradle-plugin<br>
-Android Example: https://github.com/PocketByte/locolaser-android-example<br>
-iOS Example: https://github.com/PocketByte/locolaser-ios-example<br>
-Kotlin MPP Example: https://github.com/PocketByte/locolaser-kotlin-mpp-example
+Gradle plugin: https://github.com/PocketByte/locolaser-gradle-plugin  
+Android Example: https://github.com/PocketByte/locolaser-android-example  
+iOS Example: https://github.com/PocketByte/locolaser-ios-example  
+Kotlin MPP Example: https://github.com/PocketByte/locolaser-kotlin-mpp-example  
 ### How does it work
-At first you need to create configuration file in JSON format that contains configuration of platforms and sources. Here is the detailed instruction for configuring: [LocoLaser Config](CONFIG.md)<br>
+At first, you need to create configuration file in JSON format that contains configuration of platforms and sources.
+Here is the detailed instruction for configuring: [LocoLaser Config](CONFIG.md)  
 Example of Android config that gets strings from Google Sheets:
 ```json
 {
@@ -36,7 +38,10 @@ Example of console command that starts LocoLaser:
 ``` Bash
 java -cp "core.jar:platform-mobile.jar:source-googlesheet.jar" ru.pocketbyte.locolaser.Main "localization_config.json"
 ```
-These artifacts can be download from [maven repository](https://bintray.com/pocketbyte/maven). But there is another simplests ways. If you use gradle you can use [LocoLaser gradle plugin](https://github.com/PocketByte/locolaser-gradle-plugin) instead. Otherwise in [LocaLaser iOS Example](https://github.com/PocketByte/locolaser-ios-example/) you can find [localize.command](https://github.com/PocketByte/locolaser-ios-example/blob/master/locloaser-example-ios/localize.command), the bash scripts that simplify work with LocoLaser on Unix based systems.
+These artifacts can be downloaded from [maven repository](https://bintray.com/pocketbyte/maven).
+But there is another simplest ways. 
+If you use gradle you can use [LocoLaser gradle plugin](https://github.com/PocketByte/locolaser-gradle-plugin) instead.
+Otherwise, in [LocaLaser iOS Example](https://github.com/PocketByte/locolaser-ios-example/) you can find [localize.command](https://github.com/PocketByte/locolaser-ios-example/blob/master/locloaser-example-ios/localize.command), the bash scripts that simplify work with LocoLaser on Unix based systems.
 
 ### Console arguments
 You can override config properties by adding additional console arguments:

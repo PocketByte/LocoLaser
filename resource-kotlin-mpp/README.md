@@ -3,8 +3,8 @@
 ### Overview
 Kotlin Mobile Platform it's extension of LocoLaser.
 It generates the interface of common repository with strings resources and then implementations for each platform.
-Currently, it supports Android, iOS and JavaScript.<br>
-<br>
+Currently, it supports Android, iOS and JavaScript.  
+  
 Common interface example:
 ```Kotlin
 interface StringRepository {
@@ -22,8 +22,8 @@ dependencies {
 
 ### Config
 Each class or interface that need to be generated should be described by separated platform config.
-Config can be defined by JSON object.<br>
-<br>
+Config can be defined by JSON object.  
+  
 In general config of one source file should have following structure:
 ```
 {
@@ -33,11 +33,12 @@ In general config of one source file should have following structure:
     "filter" : (String value)
 }
 ```
-Properties description:<br>
+Properties description:  
 - **`type`** - String. Type of the platform. For common kotlin interface it should be `"kotlin-common"`.
 - **`res_name`** - String. Desirable canonical name of repository interface or class implementation.
 - **`res_dir`** - String. Path to directory with interface or class file.
-- **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource. By default no filter.
+- **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource.
+  By default, no filter.
 
 ### Implementation Configs
 Repository implementation config require one more additional parameter:
@@ -119,9 +120,11 @@ They are readable and Repository will be fulfilled by strings from this resource
 ### Custom Repository
 You able to implement your custom repository for any platform.
 To do it you should use type `kotlin-abs-key-value`.
-Then LocoLaser will generate implementation of abstract repository with interface `StringProvider`, which should be implemented and provided to repository class thru constructor.
+Then LocoLaser will generate implementation of abstract repository with interface `StringProvider`,
+which should be implemented and provided to repository class through constructor.
 
-If you would to generate formatting functions for formatted strings you should provide formatting type thru the property **`formatting_type`**. See more details in [FORMATTING_TYPE.md](../FORMATTING_TYPE.md).
+If you would to generate formatting functions for formatted strings you should provide formatting type through the property **`formatting_type`**.
+See more details in [FORMATTING_TYPE.md](../FORMATTING_TYPE.md).
 
 So, Custom config should have following structure:
 ```
