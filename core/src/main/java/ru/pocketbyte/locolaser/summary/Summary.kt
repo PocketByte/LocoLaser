@@ -28,6 +28,12 @@ class Summary private constructor(file: File?) {
 
         const val SUMMARY_FILE_NAME = "locolaser.summary"
 
+        /**
+         * Config delay defined in minutes but code use time in milliseconds.
+         * So delay value from config must multiplied by this value.
+         */
+        private const val DELAY_MULT: Long = 60000
+
         private var sFactory: Factory? = null
 
         internal fun setFactory(factory: Factory?) {
@@ -117,7 +123,7 @@ class Summary private constructor(file: File?) {
 
         if (file != null && file.exists()) {
             val currentDelay = System.currentTimeMillis() - file.lastModified()
-            return currentDelay > delay
+            return currentDelay > delay * DELAY_MULT
         }
         return true
     }

@@ -47,8 +47,8 @@ class JsonResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
                 platform.filter = BaseResourcesConfig.regExFilter(
                         getString(resourceObject, FILTER, PLATFORM, false))
 
-                if (resourceObject[INDENT] != null) {
-                    platform.indent = getLong(resourceObject, INDENT, PLATFORM, false).toInt()
+                getLong(resourceObject, INDENT, PLATFORM, false)?.let {
+                    platform.indent = it.toInt()
                 }
 
                 return platform

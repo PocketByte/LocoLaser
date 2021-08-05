@@ -44,23 +44,23 @@ object JsonParseUtils {
         val jsonObject = getObject(json, key, parentKey, throwIfNull)
         if (jsonObject != null && jsonObject !is String)
             throw InvalidConfigException("Property ${keyName(key, parentKey)} must be a String.")
-        return jsonObject as String?
+        return jsonObject as? String?
     }
 
     @Throws(InvalidConfigException::class)
-    fun getBoolean(json: JSONObject, key: String, parentKey: String? = null, throwIfNull: Boolean = false): Boolean {
+    fun getBoolean(json: JSONObject, key: String, parentKey: String? = null, throwIfNull: Boolean = false): Boolean? {
         val jsonObject = getObject(json, key, parentKey, throwIfNull)
         if (jsonObject != null && jsonObject !is Boolean)
             throw InvalidConfigException("Property ${keyName(key, parentKey)} must be a Boolean.")
-        return (jsonObject as? Boolean) ?: false
+        return (jsonObject as? Boolean)
     }
 
     @Throws(InvalidConfigException::class)
-    fun getLong(json: JSONObject, key: String, parentKey: String? = null, throwIfNull: Boolean = false): Long {
+    fun getLong(json: JSONObject, key: String, parentKey: String? = null, throwIfNull: Boolean = false): Long? {
         val jsonObject = getObject(json, key, parentKey, throwIfNull)
         if (jsonObject != null && jsonObject !is Long)
             throw InvalidConfigException("Property ${keyName(key, parentKey)} must be a Long.")
-        return (jsonObject as? Long) ?: 0L
+        return (jsonObject as? Long)
     }
 
     @Throws(InvalidConfigException::class)
