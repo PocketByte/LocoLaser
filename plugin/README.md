@@ -6,7 +6,7 @@ This gradle plugin simplify work with LocoLaser by adding several tasks and exte
 In **`build.gradle.kts`** of the module apply LocoLaser
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.2.1")
+    id("ru.pocketbyte.locolaser").version("2.2.4")
 }
 ```
 ##### 2. Add dependency
@@ -18,8 +18,8 @@ buildscript {
         ...
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.2.1")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.2.1")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:2.2.4")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.2.4")
         ...
     }
 }
@@ -27,6 +27,9 @@ buildscript {
 ##### 2. Create configuration
 In same **`build.gradle.kts`** create localization configuration:
 ```kotlin
+import ru.pocketbyte.locolaser.*
+import ru.pocketbyte.locolaser.plugin.localize
+
 // 2: Configure localization config
 localize {
     config("KMP") {

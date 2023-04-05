@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.plugin
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
 import ru.pocketbyte.locolaser.config.Config
@@ -12,6 +13,7 @@ open class LocalizeTask: DefaultTask() {
         group = "localization"
     }
 
+    @Input
     var config: () -> Config = { throw IllegalArgumentException("Config not set") }
 
     @TaskAction

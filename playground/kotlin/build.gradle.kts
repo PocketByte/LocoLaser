@@ -9,7 +9,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        val localaserVersion = "2.2.1"
+        val localaserVersion = "2.2.4"
         classpath("ru.pocketbyte.locolaser:plugin:$localaserVersion")
         classpath("ru.pocketbyte.locolaser:core:$localaserVersion")
         classpath("ru.pocketbyte.locolaser:resource-gettext:$localaserVersion")
