@@ -5,11 +5,9 @@
 
 package ru.pocketbyte.locolaser.google.sheet
 
-import com.google.gdata.client.spreadsheet.SpreadsheetService
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry
-import com.google.gdata.data.spreadsheet.WorksheetEntry
 import ru.pocketbyte.locolaser.config.resources.BaseTableResourcesConfig
 import ru.pocketbyte.locolaser.google.utils.GoogleSheetGlobalPool
+import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import java.io.File
@@ -37,19 +35,12 @@ class GoogleSheetConfig : BaseTableResourcesConfig() {
 
     override val defaultTempDir: File = File("./temp/")
 
-    override val resources: GoogleSheet
+    override val resources: Resources
         get() {
             return id?.let { id ->
                 GoogleSheet(
-                        this,
-                        object : WorksheetFacade() {
-                            override val service: SpreadsheetService
-                                get() = GoogleSheetGlobalPool.getService(id, credentialFile)
-                            override val sheetEntry: SpreadsheetEntry
-                                get() = GoogleSheetGlobalPool.getSheetEntry(id, service)
-                            override val worksheetEntry: WorksheetEntry
-                                get() = GoogleSheetGlobalPool.getWorksheet(sheetEntry, worksheetTitle)
-                        },
+                    this,
+                    GoogleSheetGlobalPool.getService(id, credentialFile),
                     formattingType
                 )
             } ?: throw IllegalStateException("Sheet ID is not set")

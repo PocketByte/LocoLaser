@@ -5,5 +5,5 @@ object BuildVersion {
 
     const val googleApiClient = "1.30.4"
     const val googleAuthClient = "1.30.6"
-    const val googleGdata = "1.47.1"
+    const val googleSheets = "v4-rev581-1.25.0"
 }

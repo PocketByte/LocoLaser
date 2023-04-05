@@ -5,31 +5,25 @@
 
 package ru.pocketbyte.locolaser.google.sheet
 
-import com.google.gdata.data.ILink
-import com.google.gdata.data.batch.BatchOperationType
-import com.google.gdata.data.batch.BatchUtils
-import com.google.gdata.data.spreadsheet.CellEntry
-import com.google.gdata.data.spreadsheet.CellFeed
-import com.google.gdata.util.ServiceException
+import com.google.api.services.sheets.v4.Sheets
+import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest
+import com.google.api.services.sheets.v4.model.ValueRange
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.BaseTableResources
 import ru.pocketbyte.locolaser.resource.Resources
-import ru.pocketbyte.locolaser.resource.entity.*
+import ru.pocketbyte.locolaser.resource.entity.Quantity
+import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
-import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
 import ru.pocketbyte.locolaser.utils.LogUtils
-
 import java.io.IOException
-import java.net.URL
-import kotlin.collections.ArrayList
 
 /**
  * @author Denis Shurygin
  */
 class GoogleSheet(
         private val sourceConfig: GoogleSheetConfig,
-        private val worksheetFacade: WorksheetFacade,
+        private val service: Sheets,
         override val formattingType: FormattingType
 ) : BaseTableResources() {
 
@@ -52,18 +46,17 @@ class GoogleSheet(
     private lateinit var mColumnIndexes: ColumnIndexes
 
     private var mTitleRow = -1
-    private var mRowsCount = 0
 
-    private var mQuery: CellFeed? = null
+    private var mQuery: List<List<Any>>? = null
 
     override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(0, worksheetFacade.sheetEntry.updated.value.toString())
+        return FileSummary(0, System.currentTimeMillis().toString()) // FIXME use sheet update time
     }
 
     override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         if (fetchCellsIfNeeded()) {
-            var totalRows = mRowsCount
-            val batchRequest = CellFeed()
+            var totalRows = rowsCount
+            val batchRequest = mutableListOf<ValueRange>()
             val newRows = ArrayList<Pair<String, Quantity>>()
 
             for ((locale, resLocale) in resMap) {
@@ -76,20 +69,20 @@ class GoogleSheet(
                             // =====================================
                             // Prepare batch for found missed resMap
                             if (resRow != null) {
-                                if (getValue(localeColumn, resRow)?.isBlank() == true) {
-                                    CellEntry(getCell(localeColumn, resRow)!!).let { batchEntry ->
-                                        batchEntry.changeInputValueLocal(valueToSourceValue(resValue.value))
-                                        BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
-                                        batchRequest.entries.add(batchEntry)
-                                    }
+                                if (getValue(localeColumn, resRow)?.isBlank() != false) {
+                                    batchRequest.add(
+                                            ValueRange()
+                                                    .setRange("${columnName(localeColumn)}$resRow")
+                                                    .setValues(listOf(listOf(valueToSourceValue(resValue.value))))
+                                    )
 
                                     val comment = resValue.comment
                                     if (comment != null && mColumnIndexes.comment >= 0) {
-                                        CellEntry(getCell(mColumnIndexes.comment, resRow)!!).let { batchEntry ->
-                                            batchEntry.changeInputValueLocal(valueToSourceValue(comment))
-                                            BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
-                                            batchRequest.entries.add(batchEntry)
-                                        }
+                                        batchRequest.add(
+                                                ValueRange()
+                                                        .setRange("${columnName(mColumnIndexes.comment)}$resRow")
+                                                        .setValues(listOf(listOf(valueToSourceValue(comment))))
+                                        )
                                     }
                                 }
                             } else {
@@ -105,75 +98,50 @@ class GoogleSheet(
                 }
             }
 
-            try {
-                mQuery?.getLink(ILink.Rel.FEED_BATCH, ILink.Type.ATOM)?.let { batchLink ->
-                    worksheetFacade.batch(URL(batchLink.href), batchRequest)
+            service.spreadsheets()
+                .values()
+                .batchUpdate(
+                    sourceConfig.id,
+                    BatchUpdateValuesRequest()
+                        .setValueInputOption("RAW")
+                        .setData(batchRequest)
+                )
+                .execute()
+                .let {
+                    LogUtils.info("${it.totalUpdatedCells} cells updated.")
                 }
 
-                if (totalRows > worksheetFacade.rowCount) {
-                    worksheetFacade.rowCount = totalRows
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-                throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
-            } catch (e: ServiceException) {
-                e.printStackTrace()
-                throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
-            }
-
-            if (totalRows > mRowsCount) {
-                val cellFeed: CellFeed = try {
-                    worksheetFacade.queryRange(
-                        mColumnIndexes.min,
-                        mRowsCount + 1,
-                        mColumnIndexes.max,
-                        totalRows, true
-                    ) ?: throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
-                } catch (e: ServiceException) {
-                    e.printStackTrace()
-                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id)
-                }
+            if (totalRows > rowsCount) {
+                val newKeysList = mutableListOf<String>()
+                val newValuesBatch = mutableListOf<ValueRange>()
 
                 for ((newRowKey, newRowQuantity) in newRows) {
                     getRow(newRowKey, newRowQuantity)?.let { row ->
                         // Key Cell
-                        CellEntry(cellFeed.entries[
-                            entryIndex(mColumnIndexes.key, row, mRowsCount)
-                        ]).let { batchEntry ->
-                            batchEntry.changeInputValueLocal(newRowKey)
-                            BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
-                            batchRequest.entries.add(batchEntry)
-                        }
+
+                        newKeysList.add(newRowKey)
 
                         val resItem = resMap[Resources.BASE_LOCALE]?.get(newRowKey)
 
                         // Quantity Cell
                         if (mColumnIndexes.quantity >= 0) {
-                            CellEntry(cellFeed.entries[
-                                entryIndex(mColumnIndexes.quantity, row, mRowsCount)
-                            ]).let { batchEntry ->
-                                if (resItem?.isHasQuantities != false)
-                                    batchEntry.changeInputValueLocal(newRowQuantity.toString())
-                                else
-                                    batchEntry.changeInputValueLocal("")
-                                BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
-                                batchRequest.entries.add(batchEntry)
+                            if (resItem?.isHasQuantities != false) {
+                                newValuesBatch.add(
+                                    ValueRange()
+                                    .setRange("${columnName(mColumnIndexes.quantity)}$row")
+                                    .setValues(listOf(listOf(newRowQuantity.toString())))
+                                )
                             }
                         }
 
                         // Comment Cell
                         val comment = resItem?.valueForQuantity(newRowQuantity)?.comment
                         if (comment != null && mColumnIndexes.comment >= 0) {
-                            CellEntry(cellFeed.entries[
-                                entryIndex(mColumnIndexes.comment, row, mRowsCount)
-                            ]).let { batchEntry ->
-                                batchEntry.changeInputValueLocal(valueToSourceValue(comment))
-                                BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
-                                batchRequest.entries.add(batchEntry)
-                            }
+                            newValuesBatch.add(
+                                ValueRange()
+                                    .setRange("${columnName(mColumnIndexes.comment)}$row")
+                                    .setValues(listOf(listOf(valueToSourceValue(comment))))
+                            )
                         }
 
                         // Value Cells
@@ -182,13 +150,11 @@ class GoogleSheet(
                             if (localeColumn != null && localeColumn >= 0) {
                                 resLocale[newRowKey]?.valueForQuantity(newRowQuantity)?.let {
                                     val resValue = formattingType.convert(it)
-                                    CellEntry(cellFeed.entries[
-                                        entryIndex(localeColumn, row, mRowsCount)
-                                    ]).let { batchEntry ->
-                                        batchEntry.changeInputValueLocal(valueToSourceValue(resValue.value))
-                                        BatchUtils.setBatchOperationType(batchEntry, BatchOperationType.UPDATE)
-                                        batchRequest.entries.add(batchEntry)
-                                    }
+                                    newValuesBatch.add(
+                                        ValueRange()
+                                            .setRange("${columnName(localeColumn)}$row")
+                                            .setValues(listOf(listOf(valueToSourceValue(resValue.value))))
+                                    )
                                 }
                             }
                         }
@@ -198,12 +164,37 @@ class GoogleSheet(
                 }
 
                 try {
-                    val batchLink = cellFeed.getLink(ILink.Rel.FEED_BATCH, ILink.Type.ATOM)
-                    worksheetFacade.batch(URL(batchLink.href), batchRequest)
+                    val firstNewRow = newRows[0].let {
+                        getRow(it.first, it.second)
+                    }
+
+                    // Appending keys
+                    service.spreadsheets().values()
+                        .append(
+                            sourceConfig.id,
+                            "${columnName(mColumnIndexes.key)}${firstNewRow}",
+                            ValueRange().setValues(listOf(newKeysList)).setMajorDimension("COLUMNS")
+                        )
+                        .setValueInputOption("RAW")
+                        .execute()
+                        .let {
+                            LogUtils.info("${it.updates.updatedCells} new rows inserted.")
+                        }
+
+                    // Updating values
+                    service.spreadsheets()
+                        .values()
+                        .batchUpdate(
+                            sourceConfig.id,
+                            BatchUpdateValuesRequest()
+                                .setValueInputOption("RAW")
+                                .setData(newValuesBatch)
+                        )
+                        .execute()
+                        .let {
+                            LogUtils.info("${it.totalUpdatedCells} cells updated.")
+                        }
                 } catch (e: IOException) {
-                    e.printStackTrace()
-                    throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id!!)
-                } catch (e: ServiceException) {
                     e.printStackTrace()
                     throw RuntimeException("ERROR: Failed to write sheet. Sheet Id: " + sourceConfig.id!!)
                 }
@@ -231,14 +222,16 @@ class GoogleSheet(
         if (mIgnoreRows == null || mIgnoreRows!!.contains(row))
             return null
 
-        val cell = getCell(col, row)
-        return cell?.cell?.value
+        return mQuery
+                ?.getOrNull(row - mTitleRow - 1)
+                ?.getOrNull(col - columnIndexes.min)
+                ?.toString()
     }
 
     override val rowsCount: Int
         get() {
             fetchCellsIfNeeded()
-            return mRowsCount
+            return (mQuery?.size ?: 0) + firstRow - 1
         }
 
     override fun valueToSourceValue(value: String): String {
@@ -251,23 +244,23 @@ class GoogleSheet(
 
     private fun fetchCellsIfNeeded(): Boolean {
         if (mQuery == null) {
+            val workSheet = sourceConfig.worksheetTitle?.let { "$it!" } ?: ""
+
             // Ignore rows
             val ignoreRows = ArrayList<Int>()
-            val indexColumnFeed: CellFeed?
+            val indexColumnFeed: ValueRange?
             try {
-                indexColumnFeed = worksheetFacade.queryRange(1, -1, 1, -1, false)
+                indexColumnFeed = service.spreadsheets().values()
+                        .get(sourceConfig.id, "${workSheet}A:A")
+                        .execute()
             } catch (e: IOException) {
-                e.printStackTrace()
-                return false
-            } catch (e: ServiceException) {
                 e.printStackTrace()
                 return false
             }
 
-            if (indexColumnFeed != null) {
-                for (cell in indexColumnFeed.entries) {
-                    if (IGNORE_INDEX == cell.cell.value)
-                        ignoreRows.add(cell.cell.row)
+            indexColumnFeed?.getValues()?.forEachIndexed { row, rowValues ->
+                if (IGNORE_INDEX == rowValues.getOrElse(0) { "" }) {
+                    ignoreRows.add(row + 1)
                 }
             }
             mIgnoreRows = ignoreRows
@@ -279,13 +272,12 @@ class GoogleSheet(
             mTitleRow = titleRow
             LogUtils.info("Title row: $mTitleRow")
 
-            val titleRowFeed: CellFeed?
+            val titleRowFeed: ValueRange?
             try {
-                titleRowFeed = worksheetFacade.queryRange(-1, mTitleRow, -1, mTitleRow, false)
+                titleRowFeed = service.spreadsheets().values()
+                        .get(sourceConfig.id, "${workSheet}$titleRow:$titleRow")
+                        .execute()
             } catch (e: IOException) {
-                e.printStackTrace()
-                return false
-            } catch (e: ServiceException) {
                 e.printStackTrace()
                 return false
             }
@@ -316,28 +308,14 @@ class GoogleSheet(
             mColumnIndexes = ColumnIndexes(key, quantity, comment, metadata, indexesMap)
             LogUtils.info("Column Indexes: $mColumnIndexes")
 
-            mRowsCount = try {
-                val list = worksheetFacade
-                        .queryRange(mColumnIndexes.key, mTitleRow + 1, mColumnIndexes.key, -1, false)!!
-                        .entries
-                if (list.size > 0)
-                    list[list.size - 1].cell.row
-                else
-                    mTitleRow
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return false
-            } catch (e: ServiceException) {
-                e.printStackTrace()
-                return false
-            }
-
             try {
-                mQuery = worksheetFacade
-                        .queryRange(mColumnIndexes.min, mTitleRow + 1, mColumnIndexes.max, mRowsCount, true)
+                val minColumn = columnName(mColumnIndexes.min)
+                val maxColumn = columnName(mColumnIndexes.max)
+                mQuery = service.spreadsheets().values()
+                        .get(sourceConfig.id, "${workSheet}$minColumn${titleRow + 1}:$maxColumn")
+                        .execute()
+                        .getValues()
             } catch (e: IOException) {
-                e.printStackTrace()
-            } catch (e: ServiceException) {
                 e.printStackTrace()
             }
 
@@ -345,25 +323,20 @@ class GoogleSheet(
         return mQuery != null
     }
 
-    private fun getCell(col: Int, row: Int): CellEntry? {
-        if (fetchCellsIfNeeded()) {
-            val index = entryIndex(col, row, mTitleRow)
-            if (index >= 0 && index < mQuery!!.entries.size)
-                return mQuery!!.entries[index]
-        }
-        return null
-    }
-
-    private fun entryIndex(col: Int, row: Int, top: Int): Int {
-        return (row - top - 1) * (mColumnIndexes.max - mColumnIndexes.min + 1) + col - mColumnIndexes.min
-    }
-
-    private fun CellFeed.toIndexesMap(): Map<String, Int> {
+    private fun ValueRange.toIndexesMap(): Map<String, Int> {
         val result = mutableMapOf<String, Int>()
-        this.entries.forEach {
-            result[it.cell.value] = it.cell.col
+        getValues().getOrNull(0)?.forEachIndexed { index, value ->
+            result[value.toString()] = index + 1
         }
         return result
+    }
+
+    private fun columnName(column: Int): String {
+        return if (column < 26) {
+            (64 + column).toChar().toString()
+        } else {
+            columnName(column / 26) + (64 + column % 26).toChar()
+        }
     }
 
 }

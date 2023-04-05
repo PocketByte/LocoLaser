@@ -11,6 +11,7 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.http.GenericUrl
 import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.JsonFactory
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
@@ -18,6 +19,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.util.*
+
 
 object OAuth2Helper {
 
@@ -30,8 +32,9 @@ object OAuth2Helper {
 
     private const val DOMAIN = "127.0.0.1"
 
-    private val HTTP_TRANSPORT = NetHttpTransport()
-    private val JSON_FACTORY = JacksonFactory()
+    val HTTP_TRANSPORT = NetHttpTransport()
+
+    val JSON_FACTORY: JsonFactory = JacksonFactory.getDefaultInstance()
     private var DATA_STORE_FACTORY: DataStoreFactory? = null
 
     private val apiKey: String

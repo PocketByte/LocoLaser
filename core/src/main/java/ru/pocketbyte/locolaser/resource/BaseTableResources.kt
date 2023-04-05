@@ -44,7 +44,7 @@ abstract class BaseTableResources : Resources {
         if (this.keysRows == null) {
             val keysRows = mutableMapOf<String, MutableMap<Quantity, Int>>()
 
-            for (row in firstRow until rowsCount) {
+            for (row in firstRow..rowsCount) {
                 val rowKey = getValue(columnIndexes.key, row)
                 if (rowKey?.isNotEmpty() == true) {
                     val rowQuantity = getQuantity(row)

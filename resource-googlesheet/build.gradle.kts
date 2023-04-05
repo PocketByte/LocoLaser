@@ -15,9 +15,9 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib")
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
 
-    compile("com.google.gdata:core:${BuildVersion.googleGdata}")
-    compile("com.google.api-client:google-api-client-java6:${BuildVersion.googleApiClient}")
+    compile("com.google.api-client:google-api-client:${BuildVersion.googleApiClient}")
     compile("com.google.oauth-client:google-oauth-client-jetty:${BuildVersion.googleAuthClient}")
+    compile("com.google.apis:google-api-services-sheets:${BuildVersion.googleSheets}")
 
     testImplementation("junit:junit:4.12")
 }
