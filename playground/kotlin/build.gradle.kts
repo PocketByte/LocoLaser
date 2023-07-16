@@ -1,6 +1,8 @@
 import ru.pocketbyte.locolaser.*
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsStaticResourcesConfig
 import ru.pocketbyte.locolaser.plugin.localize
 import ru.pocketbyte.locolaser.plugin.resourceConfigAction
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 
 buildscript {
     repositories {
@@ -9,7 +11,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        val localaserVersion = "2.2.4"
+        val localaserVersion = "2.2.5"
         classpath("ru.pocketbyte.locolaser:plugin:$localaserVersion")
         classpath("ru.pocketbyte.locolaser:core:$localaserVersion")
         classpath("ru.pocketbyte.locolaser:resource-gettext:$localaserVersion")
@@ -45,6 +47,9 @@ localize {
                 repositoryInterface = "com.example.SuperString"
                 repositoryClass = "com.example.SuperStringImpl"
                 android(); ios(); js()
+                platform("common", "test", KotlinAbsStaticResourcesConfig().apply {
+                    formattingType = JavaFormattingType
+                })
             }
             json {
                 resourcesDir("./build/res/json")

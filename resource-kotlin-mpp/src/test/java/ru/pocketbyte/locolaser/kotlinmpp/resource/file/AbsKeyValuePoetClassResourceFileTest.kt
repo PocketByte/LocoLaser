@@ -17,15 +17,26 @@ import org.junit.Assert.assertNull
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.kotlinmpp.resource.AbsKotlinResources
 import ru.pocketbyte.locolaser.kotlinmpp.utils.TemplateStr
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 
 class AbsKeyValuePoetClassResourceFileTest {
 
     companion object {
-        const val StringProviderStr =
+        const val StringProviderNoFormatStr =
             "    interface StringProvider {\n" +
             "        fun getString(key: String): String\n" +
             "\n" +
             "        fun getPluralString(key: String, count: Long): String\n" +
+            "    }\n"
+        const val StringProviderJavaFormatStr =
+            "    interface StringProvider {\n" +
+            "        fun getString(key: String, vararg args: Any): String\n" +
+            "\n" +
+            "        fun getPluralString(\n" +
+            "                key: String,\n" +
+            "                count: Long,\n" +
+            "                vararg args: Any\n" +
+            "        ): String\n" +
             "    }\n"
     }
 
@@ -66,7 +77,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "    val key1: String\n" +
                 "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
-                StringProviderStr +
+                StringProviderNoFormatStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -97,7 +108,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "     * value1_2 */\n" +
                 "    fun key1(count: Long): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
                 "\n" +
-                StringProviderStr +
+                StringProviderNoFormatStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -141,7 +152,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "    val key3: String\n" +
                 "        get() = this.stringProvider.getString(\"key3\")\n" +
                 "\n" +
-                StringProviderStr +
+                StringProviderNoFormatStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -182,7 +193,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "    override val key3: String\n" +
                 "        get() = this.stringProvider.getString(\"key3\")\n" +
                 "\n" +
-                StringProviderStr +
+                StringProviderNoFormatStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -219,7 +230,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "    val key1: String\n" +
                 "        get() = this.stringProvider.getString(\"key1\")\n" +
                 "\n" +
-                StringProviderStr +
+                StringProviderNoFormatStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -228,22 +239,28 @@ class AbsKeyValuePoetClassResourceFileTest {
     @Test
     @Throws(IOException::class)
     fun testWriteFormattedComment() {
-        val testValue = "Hello %s %s"
+        val testValue = "Hello %d %s"
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue(testValue, "", Quantity.OTHER))))
-        resLocale.put(prepareResItem("key2", arrayOf(ResValue(testValue, "Comment 2", Quantity.OTHER), ResValue("value1_1", "Comment 1", Quantity.ONE))))
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue(testValue, "", Quantity.OTHER, JavaFormattingType, JavaFormattingType.argumentsFromValue(testValue))
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(
+            ResValue(testValue, "Comment 2", Quantity.OTHER, JavaFormattingType, JavaFormattingType.argumentsFromValue(testValue)),
+            ResValue("value1_1", "Comment 1", Quantity.ONE)
+        )))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null, JavaFormattingType)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
+                "import kotlin.Any\n" +
                 "import kotlin.Long\n" +
                 "import kotlin.String\n" +
                 "\n" +
@@ -255,9 +272,13 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "\n" +
                 "    /**\n" +
                 "     * $testValue */\n" +
-                "    fun key2(count: Long): String = this.stringProvider.getPluralString(\"key2\", count)\n" +
+                "    fun key1(d1: Long, s2: String): String = this.stringProvider.getString(\"key1\", d1, s2)\n" +
                 "\n" +
-                StringProviderStr +
+                "    /**\n" +
+                "     * Hello %d %s */\n" +
+                "    fun key2(count: Long, s2: String): String = this.stringProvider.getPluralString(\"key2\", count, s2)\n" +
+                "\n" +
+                StringProviderJavaFormatStr +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))

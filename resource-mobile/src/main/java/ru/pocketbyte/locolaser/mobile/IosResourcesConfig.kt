@@ -26,6 +26,6 @@ class IosResourcesConfig : BaseResourcesConfig() {
     override val defaultResourceName = "Localizable"
 
     override val resources
-        get() = IosResources(resourcesDir!!, resourceName!!, filter)
+        get() = IosResources(resourcesDir, resourceName, filter)
 
 }

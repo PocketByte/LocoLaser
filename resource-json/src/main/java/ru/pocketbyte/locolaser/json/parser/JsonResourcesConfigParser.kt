@@ -38,11 +38,13 @@ class JsonResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
             if (checkType(getString(resourceObject, ResourcesConfigParser.RESOURCE_TYPE, PLATFORM, true), throwIfWrongType)) {
                 val platform = JsonResourcesConfig()
 
-                platform.resourceName = getString(
-                        resourceObject, RESOURCE_NAME, PLATFORM, false)
+                getString(resourceObject, RESOURCE_NAME, PLATFORM, false)?.let {
+                    platform.resourceName = it
+                }
 
-                platform.resourcesDir = JsonParseUtils.getFile(
-                        resourceObject, RESOURCES_DIR, PLATFORM, false)
+                JsonParseUtils.getFile(resourceObject, RESOURCES_DIR, PLATFORM, false)?.let {
+                    platform.resourcesDir = it
+                }
 
                 platform.filter = BaseResourcesConfig.regExFilter(
                         getString(resourceObject, FILTER, PLATFORM, false))

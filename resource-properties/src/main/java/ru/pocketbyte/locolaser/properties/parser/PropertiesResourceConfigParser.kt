@@ -2,7 +2,9 @@ package ru.pocketbyte.locolaser.properties.parser
 
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser
+import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.PLATFORM
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
+import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser.Companion.RESOURCE_TYPE
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.properties.PropertiesResourceConfig
@@ -24,21 +26,23 @@ class PropertiesResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig
         } else if (resourceObject is JSONObject) {
             val platformJSON = resourceObject as JSONObject?
 
-            if (checkType(JsonParseUtils.getString(platformJSON!!, ResourcesConfigParser.RESOURCE_TYPE, ConfigParser.PLATFORM, true), throwIfWrongType)) {
+            if (checkType(JsonParseUtils.getString(platformJSON!!, RESOURCE_TYPE, PLATFORM, true), throwIfWrongType)) {
                 val platform = PropertiesResourceConfig()
 
-                platform.resourceName = JsonParseUtils.getString(
-                        platformJSON, RESOURCE_NAME, ConfigParser.PLATFORM, false)
+                JsonParseUtils.getString(platformJSON, RESOURCE_NAME, PLATFORM, false)?.let {
+                    platform.resourceName = it
+                }
 
-                platform.resourcesDir = JsonParseUtils.getFile(
-                        platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false)
+                JsonParseUtils.getFile(platformJSON, RESOURCES_DIR, PLATFORM, false)?.let {
+                    platform.resourcesDir = it
+                }
 
                 return platform
             }
         }
 
         if (throwIfWrongType)
-            throw InvalidConfigException("Property \"" + ConfigParser.PLATFORM + "\" must be a String or JSON object.")
+            throw InvalidConfigException("Property \"$PLATFORM\" must be a String or JSON object.")
 
         return null
     }
@@ -47,7 +51,7 @@ class PropertiesResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig
     private fun checkType(type: String?, throwIfWrongType: Boolean): Boolean {
         if (PropertiesResourceConfig.TYPE != type) {
             if (throwIfWrongType)
-                throw InvalidConfigException("Source type is \"" + type + "\", but expected \"" + PropertiesResourceConfig.TYPE + "\".")
+                throw InvalidConfigException("Source type is \"$type\", but expected \"${PropertiesResourceConfig.TYPE}\".")
 
             return false
         }

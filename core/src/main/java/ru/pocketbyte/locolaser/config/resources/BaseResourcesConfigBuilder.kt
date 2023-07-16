@@ -9,19 +9,19 @@ open class BaseResourcesConfigBuilder(
     /**
      * Resource name or null if should be used default name.
      */
-    open var resourceName: String?
+    open var resourceName: String
         get() = config.resourceName
         set(value) { config.resourceName = value }
 
     /**
      * Resource directory.
      */
-    open var resourcesDir: File?
+    open var resourcesDir: File
         get() = config.resourcesDir
         set(value) { config.resourcesDir = value }
 
     /**
-     * Resource directory.
+     * Sets Resource directory.
      */
     open fun resourcesDir(path: String) {
         resourcesDir = File(path)

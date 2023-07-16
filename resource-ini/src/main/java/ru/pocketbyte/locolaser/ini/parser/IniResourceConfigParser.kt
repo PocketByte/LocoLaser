@@ -27,11 +27,13 @@ class IniResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
             if (checkType(JsonParseUtils.getString(platformJSON!!, ResourcesConfigParser.RESOURCE_TYPE, ConfigParser.PLATFORM, true), throwIfWrongType)) {
                 val platform = IniResourceConfig()
 
-                platform.resourceName = JsonParseUtils.getString(
-                        platformJSON, RESOURCE_NAME, ConfigParser.PLATFORM, false)
+                JsonParseUtils.getString(platformJSON, RESOURCE_NAME, ConfigParser.PLATFORM, false)?.let {
+                    platform.resourceName = it
+                }
 
-                platform.resourcesDir = JsonParseUtils.getFile(
-                        platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false)
+                JsonParseUtils.getFile(platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false)?.let {
+                    platform.resourcesDir = it
+                }
 
                 return platform
             }

@@ -54,7 +54,7 @@ object JavaFormattingType: FormattingType {
         argument.index ?.let {
             builder.append(it).append("$")
         }
-        (argument.parameters?.get(PARAM_TYPE_PARAMETERS) as? String)?.let {
+        (argument.parameters[PARAM_TYPE_PARAMETERS] as? String)?.let {
             builder.append(it)
         }
         builder.append(typeName)

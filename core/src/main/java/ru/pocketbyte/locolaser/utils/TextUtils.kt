@@ -13,6 +13,6 @@ object TextUtils {
     fun keyToProperty(key: String): String {
         return key.replace("[^0-9|A-Z|a-z]{1,}".toRegex(), "_")
                 .replace("(^[0-9])".toRegex(), "_$1")
-                .replace("(_$){1,}".toRegex(), "").toLowerCase()
+                .replace("(_$){1,}".toRegex(), "").lowercase()
     }
 }

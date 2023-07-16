@@ -2,7 +2,9 @@ package ru.pocketbyte.locolaser.mobile.parser
 
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser
+import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.PLATFORM
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
+import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser.Companion.RESOURCE_TYPE
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
@@ -18,7 +20,7 @@ abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResou
     /**
      * Creates new platform object from it's type.
      * @param type Platform type.
-     * @param throwIfWrongType Define that parser should trow exception if object type is not supported.
+     * @param throwIfWrongType Defines that parser should trow exception if object type is not supported.
      * @return Platform object depends on type or null if type is not supported and throwIfWrongType equal false.
      * @throws InvalidConfigException if platform is unknown.
      */
@@ -35,7 +37,7 @@ abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResou
         }
 
         if (throwIfWrongType)
-            throw InvalidConfigException("Property \"" + ConfigParser.PLATFORM + "\" must be a String or JSON object.")
+            throw InvalidConfigException("Property \"$PLATFORM\" must be a String or JSON object.")
 
         return null
     }
@@ -47,17 +49,19 @@ abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResou
 
     @Throws(InvalidConfigException::class)
     protected open fun parseJSONObject(platformJSON: JSONObject, throwIfWrongType: Boolean): BaseResourcesConfig? {
-        val type = JsonParseUtils.getString(platformJSON, ResourcesConfigParser.RESOURCE_TYPE, ConfigParser.PLATFORM, true)
+        val type = JsonParseUtils.getString(platformJSON, RESOURCE_TYPE, PLATFORM, true)
         val platform = platformByType(type, throwIfWrongType) ?: return null
 
-        platform.resourceName = JsonParseUtils.getString(
-                platformJSON, RESOURCE_NAME, ConfigParser.PLATFORM, false)
+        JsonParseUtils.getString(platformJSON, RESOURCE_NAME, PLATFORM, false)?.let {
+            platform.resourceName = it
+        }
 
-        platform.resourcesDir = JsonParseUtils.getFile(
-                platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false)
+        JsonParseUtils.getFile(platformJSON, RESOURCES_DIR, PLATFORM, false)?.let {
+            platform.resourcesDir = it
+        }
 
         platform.filter = BaseResourcesConfig.regExFilter(
-                JsonParseUtils.getString(platformJSON, FILTER, ConfigParser.PLATFORM, false))
+                JsonParseUtils.getString(platformJSON, FILTER, PLATFORM, false))
 
         return platform
     }

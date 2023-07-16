@@ -13,7 +13,7 @@ class BaseResourcesConfigTest {
         val config = BaseResourcesConfigImpl()
 
         assertEquals("default_res_name", config.resourceName)
-        assertEquals(File("default_res_path").absolutePath, config.resourcesDir?.absolutePath)
+        assertEquals(File("default_res_path").absolutePath, config.resourcesDir.absolutePath)
     }
 
     @Test
@@ -24,7 +24,7 @@ class BaseResourcesConfigTest {
         config.resourcesDir = File("custom_res_dir")
 
         assertEquals("custom_res_name", config.resourceName)
-        assertEquals(File("custom_res_dir").absolutePath, config.resourcesDir?.absolutePath)
+        assertEquals(File("custom_res_dir").absolutePath, config.resourcesDir.absolutePath)
     }
 
     private class BaseResourcesConfigImpl: BaseResourcesConfig() {

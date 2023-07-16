@@ -22,7 +22,7 @@ interface ResourcesConfigParser<out ConfigType : ResourcesConfig> {
     /**
      * Parse Resource Config.
      * @param resourceObject An object that represent Resource Config object.
-     * @param throwIfWrongType Define that parser should trow exception if object type is not supported.
+     * @param throwIfWrongType Defines that parser should trow exception if object type is not supported.
      * @return Parsed Config object or null if object has wrong type and throwIfWrongType equal false.
      * @throws InvalidConfigException if config has some logic errors or doesn't contain some required fields.
      */

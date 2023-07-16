@@ -11,10 +11,9 @@ class KotlinAndroidResourcesConfig : KotlinBaseImplResourcesConfig() {
     override val type = TYPE
 
     override val defaultResourcesPath = "./build/generated/src/androidMain/kotlin/"
-    override val defaultResourceName  = "ru.pocketbyte.locolaser.kmpp.AndroidStringRepository"
-    override val defaultInterfaceName = "ru.pocketbyte.locolaser.kmpp.StringRepository"
+    override val defaultResourceName  = "$DEFAULT_PACKAGE.Android$DEFAULT_INTERFACE_NAME"
 
     override val resources
-        get() = KotlinAndroidResources(resourcesDir!!, resourceName!!, implements!!, filter)
+        get() = KotlinAndroidResources(resourcesDir, resourceName, implements!!, filter)
 
 }

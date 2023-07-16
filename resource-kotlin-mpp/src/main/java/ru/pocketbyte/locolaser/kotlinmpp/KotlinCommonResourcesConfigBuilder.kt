@@ -10,19 +10,19 @@ class KotlinCommonResourcesConfigBuilder(
     /**
      * Canonical name of the Repository interface that should be should be generated.
      */
-    override var resourceName: String?
+    override var resourceName: String
         get() = super.resourceName
         set(value) { super.resourceName = value }
 
     /**
      * Path to directory with source code.
      */
-    override var resourcesDir: File?
+    override var resourcesDir: File
         get() = super.resourcesDir
         set(value) { super.resourcesDir = value }
 
     /**
-     * Path to directory with source code.
+     * Sets Path to directory with source code.
      */
     override fun resourcesDir(path: String) {
         super.resourcesDir(path)

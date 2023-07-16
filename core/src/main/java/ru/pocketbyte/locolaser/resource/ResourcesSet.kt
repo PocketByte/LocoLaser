@@ -36,7 +36,7 @@ class ResourcesSet(
         }
 
     override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap? {
-        return resources.fold(null as? ResMap) { resMap, source ->
+        return resources.fold(null as? ResMap?) { resMap, source ->
             resMap.merge(source.read(locales, extraParams))
         }
     }

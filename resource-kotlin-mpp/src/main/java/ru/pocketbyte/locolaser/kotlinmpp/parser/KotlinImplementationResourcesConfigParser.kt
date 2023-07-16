@@ -44,6 +44,8 @@ class KotlinImplementationResourcesConfigParser : BaseMobileResourcesConfigParse
             return KotlinJsResourcesConfig()
         if (KotlinAbsKeyValueResourcesConfig.TYPE == type)
             return KotlinAbsKeyValueResourcesConfig()
+        if (KotlinAbsStaticResourcesConfig.TYPE == type)
+            return KotlinAbsStaticResourcesConfig()
 
         if (throwIfWrongType)
             throw InvalidConfigException("Unknown platform: $type")

@@ -3,6 +3,9 @@ package ru.pocketbyte.locolaser.kotlinmpp
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig.Companion.DEFAULT_INTERFACE_NAME
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig.Companion.DEFAULT_PACKAGE
+import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
 import java.io.File
 
 class KotlinMultiplatformResourcesConfigBuilder {
@@ -35,21 +38,34 @@ class KotlinMultiplatformResourcesConfigBuilder {
         var interfaceName: String? = null
     }
 
-    class KmpClassBuilder: BaseKmpBuilder() {
+    class KmpClassBuilder<T : KotlinBaseImplResourcesConfig>(
+        internal val name: String,
+        internal val sourceSet: String,
+        internal val config: T
+    ): BaseKmpBuilder() {
         /**
          * Canonical name of the Repository class that should be generated.
          */
         var className: String? = null
+
     }
 
     /**
-     * Canonical name of the Repository interface that should be implemented by generated classes.
+     * Package of the Repository that should be used in interface and class names.
+     * Package can be overridden if Interface name or Class name contains Canonical name.
+     */
+    var repositoryPackage: String? = null
+
+    /**
+     * Canonical or Simple name of the Repository interface that
+     * should be implemented by generated classes.
      * If empty there will no interfaces implemented by generated Repository classes.
      */
     var repositoryInterface: String? = null
 
     /**
-     * Canonical name of the Repository class that should be generated for each platform.
+     * Canonical or Simple name of the Repository class that
+     * should be generated for each platform.
      */
     var repositoryClass: String? = null
 
@@ -79,16 +95,14 @@ class KotlinMultiplatformResourcesConfigBuilder {
         filter = BaseResourcesConfig.regExFilter(regExp)
     }
 
-    private var commonPlatform: KmpInterfaceBuilder? = null
-    private var androidPlatform: KmpClassBuilder? = null
-    private var iosPlatform: KmpClassBuilder? = null
-    private var jsPlatform: KmpClassBuilder? = null
+    private val platformCommon: KmpInterfaceBuilder = KmpInterfaceBuilder()
+    private val platformMap = mutableMapOf<String, KmpClassBuilder<*>>()
 
     /**
      * Configure Repository interface in common module.
      */
     fun common(action: KmpInterfaceBuilder.() -> Unit = {}) {
-        commonPlatform = KmpInterfaceBuilder().apply {
+        platformCommon.apply {
             action(this)
         }
     }
@@ -97,85 +111,87 @@ class KotlinMultiplatformResourcesConfigBuilder {
      * Configure Repository implementation for Android platform.
      * There is no Android implementation will be generated if Android platform wasn't be configured.
      */
-    fun android(action: KmpClassBuilder.() -> Unit = {}) {
-        androidPlatform = KmpClassBuilder().apply {
-            action(this)
-        }
+    fun android(action: KmpClassBuilder<KotlinAndroidResourcesConfig>.() -> Unit = {}) {
+        platform("android", KotlinAndroidResourcesConfig(), action)
     }
 
     /**
      * Configure Repository implementation for iOS platform.
      * There is no iOS implementation will be generated if iOS platform wasn't be configured.
      */
-    fun ios(action: KmpClassBuilder.() -> Unit = {}) {
-        iosPlatform = KmpClassBuilder().apply {
-            action(this)
-        }
+    fun ios(action: KmpClassBuilder<KotlinIosResourcesConfig>.() -> Unit = {}) {
+        platform("ios", KotlinIosResourcesConfig(), action)
     }
 
     /**
      * Configure Repository implementation for JS platform.
      * There is no JS implementation will be generated if JS platform wasn't be configured.
      */
-    fun js(action: KmpClassBuilder.() -> Unit = {}) {
-        jsPlatform = KmpClassBuilder().apply {
-            action(this)
+    fun js(action: KmpClassBuilder<KotlinJsResourcesConfig>.() -> Unit = {}) {
+        platform("js", KotlinJsResourcesConfig(), action)
+    }
+
+    /**
+     * Configure Repository implementation for provided platform type.
+     * @param name Name of platform.
+     * @param config Platform Configuration instance.
+     * Class should not be abstract and should have a constructor without parameters.
+     * @param action Configure action.
+     */
+    fun <T : KotlinBaseImplResourcesConfig> platform (
+        name: String, config: T,
+        action: KmpClassBuilder<T>.() -> Unit = {}
+    ) {
+        platform(name, "Main", config, action)
+    }
+    /**
+     * Configure Repository implementation for provided platform type.
+     * @param name Name of platform.
+     * @param sourceSet Name of source set where source code should be placed ("Main", "Test", etc.).
+     * @param config Platform Configuration instance.
+     * Class should not be abstract and should have a constructor without parameters.
+     * @param action Configure action.
+     */
+    fun <T : KotlinBaseImplResourcesConfig> platform (
+        name: String, sourceSet: String, config: T,
+        action: KmpClassBuilder<T>.() -> Unit = {}
+    ) {
+        val key = name + sourceSet[0].uppercase() + sourceSet.substring(1)
+        val platformBuilder = platformMap[key] ?: KmpClassBuilder(name, sourceSet, config).apply {
+            platformMap[key] = this
         }
+
+        action(platformBuilder as KmpClassBuilder<T>)
     }
 
     internal fun build(): ResourcesConfig {
         val commonConfig = KotlinCommonResourcesConfig()
-        val androidConfig = if (androidPlatform != null) KotlinAndroidResourcesConfig() else null
-        val iosConfig = if (iosPlatform != null) KotlinIosResourcesConfig() else null
-        val jsConfig = if (jsPlatform != null) KotlinJsResourcesConfig() else null
 
-        repositoryInterface?.also {
-            commonConfig.resourceName = it
-        }
+        val packageName = repositoryPackage ?: DEFAULT_PACKAGE
 
-        repositoryClass?.also { className ->
-            val applyAction: (it: KotlinBaseImplResourcesConfig) -> Unit = {
-                it.resourceName = className
+        commonConfig.resourceName = mergeName(packageName, repositoryInterface ?: DEFAULT_INTERFACE_NAME)
+        repositoryInterface?.also { commonConfig.resourceName = it }
+        srcDir?.also { commonConfig.resourcesDir = File(it, "./commonMain/kotlin/") }
+        filter?.also { commonConfig.filter = it }
+        platformCommon.also { commonConfig.fillFrom(it) }
+
+        val platformConfigs = platformMap.map { entry ->
+            entry.value.config.also { config ->
+                config.resourceName = mergeName(
+                    packageName,
+                    repositoryClass ?: "${entry.value.name.firstCharToUpperCase()}$DEFAULT_INTERFACE_NAME"
+                )
+                srcDir?.also { config.resourcesDir = File(it, "./${entry.key}/kotlin/") }
+                filter?.also { config.filter = it }
+                config.fillFrom(entry.value)
+                config.implements = commonConfig.resourceName
             }
-            androidConfig?.also { applyAction(it) }
-            iosConfig?.also { applyAction(it) }
-            jsConfig?.also { applyAction(it) }
-        }
-        srcDir?.also {
-            commonConfig.resourcesDir = File(it, "./commonMain/kotlin/")
-            androidConfig?.resourcesDir = File(it, "./androidMain/kotlin/")
-            iosConfig?.resourcesDir = File(it, "./iosMain/kotlin/")
-            jsConfig?.resourcesDir = File(it, "./jsMain/kotlin/")
-        }
-        filter?.also {
-            commonConfig.filter = it
-            androidConfig?.filter = it
-            iosConfig?.filter = it
-            jsConfig?.filter = it
-        }
-
-        commonPlatform?.also {
-            commonConfig.fillFrom(it)
-        }
-        androidPlatform?.also {
-            androidConfig?.fillFrom(it)
-            androidConfig?.implements = commonConfig.resourceName
-        }
-        iosPlatform?.also {
-            iosConfig?.fillFrom(it)
-            iosConfig?.implements = commonConfig.resourceName
-        }
-        jsPlatform?.also {
-            jsConfig?.fillFrom(it)
-            jsConfig?.implements = commonConfig.resourceName
         }
 
         return ResourcesSetConfig(
             LinkedHashSet<ResourcesConfig>().apply {
                 add(commonConfig)
-                androidConfig?.also { add(it) }
-                iosConfig?.also { add(it) }
-                jsConfig?.also { add(it) }
+                addAll(platformConfigs)
             }
         )
     }
@@ -183,7 +199,7 @@ class KotlinMultiplatformResourcesConfigBuilder {
     private fun BaseResourcesConfig.fillFrom(platformBuilder: BaseKmpBuilder) {
         if (platformBuilder is KmpInterfaceBuilder) {
             platformBuilder.interfaceName?.let { resourceName = it }
-        } else if (platformBuilder is KmpClassBuilder) {
+        } else if (platformBuilder is KmpClassBuilder<*>) {
             platformBuilder.className?.let { resourceName = it }
         }
         platformBuilder.sourcesDir?.let { resourcesDir = it }
@@ -196,6 +212,14 @@ class KotlinMultiplatformResourcesConfigBuilder {
                     parentFiler(key) && it(key)
                 }
             }
+        }
+    }
+
+    private fun mergeName(packageName: String, name: String): String {
+        return if (name.contains(".")) { // is Canonical name
+            name
+        } else {
+            "$packageName.$name"
         }
     }
 }

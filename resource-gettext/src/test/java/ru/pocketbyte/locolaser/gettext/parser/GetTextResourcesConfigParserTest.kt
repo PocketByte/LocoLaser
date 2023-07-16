@@ -21,7 +21,7 @@ class GetTextResourcesConfigParserTest {
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
 
-    private var parser: GetTextResourcesConfigParser? = null
+    private lateinit var parser: GetTextResourcesConfigParser
 
     @Before
     @Throws(IOException::class)
@@ -35,30 +35,30 @@ class GetTextResourcesConfigParserTest {
     @Test
     @Throws(InvalidConfigException::class)
     fun testFromString() {
-        val config = parser!!.parse(GetTextResourcesConfig.TYPE, true)
+        val config = parser.parse(GetTextResourcesConfig.TYPE, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(GetTextResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(GetTextResourcesConfig::class.java, config.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testUnknownFromString() {
-        parser?.parse("invalid_resource", true)
+        parser.parse("invalid_resource", true)
     }
 
     @Test
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJson() {
-        val config = parser!!.parse(prepareTestPlatformJson(), true)
+        val config = parser.parse(prepareTestPlatformJson(), true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(GetTextResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(GetTextResourcesConfig::class.java, config.javaClass)
 
         assertNull(config.filter)
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
-                config.resourcesDir!!.canonicalPath)
+                config.resourcesDir.canonicalPath)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -67,7 +67,7 @@ class GetTextResourcesConfigParserTest {
         val json = prepareTestPlatformJson()
         json.remove(ResourcesConfigParser.RESOURCE_TYPE)
 
-        parser!!.parse(json, true)
+        parser.parse(json, true)
     }
 
     @Test
@@ -75,22 +75,22 @@ class GetTextResourcesConfigParserTest {
     fun testFromJsonOnlyType() {
         val json = JSONObject()
         json[ResourcesConfigParser.RESOURCE_TYPE] = GetTextResourcesConfig.TYPE
-        val config = parser!!.parse(json, true)
+        val config = parser.parse(json, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(GetTextResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(GetTextResourcesConfig::class.java, config.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testFromInvalidClass() {
-        parser!!.parse(ArrayList<String>(), true)
+        parser.parse(ArrayList<String>(), true)
     }
 
     @Test
     fun testConfigResources() {
         val json = prepareTestPlatformJson()
-        val resources = (parser?.parse(json, true) as GetTextResourcesConfig).resources as AbsResources
+        val resources = (parser.parse(json, true) as GetTextResourcesConfig).resources as AbsResources
 
         assertEquals("test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)
@@ -103,7 +103,7 @@ class GetTextResourcesConfigParserTest {
             this[GetTextResourcesConfigParser.FILTER] = "test_filter"
         }
 
-        assertNotNull(parser!!.parse(json, true)?.filter)
+        assertNotNull(parser.parse(json, true)?.filter)
     }
 
     private fun prepareTestPlatformJson(): JSONObject {

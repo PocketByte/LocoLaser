@@ -30,7 +30,7 @@ class MobileResourcesConfigParserTest {
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
 
-    private var parser: MobileResourcesConfigParser? = null
+    private lateinit var parser: MobileResourcesConfigParser
 
     @Before
     @Throws(IOException::class)
@@ -44,48 +44,48 @@ class MobileResourcesConfigParserTest {
     @Test
     @Throws(InvalidConfigException::class)
     fun testAndroidFromString() {
-        val config = parser!!.parse(AndroidResourcesConfig.TYPE, true)
+        val config = parser.parse(AndroidResourcesConfig.TYPE, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(AndroidResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(AndroidResourcesConfig::class.java, config.javaClass)
     }
 
     @Test
     @Throws(InvalidConfigException::class)
     fun testIosFromString() {
-        val config = parser!!.parse(IosResourcesConfig.TYPE, true)
+        val config = parser.parse(IosResourcesConfig.TYPE, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(IosResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(IosResourcesConfig::class.java, config.javaClass)
     }
 
     @Test
     @Throws(InvalidConfigException::class)
     fun testIosPlistFromString() {
-        val config = parser!!.parse(IosPlistResourcesConfig.TYPE, true)
+        val config = parser.parse(IosPlistResourcesConfig.TYPE, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(IosPlistResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(IosPlistResourcesConfig::class.java, config.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testUnknownFromString() {
-        parser!!.parse("invalid_platform", true)
+        parser.parse("invalid_platform", true)
     }
 
     @Test
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJson() {
-        val config = parser!!.parse(prepareTestPlatformJson(AndroidResourcesConfig.TYPE), true)
+        val config = parser.parse(prepareTestPlatformJson(AndroidResourcesConfig.TYPE), true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(AndroidResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(AndroidResourcesConfig::class.java, config.javaClass)
 
         assertNull(config.filter)
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
-                config.resourcesDir!!.canonicalPath)
+                config.resourcesDir.canonicalPath)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -93,7 +93,7 @@ class MobileResourcesConfigParserTest {
     fun testFromJsonNoType() {
         val json = prepareTestPlatformJson(AndroidResourcesConfig.TYPE)
         json.remove(ResourcesConfigParser.RESOURCE_TYPE)
-        parser!!.parse(json, true)
+        parser.parse(json, true)
     }
 
     @Test
@@ -101,16 +101,16 @@ class MobileResourcesConfigParserTest {
     fun testFromJsonOnlyType() {
         val json = JSONObject()
         json[ResourcesConfigParser.RESOURCE_TYPE] = AndroidResourcesConfig.TYPE
-        val config = parser!!.parse(json, true)
+        val config = parser.parse(json, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(AndroidResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(AndroidResourcesConfig::class.java, config.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testFromInvalidClass() {
-        parser!!.parse(ArrayList<String>(), true)
+        parser.parse(ArrayList<String>(), true)
     }
 
     @Test
@@ -127,17 +127,17 @@ class MobileResourcesConfigParserTest {
             this[BaseMobileResourcesConfigParser.FILTER] = "test_filter"
         }
 
-        val config = parser!!.parse(json, true)
+        val config = parser.parse(json, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(AndroidResourcesConfig::class.java, config!!.javaClass)
+        assertEquals(AndroidResourcesConfig::class.java, config.javaClass)
 
         assertNotNull(config.filter)
     }
 
     private fun testPlatformConfigResource(platform: String) {
         val json = prepareTestPlatformJson(platform)
-        val resources = (parser?.parse(json, true) as BaseResourcesConfig).resources as AbsResources
+        val resources = (parser.parse(json, true) as BaseResourcesConfig).resources as AbsResources
 
         assertEquals("test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

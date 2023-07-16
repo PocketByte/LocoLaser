@@ -90,11 +90,11 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                             isComment = true
                         }
                     } else if (isMultilineComment) {
-                        comment!!.append(line)
+                        comment?.append(line)
                     }
 
                     if (isMultilineComment && line.endsWith(COMMENT_MULTILINE_END)) {
-                        comment!!.delete(comment.length - COMMENT_MULTILINE_END.length - 1, comment.length)
+                        comment?.delete(comment.length - COMMENT_MULTILINE_END.length - 1, comment.length)
                         isMultilineComment = false
                     }
 

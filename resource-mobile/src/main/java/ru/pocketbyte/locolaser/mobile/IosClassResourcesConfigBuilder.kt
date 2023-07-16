@@ -17,14 +17,14 @@ open class IosClassResourcesConfigBuilder(
     /**
      * Name of the class that will be generated.
      */
-    override var resourceName: String?
+    override var resourceName: String
         get() = super.resourceName
         set(value) { super.resourceName = value }
 
     /**
      * Directory where class file should be placed.
      */
-    override var resourcesDir: File?
+    override var resourcesDir: File
         get() = super.resourcesDir
-        set(value) {}
+        set(value) { super.resourcesDir = value }
 }

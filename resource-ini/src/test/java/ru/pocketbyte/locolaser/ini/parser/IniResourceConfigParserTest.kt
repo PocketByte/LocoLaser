@@ -19,7 +19,7 @@ class IniResourceConfigParserTest {
     @JvmField @Rule
     var tempFolder = TemporaryFolder()
 
-    private var parser: IniResourceConfigParser? = null
+    private lateinit var parser: IniResourceConfigParser
 
     @Before
     @Throws(IOException::class)
@@ -33,29 +33,29 @@ class IniResourceConfigParserTest {
     @Test
     @Throws(InvalidConfigException::class)
     fun testFromString() {
-        val config = parser!!.parse(IniResourceConfig.TYPE, true)
+        val config = parser.parse(IniResourceConfig.TYPE, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(IniResourceConfig::class.java, config!!.javaClass)
+        assertEquals(IniResourceConfig::class.java, config.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testUnknownFromString() {
-        parser!!.parse("invalid_platform", true)
+        parser.parse("invalid_platform", true)
     }
 
     @Test
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJson() {
-        val config = parser!!.parse(prepareTestPlatformJson(), true)
+        val config = parser.parse(prepareTestPlatformJson(), true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(IniResourceConfig::class.java, config!!.javaClass)
+        assertEquals(IniResourceConfig::class.java, config.javaClass)
 
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
-                config.resourcesDir!!.canonicalPath)
+                config.resourcesDir.canonicalPath)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -64,7 +64,7 @@ class IniResourceConfigParserTest {
         val json = prepareTestPlatformJson()
         json.remove(ResourcesConfigParser.RESOURCE_TYPE)
 
-        parser!!.parse(json, true)
+        parser.parse(json, true)
     }
 
     @Test
@@ -72,16 +72,16 @@ class IniResourceConfigParserTest {
     fun testFromJsonOnlyType() {
         val json = JSONObject()
         json[ResourcesConfigParser.RESOURCE_TYPE] = IniResourceConfig.TYPE
-        val config = parser!!.parse(json, true)
+        val config = parser.parse(json, true)
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-        assertEquals(IniResourceConfig::class.java, config!!.javaClass)
+        assertEquals(IniResourceConfig::class.java, config.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testFromInvalidClass() {
-        parser!!.parse(ArrayList<String>(), true)
+        parser.parse(ArrayList<String>(), true)
     }
 
     private fun prepareTestPlatformJson(): JSONObject {

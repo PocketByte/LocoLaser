@@ -23,6 +23,6 @@ class IniResourceConfig : BaseResourcesConfig() {
         get() = "data"
 
     override val resources: Resources
-        get() = IniResources(resourcesDir!!, resourceName!!, filter)
+        get() = IniResources(resourcesDir, resourceName, filter)
 
 }

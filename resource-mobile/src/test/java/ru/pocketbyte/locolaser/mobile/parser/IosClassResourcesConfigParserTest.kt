@@ -23,7 +23,7 @@ class IosClassResourcesConfigParserTest {
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
 
-    private var parser: IosClassResourcesConfigParser? = null
+    private lateinit var parser: IosClassResourcesConfigParser
 
     @Before
     @Throws(IOException::class)
@@ -37,19 +37,18 @@ class IosClassResourcesConfigParserTest {
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testUnknownFromString() {
-        parser!!.parse("invalid_platform", true)
+        parser.parse("invalid_platform", true)
     }
 
     @Test
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJson() {
-        val config = parser!!.parse(prepareTestPlatformJson(IosSwiftResourcesConfig.TYPE), true) as IosSwiftResourcesConfig?
+        val config = parser.parse(prepareTestPlatformJson(IosSwiftResourcesConfig.TYPE), true) as? IosSwiftResourcesConfig
+            ?: throw NullPointerException()
 
-        assertNotNull(config)
-
-        assertEquals("test_res", config!!.resourceName)
+        assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
-                config.resourcesDir!!.canonicalPath)
+                config.resourcesDir.canonicalPath)
         assertEquals("test_table", config.tableName)
     }
 

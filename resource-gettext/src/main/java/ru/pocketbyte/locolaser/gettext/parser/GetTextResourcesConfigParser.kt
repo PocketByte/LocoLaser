@@ -36,11 +36,13 @@ class GetTextResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> 
             if (checkType(getString(resourceObject, ResourcesConfigParser.RESOURCE_TYPE, PLATFORM, true), throwIfWrongType)) {
                 val config = GetTextResourcesConfig()
 
-                config.resourceName = getString(
-                        resourceObject, RESOURCE_NAME, PLATFORM, false)
+                getString(resourceObject, RESOURCE_NAME, PLATFORM, false)?.let {
+                    config.resourceName = it
+                }
 
-                config.resourcesDir = JsonParseUtils.getFile(
-                        resourceObject, RESOURCES_DIR, PLATFORM, false)
+                JsonParseUtils.getFile(resourceObject, RESOURCES_DIR, PLATFORM, false)?.let {
+                    config.resourcesDir = it
+                }
 
                 config.filter = BaseResourcesConfig.regExFilter(
                         getString(resourceObject, FILTER, PLATFORM, false))

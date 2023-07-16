@@ -29,6 +29,6 @@ class GetTextResourcesConfig : BaseResourcesConfig() {
     override val type = TYPE
 
     override val resources: Resources
-        get() = GetTextResources(resourcesDir!!, resourceName!!, filter)
+        get() = GetTextResources(resourcesDir, resourceName, filter)
 
 }

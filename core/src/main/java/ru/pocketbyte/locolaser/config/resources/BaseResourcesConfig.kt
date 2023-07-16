@@ -32,28 +32,32 @@ abstract class BaseResourcesConfig : Config.Child(), ResourcesConfig {
         }
     }
 
+    private var _resourceName: String? = null
+
     /**
      * Resource name or null if should be used default name.
      */
-    var resourceName: String? = null
-        get() = if (field != null) field else defaultResourceName
+    var resourceName: String
+        get() = _resourceName ?: defaultResourceName
+        set(value) { _resourceName = value }
+
+    private var _resourcesDir: File? = null
 
     /**
      * Resource directory.
      */
-    var resourcesDir: File? = null
+    var resourcesDir: File
         get() {
-            if (field == null) {
-                resourcesDir = try {
-                    File(File(defaultResourcesPath).canonicalPath)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    File(defaultResourcesPath)
-                }
-
+            return _resourcesDir ?: try {
+                File(File(defaultResourcesPath).canonicalPath)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                File(defaultResourcesPath)
+            }.apply {
+                _resourcesDir = this
             }
-            return field
         }
+        set(value) { _resourcesDir = value }
 
     var filter: ((key: String) -> Boolean)? = null
 
@@ -61,19 +65,14 @@ abstract class BaseResourcesConfig : Config.Child(), ResourcesConfig {
     // ========= Interface properties =====================================================================================
     // =================================================================================================================
 
-    private var _defaultTempDir: File? = null
-    override val defaultTempDir: File
-        get() {
-            if (_defaultTempDir == null)
-                _defaultTempDir = try {
-                    File(File(defaultTempDirPath).canonicalPath)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    File(defaultTempDirPath)
-                }
-
-            return _defaultTempDir!!
+    override val defaultTempDir: File by lazy {
+        try {
+            File(File(defaultTempDirPath).canonicalPath)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            File(defaultTempDirPath)
         }
+    }
 
     // =================================================================================================================
     // ========= Abstract properties ======================================================================================

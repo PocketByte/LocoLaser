@@ -190,38 +190,34 @@ open class ConfigParser
     class ConfigArgsParser {
 
         @Parameter
-        private val parameters = ArrayList<String>()
+        private var parameters = ArrayList<String>()
 
         @Parameter(names = ["--force", "--f"])
-        private val forceImport: Boolean = false
+        private var forceImport: Boolean = false
 
         @Parameter(names = ["-cs"])
-        private val conflictStrategy: String? = null
+        private var conflictStrategy: String? = null
 
         @Parameter(names = ["-delay"])
-        private val delay: Long? = null
+        private var delay: Long? = null
 
         @Parameter(names = ["-tempDir"])
-        private val tempDir: String? = null
+        private var tempDir: String? = null
 
         @Parameter(names = ["-workDir"])
-        val workDir: String? = null
+        var workDir: String? = null
 
         @Throws(InvalidConfigException::class)
         fun applyFor(config: Config) {
             if (forceImport)
                 config.isForceImport = true
 
-            if (conflictStrategy != null)
-                parseConflictStrategy(conflictStrategy)?.let {
-                    config.conflictStrategy = it
-                }
+            parseConflictStrategy(conflictStrategy)?.let {
+                config.conflictStrategy = it
+            }
 
-            if (delay != null)
-                config.delay = delay
-
-            if (tempDir != null)
-                config.tempDir = File(File(tempDir).canonicalPath)
+            delay?.let { config.delay = it }
+            tempDir?.let { config.tempDir = File(File(it).canonicalPath) }
         }
     }
 }

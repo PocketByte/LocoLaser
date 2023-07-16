@@ -134,12 +134,12 @@ object JsonToStringUtils {
                 else ->
                     //Reference: http://www.unicode.org/versions/Unicode5.1.0/
                     if (ch in '\u0000'..'\u001F' || ch in '\u007F'..'\u009F' || ch in '\u2000'..'\u20FF') {
-                        val ss = Integer.toHexString(ch.toInt())
+                        val ss = Integer.toHexString(ch.code)
                         sb.append("\\u")
                         for (k in 0 until 4 - ss.length) {
                             sb.append('0')
                         }
-                        sb.append(ss.toUpperCase())
+                        sb.append(ss.uppercase())
                     } else {
                         sb.append(ch)
                     }

@@ -11,10 +11,9 @@ class KotlinIosResourcesConfig : KotlinBaseImplResourcesConfig() {
     override val type = TYPE
 
     override val defaultResourcesPath = "./build/generated/src/iosMain/kotlin/"
-    override val defaultResourceName  = "ru.pocketbyte.locolaser.kmpp.IosStringRepository"
-    override val defaultInterfaceName = "ru.pocketbyte.locolaser.kmpp.StringRepository"
+    override val defaultResourceName  = "$DEFAULT_PACKAGE.Ios$DEFAULT_INTERFACE_NAME"
 
     override val resources
-        get() = KotlinIosResources(resourcesDir!!, resourceName!!, implements!!, filter)
+        get() = KotlinIosResources(resourcesDir, resourceName, implements!!, filter)
 
 }

@@ -13,7 +13,7 @@ interface FormattingType {
 
         /**
          * Arguments substitution by index. Typical for formatting used in Java.
-         * For example: "Hello %1$s. My name is %1$s"
+         * For example: "Hello %1$s. My name is %2$s"
          */
         BY_INDEX,
 

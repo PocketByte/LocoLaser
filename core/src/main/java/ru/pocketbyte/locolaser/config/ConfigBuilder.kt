@@ -8,7 +8,7 @@ open class ConfigBuilder(
 ) {
     /**
      * Import doesn't execute without a need.
-     * Define if import should be forced even if this is not necessary.
+     * Defines if import should be forced even if this is not necessary.
      * True if import should be forced, false otherwise.
      */
     var isForceImport: Boolean
@@ -24,14 +24,14 @@ open class ConfigBuilder(
         set(value) { config.conflictStrategy = value }
 
     /**
-     * Define temporary directory.
+     * Defines temporary directory.
      */
     var tempDir: File?
         get() = config.tempDir
         set(value) { config.tempDir = value }
 
     /**
-     * Define temporary directory.
+     * Defines temporary directory.
      */
     fun tempDir(path: String) {
         tempDir = File(path)
@@ -46,7 +46,7 @@ open class ConfigBuilder(
         set(value) { config.locales = value }
 
     /**
-     * Define time in minutes that define delay for next localization.
+     * Defines time in minutes that define delay for next localization.
      * Localization will executed not more often the specified delay.
      * If force import switched on delay will be ignored.
      */
@@ -90,7 +90,7 @@ open class ConfigBuilder(
     }
 
     /**
-     * Define if comment should be written even if it equal resource value.
+     * Defines if comment should be written even if it equal resource value.
      * True if comment should be written even if it equal resource value, false otherwise.
      */
     var isDuplicateComments: Boolean
@@ -100,7 +100,7 @@ open class ConfigBuilder(
         }
 
     /**
-     * Define if unsupported quantities should be throw away if is not supported by locale.
+     * Defines if unsupported quantities should be throw away if is not supported by locale.
      * True if unsupported quantities should be throw away, false otherwise.
      */
     var ExtraParams.trimUnsupportedQuantities: Boolean

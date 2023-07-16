@@ -7,6 +7,7 @@ import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.entity.*
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
@@ -15,6 +16,10 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 class PropertiesResourceFileTest {
+
+    companion object {
+        private const val FILE_HEADER = PropertiesResourceFile.GENERATED_COMMENT + "\r\n\r\n"
+    }
 
     @JvmField @Rule
     var tempFolder = TemporaryFolder()
@@ -83,19 +88,20 @@ class PropertiesResourceFileTest {
     fun testReadComments() {
         val testLocale = "ru"
         val testFile = prepareTestFile(
-                (PropertiesResourceFile.GENERATED_COMMENT + "\r\n\r\n" +
-                        "# This comment must be ignored\r\n" +
-                        "\r\n" +
-                        "no_comment=No comment\r\n" +
-                        "# This comment must be not ignored\r\n" +
-                        "has_comment=Has comment\r\n" +
-                        "# Comment line 1\r\n" +
-                        "# Comment line 2\r\n" +
-                        "multiline_comment=Multiline comment\r\n" +
-                        "# Ignored Comment line 1\r\n" +
-                        "\r\n" +
-                        "# Comment line 2\r\n" +
-                        "multiline_ignore_comment=Multiline comment (ignore)\r\n"))
+            FILE_HEADER +
+            "# This comment must be ignored\r\n" +
+            "\r\n" +
+            "no_comment=No comment\r\n" +
+            "# This comment must be not ignored\r\n" +
+            "has_comment=Has comment\r\n" +
+            "# Comment line 1\r\n" +
+            "# Comment line 2\r\n" +
+            "multiline_comment=Multiline comment\r\n" +
+            "# Ignored Comment line 1\r\n" +
+            "\r\n" +
+            "# Comment line 2\r\n" +
+            "multiline_ignore_comment=Multiline comment (ignore)\r\n"
+        )
 
         val resourceFile = PropertiesResourceFile(testFile, testLocale)
         val resMap = resourceFile.read(null)
@@ -136,11 +142,11 @@ class PropertiesResourceFileTest {
         val resourceFile = PropertiesResourceFile(testFile, testLocale)
         resourceFile.write(resMap, null)
 
-        val expectedResult = (PropertiesResourceFile.GENERATED_COMMENT + "\r\n\r\n" +
-                "# Comment\r\n" +
-                "key1=value1_1\r\n" +
-                "# value2_1\r\n" +
-                "key2=value2_1\r\n")
+        val expectedResult = FILE_HEADER +
+            "# Comment\r\n" +
+            "key1=value1_1\r\n" +
+            "# value2_1\r\n" +
+            "key2=value2_1\r\n"
 
         assertEquals(expectedResult, readFile(testFile))
     }
@@ -164,12 +170,89 @@ class PropertiesResourceFileTest {
         val resourceFile = PropertiesResourceFile(testFile, testLocale)
         resourceFile.write(resMap, extraParams)
 
-        val expectedResult = (PropertiesResourceFile.GENERATED_COMMENT + "\r\n\r\n" +
-                "# Comment\r\n" +
-                "key1=value1_1\r\n" +
-                "key2=value2_1\r\n")
+        val expectedResult = FILE_HEADER +
+            "# Comment\r\n" +
+            "key1=value1_1\r\n" +
+            "key2=value2_1\r\n"
 
         assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWritePlurals() {
+        val testLocale = "ru"
+
+        val resMap = ResMap()
+
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_1", "Comment", Quantity.OTHER),
+            ResValue("value1_2", "Comment One", Quantity.ONE),
+            ResValue("value1_3", "Comment Few", Quantity.FEW),
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(
+            ResValue("value2_1", "value2_1", Quantity.OTHER),
+            ResValue("value2_2", "value2_2", Quantity.MANY),
+        )))
+        resMap[testLocale] = resLocale
+
+        val extraParams = ExtraParams()
+        extraParams.duplicateComments = false
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = PropertiesResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, extraParams)
+
+        val expectedResult = FILE_HEADER +
+            "# Comment\r\n" +
+            "key1.other=value1_1\r\n" +
+            "# Comment One\r\n" +
+            "key1.one=value1_2\r\n" +
+            "# Comment Few\r\n" +
+            "key1.few=value1_3\r\n" +
+            "key2.other=value2_1\r\n" +
+            "key2.many=value2_2\r\n"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testReadPlurals() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+            "# Comment\r\n" +
+            "key1.other=value1_1\r\n" +
+            "# Comment One\r\n" +
+            "key1.one=value1_2\r\n" +
+            "# Comment Few\r\n" +
+            "key1.few=value1_3\r\n" +
+            "key2.other=value2_1\r\n" +
+            "key2.many=value2_2\r\n"
+        )
+
+        val resourceFile = PropertiesResourceFile(testFile, testLocale)
+        val resMap = resourceFile.read(null)
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_1", "Comment", Quantity.OTHER, NoFormattingType, emptyList()),
+            ResValue("value1_2", "Comment One", Quantity.ONE, NoFormattingType, emptyList()),
+            ResValue("value1_3", "Comment Few", Quantity.FEW, NoFormattingType, emptyList()),
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(
+            ResValue("value2_1", null, Quantity.OTHER, NoFormattingType, emptyList()),
+            ResValue("value2_2", null, Quantity.MANY, NoFormattingType, emptyList()),
+        )))
+
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
     }
 
     @Throws(IOException::class)

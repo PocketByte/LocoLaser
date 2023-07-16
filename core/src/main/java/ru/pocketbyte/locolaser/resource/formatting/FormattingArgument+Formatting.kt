@@ -22,7 +22,7 @@ fun FormattingArgument.parameterClass(): KClass<*> {
             return it
         }
     }
-    if (name?.toLowerCase() == "count") {
+    if (name?.lowercase() == "count") {
         return Long::class
     }
     return String::class

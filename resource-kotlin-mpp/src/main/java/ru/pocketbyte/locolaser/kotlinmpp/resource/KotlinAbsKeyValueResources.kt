@@ -19,5 +19,4 @@ class KotlinAbsKeyValueResources(
                 this.interfaceName, this.interfacePackage,
                 this.formattingType))
     }
-
 }

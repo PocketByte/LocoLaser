@@ -31,6 +31,6 @@ class JsonResourcesConfig : BaseResourcesConfig() {
     override val type = TYPE
 
     override val resources: Resources
-        get() = JsonResources(resourcesDir!!, resourceName!!, indent, filter)
+        get() = JsonResources(resourcesDir, resourceName, indent, filter)
 
 }

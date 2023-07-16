@@ -69,7 +69,7 @@ class Config {
             (value as? Child)?.parent = this
         }
     /**
-     * Define if import should be forced even if this is not necessary.
+     * Defines if import should be forced even if this is not necessary.
      * True if import should be forced, false otherwise.
      */
     var isForceImport: Boolean = false
@@ -91,14 +91,14 @@ class Config {
     var locales: Set<String> = setOf(Resources.BASE_LOCALE)
 
     /**
-     * Define time in minutes that define delay for next localization.
+     * Defines time in minutes that define delay for next localization.
      * Localization will executed not more often the specified delay.
      * If force import switched on delay will be ignored.
      */
     var delay: Long = 0
 
     /**
-     * Define temporary directory.
+     * Defines temporary directory.
      */
     var tempDir: File? = null
         get() {
@@ -110,7 +110,7 @@ class Config {
     val extraParams = ExtraParams()
 
     /**
-     * Define if comment should be written even if it equal resource value.
+     * Defines if comment should be written even if it equal resource value.
      * True if comment should be written even if it equal resource value, false otherwise.
      */
     var isDuplicateComments: Boolean
@@ -120,7 +120,7 @@ class Config {
         }
 
     /**
-     * Define if unsupported quantities should be throw away if is not supported by locale.
+     * Defines if unsupported quantities should be throw away if is not supported by locale.
      * True if unsupported quantities should be throw away, false otherwise.
      */
     var trimUnsupportedQuantities: Boolean

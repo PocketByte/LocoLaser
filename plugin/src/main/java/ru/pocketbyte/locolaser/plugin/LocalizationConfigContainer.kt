@@ -6,7 +6,7 @@ import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.ConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.EmptyResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.plugin.utils.firstCharToUpperCase
+import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
 import java.io.File
 
 open class LocalizationConfigContainer(

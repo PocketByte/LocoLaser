@@ -23,6 +23,6 @@ class PropertiesResourceConfig : BaseResourcesConfig() {
         get() = "strings"
 
     override val resources: Resources
-        get() = PropertiesResources(resourcesDir!!, resourceName!!, filter)
+        get() = PropertiesResources(resourcesDir, resourceName, filter)
 
 }

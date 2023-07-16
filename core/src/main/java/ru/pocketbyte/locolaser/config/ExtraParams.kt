@@ -13,12 +13,12 @@ class ExtraParams: HashMap<String, Any?>() {
     companion object {
 
         /**
-         * Define if comment should be written even if it equal resource value.
+         * Defines if comment should be written even if it equal resource value.
          */
         const val DUPLICATE_COMMENTS = "DuplicateComments"
 
         /**
-         * Define if unsupported quantities should be throw away if is not supported by locale.
+         * Defines if unsupported quantities should be throw away if is not supported by locale.
          */
         const val TRIM_UNSUPPORTED_QUANTITIES = "TrimUnsupportedQuantities"
     }
@@ -26,7 +26,7 @@ class ExtraParams: HashMap<String, Any?>() {
 }
 
 /**
- * Define if comment should be written even if it equal resource value. Default value: false.
+ * Defines if comment should be written even if it equal resource value. Default value: false.
  */
 var ExtraParams.duplicateComments: Boolean
     get() = get(ExtraParams.DUPLICATE_COMMENTS) as? Boolean ?: false
@@ -35,7 +35,7 @@ var ExtraParams.duplicateComments: Boolean
     }
 
 /**
- * Define if unsupported quantities should be throw away if is not supported by locale. Default value: true.
+ * Defines if unsupported quantities should be throw away if is not supported by locale. Default value: true.
  */
 var ExtraParams.trimUnsupportedQuantities: Boolean
     get() = get(ExtraParams.TRIM_UNSUPPORTED_QUANTITIES) as? Boolean ?: true
