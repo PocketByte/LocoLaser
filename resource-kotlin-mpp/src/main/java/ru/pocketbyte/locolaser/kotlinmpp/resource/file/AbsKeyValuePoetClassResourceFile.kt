@@ -1,40 +1,68 @@
 package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider
+import ru.pocketbyte.locolaser.provider.NameFormattedStringProvider
+import ru.pocketbyte.locolaser.provider.StringProvider
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType.ArgumentsSubstitution.*
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.anyName
 import java.io.File
 
 open class AbsKeyValuePoetClassResourceFile(
-        file: File,
-        className: String,
-        classPackage: String,
-        private val interfaceName: String?,
-        private val interfacePackage: String?,
-        formattingType: FormattingType = NoFormattingType
+    file: File,
+    className: String,
+    classPackage: String,
+    private val interfaceName: String?,
+    private val interfacePackage: String?,
+    formattingType: FormattingType = NoFormattingType
 ): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
 
-    companion object {
-        val StringProviderClassName = ClassName("", "StringProvider")
-        val KeyValuePairClassName = ParameterizedTypeName.get(Pair::class, String::class, Any::class)
+    private val stringProviderClassName by lazy {
+        when (formattingType.argumentsSubstitution) {
+            BY_INDEX -> IndexFormattedStringProvider::class.asTypeName()
+            BY_NAME -> NameFormattedStringProvider::class.asTypeName()
+            NO -> StringProvider::class.asTypeName()
+        }
+    }
+
+    override fun description(): String {
+        return "KotlinAbsKeyValue(${directory.absolutePath}/${className})"
+    }
+
+    override fun instantiateFileSpecBuilder(
+        resMap: ResMap,
+        extraParams: ExtraParams?
+    ): FileSpec.Builder {
+        return super.instantiateFileSpecBuilder(resMap, extraParams).apply {
+            if (formattingType.argumentsSubstitution == BY_NAME) {
+                addImport("kotlin", "Pair")
+            }
+        }
     }
 
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
         val builder = TypeSpec.classBuilder(className)
-                .addModifiers(KModifier.PUBLIC)
-                .addType(instantiateStringProviderInterfaceSpecBuilder().build())
-                .primaryConstructor(
-                    FunSpec.constructorBuilder()
-                        .addParameter(
-                            "private val stringProvider", StringProviderClassName)
-                        .build()
-                )
+            .addModifiers(KModifier.PUBLIC)
+            .addProperty(
+                PropertySpec
+                    .builder("stringProvider", stringProviderClassName, KModifier.PRIVATE)
+                    .initializer("stringProvider")
+                    .build()
+            )
+            .primaryConstructor(
+                FunSpec.constructorBuilder()
+                    .addParameter("stringProvider", stringProviderClassName)
+                    .build()
+            )
+
         if (interfaceName != null && interfacePackage != null) {
             builder.addSuperinterface(ClassName(interfacePackage, interfaceName))
         }
@@ -43,13 +71,13 @@ open class AbsKeyValuePoetClassResourceFile(
     }
 
     override fun instantiatePropertySpecBuilder(
-            name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
+        name: String, item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): PropertySpec.Builder {
         val builder = super
             .instantiatePropertySpecBuilder(name, item, resMap, extraParams)
             .getter(
                 FunSpec.getterBuilder()
-                    .addStatement("return this.stringProvider.getString(\"${item.key}\")")
+                    .addStatement("return stringProvider.getString(\"${item.key}\")")
                     .build()
             )
 
@@ -80,15 +108,24 @@ open class AbsKeyValuePoetClassResourceFile(
             builder.addModifiers(KModifier.OVERRIDE)
         }
 
-        formattingArguments.mapIndexed { index, argument ->
-            val argumentName = argument.anyName(index)
-            when (formattingType.argumentsSubstitution) {
-                FormattingType.ArgumentsSubstitution.BY_NAME -> "Pair(\"$argumentName\", $argumentName)"
-                else -> argumentName
+        val argumentsString = when (formattingType.argumentsSubstitution) {
+            BY_NAME -> {
+                formattingArguments.mapIndexed { index, argument ->
+                    argument.anyName(index).let { "Pair(\"$it\", $it)" }
+                }.joinToString()
             }
-        }.joinToString()
-        .let {
-            builder.addStatement("return this.stringProvider.getString(\"${item.key}\", $it)")
+            BY_INDEX -> {
+                formattingArguments.mapIndexed { index, argument ->
+                    argument.anyName(index)
+                }.joinToString()
+            }
+            NO -> null
+        }
+
+        if (argumentsString != null) {
+            builder.addStatement("return stringProvider.getString(\"${item.key}\", $argumentsString)")
+        } else {
+            builder.addStatement("return stringProvider.getString(\"${item.key}\")")
         }
 
         return builder
@@ -102,16 +139,34 @@ open class AbsKeyValuePoetClassResourceFile(
                 ?: throw IllegalArgumentException("item must have OTHER quantity")
         val builder = super
             .instantiatePluralSpecBuilder(name, formattingArguments, item, resMap, extraParams)
-            .addStatement("return this.stringProvider.getPluralString(\"${item.key}\", ${
+
+        val argumentsString = when (formattingType.argumentsSubstitution) {
+            BY_NAME -> {
                 formattingArguments.mapIndexed { index, argument ->
-                    if (index == 0) return@mapIndexed "count"
-                    val argumentName = argument.anyName(index)
-                    when (formattingType.argumentsSubstitution) {
-                        FormattingType.ArgumentsSubstitution.BY_NAME -> "Pair(\"$argumentName\", $argumentName)"
-                        else -> argumentName
+                    if (index == 0) {
+                        "count"
+                    } else {
+                        argument.anyName(index).let { "Pair(\"$it\", $it)" }
                     }
                 }.joinToString()
-            })")
+            }
+            BY_INDEX -> {
+                formattingArguments.mapIndexed { index, argument ->
+                    if (index == 0) {
+                        "count"
+                    } else {
+                        argument.anyName(index)
+                    }
+                }.joinToString()
+            }
+            NO -> null
+        }
+
+        if (argumentsString != null) {
+            builder.addStatement("return stringProvider.getPluralString(\"${item.key}\", $argumentsString)")
+        } else {
+            builder.addStatement("return stringProvider.getString(\"${item.key}\")")
+        }
 
         if (interfaceName == null || interfacePackage == null) {
             val valueOther = item.valueForQuantity(Quantity.OTHER)
@@ -122,59 +177,6 @@ open class AbsKeyValuePoetClassResourceFile(
             builder.addModifiers(KModifier.OVERRIDE)
         }
 
-        return builder
-    }
-
-    protected fun instantiateStringProviderInterfaceSpecBuilder(): TypeSpec.Builder {
-        return TypeSpec.interfaceBuilder(StringProviderClassName)
-            .addFunction(
-                instantiateStringProviderGetStringSpecBuilder()
-                    .addModifiers(KModifier.ABSTRACT)
-                    .build()
-            )
-            .addFunction(
-                instantiateStringProviderGetPluralStringSpecBuilder()
-                    .addModifiers(KModifier.ABSTRACT)
-                    .build()
-            )
-    }
-
-    protected fun instantiateStringProviderGetStringSpecBuilder(): FunSpec.Builder {
-        val builder = FunSpec.builder("getString")
-                .addParameter("key", String::class)
-                .returns(String::class)
-
-        when (formattingType.argumentsSubstitution) {
-            FormattingType.ArgumentsSubstitution.BY_INDEX -> {
-                builder.addParameter("vararg args", Any::class)
-            }
-            FormattingType.ArgumentsSubstitution.BY_NAME -> {
-                builder.addParameter("vararg args", KeyValuePairClassName)
-            }
-            FormattingType.ArgumentsSubstitution.NO -> {
-                // Do nothing
-            }
-        }
-        return builder
-    }
-
-    protected fun instantiateStringProviderGetPluralStringSpecBuilder(): FunSpec.Builder {
-        val builder = FunSpec.builder("getPluralString")
-                .addParameter("key", String::class)
-                .addParameter("count", Long::class)
-                .returns(String::class)
-
-        when (formattingType.argumentsSubstitution) {
-            FormattingType.ArgumentsSubstitution.BY_INDEX -> {
-                builder.addParameter("vararg args", Any::class)
-            }
-            FormattingType.ArgumentsSubstitution.BY_NAME -> {
-                builder.addParameter("vararg args", KeyValuePairClassName)
-            }
-            FormattingType.ArgumentsSubstitution.NO -> {
-                // Do nothing
-            }
-        }
         return builder
     }
 }

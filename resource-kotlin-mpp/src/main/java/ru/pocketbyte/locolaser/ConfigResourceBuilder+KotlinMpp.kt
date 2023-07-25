@@ -45,7 +45,7 @@ fun ConfigResourceBuilder.kotlinJs(action: KotlinJsResourcesConfigBuilder.() -> 
 
 /**
  * Create and configure Kotlin Multiplatform AbsKeyValue config.
- * This config generates strings Repository implementation with abstract implementation, that can be used in any target.
+ * This config generates abstract strings Repository implementation, that can be used in any target.
  */
 fun ConfigResourceBuilder.kotlinAbsKeyValue(action: KotlinAbsKeyValueResourcesConfigBuilder.() -> Unit) {
     val resourcesConfig = KotlinAbsKeyValueResourcesConfig()
@@ -55,11 +55,21 @@ fun ConfigResourceBuilder.kotlinAbsKeyValue(action: KotlinAbsKeyValueResourcesCo
 
 /**
  * Create and configure Kotlin Multiplatform AbsStatic config.
- * This config generates strings Repository implementation with abstract implementation, that can be used in any target.
+ * This config generates abstract strings Repository implementation, that can be used in any target.
  */
 fun ConfigResourceBuilder.kotlinAbsStatic(action: KotlinAbsStaticResourcesConfigBuilder.() -> Unit) {
     val resourcesConfig = KotlinAbsStaticResourcesConfig()
     action(KotlinAbsStaticResourcesConfigBuilder(resourcesConfig))
+    add(resourcesConfig)
+}
+
+/**
+ * Create and configure Kotlin Multiplatform AbsProxy config.
+ * This config generates abstract strings Repository implementation, that can be used in any target.
+ */
+fun ConfigResourceBuilder.kotlinAbsProxy(action: KotlinAbsProxyResourcesConfigBuilder.() -> Unit) {
+    val resourcesConfig = KotlinAbsProxyResourcesConfig()
+    action(KotlinAbsProxyResourcesConfigBuilder(resourcesConfig))
     add(resourcesConfig)
 }
 

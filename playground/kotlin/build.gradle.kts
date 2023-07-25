@@ -11,7 +11,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        val localaserVersion = "2.2.5"
+        val localaserVersion = "2.3.0"
         classpath("ru.pocketbyte.locolaser:plugin:$localaserVersion")
         classpath("ru.pocketbyte.locolaser:core:$localaserVersion")
         classpath("ru.pocketbyte.locolaser:resource-gettext:$localaserVersion")
@@ -42,15 +42,16 @@ localize {
     }
     config {
         platform {
-            kotlinMultiplatform {
-                srcDir = File("./build/res/kmpp/")
-                repositoryInterface = "com.example.SuperString"
-                repositoryClass = "com.example.SuperStringImpl"
-                android(); ios(); js()
-                platform("common", "test", KotlinAbsStaticResourcesConfig().apply {
-                    formattingType = JavaFormattingType
-                })
-            }
+            this.
+//            kotlinMultiplatform {
+//                srcDir = File("./build/res/kmpp/")
+//                repositoryInterface = "com.example.SuperString"
+//                repositoryClass = "com.example.SuperStringImpl"
+//                android(); ios(); js()
+//                platform("common", "test", KotlinAbsStaticResourcesConfig().apply {
+//                    formattingType = JavaFormattingType
+//                })
+//            }
             json {
                 resourcesDir("./build/res/json")
                 indent = 2

@@ -13,7 +13,6 @@ abstract class AbsKotlinImplementationResources(
     val interfacePackage: String?
 
     init {
-
         if (interfaceName != null) {
             val interfaceNameParts = interfaceName.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 

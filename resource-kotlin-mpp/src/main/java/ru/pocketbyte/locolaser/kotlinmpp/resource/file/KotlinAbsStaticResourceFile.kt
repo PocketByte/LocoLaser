@@ -18,6 +18,15 @@ open class KotlinAbsStaticResourceFile(
     formattingType: FormattingType = WebFormattingType
 ): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
 
+    companion object {
+        private const val PARAMETER_NAME_COUNT = "count"
+        private const val PARAMETER_NAME_STRING = "string"
+        private const val PARAMETER_NAME_ARGS = "args"
+
+        private const val FUN_NAME_FORMAT_STRING = "formatString"
+        private const val FUN_NAME_GET_QUANTITY = "getQuantity"
+    }
+
     override fun description(): String {
         return "KotlinAbsStatic(${directory.absolutePath}/${className})"
     }
@@ -67,7 +76,9 @@ open class KotlinAbsStaticResourceFile(
         name: String, formattingArguments: List<FormattingArgument>,
         item: ResItem, resMap: ResMap, extraParams: ExtraParams?
     ): FunSpec.Builder {
-        val builder = super.instantiateFormattedPropertySpecBuilder(name, formattingArguments, item, resMap, extraParams)
+        val builder = super.instantiateFormattedPropertySpecBuilder(
+            name, formattingArguments, item, resMap, extraParams
+        )
 
         if (interfaceName == null || interfacePackage == null) {
             val valueOther = item.valueForQuantity(Quantity.OTHER)
@@ -84,8 +95,9 @@ open class KotlinAbsStaticResourceFile(
         ).value
 
         builder.addStatement(
-            StringBuilder("return %S")
-                .appendFormatFunction(formattingArguments)
+            StringBuilder("return $FUN_NAME_FORMAT_STRING(%S")
+                .appendFormatFunctionArguments(formattingArguments, isPlural = false)
+                .append(")")
                 .toString(),
             otherValue
         )
@@ -99,7 +111,9 @@ open class KotlinAbsStaticResourceFile(
     ): FunSpec.Builder {
         val otherValue = item.valueForQuantity(Quantity.OTHER)
             ?: throw IllegalArgumentException("item must have OTHER quantity")
-        val builder = super.instantiatePluralSpecBuilder(name, formattingArguments, item, resMap, extraParams)
+        val builder = super.instantiatePluralSpecBuilder(
+            name, formattingArguments, item, resMap, extraParams
+        )
 
         if (interfaceName == null || interfacePackage == null) {
             val valueOther = item.valueForQuantity(Quantity.OTHER)
@@ -112,7 +126,9 @@ open class KotlinAbsStaticResourceFile(
 
         val codeBlock = CodeBlock.builder()
 
-        codeBlock.beginControlFlow("val stringValue = when (getQuantity(count))")
+        codeBlock.beginControlFlow(
+            "val stringValue = when ($FUN_NAME_GET_QUANTITY($PARAMETER_NAME_COUNT))"
+        )
 
         item.values.forEach {
             if (it.quantity != Quantity.OTHER) {
@@ -129,8 +145,9 @@ open class KotlinAbsStaticResourceFile(
         codeBlock.endControlFlow()
 
         codeBlock.addStatement(
-            StringBuilder("return stringValue")
-                .appendFormatFunction(formattingArguments)
+            StringBuilder("return $FUN_NAME_FORMAT_STRING(stringValue")
+                .appendFormatFunctionArguments(formattingArguments, isPlural = true)
+                .append(")")
                 .toString()
         )
 
@@ -140,27 +157,28 @@ open class KotlinAbsStaticResourceFile(
     }
 
     private fun instantiateGetQuantitySpecBuilder(): FunSpec.Builder {
-        return FunSpec.builder("getQuantity")
+        return FunSpec.builder(FUN_NAME_GET_QUANTITY)
             .addModifiers(KModifier.PROTECTED)
             .addModifiers(KModifier.ABSTRACT)
-            .addParameter("count", Long::class)
+            .addParameter(PARAMETER_NAME_COUNT, Long::class)
             .returns(Quantity::class.asTypeName())
     }
 
     private fun instantiateFormatStringSpecBuilder(): FunSpec.Builder {
-        val builder = FunSpec.builder("formatString")
+        val builder = FunSpec.builder(FUN_NAME_FORMAT_STRING)
             .addModifiers(KModifier.PROTECTED)
             .addModifiers(KModifier.ABSTRACT)
-            .addParameter("string", String::class)
+            .addParameter(PARAMETER_NAME_STRING, String::class)
             .returns(String::class)
 
         when (formattingType.argumentsSubstitution) {
             FormattingType.ArgumentsSubstitution.BY_INDEX -> {
-                builder.addParameter("vararg args", Any::class)
+                builder.addParameter(PARAMETER_NAME_ARGS, Any::class, KModifier.VARARG)
             }
             FormattingType.ArgumentsSubstitution.BY_NAME -> {
-                builder.addParameter("vararg args",
-                    AbsKeyValuePoetClassResourceFile.KeyValuePairClassName
+                builder.addParameter(PARAMETER_NAME_ARGS,
+                    KeyValuePairClassName,
+                    KModifier.VARARG
                 )
             }
             FormattingType.ArgumentsSubstitution.NO -> {
@@ -170,11 +188,17 @@ open class KotlinAbsStaticResourceFile(
         return builder
     }
 
-    private fun StringBuilder.appendFormatFunction(formattingArguments: List<FormattingArgument>): StringBuilder {
-        append(".let { formatString(it")
+    private fun StringBuilder.appendFormatFunctionArguments(
+        formattingArguments: List<FormattingArgument>,
+        isPlural: Boolean
+    ): StringBuilder {
         formattingArguments.forEachIndexed { index, argument ->
             append(", ")
-            val argumentName = argument.anyName(index)
+            val argumentName = if (isPlural && index == 0) {
+                PARAMETER_NAME_COUNT
+            } else {
+                argument.anyName(index)
+            }
             when (formattingType.argumentsSubstitution) {
                 FormattingType.ArgumentsSubstitution.BY_NAME -> {
                     append("Pair(\"")
@@ -188,7 +212,6 @@ open class KotlinAbsStaticResourceFile(
                 }
             }
         }
-        append(") }")
         return this
     }
 

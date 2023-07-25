@@ -9,8 +9,10 @@ abstract class KotlinBaseImplResourcesConfig : BaseResourcesConfig() {
         const val DEFAULT_INTERFACE_NAME = "StringRepository"
     }
 
-    var implements: String? = null
-        get() = if (field != null) field else defaultInterfaceName
+    private var _implements: String? = null
+    var implements: String
+        get() = _implements ?: defaultInterfaceName
+    set(value) { _implements = value }
 
     open val defaultInterfaceName = "$DEFAULT_PACKAGE.$DEFAULT_INTERFACE_NAME"
 

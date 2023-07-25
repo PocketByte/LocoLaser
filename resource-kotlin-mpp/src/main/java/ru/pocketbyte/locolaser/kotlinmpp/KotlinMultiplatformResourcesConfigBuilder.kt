@@ -10,7 +10,14 @@ import java.io.File
 
 class KotlinMultiplatformResourcesConfigBuilder {
 
-    open class BaseKmpBuilder {
+    abstract class BaseKmpBuilder {
+
+        /**
+         * Name of source set.
+         * Will be used to get path to sources directory if sourcesDir is null.
+         */
+        abstract var sourceSet: String
+
         /**
          * Path to directory with source code.
          */
@@ -32,6 +39,9 @@ class KotlinMultiplatformResourcesConfigBuilder {
     }
 
     class KmpInterfaceBuilder: BaseKmpBuilder() {
+
+        override var sourceSet: String = "commonMain"
+
         /**
          * Canonical name of the Repository interface that should be generated.
          */
@@ -40,14 +50,15 @@ class KotlinMultiplatformResourcesConfigBuilder {
 
     class KmpClassBuilder<T : KotlinBaseImplResourcesConfig>(
         internal val name: String,
-        internal val sourceSet: String,
         internal val config: T
     ): BaseKmpBuilder() {
+
+        override var sourceSet: String = "${name}Main"
+
         /**
          * Canonical name of the Repository class that should be generated.
          */
         var className: String? = null
-
     }
 
     /**
@@ -112,7 +123,7 @@ class KotlinMultiplatformResourcesConfigBuilder {
      * There is no Android implementation will be generated if Android platform wasn't be configured.
      */
     fun android(action: KmpClassBuilder<KotlinAndroidResourcesConfig>.() -> Unit = {}) {
-        platform("android", KotlinAndroidResourcesConfig(), action)
+        platform("android", { KotlinAndroidResourcesConfig() }, action)
     }
 
     /**
@@ -120,7 +131,7 @@ class KotlinMultiplatformResourcesConfigBuilder {
      * There is no iOS implementation will be generated if iOS platform wasn't be configured.
      */
     fun ios(action: KmpClassBuilder<KotlinIosResourcesConfig>.() -> Unit = {}) {
-        platform("ios", KotlinIosResourcesConfig(), action)
+        platform("ios", { KotlinIosResourcesConfig() }, action)
     }
 
     /**
@@ -128,7 +139,7 @@ class KotlinMultiplatformResourcesConfigBuilder {
      * There is no JS implementation will be generated if JS platform wasn't be configured.
      */
     fun js(action: KmpClassBuilder<KotlinJsResourcesConfig>.() -> Unit = {}) {
-        platform("js", KotlinJsResourcesConfig(), action)
+        platform("js", { KotlinJsResourcesConfig() }, action)
     }
 
     /**
@@ -139,27 +150,14 @@ class KotlinMultiplatformResourcesConfigBuilder {
      * @param action Configure action.
      */
     fun <T : KotlinBaseImplResourcesConfig> platform (
-        name: String, config: T,
+        name: String, config: () -> T,
         action: KmpClassBuilder<T>.() -> Unit = {}
     ) {
-        platform(name, "Main", config, action)
-    }
-    /**
-     * Configure Repository implementation for provided platform type.
-     * @param name Name of platform.
-     * @param sourceSet Name of source set where source code should be placed ("Main", "Test", etc.).
-     * @param config Platform Configuration instance.
-     * Class should not be abstract and should have a constructor without parameters.
-     * @param action Configure action.
-     */
-    fun <T : KotlinBaseImplResourcesConfig> platform (
-        name: String, sourceSet: String, config: T,
-        action: KmpClassBuilder<T>.() -> Unit = {}
-    ) {
-        val key = name + sourceSet[0].uppercase() + sourceSet.substring(1)
-        val platformBuilder = platformMap[key] ?: KmpClassBuilder(name, sourceSet, config).apply {
-            platformMap[key] = this
-        }
+        val platformBuilder = platformMap[name]
+            ?: KmpClassBuilder(name, config()).apply {
+                sourceSet = "${name}Main"
+                platformMap[name] = this
+            }
 
         action(platformBuilder as KmpClassBuilder<T>)
     }
@@ -171,19 +169,21 @@ class KotlinMultiplatformResourcesConfigBuilder {
 
         commonConfig.resourceName = mergeName(packageName, repositoryInterface ?: DEFAULT_INTERFACE_NAME)
         repositoryInterface?.also { commonConfig.resourceName = it }
-        srcDir?.also { commonConfig.resourcesDir = File(it, "./commonMain/kotlin/") }
+        srcDir?.also {
+            commonConfig.resourcesDir = File(it, "./${platformCommon.sourceSet}/kotlin/")
+        }
         filter?.also { commonConfig.filter = it }
         platformCommon.also { commonConfig.fillFrom(it) }
 
-        val platformConfigs = platformMap.map { entry ->
-            entry.value.config.also { config ->
+        val platformConfigs = platformMap.values.map { builder ->
+            builder.config.also { config ->
                 config.resourceName = mergeName(
                     packageName,
-                    repositoryClass ?: "${entry.value.name.firstCharToUpperCase()}$DEFAULT_INTERFACE_NAME"
+                    repositoryClass ?: "${builder.name.firstCharToUpperCase()}$DEFAULT_INTERFACE_NAME"
                 )
-                srcDir?.also { config.resourcesDir = File(it, "./${entry.key}/kotlin/") }
+                srcDir?.also { config.resourcesDir = File(it, "./${builder.sourceSet}/kotlin/") }
                 filter?.also { config.filter = it }
-                config.fillFrom(entry.value)
+                config.fillFrom(builder)
                 config.implements = commonConfig.resourceName
             }
         }

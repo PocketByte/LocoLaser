@@ -48,13 +48,17 @@ class AbsStaticPoetClassResourceFileTest {
     fun testWriteOneItem() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_1", "Comment", Quantity.OTHER)
+        )))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = KotlinAbsStaticResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = KotlinAbsStaticResourceFile(
+            testDirectory, className, classPackage, null, null
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
@@ -64,13 +68,14 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.resource.entity.Quantity\n" +
+                "import ru.pocketbyte.locolaser.api.Quantity\n" +
                 "\n" +
-                "abstract class $className {\n" +
-                "    /**\n" +
-                "     * value1_1 */\n" +
-                "    val key1: String\n" +
-                "        get() = \"value1_1\"\n" +
+                "public abstract class $className {\n" +
+                "  /**\n" +
+                "   * value1_1\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() = \"value1_1\"\n" +
                 "\n" +
                 getAbstractFunctions(resourceFile.formattingType) +
                 "}\n"
@@ -105,20 +110,21 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.resource.entity.Quantity\n" +
+                "import ru.pocketbyte.locolaser.api.Quantity\n" +
                 "\n" +
-                "abstract class $className {\n" +
+                "public abstract class $className {\n" +
                 getAbstractFunctions(resourceFile.formattingType) +
                 "\n" +
-                "    /**\n" +
-                "     * value1_2 */\n" +
-                "    fun key1(count: Long): String {\n" +
-                "        val stringValue = when (getQuantity(count)) {\n" +
-                "            Quantity.ONE -> \"value1_1\"\n" +
-                "            else -> \"value1_2\"\n" +
-                "        }\n" +
-                "        return stringValue.let { formatString(it, Pair(\"count\", count)) }\n" +
+                "  /**\n" +
+                "   * value1_2\n" +
+                "   */\n" +
+                "  public fun key1(count: Long): String {\n" +
+                "    val stringValue = when (getQuantity(count)) {\n" +
+                "      Quantity.ONE -> \"value1_1\"\n" +
+                "      else -> \"value1_2\"\n" +
                 "    }\n" +
+                "    return stringValue.let { formatString(it, Pair(\"count\", count)) }\n" +
+                "  }\n" +
                 "}\n"
 
         Assert.assertEquals(
@@ -155,18 +161,20 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.resource.entity.Quantity\n" +
+                "import ru.pocketbyte.locolaser.api.Quantity\n" +
                 "\n" +
-                "abstract class $className {\n" +
-                "    /**\n" +
-                "     * value1_2 */\n" +
-                "    val key1: String\n" +
-                "        get() = \"value1_2\"\n" +
+                "public abstract class $className {\n" +
+                "  /**\n" +
+                "   * value1_2\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() = \"value1_2\"\n" +
                 "\n" +
-                "    /**\n" +
-                "     * value3_2 */\n" +
-                "    val key3: String\n" +
-                "        get() = \"value3_2\"\n" +
+                "  /**\n" +
+                "   * value3_2\n" +
+                "   */\n" +
+                "  public val key3: String\n" +
+                "    get() = \"value3_2\"\n" +
                 "\n" +
                 getAbstractFunctions(resourceFile.formattingType) +
                 "}\n"
@@ -195,25 +203,28 @@ class AbsStaticPoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = KotlinAbsStaticResourceFile(testDirectory, className, classPackage, "StrInterface", "com.some.package")
+        val resourceFile = KotlinAbsStaticResourceFile(
+            testDirectory, className, classPackage,
+            "StrInterface", "com.some.interfacepcg"
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import com.some.package.StrInterface\n" +
+                "import com.some.interfacepcg.StrInterface\n" +
                 "import kotlin.Any\n" +
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.resource.entity.Quantity\n" +
+                "import ru.pocketbyte.locolaser.api.Quantity\n" +
                 "\n" +
-                "abstract class $className : StrInterface {\n" +
-                "    override val key1: String\n" +
-                "        get() = \"value1_2\"\n" +
+                "public abstract class $className : StrInterface {\n" +
+                "  public override val key1: String\n" +
+                "    get() = \"value1_2\"\n" +
                 "\n" +
-                "    override val key3: String\n" +
-                "        get() = \"value3_2\"\n" +
+                "  public override val key3: String\n" +
+                "    get() = \"value3_2\"\n" +
                 "\n" +
                 getAbstractFunctions(resourceFile.formattingType) +
                 "}\n"
@@ -230,10 +241,8 @@ class AbsStaticPoetClassResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-            ResValue(
-            "Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery " +
-                    "Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long",
-            null,
+            ResValue("Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery" +
+                        " Wery Wery Wery 4 Wery Wery Wery Wery 5 Wery Long Comment", null,
             Quantity.OTHER)
         )))
         resMap[Resources.BASE_LOCALE] = resLocale
@@ -252,16 +261,18 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.resource.entity.Quantity\n" +
+                "import ru.pocketbyte.locolaser.api.Quantity\n" +
                 "\n" +
-                "abstract class $className {\n" +
-                "    /**\n" +
-                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
-                " Wery Wery Wery Wery Wery Wery\n" +
-                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long */\n" +
-                "    val key1: String\n" +
-                "        get() = \"Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery " +
-                                    "Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long\"\n" +
+                "public abstract class $className {\n" +
+                "  /**\n" +
+                "   * Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery Wery Wery Wery 4 Wery\n" +
+                "   * Wery Wery Wery 5 Wery\n" +
+                "   * Long Comment\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() =\n" +
+                "        \"Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery" +
+                         " Wery Wery Wery 4 Wery Wery Wery Wery 5 Wery Long Comment\"\n" +
                 "\n" +
                 getAbstractFunctions(resourceFile.formattingType) +
                 "}\n"
@@ -287,29 +298,32 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Any\n" +
                 "import kotlin.Long\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.resource.entity.Quantity\n" +
+                "import ru.pocketbyte.locolaser.api.Quantity\n" +
                 "\n" +
-                "abstract class $className {\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    val key1: String\n" +
-                "        get() = \"$testValue\"\n" +
+                "public abstract class $className {\n" +
+                "  /**\n" +
+                "   * $testValue\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() = \"$testValue\"\n" +
                 "\n" +
                 getAbstractFunctions(JavaFormattingType) +
                 "\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    fun key1(d1: Long, s2: String): String = \"$testValue\".let { formatString(it, d1, s2) }\n" +
+                "  /**\n" +
+                "   * $testValue\n" +
+                "   */\n" +
+                "  public fun key1(d1: Long, s2: String): String = \"$testValue\".let { formatString(it, d1, s2) }\n" +
                 "\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    fun key2(count: Long, s2: String): String {\n" +
-                "        val stringValue = when (getQuantity(count)) {\n" +
-                "            Quantity.ONE -> \"value1_1\"\n" +
-                "            else -> \"$testValue\"\n" +
-                "        }\n" +
-                "        return stringValue.let { formatString(it, d1, s2) }\n" +
+                "  /**\n" +
+                "   * $testValue\n" +
+                "   */\n" +
+                "  public fun key2(count: Long, s2: String): String {\n" +
+                "    val stringValue = when (getQuantity(count)) {\n" +
+                "      Quantity.ONE -> \"value1_1\"\n" +
+                "      else -> \"$testValue\"\n" +
                 "    }\n" +
+                "    return stringValue.let { formatString(it, d1, s2) }\n" +
+                "  }\n" +
                 "}\n"
         )
     }
@@ -330,29 +344,33 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.resource.entity.Quantity\n" +
+                "import ru.pocketbyte.locolaser.api.Quantity\n" +
                 "\n" +
-                "abstract class $className {\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    val key1: String\n" +
-                "        get() = \"$testValue\"\n" +
+                "public abstract class $className {\n" +
+                "  /**\n" +
+                "   * $testValue\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() = \"$testValue\"\n" +
                 "\n" +
                 getAbstractFunctions(WebFormattingType) +
                 "\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    fun key1(count: Long, name: String): String = \"$testValue\".let { formatString(it, Pair(\"count\", count), Pair(\"name\", name)) }\n" +
+                "  /**\n" +
+                "   * $testValue\n" +
+                "   */\n" +
+                "  public fun key1(count: Long, name: String): String = \"$testValue\".let {\n" +
+                "      formatString(it, Pair(\"count\", count), Pair(\"name\", name)) }\n" +
                 "\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    fun key2(count: Long, name: String): String {\n" +
-                "        val stringValue = when (getQuantity(count)) {\n" +
-                "            Quantity.ONE -> \"value1_1\"\n" +
-                "            else -> \"$testValue\"\n" +
-                "        }\n" +
-                "        return stringValue.let { formatString(it, Pair(\"count\", count), Pair(\"name\", name)) }\n" +
+                "  /**\n" +
+                "   * $testValue\n" +
+                "   */\n" +
+                "  public fun key2(count: Long, name: String): String {\n" +
+                "    val stringValue = when (getQuantity(count)) {\n" +
+                "      Quantity.ONE -> \"value1_1\"\n" +
+                "      else -> \"$testValue\"\n" +
                 "    }\n" +
+                "    return stringValue.let { formatString(it, Pair(\"count\", count), Pair(\"name\", name)) }\n" +
+                "  }\n" +
                 "}\n"
         )
     }
@@ -407,12 +425,12 @@ class AbsStaticPoetClassResourceFileTest {
     private fun getAbstractFunctions(formattingType: FormattingType): String {
         return when (formattingType.argumentsSubstitution) {
             ArgumentsSubstitution.BY_NAME -> {
-                "    $getQuantityFunctionStr\n\n" +
-                "    $formatStringNamedFunctionStr\n"
+                "  $getQuantityFunctionStr\n\n" +
+                "  $formatStringNamedFunctionStr\n"
             }
             else -> {
-                "    $getQuantityFunctionStr\n\n" +
-                "    $formatStringIndexedFunctionStr\n"
+                "  $getQuantityFunctionStr\n\n" +
+                "  $formatStringIndexedFunctionStr\n"
             }
         }
     }

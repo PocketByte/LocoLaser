@@ -21,10 +21,11 @@ class KotlinImplementationResourcesConfigParser : BaseMobileResourcesConfigParse
         val config = super.parseJSONObject(platformJSON, throwIfWrongType) as? KotlinBaseImplResourcesConfig
 
         if (config != null) {
-            config.implements = JsonParseUtils
-                    .getString(platformJSON, INTERFACE, ConfigParser.PLATFORM, false)
+            JsonParseUtils.getString(platformJSON, INTERFACE, ConfigParser.PLATFORM, false)?.let {
+                config.implements = it
+            }
 
-            if (config is KotlinAbsKeyValueResourcesConfig) {
+            if (config is KotlinResourcesConfigWithFormattingType) {
                 config.formattingType = JsonParseUtils.getFormattingType(
                         platformJSON, FORMATTING_TYPE, ConfigParser.PLATFORM, false
                 ) ?: NoFormattingType
@@ -46,6 +47,8 @@ class KotlinImplementationResourcesConfigParser : BaseMobileResourcesConfigParse
             return KotlinAbsKeyValueResourcesConfig()
         if (KotlinAbsStaticResourcesConfig.TYPE == type)
             return KotlinAbsStaticResourcesConfig()
+        if (KotlinAbsProxyResourcesConfig.TYPE == type)
+            return KotlinAbsProxyResourcesConfig()
 
         if (throwIfWrongType)
             throw InvalidConfigException("Unknown platform: $type")

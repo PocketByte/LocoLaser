@@ -14,6 +14,6 @@ class KotlinAndroidResourcesConfig : KotlinBaseImplResourcesConfig() {
     override val defaultResourceName  = "$DEFAULT_PACKAGE.Android$DEFAULT_INTERFACE_NAME"
 
     override val resources
-        get() = KotlinAndroidResources(resourcesDir, resourceName, implements!!, filter)
+        get() = KotlinAndroidResources(resourcesDir, resourceName, implements, filter)
 
 }

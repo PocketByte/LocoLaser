@@ -22,25 +22,6 @@ import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 
 class AbsKeyValuePoetClassResourceFileTest {
 
-    companion object {
-        const val StringProviderNoFormatStr =
-            "    interface StringProvider {\n" +
-            "        fun getString(key: String): String\n" +
-            "\n" +
-            "        fun getPluralString(key: String, count: Long): String\n" +
-            "    }\n"
-        const val StringProviderJavaFormatStr =
-            "    interface StringProvider {\n" +
-            "        fun getString(key: String, vararg args: Any): String\n" +
-            "\n" +
-            "        fun getPluralString(\n" +
-            "                key: String,\n" +
-            "                count: Long,\n" +
-            "                vararg args: Any\n" +
-            "        ): String\n" +
-            "    }\n"
-    }
-
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
 
@@ -69,16 +50,17 @@ class AbsKeyValuePoetClassResourceFileTest {
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
+                "import ru.pocketbyte.locolaser.api.provider.StringProvider\n" +
                 "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * value1_1 */\n" +
-                "    val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                StringProviderNoFormatStr +
+                "public class $className(\n" +
+                "  private val stringProvider: StringProvider,\n" +
+                ") {\n" +
+                "  /**\n" +
+                "   * value1_1\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() = stringProvider.getString(\"key1\")\n" +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -95,7 +77,10 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(
+            testDirectory, className, classPackage,
+            null, null, JavaFormattingType
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
@@ -103,13 +88,15 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "\n" +
                 "import kotlin.Long\n" +
                 "import kotlin.String\n" +
+                "import ru.pocketbyte.locolaser.api.provider.IndexFormattedStringProvider\n" +
                 "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * value1_2 */\n" +
-                "    fun key1(count: Long): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
-                "\n" +
-                StringProviderNoFormatStr +
+                "public class $className(\n" +
+                "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                ") {\n" +
+                "  /**\n" +
+                "   * value1_2\n" +
+                "   */\n" +
+                "  public fun key1(count: Long): String = stringProvider.getPluralString(\"key1\", count)\n" +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -133,27 +120,32 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(
+            testDirectory, className, classPackage,
+            null, null, JavaFormattingType
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
+                "import ru.pocketbyte.locolaser.api.provider.IndexFormattedStringProvider\n" +
                 "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * value1_2 */\n" +
-                "    val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
+                "public class $className(\n" +
+                "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                ") {\n" +
+                "  /**\n" +
+                "   * value1_2\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() = stringProvider.getString(\"key1\")\n" +
                 "\n" +
-                "    /**\n" +
-                "     * value3_2 */\n" +
-                "    val key3: String\n" +
-                "        get() = this.stringProvider.getString(\"key3\")\n" +
-                "\n" +
-                StringProviderNoFormatStr +
+                "  /**\n" +
+                "   * value3_2\n" +
+                "   */\n" +
+                "  public val key3: String\n" +
+                "    get() = stringProvider.getString(\"key3\")\n" +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -177,24 +169,27 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, "StrInterface", "com.some.package")
+        val resourceFile = AbsKeyValuePoetClassResourceFile(
+            testDirectory, className, classPackage,
+            "StrInterface", "com.some.interfacepcg"
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import com.some.package.StrInterface\n" +
-                "import kotlin.Long\n" +
+                "import com.some.interfacepcg.StrInterface\n" +
                 "import kotlin.String\n" +
+                "import ru.pocketbyte.locolaser.api.provider.StringProvider\n" +
                 "\n" +
-                "class $className(private val stringProvider: StringProvider) : StrInterface {\n" +
-                "    override val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
+                "public class $className(\n" +
+                "  private val stringProvider: StringProvider,\n" +
+                ") : StrInterface {\n" +
+                "  public override val key1: String\n" +
+                "    get() = stringProvider.getString(\"key1\")\n" +
                 "\n" +
-                "    override val key3: String\n" +
-                "        get() = this.stringProvider.getString(\"key3\")\n" +
-                "\n" +
-                StringProviderNoFormatStr +
+                "  public override val key3: String\n" +
+                "    get() = stringProvider.getString(\"key3\")\n" +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -206,32 +201,37 @@ class AbsKeyValuePoetClassResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(ResValue(
-                "Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery " + "Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment", null,
+                "Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery" +
+                        " Wery Wery Wery 4 Wery Wery Wery Wery 5 Wery Long Comment", null,
                 Quantity.OTHER))))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
         val className = "Strings"
         val classPackage = "ru.pocketbyte"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(
+            testDirectory, className, classPackage,
+            null, null
+        )
 
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Long\n" +
                 "import kotlin.String\n" +
+                "import ru.pocketbyte.locolaser.api.provider.StringProvider\n" +
                 "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
-                " Wery Wery Wery Wery Wery Wery\n" +
-                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment */\n" +
-                "    val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                StringProviderNoFormatStr +
+                "public class $className(\n" +
+                "  private val stringProvider: StringProvider,\n" +
+                ") {\n" +
+                "  /**\n" +
+                "   * Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery Wery Wery Wery 4 Wery\n" +
+                "   * Wery Wery Wery 5 Wery\n" +
+                "   * Long Comment\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() = stringProvider.getString(\"key1\")\n" +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -255,31 +255,38 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null, JavaFormattingType)
+        val resourceFile = AbsKeyValuePoetClassResourceFile(
+            testDirectory, className, classPackage,
+            null, null, JavaFormattingType
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
                 "package $classPackage\n" +
                 "\n" +
-                "import kotlin.Any\n" +
                 "import kotlin.Long\n" +
                 "import kotlin.String\n" +
+                "import ru.pocketbyte.locolaser.api.provider.IndexFormattedStringProvider\n" +
                 "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
+                "public class $className(\n" +
+                "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                ") {\n" +
+                "  /**\n" +
+                "   * $testValue\n" +
+                "   */\n" +
+                "  public val key1: String\n" +
+                "    get() = stringProvider.getString(\"key1\")\n" +
                 "\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    fun key1(d1: Long, s2: String): String = this.stringProvider.getString(\"key1\", d1, s2)\n" +
+                "  /**\n" +
+                "   * $testValue\n" +
+                "   */\n" +
+                "  public fun key1(d1: Long, s2: String): String = stringProvider.getString(\"key1\", d1, s2)\n" +
                 "\n" +
-                "    /**\n" +
-                "     * Hello %d %s */\n" +
-                "    fun key2(count: Long, s2: String): String = this.stringProvider.getPluralString(\"key2\", count, s2)\n" +
-                "\n" +
-                StringProviderJavaFormatStr +
+                "  /**\n" +
+                "   * Hello %d %s\n" +
+                "   */\n" +
+                "  public fun key2(count: Long, s2: String): String = stringProvider.getPluralString(\"key2\", count,\n" +
+                "      s2)\n" +
                 "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))

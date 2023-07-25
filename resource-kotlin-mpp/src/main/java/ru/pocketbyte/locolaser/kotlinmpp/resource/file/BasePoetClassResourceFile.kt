@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import org.apache.commons.lang3.text.WordUtils
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.exception.InvalidValueException
@@ -26,11 +27,17 @@ abstract class BasePoetClassResourceFile(
 
     companion object {
         private const val MAX_LINE_SIZE = 120 - 6
+
+        val KeyValuePairClassName = Pair::class.parameterizedBy(
+            String::class, Any::class
+        )
     }
 
     protected val directory = File(_directory.canonicalPath)
 
-    abstract fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder
+    abstract fun instantiateClassSpecBuilder(
+        resMap: ResMap, extraParams: ExtraParams?
+    ): TypeSpec.Builder
 
     override fun read(extraParams: ExtraParams?): ResMap? {
         return null
@@ -158,7 +165,7 @@ abstract class BasePoetClassResourceFile(
             resMap: ResMap, extraParams: ExtraParams?
     ): FileSpec.Builder {
         return FileSpec.builder(classPackage, className)
-            .addComment(TemplateStr.GENERATED_CLASS_WARNING)
+            .addFileComment(TemplateStr.GENERATED_CLASS_WARNING)
     }
 
     protected fun wrapCommentString(string: String): String {

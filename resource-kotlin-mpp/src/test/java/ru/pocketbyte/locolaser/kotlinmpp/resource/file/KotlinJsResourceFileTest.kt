@@ -23,36 +23,8 @@ import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 class KotlinJsResourceFileTest {
 
     companion object {
-        const val StringProviderStr =
-            "    interface StringProvider {\n" +
-            "        fun getString(key: String, vararg args: Pair<String, Any>): String\n" +
-            "\n" +
-            "        fun getPluralString(\n" +
-            "                key: String,\n" +
-            "                count: Long,\n" +
-            "                vararg args: Pair<String, Any>\n" +
-            "        ): String\n" +
-            "    }\n" +
-            "\n" +
-            "    private class StringProviderImpl(private val i18n: I18n) : StringProvider {\n" +
-            "        override fun getString(key: String, vararg args: Pair<String, Any>): String = this.i18n.t(key, dynamic(*args))\n" +
-            "\n" +
-            "        override fun getPluralString(\n" +
-            "                key: String,\n" +
-            "                count: Long,\n" +
-            "                vararg args: Pair<String, Any>\n" +
-            "        ): String = this.i18n.t(\"\${key}_plural\", dynamic(Pair(\"count\", count), *args))\n" +
-            "\n" +
-            "        private fun dynamic(vararg args: Pair<String, Any>): Any {\n" +
-            "            val d: dynamic = object{}\n" +
-            "            args.forEach {\n" +
-            "                d[it.first] = it.second\n" +
-            "            }\n" +
-            "            return d as Any\n" +
-            "        }\n" +
-            "    }\n"
         const val SecondConstructorsStr =
-            "    constructor(i18n: I18n) : this(StringProviderImpl(i18n))\n"
+            "  public constructor(i18n: I18n) : this(JsStringProvider(i18n))\n"
     }
 
     @Rule @JvmField
@@ -71,34 +43,40 @@ class KotlinJsResourceFileTest {
     fun testWriteOneItem() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_1", "Comment", Quantity.OTHER)
+        )))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = KotlinJsResourceFile(
+            testDirectory, className, classPackage,
+            null, null
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
-                "package $classPackage\n" +
-                "\n" +
-                "import i18next.I18n\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Long\n" +
-                "import kotlin.Pair\n" +
-                "import kotlin.String\n" +
-                "\n" +
-                "class Str(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * value1_1 */\n" +
-                "    val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                SecondConstructorsStr +
-                "\n" +
-                StringProviderStr +
-                "}\n"
+            "package $classPackage\n" +
+            "\n" +
+            "import i18next.I18n\n" +
+            "import kotlin.Pair\n" +
+            "import kotlin.String\n" +
+            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "\n" +
+            "public class $className(\n" +
+            "  private val stringProvider: NameFormattedStringProvider,\n" +
+            ") {\n" +
+            "  /**\n" +
+            "   * value1_1\n" +
+            "   */\n" +
+            "  public val key1: String\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
+            "\n" +
+            SecondConstructorsStr +
+            "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
@@ -118,23 +96,25 @@ class KotlinJsResourceFileTest {
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
-                "package $classPackage\n" +
-                "\n" +
-                "import i18next.I18n\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Long\n" +
-                "import kotlin.Pair\n" +
-                "import kotlin.String\n" +
-                "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                SecondConstructorsStr +
-                "\n" +
-                "    /**\n" +
-                "     * value1_2 */\n" +
-                "    fun key1(count: Long): String = this.stringProvider.getPluralString(\"key1\", count)\n" +
-                "\n" +
-                StringProviderStr +
-                "}\n"
+            "package $classPackage\n" +
+            "\n" +
+            "import i18next.I18n\n" +
+            "import kotlin.Long\n" +
+            "import kotlin.Pair\n" +
+            "import kotlin.String\n" +
+            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "\n" +
+            "public class $className(\n" +
+            "  private val stringProvider: NameFormattedStringProvider,\n" +
+            ") {\n" +
+            SecondConstructorsStr +
+            "\n" +
+            "  /**\n" +
+            "   * value1_2\n" +
+            "   */\n" +
+            "  public fun key1(count: Long): String = stringProvider.getPluralString(\"key1\", count)\n" +
+            "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
@@ -156,27 +136,33 @@ class KotlinJsResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = KotlinJsResourceFile(
+            testDirectory, className, classPackage,
+            null, null
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
-                "package $classPackage\n" +
-                "\n" +
-                "import i18next.I18n\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Long\n" +
-                "import kotlin.Pair\n" +
-                "import kotlin.String\n" +
-                "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                SecondConstructorsStr +
-                "\n" +
-                "    /**\n" +
-                "     * Count %d %s */\n" +
-                "    fun key1(count: Long, s2: String): String = this.stringProvider.getPluralString(\"key1\", count, Pair(\"s2\", s2))\n" +
-                "\n" +
-                StringProviderStr +
-                "}\n"
+            "package $classPackage\n" +
+            "\n" +
+            "import i18next.I18n\n" +
+            "import kotlin.Long\n" +
+            "import kotlin.Pair\n" +
+            "import kotlin.String\n" +
+            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "\n" +
+            "public class $className(\n" +
+            "  private val stringProvider: NameFormattedStringProvider,\n" +
+            ") {\n" +
+            SecondConstructorsStr +
+            "\n" +
+            "  /**\n" +
+            "   * Count %d %s\n" +
+            "   */\n" +
+            "  public fun key1(count: Long, s2: String): String = stringProvider.getPluralString(\"key1\", count,\n" +
+            "      Pair(\"s2\", s2))\n" +
+            "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
@@ -187,45 +173,58 @@ class KotlinJsResourceFileTest {
         val resMap = ResMap()
 
         var resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
-        resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_1", "Comment", Quantity.OTHER)
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(
+            ResValue("value2_1", "value2_1", Quantity.OTHER)
+        )))
         resMap["ru"] = resLocale
 
         resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_2", null, Quantity.OTHER))))
-        resLocale.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_2", null, Quantity.OTHER)
+        )))
+        resLocale.put(prepareResItem("key3", arrayOf(
+            ResValue("value3_2", "value2_1", Quantity.OTHER)
+        )))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = KotlinJsResourceFile(
+            testDirectory, className, classPackage,
+            null, null
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
-                "package $classPackage\n" +
-                "\n" +
-                "import i18next.I18n\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Long\n" +
-                "import kotlin.Pair\n" +
-                "import kotlin.String\n" +
-                "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * value1_2 */\n" +
-                "    val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                "    /**\n" +
-                "     * value3_2 */\n" +
-                "    val key3: String\n" +
-                "        get() = this.stringProvider.getString(\"key3\")\n" +
-                "\n" +
-                SecondConstructorsStr +
-                "\n" +
-                StringProviderStr +
-                "}\n"
+            "package $classPackage\n" +
+            "\n" +
+            "import i18next.I18n\n" +
+            "import kotlin.Pair\n" +
+            "import kotlin.String\n" +
+            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "\n" +
+            "public class $className(\n" +
+            "  private val stringProvider: NameFormattedStringProvider,\n" +
+            ") {\n" +
+            "  /**\n" +
+            "   * value1_2\n" +
+            "   */\n" +
+            "  public val key1: String\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
+            "\n" +
+            "  /**\n" +
+            "   * value3_2\n" +
+            "   */\n" +
+            "  public val key3: String\n" +
+            "    get() = stringProvider.getString(\"key3\")\n" +
+            "\n" +
+            SecondConstructorsStr +
+            "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
@@ -248,30 +247,33 @@ class KotlinJsResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = KotlinJsResourceFile(testDirectory, className, classPackage, "StrInterface", "com.interface")
+        val resourceFile = KotlinJsResourceFile(
+            testDirectory, className, classPackage,
+            "StrInterface", "com.pcg"
+        )
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
-                "package $classPackage\n" +
-                "\n" +
-                "import com.interface.StrInterface\n" +
-                "import i18next.I18n\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Long\n" +
-                "import kotlin.Pair\n" +
-                "import kotlin.String\n" +
-                "\n" +
-                "class $className(private val stringProvider: StringProvider) : StrInterface {\n" +
-                "    override val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                "    override val key3: String\n" +
-                "        get() = this.stringProvider.getString(\"key3\")\n" +
-                "\n" +
-                SecondConstructorsStr +
-                "\n" +
-                StringProviderStr +
-                "}\n"
+            "package $classPackage\n" +
+            "\n" +
+            "import com.pcg.StrInterface\n" +
+            "import i18next.I18n\n" +
+            "import kotlin.Pair\n" +
+            "import kotlin.String\n" +
+            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "\n" +
+            "public class $className(\n" +
+            "  private val stringProvider: NameFormattedStringProvider,\n" +
+            ") : StrInterface {\n" +
+            "  public override val key1: String\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
+            "\n" +
+            "  public override val key3: String\n" +
+            "    get() = stringProvider.getString(\"key3\")\n" +
+            "\n" +
+            SecondConstructorsStr +
+            "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
@@ -282,7 +284,8 @@ class KotlinJsResourceFileTest {
         val resMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(ResValue(
-                "Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery " + "Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment", null,
+            "Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery" +
+                    " Wery Wery Wery 4 Wery Wery Wery Wery 5 Wery Long Comment", null,
                 Quantity.OTHER))))
         resMap[Resources.BASE_LOCALE] = resLocale
 
@@ -293,26 +296,27 @@ class KotlinJsResourceFileTest {
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
-                "package $classPackage\n" +
-                "\n" +
-                "import i18next.I18n\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Long\n" +
-                "import kotlin.Pair\n" +
-                "import kotlin.String\n" +
-                "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery" +
-                " Wery Wery Wery Wery Wery Wery\n" +
-                "     * Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Wery Long Comment */\n" +
-                "    val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                SecondConstructorsStr +
-                "\n" +
-                StringProviderStr +
-                "}\n"
+            "package $classPackage\n" +
+            "\n" +
+            "import i18next.I18n\n" +
+            "import kotlin.Pair\n" +
+            "import kotlin.String\n" +
+            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "\n" +
+            "public class $className(\n" +
+            "  private val stringProvider: NameFormattedStringProvider,\n" +
+            ") {\n" +
+            "  /**\n" +
+            "   * Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery Wery Wery Wery 4 Wery\n" +
+            "   * Wery Wery Wery 5 Wery\n" +
+            "   * Long Comment\n" +
+            "   */\n" +
+            "  public val key1: String\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
+            "\n" +
+            SecondConstructorsStr +
+            "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }
@@ -334,28 +338,31 @@ class KotlinJsResourceFileTest {
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
-                "package $classPackage\n" +
-                "\n" +
-                "import i18next.I18n\n" +
-                "import kotlin.Any\n" +
-                "import kotlin.Long\n" +
-                "import kotlin.Pair\n" +
-                "import kotlin.String\n" +
-                "\n" +
-                "class $className(private val stringProvider: StringProvider) {\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    val key1: String\n" +
-                "        get() = this.stringProvider.getString(\"key1\")\n" +
-                "\n" +
-                SecondConstructorsStr +
-                "\n" +
-                "    /**\n" +
-                "     * $testValue */\n" +
-                "    fun key2(count: Long): String = this.stringProvider.getPluralString(\"key2\", count)\n" +
-                "\n" +
-                StringProviderStr +
-                "}\n"
+            "package $classPackage\n" +
+            "\n" +
+            "import i18next.I18n\n" +
+            "import kotlin.Long\n" +
+            "import kotlin.Pair\n" +
+            "import kotlin.String\n" +
+            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "\n" +
+            "public class $className(\n" +
+            "  private val stringProvider: NameFormattedStringProvider,\n" +
+            ") {\n" +
+            "  /**\n" +
+            "   * $testValue\n" +
+            "   */\n" +
+            "  public val key1: String\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
+            "\n" +
+            SecondConstructorsStr +
+            "\n" +
+            "  /**\n" +
+            "   * $testValue\n" +
+            "   */\n" +
+            "  public fun key2(count: Long): String = stringProvider.getPluralString(\"key2\", count)\n" +
+            "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
     }

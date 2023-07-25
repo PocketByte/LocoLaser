@@ -11,7 +11,7 @@ open class KotlinBaseImplResourcesConfigBuilder(
      * Canonical name of the Repository interface that should be implemented by generated class.
      * If empty there will no interfaces implemented by generated Repository class.
      */
-    var implements: String?
+    var implements: String
         get() = config.implements
         set(value) { config.implements = value }
 

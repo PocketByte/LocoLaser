@@ -256,6 +256,40 @@ class PropertiesResourceFileTest {
         assertEquals(expectedMap, resMap)
     }
 
+    @Test
+    fun testWriteUtf8() {
+        val testLocale = "ru"
+
+        val resMap = ResMap()
+
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("Значение OTHER", "Комментарий OTHER", Quantity.OTHER),
+            ResValue("Значение FEW", "Комментарий FEW", Quantity.FEW),
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(
+            ResValue("Значение 2", "Комментарий", Quantity.OTHER),
+        )))
+        resMap[testLocale] = resLocale
+
+        val extraParams = ExtraParams()
+        extraParams.duplicateComments = false
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = PropertiesResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, extraParams)
+
+        val expectedResult = FILE_HEADER +
+                "# Комментарий OTHER\r\n" +
+                "key1.other=Значение OTHER\r\n" +
+                "# Комментарий FEW\r\n" +
+                "key1.few=Значение FEW\r\n" +
+                "# Комментарий\r\n" +
+                "key2=Значение 2\r\n"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
     @Throws(IOException::class)
     private fun prepareTestFile(text:String):File {
         val file = tempFolder.newFile()

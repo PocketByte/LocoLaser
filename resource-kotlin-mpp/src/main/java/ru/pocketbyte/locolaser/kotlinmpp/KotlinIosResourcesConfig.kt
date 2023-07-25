@@ -14,6 +14,6 @@ class KotlinIosResourcesConfig : KotlinBaseImplResourcesConfig() {
     override val defaultResourceName  = "$DEFAULT_PACKAGE.Ios$DEFAULT_INTERFACE_NAME"
 
     override val resources
-        get() = KotlinIosResources(resourcesDir, resourceName, implements!!, filter)
+        get() = KotlinIosResources(resourcesDir, resourceName, implements, filter)
 
 }
