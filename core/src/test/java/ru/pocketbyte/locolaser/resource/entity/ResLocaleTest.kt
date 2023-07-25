@@ -8,6 +8,7 @@ package ru.pocketbyte.locolaser.resource.entity
 import org.junit.Test
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.entity.Quantity
 
 /**
  * @author Denis Shurygin
@@ -37,11 +38,14 @@ class ResLocaleTest {
                 resItem1_1.valueForQuantity(Quantity.OTHER))
         assertNotEquals(resItem1_1_Original.valueForQuantity(Quantity.MANY),
                 resItem1_1.valueForQuantity(Quantity.MANY))
-        assertEquals(resItem1_1_Original.valueForQuantity(Quantity.FEW), resItem1_1.valueForQuantity(Quantity.FEW))
+        assertEquals(resItem1_1_Original.valueForQuantity(Quantity.FEW), resItem1_1.valueForQuantity(
+            Quantity.FEW))
 
         // Check values from map 2
-        assertEquals(resItem1_2.valueForQuantity(Quantity.OTHER), resItem1_1.valueForQuantity(Quantity.OTHER))
-        assertEquals(resItem1_2.valueForQuantity(Quantity.MANY), resItem1_1.valueForQuantity(Quantity.MANY))
+        assertEquals(resItem1_2.valueForQuantity(Quantity.OTHER), resItem1_1.valueForQuantity(
+            Quantity.OTHER))
+        assertEquals(resItem1_2.valueForQuantity(Quantity.MANY), resItem1_1.valueForQuantity(
+            Quantity.MANY))
         assertEquals(resItem1_2.valueForQuantity(Quantity.TWO), resItem1_1.valueForQuantity(Quantity.TWO))
 
         // ==============
@@ -64,11 +68,14 @@ class ResLocaleTest {
         // Check values from map 1
         assertNotEquals(resItem3_1_Original.valueForQuantity(Quantity.OTHER),
                 resItem3_1.valueForQuantity(Quantity.OTHER))
-        assertEquals(resItem3_1_Original.valueForQuantity(Quantity.MANY), resItem3_1.valueForQuantity(Quantity.MANY))
-        assertEquals(resItem3_1_Original.valueForQuantity(Quantity.ZERO), resItem3_1.valueForQuantity(Quantity.ZERO))
+        assertEquals(resItem3_1_Original.valueForQuantity(Quantity.MANY), resItem3_1.valueForQuantity(
+            Quantity.MANY))
+        assertEquals(resItem3_1_Original.valueForQuantity(Quantity.ZERO), resItem3_1.valueForQuantity(
+            Quantity.ZERO))
 
         // Check values from map 2
-        assertEquals(resItem3_2.valueForQuantity(Quantity.OTHER), resItem3_1.valueForQuantity(Quantity.OTHER))
+        assertEquals(resItem3_2.valueForQuantity(Quantity.OTHER), resItem3_1.valueForQuantity(
+            Quantity.OTHER))
 
         // ==============
         // Key 4
@@ -97,7 +104,8 @@ class ResLocaleTest {
         assertNotNull(resItem1_1)
         assertEquals(1, resItem1_1.values.size)
 
-        assertEquals(resItem1_1_Original.valueForQuantity(Quantity.FEW), resItem1_1.valueForQuantity(Quantity.FEW))
+        assertEquals(resItem1_1_Original.valueForQuantity(Quantity.FEW), resItem1_1.valueForQuantity(
+            Quantity.FEW))
         assertNull(resItem1_1.valueForQuantity(Quantity.OTHER))
         assertNull(resItem1_1.valueForQuantity(Quantity.MANY))
         assertNull(resItem1_1.valueForQuantity(Quantity.TWO))
@@ -118,8 +126,10 @@ class ResLocaleTest {
         assertNotNull(resItem3_1)
         assertEquals(2, resItem3_1.values.size)
 
-        assertEquals(resItem3_1_Original.valueForQuantity(Quantity.MANY), resItem3_1.valueForQuantity(Quantity.MANY))
-        assertEquals(resItem3_1_Original.valueForQuantity(Quantity.ZERO), resItem3_1.valueForQuantity(Quantity.ZERO))
+        assertEquals(resItem3_1_Original.valueForQuantity(Quantity.MANY), resItem3_1.valueForQuantity(
+            Quantity.MANY))
+        assertEquals(resItem3_1_Original.valueForQuantity(Quantity.ZERO), resItem3_1.valueForQuantity(
+            Quantity.ZERO))
         assertNull(resItem3_1.valueForQuantity(Quantity.OTHER))
 
         // ==============

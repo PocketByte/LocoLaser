@@ -61,6 +61,10 @@ class GetTextResourceFile(file: File, private val mLocale: String) : ResourceStr
 
     override val formattingType = NoFormattingType
 
+    override fun description(): String {
+        return "GetText(${file.absolutePath})"
+    }
+
     override fun read(extraParams: ExtraParams?): ResMap? {
         if (file.exists()) {
             val result = ResLocale()

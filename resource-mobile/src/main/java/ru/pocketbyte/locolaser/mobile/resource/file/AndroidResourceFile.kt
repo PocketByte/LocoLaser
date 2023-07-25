@@ -8,6 +8,7 @@ package ru.pocketbyte.locolaser.mobile.resource.file
 import org.xml.sax.Attributes
 import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.mobile.utils.TemplateStr
@@ -89,6 +90,10 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
     }
 
     override val formattingType: FormattingType = JavaFormattingType
+
+    override fun description(): String {
+        return "Android(${file.absolutePath})"
+    }
 
     override fun read(extraParams: ExtraParams?): ResMap? {
         if (file.exists()) {
@@ -183,10 +188,10 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
     }
 
     private fun ResItem.addValue(
-            value: String,
-            comment: String?,
-            quantity: Quantity = Quantity.OTHER,
-            meta: Map<String, String>? = null
+        value: String,
+        comment: String?,
+        quantity: Quantity = Quantity.OTHER,
+        meta: Map<String, String>? = null
     ) {
         val formattingArguments = formattingType.argumentsFromValue(value)
         val formattingType = if (formattingArguments?.isEmpty() != false) NoFormattingType else formattingType

@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.mobile.resource.file
 
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
@@ -42,6 +43,10 @@ class IosObjectiveCMResourceFile(
                     ?.replace("\r", "\\r")
                     ?.replace("\n", "\\n")
         }
+    }
+
+    override fun description(): String {
+        return "IosObjCM(${file.absolutePath})"
     }
 
     override fun read(extraParams: ExtraParams?): ResMap? {

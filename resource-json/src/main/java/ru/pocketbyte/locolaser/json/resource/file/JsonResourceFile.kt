@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser.json.resource.file
 
 import org.json.simple.JSONObject
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
@@ -38,10 +39,14 @@ class JsonResourceFile(
 
         private const val PLURAL_0_KEY_POSTFIX = "_plural"
         private const val PLURAL_KEY_POSTFIX = "_plural_"
-        private const val PLURAL_KEY_PATTERN = "(.+)$PLURAL_KEY_POSTFIX([0-9]+)"
+        private const val PLURAL_KEY_PATTERN = "(.+)$PLURAL_KEY_POSTFIX(\\d+)"
     }
 
     override val formattingType: FormattingType = WebFormattingType
+
+    override fun description(): String {
+        return "Json(${file.absolutePath})"
+    }
 
     override fun read(extraParams: ExtraParams?): ResMap? {
         if (!file.exists())

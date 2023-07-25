@@ -39,6 +39,10 @@ class IosObjectiveCHResourceFile(file: File, private val mClassName: String) : B
         }
     }
 
+    override fun description(): String {
+        return "IosObjCH(${file.absolutePath})"
+    }
+
     override fun read(extraParams: ExtraParams?): ResMap? {
         return null
     }

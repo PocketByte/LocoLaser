@@ -3,7 +3,7 @@ package ru.pocketbyte.locolaser.utils
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import ru.pocketbyte.locolaser.resource.entity.Quantity
+import ru.pocketbyte.locolaser.entity.Quantity
 import java.util.*
 
 class PluralUtilsTest {

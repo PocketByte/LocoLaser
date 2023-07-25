@@ -15,6 +15,10 @@ class IosResourceFile(file: File, locale: String) : AbsIosStringsResourceFile(fi
 
     override val keyValueLinePattern = "\"((?:[^\"]|\\\\\")+)\"\\s*=\\s*\"((?:[^\"]|\\\\\")*)\"\\s*;"
 
+    override fun description(): String {
+        return "Ios(${file.absolutePath})"
+    }
+
     @Throws(IOException::class)
     override fun writeKeyValueString(key: String, value: String) {
         writeString("\"")

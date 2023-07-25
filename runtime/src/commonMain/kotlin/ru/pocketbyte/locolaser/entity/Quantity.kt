@@ -3,7 +3,7 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-package ru.pocketbyte.locolaser.resource.entity
+package ru.pocketbyte.locolaser.entity
 
 /**
  * @author Denis Shurygin
@@ -11,10 +11,6 @@ package ru.pocketbyte.locolaser.resource.entity
 enum class Quantity {
 
     ZERO, ONE, TWO, FEW, MANY, OTHER;
-
-    companion object {
-        val QUANTITY_OTHER: Set<Quantity> = setOf(OTHER)
-    }
 
     override fun toString(): String {
         return when (this) {

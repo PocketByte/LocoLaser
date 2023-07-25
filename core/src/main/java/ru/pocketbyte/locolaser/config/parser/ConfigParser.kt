@@ -119,22 +119,22 @@ open class ConfigParser
         reader.close()
 
         if (json is JSONObject) {
-            if (workDir == null) JsonParseUtils.getString(json, WORK_DIR)?.let {
-                System.setProperty("user.dir", File(file.parentFile, it).canonicalPath)
-            } ?: {
-                System.setProperty("user.dir", file.parentFile.canonicalPath)
-            }()
+            if (workDir == null) {
+                JsonParseUtils.getString(json, WORK_DIR)?.let {
+                    System.setProperty("user.dir", File(file.parentFile, it).canonicalPath)
+                } ?: System.setProperty("user.dir", file.parentFile.canonicalPath)
+            }
             return listOf(fromJsonObject(file, json))
         }
         else if (json is JSONArray) {
             return json.indices.map { index ->
                 val jsonItem = json[index] as JSONObject
 
-                if (workDir == null) JsonParseUtils.getString(jsonItem, WORK_DIR)?.let {
-                    System.setProperty("user.dir", File(file.parentFile, it).canonicalPath)
-                } ?: {
-                    System.setProperty("user.dir", file.parentFile.canonicalPath)
-                }()
+                if (workDir == null) {
+                    JsonParseUtils.getString(jsonItem, WORK_DIR)?.let {
+                        System.setProperty("user.dir", File(file.parentFile, it).canonicalPath)
+                    } ?: System.setProperty("user.dir", file.parentFile.canonicalPath)
+                }
 
                 fromJsonObject(file, jsonItem)
             }

@@ -18,6 +18,10 @@ class KotlinAndroidResourceFile(
         file, className, classPackage, interfaceName, interfacePackage, formattingType
 ) {
 
+    override fun description(): String {
+        return "KotlinAndroid(${directory.absolutePath}/${className})"
+    }
+
     companion object {
         private val StringProviderImplClassName = ClassName("", "StringProviderImpl")
         private val ContextClassName = ClassName("android.content", "Context")

@@ -8,11 +8,17 @@ plugins {
     id("signing")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 application {
     mainClass.set("ru.pocketbyte.locolaser.Main")
 }
 
 dependencies {
+    api(project(":runtime"))
     api("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")

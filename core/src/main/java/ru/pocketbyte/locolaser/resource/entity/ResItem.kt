@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.resource.entity
 
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.utils.LogUtils
 
 import java.util.ArrayList

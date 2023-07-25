@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.config.resources
 
 import org.junit.Assert.*
 import org.junit.Test
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.BaseTableResources
 import ru.pocketbyte.locolaser.resource.entity.*

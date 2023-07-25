@@ -1,7 +1,9 @@
 
 object BuildVersion {
-    const val kotlin = "1.6.10"
-    const val kotlinPoet = "0.7.0"
+    const val kotlin = "1.8.20"
+    const val kotlinPoet = "1.14.2"
+
+    const val androidTool = "29.0.2"
 
     const val googleApiClient = "1.30.4"
     const val googleAuthClient = "1.30.6"

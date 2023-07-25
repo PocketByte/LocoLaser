@@ -4,7 +4,7 @@ import kotlin.collections.listOf
 plugins {
     id("kotlin")
     id("java-gradle-plugin")
-    id("com.gradle.plugin-publish")
+    id("com.gradle.plugin-publish") version "1.2.0"
     id("maven-publish")
 }
 dependencies {
@@ -14,19 +14,16 @@ dependencies {
     implementation(project(":core"))
 }
 
-pluginBundle {
-    website = "https://github.com/PocketByte/LocoLaser/"
-    vcsUrl = "https://github.com/PocketByte/LocoLaser/"
-    description = "Plugin for LocoLaser"
-    tags = listOf("localization", "tool")
-}
-
 gradlePlugin {
+    website.set("https://github.com/PocketByte/LocoLaser/")
+    vcsUrl.set("https://github.com/PocketByte/LocoLaser/")
     plugins {
         create("locolaserPlugin") {
             id = "ru.pocketbyte.locolaser"
             implementationClass = "ru.pocketbyte.locolaser.plugin.LocoLaserPlugin"
             displayName = "Plugin for LocoLaser"
+            description = "Plugin for LocoLaser"
+            tags.set(listOf("localization", "tool"))
         }
     }
 }

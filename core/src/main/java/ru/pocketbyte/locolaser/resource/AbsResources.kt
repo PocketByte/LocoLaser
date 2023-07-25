@@ -30,8 +30,14 @@ abstract class AbsResources(
 
     override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap {
         val resMap = ResMap()
-        getResourceFiles(locales)?.forEach {
-            resMap.merge(it.read(extraParams))
+        getResourceFiles(locales)?.forEach { resFile ->
+            resMap.merge(
+                resFile.read(extraParams).apply {
+                    if (this == null) {
+                        println("Failed to read ${resFile.description()}")
+                    }
+                }
+            )
         }
         return resMap
     }

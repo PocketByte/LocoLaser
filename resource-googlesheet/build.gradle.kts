@@ -73,6 +73,7 @@ tasks {
     }
 
     findByName("processResources")?.finalizedBy(copyAppProperties)
+    findByName("jar")?.dependsOn(copyAppProperties)
 }
 
 publishing {

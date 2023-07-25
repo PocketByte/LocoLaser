@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.resource
 
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType

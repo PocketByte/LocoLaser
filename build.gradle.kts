@@ -4,26 +4,23 @@ buildscript {
         mavenLocal()
         google()
         mavenCentral()
-        jcenter()
         maven("https://maven.google.com")
         maven("https://plugins.gradle.org/m2/")
+        gradlePluginPortal()
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${BuildVersion.kotlin}")
-        classpath("com.github.dcendents:android-maven-gradle-plugin:1.4.1")
-        classpath("com.gradle.publish:plugin-publish-plugin:0.14.0")
     }
+}
+
+plugins {
+    id("com.android.library") version "7.4.1" apply false
 }
 
 allprojects {
 
     version = LibraryInfo.version
     group = LibraryInfo.group
-
-    configurations {
-        // dependencies from this configuration will not be included in final jar file
-        val noJarCompile by creating
-    }
 
     repositories {
         mavenLocal()

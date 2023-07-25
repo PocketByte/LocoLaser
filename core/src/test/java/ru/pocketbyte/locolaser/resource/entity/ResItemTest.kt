@@ -9,6 +9,7 @@ import org.junit.Before
 import org.junit.Test
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.entity.Quantity
 
 /**
  * @author Denis Shurygin

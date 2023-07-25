@@ -8,6 +8,7 @@ package ru.pocketbyte.locolaser.resource.entity
 import org.junit.Test
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.entity.Quantity
 
 /**
  * @author Denis Shurygin

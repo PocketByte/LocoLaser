@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser
 
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
+import kotlin.system.exitProcess
 
 /**
  * @author Denis Shurygin
@@ -19,17 +20,16 @@ object Main {
         try {
             parserFactory.get().fromArguments(args).forEach { config ->
                 if (!LocoLaser.localize(config)) {
-                    System.exit(1)
-                    return
+                    exitProcess(1)
                 }
             }
         } catch (e: InvalidConfigException) {
             System.err.println("ERROR: " + e.message)
-            System.exit(1)
+            exitProcess(1)
         } catch (e: Exception) {
             System.err.print("ERROR: ")
             e.printStackTrace()
-            System.exit(1)
+            exitProcess(1)
         }
     }
 }

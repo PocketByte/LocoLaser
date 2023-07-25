@@ -11,7 +11,7 @@ import com.google.api.services.sheets.v4.model.ValueRange
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.BaseTableResources
 import ru.pocketbyte.locolaser.resource.Resources
-import ru.pocketbyte.locolaser.resource.entity.Quantity
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary

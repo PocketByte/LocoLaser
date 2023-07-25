@@ -14,6 +14,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertEquals
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.kotlinmpp.resource.AbsKotlinResources
 import ru.pocketbyte.locolaser.kotlinmpp.utils.TemplateStr

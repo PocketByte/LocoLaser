@@ -314,6 +314,16 @@ class ConfigParserTest {
     }
 
     @Test
+    fun someTest() {
+        val workDir = File("./newFolder")
+        println("workDir=${workDir.canonicalPath}")
+        System.setProperty("user.dir", workDir.canonicalPath)
+
+        val tempDir = File("./temp")
+        println("tempDir=${tempDir.canonicalPath}")
+    }
+
+    @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testManyArguments() {
         val delay: Long = 1

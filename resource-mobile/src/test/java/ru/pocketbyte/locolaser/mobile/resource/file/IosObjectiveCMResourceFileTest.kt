@@ -19,6 +19,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.Resources.Companion.BASE_LOCALE
 

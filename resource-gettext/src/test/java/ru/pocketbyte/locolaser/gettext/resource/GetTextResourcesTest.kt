@@ -9,6 +9,7 @@ import java.io.IOException
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 
 class GetTextResourcesTest {

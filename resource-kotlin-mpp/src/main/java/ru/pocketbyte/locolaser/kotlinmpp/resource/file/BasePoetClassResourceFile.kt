@@ -7,7 +7,7 @@ import ru.pocketbyte.locolaser.exception.InvalidValueException
 import ru.pocketbyte.locolaser.kotlinmpp.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
-import ru.pocketbyte.locolaser.resource.entity.Quantity
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.file.ResourceFile

@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser.mobile.resource.file
 
 import org.apache.commons.lang3.text.WordUtils
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
@@ -55,6 +56,10 @@ class IosSwiftResourceFile(
                     ?.replace("\n", "\\n")
                     ?.replace("\u0009", "\\t")
         }
+    }
+
+    override fun description(): String {
+        return "IosSwift(${file.absolutePath})"
     }
 
     override fun read(extraParams: ExtraParams?): ResMap? {

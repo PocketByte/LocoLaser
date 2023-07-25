@@ -3,7 +3,7 @@ package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
-import ru.pocketbyte.locolaser.resource.entity.Quantity
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.*
@@ -17,6 +17,10 @@ open class KotlinAbsStaticResourceFile(
     private val interfacePackage: String?,
     formattingType: FormattingType = WebFormattingType
 ): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
+
+    override fun description(): String {
+        return "KotlinAbsStatic(${directory.absolutePath}/${className})"
+    }
 
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
         val builder = TypeSpec.classBuilder(className)

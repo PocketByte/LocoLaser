@@ -20,6 +20,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType

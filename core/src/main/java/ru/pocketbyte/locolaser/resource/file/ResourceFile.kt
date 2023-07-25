@@ -34,4 +34,5 @@ interface ResourceFile {
     @Throws(IOException::class)
     fun write(resMap: ResMap, extraParams: ExtraParams?)
 
+    fun description(): String
 }

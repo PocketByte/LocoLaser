@@ -1,5 +1,6 @@
 package ru.pocketbyte.locolaser.properties.resource.file
 
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.entity.*
@@ -45,6 +46,10 @@ class PropertiesResourceFile(
     }
 
     override val formattingType: FormattingType = JavaFormattingType
+
+    override fun description(): String {
+        return "Propeties(${file.absolutePath})"
+    }
 
     override fun read(extraParams: ExtraParams?):ResMap? {
         if (file.exists()) {

@@ -15,6 +15,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import ru.pocketbyte.locolaser.entity.Quantity
 
 class IosObjectiveCResourcesTest {
 

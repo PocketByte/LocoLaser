@@ -15,6 +15,7 @@ import java.util.*
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 
 class ResourcesSetTest {

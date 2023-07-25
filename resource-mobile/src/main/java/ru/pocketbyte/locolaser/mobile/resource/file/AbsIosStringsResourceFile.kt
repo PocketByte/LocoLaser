@@ -1,5 +1,6 @@
 package ru.pocketbyte.locolaser.mobile.resource.file
 
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.mobile.utils.TemplateStr

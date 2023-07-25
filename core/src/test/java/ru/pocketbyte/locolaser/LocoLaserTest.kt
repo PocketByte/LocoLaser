@@ -26,6 +26,7 @@ import java.io.IOException
 import java.io.PrintWriter
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.plus
@@ -150,7 +151,8 @@ class LocoLaserTest {
         val overriddenValue = "valueEn1Overridden"
         // Check if original map contain overridden key with different value
         assertTrue(mResMap[locale]?.containsKey(overriddenKey) ?: false)
-        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(Quantity.OTHER))
+        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(
+            Quantity.OTHER))
 
         val resLocale = ResLocale()
         resLocale.put(buildItem(newKey, "value"))
@@ -180,7 +182,8 @@ class LocoLaserTest {
         val overriddenValue = "valueEn1Overridden"
         // Check if original map contain overridden key with different value
         assertTrue(mResMap[locale]?.containsKey(overriddenKey) ?: false)
-        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(Quantity.OTHER))
+        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(
+            Quantity.OTHER))
 
         val resLocale = ResLocale()
         resLocale.put(buildItem(newKey, "value"))
@@ -219,7 +222,8 @@ class LocoLaserTest {
         val overriddenValue = "valueEn1Overridden"
         // Check if original map contain overridden key with different value
         assertTrue(mResMap[locale]?.containsKey(overriddenKey) ?: false)
-        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(Quantity.OTHER))
+        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(
+            Quantity.OTHER))
 
         val resLocale = ResLocale()
         resLocale.put(buildItem(newKey, "value"))
@@ -256,7 +260,8 @@ class LocoLaserTest {
         val overriddenValue = "valueEn1Overridden"
         // Check if original map contain overridden key with different value
         assertTrue(mResMap[locale]?.containsKey(overriddenKey) ?: false)
-        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(Quantity.OTHER))
+        assertNotEquals(overriddenValue, mResMap[locale]?.get(overriddenKey)?.valueForQuantity(
+            Quantity.OTHER))
 
         val resLocale = ResLocale()
         resLocale.put(buildItem(newKey, "value"))

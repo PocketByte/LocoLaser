@@ -1,6 +1,6 @@
 package ru.pocketbyte.locolaser.utils
 
-import ru.pocketbyte.locolaser.resource.entity.Quantity
+import ru.pocketbyte.locolaser.entity.Quantity
 
 object PluralUtils {
 
@@ -83,7 +83,7 @@ object PluralUtils {
 
     fun quantityIndexForLocale(quantity: Quantity, locale: String): Int? {
         val quantities = quantitiesForLocale(locale) ?: return null
-        for (index in 0 until quantities.size) {
+        for (index in quantities.indices) {
             if (quantities[index] == quantity)
                 return index
         }

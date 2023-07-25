@@ -3,6 +3,7 @@ package ru.pocketbyte.locolaser.google.sheet
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.*
 import java.io.File
 

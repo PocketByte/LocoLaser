@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.resource.entity
 
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
@@ -12,13 +13,13 @@ import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
  * @author Denis Shurygin
  */
 class ResValue(
-        val value: String,
-        /** Resource comment. */
+    val value: String,
+    /** Resource comment. */
         val comment: String?,
-        val quantity: Quantity = Quantity.OTHER,
-        val formattingType: FormattingType = NoFormattingType,
-        val formattingArguments: List<FormattingArgument>? = null,
-        val meta: Map<String, String>? = null
+    val quantity: Quantity = Quantity.OTHER,
+    val formattingType: FormattingType = NoFormattingType,
+    val formattingArguments: List<FormattingArgument>? = null,
+    val meta: Map<String, String>? = null
 ) {
 
     override fun equals(other: Any?): Boolean {

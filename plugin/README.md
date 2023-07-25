@@ -6,7 +6,7 @@ This gradle plugin simplify work with LocoLaser by adding several tasks and exte
 In **`build.gradle.kts`** of the module apply LocoLaser
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.2.4")
+    id("ru.pocketbyte.locolaser").version("2.2.5")
 }
 ```
 ##### 2. Add dependency
@@ -18,8 +18,8 @@ buildscript {
         ...
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.2.4")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.2.4")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:2.2.5")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.2.5")
         ...
     }
 }
@@ -49,6 +49,8 @@ localize {
     }
 }
 ```
+Here `kotlinMultiplatform`, `android`, `ios` and `json` is an extensions for `ConfigResourceBuilder`.
+Each locolaser artifact that you add in section `buildscript.dependencies` adds its own Kotlin Extension.
 
 ##### Tasks
 Plugin add 3 tasks into **`localization`** group:
@@ -56,13 +58,10 @@ Plugin add 3 tasks into **`localization`** group:
 - **`localize[ConfigName]Force`** - Run LocoLaser with force;
 - **`localize[ConfigName]ExportNew`** - Run LocoLaser with force and conflict strategy = export_new_platform.
 
-**Note:** Before start one of this tasks make sure that you place configuration file in the root of the module folder.
-About configuration file format you can read in https://github.com/PocketByte/LocoLaser/blob/master/README.md
-
 ##### Extension
 Plugin add **`localize`** extension. This extension has following methods:
 - **`config(name, configSetup)`** - Creates config with provided name and configure it with closure configSetup.
-- **`configFromFile(name, file, workDir)`** - Creates config with provided name from JSON File with localization config. Default value `"localize_config.json"`
+- **`configFromFile(name, file, workDir)`** - Creates config with provided name from JSON File with localization config. Default value `"localize_config.json"`. About configuration file format you can read in https://github.com/PocketByte/LocoLaser/blob/master/README.md
 
 ### License
 ```
