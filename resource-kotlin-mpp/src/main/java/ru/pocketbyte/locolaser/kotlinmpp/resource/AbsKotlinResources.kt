@@ -31,7 +31,7 @@ abstract class AbsKotlinResources(
         val nameParts = name.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         if (nameParts.size < 2)
-            throw IllegalArgumentException("Invalid resource name")
+            throw IllegalArgumentException("Invalid resource name: $name")
 
         this.className = nameParts[nameParts.size - 1]
 

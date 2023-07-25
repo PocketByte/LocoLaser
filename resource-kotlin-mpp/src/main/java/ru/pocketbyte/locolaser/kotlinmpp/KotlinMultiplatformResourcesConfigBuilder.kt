@@ -43,7 +43,13 @@ class KotlinMultiplatformResourcesConfigBuilder {
         override var sourceSet: String = "commonMain"
 
         /**
-         * Canonical name of the Repository interface that should be generated.
+         * Package of the Repository that should be used in Interface name.
+         * Package will be ignored if Interface name contains Canonical name.
+         */
+        var interfacePackage: String? = null
+
+        /**
+         * Canonical or Simple name of the Repository interface that should be generated.
          */
         var interfaceName: String? = null
     }
@@ -56,14 +62,20 @@ class KotlinMultiplatformResourcesConfigBuilder {
         override var sourceSet: String = "${name}Main"
 
         /**
-         * Canonical name of the Repository class that should be generated.
+         * Package of the Repository that should be used in class name.
+         * Package will be ignored if class name contains canonical name.
+         */
+        var classPackage: String? = null
+
+        /**
+         * Canonical or Simple name of the Repository class that should be generated.
          */
         var className: String? = null
     }
 
     /**
      * Package of the Repository that should be used in interface and class names.
-     * Package can be overridden if Interface name or Class name contains Canonical name.
+     * Package will be ignored if interface name or class name contains canonical name.
      */
     var repositoryPackage: String? = null
 
@@ -165,9 +177,6 @@ class KotlinMultiplatformResourcesConfigBuilder {
     internal fun build(): ResourcesConfig {
         val commonConfig = KotlinCommonResourcesConfig()
 
-        val packageName = repositoryPackage ?: DEFAULT_PACKAGE
-
-        commonConfig.resourceName = mergeName(packageName, repositoryInterface ?: DEFAULT_INTERFACE_NAME)
         repositoryInterface?.also { commonConfig.resourceName = it }
         srcDir?.also {
             commonConfig.resourcesDir = File(it, "./${platformCommon.sourceSet}/kotlin/")
@@ -177,10 +186,6 @@ class KotlinMultiplatformResourcesConfigBuilder {
 
         val platformConfigs = platformMap.values.map { builder ->
             builder.config.also { config ->
-                config.resourceName = mergeName(
-                    packageName,
-                    repositoryClass ?: "${builder.name.firstCharToUpperCase()}$DEFAULT_INTERFACE_NAME"
-                )
                 srcDir?.also { config.resourcesDir = File(it, "./${builder.sourceSet}/kotlin/") }
                 filter?.also { config.filter = it }
                 config.fillFrom(builder)
@@ -198,9 +203,23 @@ class KotlinMultiplatformResourcesConfigBuilder {
 
     private fun BaseResourcesConfig.fillFrom(platformBuilder: BaseKmpBuilder) {
         if (platformBuilder is KmpInterfaceBuilder) {
-            platformBuilder.interfaceName?.let { resourceName = it }
+            resourceName = mergeName(
+                platformBuilder.interfacePackage
+                    ?: repositoryPackage
+                    ?: DEFAULT_PACKAGE,
+                platformBuilder.interfaceName
+                    ?: repositoryInterface
+                    ?: DEFAULT_INTERFACE_NAME
+            )
         } else if (platformBuilder is KmpClassBuilder<*>) {
-            platformBuilder.className?.let { resourceName = it }
+            resourceName = mergeName(
+                platformBuilder.classPackage
+                    ?: repositoryPackage
+                    ?: DEFAULT_PACKAGE,
+                platformBuilder.className
+                    ?: repositoryClass
+                    ?: getDefaultClassName(platformBuilder.name)
+            )
         }
         platformBuilder.sourcesDir?.let { resourcesDir = it }
         platformBuilder.filter?.let {
@@ -221,5 +240,9 @@ class KotlinMultiplatformResourcesConfigBuilder {
         } else {
             "$packageName.$name"
         }
+    }
+
+    private fun getDefaultClassName(platformName: String): String {
+        return "${platformName.firstCharToUpperCase()}$DEFAULT_INTERFACE_NAME"
     }
 }

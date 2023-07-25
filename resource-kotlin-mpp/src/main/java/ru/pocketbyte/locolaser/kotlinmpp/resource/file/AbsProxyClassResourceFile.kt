@@ -35,7 +35,7 @@ class AbsProxyClassResourceFile(
                     .builder(
                         "stringRepository",
                         stringRepositoryClassName,
-                        KModifier.PRIVATE, KModifier.ABSTRACT)
+                        KModifier.PROTECTED, KModifier.ABSTRACT)
                     .build()
             )
 
