@@ -18,5 +18,8 @@ class KotlinAbsStaticResourcesConfig(
     override val defaultResourceName  = "$DEFAULT_PACKAGE.AbsStatic$DEFAULT_INTERFACE_NAME"
 
     override val resources
-        get() = KotlinAbsStaticResources(resourcesDir, resourceName, implements, formattingType, filter)
+        get() = KotlinAbsStaticResources(
+            resourcesDir, resourceName, implements,
+            formattingType, resourceFileProvider, filter
+        )
 }

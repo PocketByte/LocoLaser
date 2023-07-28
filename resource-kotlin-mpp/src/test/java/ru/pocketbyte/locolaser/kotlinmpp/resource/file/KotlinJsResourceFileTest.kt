@@ -63,8 +63,8 @@ class KotlinJsResourceFileTest {
             "import i18next.I18n\n" +
             "import kotlin.Pair\n" +
             "import kotlin.String\n" +
-            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
-            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.NameFormattedStringProvider\n" +
             "\n" +
             "public class $className(\n" +
             "  private val stringProvider: NameFormattedStringProvider,\n" +
@@ -102,8 +102,8 @@ class KotlinJsResourceFileTest {
             "import kotlin.Long\n" +
             "import kotlin.Pair\n" +
             "import kotlin.String\n" +
-            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
-            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.NameFormattedStringProvider\n" +
             "\n" +
             "public class $className(\n" +
             "  private val stringProvider: NameFormattedStringProvider,\n" +
@@ -149,8 +149,8 @@ class KotlinJsResourceFileTest {
             "import kotlin.Long\n" +
             "import kotlin.Pair\n" +
             "import kotlin.String\n" +
-            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
-            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.NameFormattedStringProvider\n" +
             "\n" +
             "public class $className(\n" +
             "  private val stringProvider: NameFormattedStringProvider,\n" +
@@ -205,8 +205,8 @@ class KotlinJsResourceFileTest {
             "import i18next.I18n\n" +
             "import kotlin.Pair\n" +
             "import kotlin.String\n" +
-            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
-            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.NameFormattedStringProvider\n" +
             "\n" +
             "public class $className(\n" +
             "  private val stringProvider: NameFormattedStringProvider,\n" +
@@ -260,8 +260,8 @@ class KotlinJsResourceFileTest {
             "import i18next.I18n\n" +
             "import kotlin.Pair\n" +
             "import kotlin.String\n" +
-            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
-            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.NameFormattedStringProvider\n" +
             "\n" +
             "public class $className(\n" +
             "  private val stringProvider: NameFormattedStringProvider,\n" +
@@ -301,8 +301,8 @@ class KotlinJsResourceFileTest {
             "import i18next.I18n\n" +
             "import kotlin.Pair\n" +
             "import kotlin.String\n" +
-            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
-            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.NameFormattedStringProvider\n" +
             "\n" +
             "public class $className(\n" +
             "  private val stringProvider: NameFormattedStringProvider,\n" +
@@ -344,8 +344,8 @@ class KotlinJsResourceFileTest {
             "import kotlin.Long\n" +
             "import kotlin.Pair\n" +
             "import kotlin.String\n" +
-            "import ru.pocketbyte.locolaser.api.provider.JsStringProvider\n" +
-            "import ru.pocketbyte.locolaser.api.provider.NameFormattedStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.JsStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.NameFormattedStringProvider\n" +
             "\n" +
             "public class $className(\n" +
             "  private val stringProvider: NameFormattedStringProvider,\n" +
@@ -382,7 +382,7 @@ class KotlinJsResourceFileTest {
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
                 File(directory, classPackage.replace(".", "/")),
-                "$className${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
+                "$className.${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 }

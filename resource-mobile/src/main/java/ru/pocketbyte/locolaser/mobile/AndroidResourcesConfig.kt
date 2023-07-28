@@ -6,7 +6,9 @@
 package ru.pocketbyte.locolaser.mobile
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.mobile.resource.AndroidResources
+import ru.pocketbyte.locolaser.mobile.resource.file.provider.AndroidResourceFileProvider
 
 /**
  * Android platform configuration.
@@ -25,7 +27,9 @@ class AndroidResourcesConfig : BaseResourcesConfig() {
     override val defaultResourcesPath = "./src/main/res/"
     override val defaultResourceName = "strings"
 
+    override var resourceFileProvider: ResourceFileProvider = AndroidResourceFileProvider()
+
     override val resources
-        get() = AndroidResources(resourcesDir, resourceName, filter)
+        get() = AndroidResources(resourcesDir, resourceName, resourceFileProvider, filter)
 
 }

@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.provider.StringProvider
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 import java.io.File
@@ -18,14 +19,10 @@ class KotlinJsResourceFile(
 
     companion object {
         private val StringProviderImplClassName = ClassName(
-            "ru.pocketbyte.locolaser.api.provider",
+            StringProvider::class.java.`package`.name,
             "JsStringProvider"
         )
         private val I18nClassName = ClassName("i18next", "I18n")
-    }
-
-    override fun description(): String {
-        return "KotlinJs(${directory.absolutePath}/${className})"
     }
 
     override fun instantiateFileSpecBuilder(

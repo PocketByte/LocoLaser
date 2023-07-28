@@ -30,23 +30,18 @@ import java.io.BufferedReader
  * @author Denis Shurygin
  */
 class JsonResourceFile(
-        private val file: File,
-        private val mLocale: String,
-        private val indent: Int
+    private val file: File,
+    private val mLocale: String,
+    private val indent: Int
 ) : ResourceFile {
 
     companion object {
-
         private const val PLURAL_0_KEY_POSTFIX = "_plural"
         private const val PLURAL_KEY_POSTFIX = "_plural_"
         private const val PLURAL_KEY_PATTERN = "(.+)$PLURAL_KEY_POSTFIX(\\d+)"
     }
 
     override val formattingType: FormattingType = WebFormattingType
-
-    override fun description(): String {
-        return "Json(${file.absolutePath})"
-    }
 
     override fun read(extraParams: ExtraParams?): ResMap? {
         if (!file.exists())
@@ -68,7 +63,9 @@ class JsonResourceFile(
                     val pluralMatch = pluralMatcher.reset(key)
                     if (pluralMatch.find() && pluralMatch.groupCount() == 2) {
                         val quantityIndex = pluralMatch.group(2).toIntOrNull()
-                        val quantity = PluralUtils.quantityFromIndex(quantityIndex, mLocale) ?: Quantity.OTHER
+                        val quantity = PluralUtils
+                            .quantityFromIndex(quantityIndex, mLocale)
+                            ?: Quantity.OTHER
                         val pluralKey = pluralMatch.group(1)
 
                         val item = result[pluralKey] ?: ResItem(pluralKey)
@@ -127,7 +124,8 @@ class JsonResourceFile(
                     }
                     if (!isHasAnyQuantity)
                         value.valueForQuantity(Quantity.OTHER)?.let {
-                            rootJson[keyParts.last() + PLURAL_KEY_POSTFIX + 0] = formattingType.convert(it).value
+                            val pluralKey = keyParts.last() + PLURAL_KEY_POSTFIX + 0
+                            rootJson[pluralKey] = formattingType.convert(it).value
                         }
                 } else {
                     rootJson[keyParts.last()] = formattingType.convert(value.values[0]).value
@@ -151,11 +149,17 @@ class JsonResourceFile(
 
     private fun ResItem.addValue(value: String, quantity: Quantity) {
         val formattingArguments = formattingType.argumentsFromValue(value)
-        val formattingType = if (formattingArguments?.isEmpty() != false) NoFormattingType else formattingType
+        val formattingType = if (formattingArguments?.isEmpty() != false) {
+            NoFormattingType
+        } else {
+            formattingType
+        }
         this.addValue(ResValue(value, null, quantity, formattingType, formattingArguments))
     }
 
-    private fun getResItemsFromObject(keyPrefix: String, json: Map<Any?, Any?>): Map<String, String> {
+    private fun getResItemsFromObject(
+        keyPrefix: String, json: Map<Any?, Any?>
+    ): Map<String, String> {
         val result = mutableMapOf<String, String>()
 
         for (itemKey in json.keys) {

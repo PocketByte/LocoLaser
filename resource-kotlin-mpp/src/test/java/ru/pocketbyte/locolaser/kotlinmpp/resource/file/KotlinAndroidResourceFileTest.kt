@@ -24,8 +24,8 @@ class KotlinAndroidResourceFileTest {
     companion object {
         const val CommonImportsStr =
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.provider.AndroidStringProvider\n" +
-                "import ru.pocketbyte.locolaser.api.provider.IndexFormattedStringProvider\n"
+                "import ru.pocketbyte.locolaser.provider.AndroidStringProvider\n" +
+                "import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider\n"
 
         const val SecondConstructorsStr =
             "  public constructor(context: Context) : this(AndroidStringProvider(context))\n"
@@ -346,7 +346,7 @@ class KotlinAndroidResourceFileTest {
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
             File(directory, classPackage.replace(".", "/")),
-            "$className${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
+            "$className.${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 }

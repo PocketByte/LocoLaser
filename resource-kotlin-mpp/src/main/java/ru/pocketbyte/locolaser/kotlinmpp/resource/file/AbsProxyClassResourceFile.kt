@@ -19,13 +19,13 @@ class AbsProxyClassResourceFile(
     formattingType: FormattingType = NoFormattingType
 ): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
 
+    companion object {
+        private const val PROPERTY_REPOSITORY = "stringRepository"
+    }
+
     private val stringRepositoryClassName = ClassName(
         interfacePackage, interfaceName
     )
-
-    override fun description(): String {
-        return "KotlinProxy(${directory.absolutePath}/${className})"
-    }
 
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
         val builder = TypeSpec.classBuilder(className)
@@ -33,7 +33,7 @@ class AbsProxyClassResourceFile(
             .addProperty(
                 PropertySpec
                     .builder(
-                        "stringRepository",
+                        PROPERTY_REPOSITORY,
                         stringRepositoryClassName,
                         KModifier.PROTECTED, KModifier.ABSTRACT)
                     .build()
@@ -51,7 +51,7 @@ class AbsProxyClassResourceFile(
             .instantiatePropertySpecBuilder(name, item, resMap, extraParams)
             .getter(
                 FunSpec.getterBuilder()
-                    .addStatement("return stringRepository.$name")
+                    .addStatement("return $PROPERTY_REPOSITORY.$name")
                     .build()
             )
 
@@ -71,12 +71,12 @@ class AbsProxyClassResourceFile(
         builder.addModifiers(KModifier.OVERRIDE)
 
         if (formattingArguments.isEmpty()) {
-            builder.addStatement("return stringRepository.$name()")
+            builder.addStatement("return $PROPERTY_REPOSITORY.$name()")
         } else {
             val argumentsString = formattingArguments.mapIndexed { index, argument ->
                 argument.anyName(index)
             }.joinToString()
-            builder.addStatement("return stringRepository.$name($argumentsString)")
+            builder.addStatement("return $PROPERTY_REPOSITORY.$name($argumentsString)")
         }
 
         return builder

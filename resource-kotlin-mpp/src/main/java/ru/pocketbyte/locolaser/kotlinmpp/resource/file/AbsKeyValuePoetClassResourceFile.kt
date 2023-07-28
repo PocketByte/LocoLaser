@@ -33,10 +33,6 @@ open class AbsKeyValuePoetClassResourceFile(
         }
     }
 
-    override fun description(): String {
-        return "KotlinAbsKeyValue(${directory.absolutePath}/${className})"
-    }
-
     override fun instantiateFileSpecBuilder(
         resMap: ResMap,
         extraParams: ExtraParams?

@@ -1,5 +1,6 @@
 package ru.pocketbyte.locolaser.mobile.resource
 
+import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.mobile.resource.file.IosSwiftResourceFile
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
@@ -9,17 +10,18 @@ import ru.pocketbyte.locolaser.summary.FileSummary
 import java.io.File
 
 class IosSwiftResources(
-        resourcesDir: File,
-        name: String,
-        tableName: String?,
-        filter: ((key: String) -> Boolean)?
-) : IosBaseClassResources(resourcesDir, name, tableName, filter) {
+    resourcesDir: File,
+    name: String,
+    resourceFileProvider: ResourceFileProvider,
+    tableName: String?,
+    filter: ((key: String) -> Boolean)?
+) : IosBaseClassResources(resourcesDir, name, resourceFileProvider, tableName, filter) {
 
     companion object {
         const val SWIFT_FILE_EXTENSION = ".swift"
     }
 
-    override val formattingType: FormattingType = NoFormattingType
+    override val fileExtension: String = "swift"
 
     private val swiftFile: File
         get() {

@@ -1,10 +1,9 @@
-package ru.pocketbyte.locolaser.entity.provider
+package ru.pocketbyte.locolaser.provider
 
 import platform.Foundation.NSBundle
 import platform.Foundation.NSString
 import platform.Foundation.localizedStringWithFormat
 import platform.Foundation.stringWithFormat
-import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider
 
 class IosStringProvider(
     private val bundle: NSBundle,

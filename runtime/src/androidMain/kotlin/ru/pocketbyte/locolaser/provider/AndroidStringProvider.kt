@@ -1,7 +1,6 @@
-package ru.pocketbyte.locolaser.entity.provider
+package ru.pocketbyte.locolaser.provider
 
 import android.content.Context
-import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider
 
 class AndroidStringProvider(
     private val context: Context

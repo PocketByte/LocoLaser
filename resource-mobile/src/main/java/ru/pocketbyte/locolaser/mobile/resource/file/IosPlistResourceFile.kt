@@ -15,10 +15,6 @@ class IosPlistResourceFile(file: File, locale: String) : AbsIosStringsResourceFi
 
     override val keyValueLinePattern = "^\\s?((?:[^\"]|\\\\\")+?)\\s*=\\s*\"((?:[^\"]|\\\\\")*)\"\\s*;"
 
-    override fun description(): String {
-        return "IosPlist(${file.absolutePath})"
-    }
-
     @Throws(IOException::class)
     override fun writeKeyValueString(key: String, value: String) {
         writeString(key)

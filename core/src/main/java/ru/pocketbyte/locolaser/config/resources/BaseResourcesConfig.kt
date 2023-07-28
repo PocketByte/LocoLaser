@@ -59,6 +59,11 @@ abstract class BaseResourcesConfig : Config.Child(), ResourcesConfig {
         }
         set(value) { _resourcesDir = value }
 
+    /**
+     * ResourceFileProvider provides resource File depending on locale, directory and name.
+     */
+    abstract var resourceFileProvider: ResourceFileProvider
+
     var filter: ((key: String) -> Boolean)? = null
 
     // =================================================================================================================

@@ -47,10 +47,6 @@ class PropertiesResourceFile(
 
     override val formattingType: FormattingType = JavaFormattingType
 
-    override fun description(): String {
-        return "Propeties(${file.absolutePath})"
-    }
-
     override fun read(extraParams: ExtraParams?):ResMap? {
         if (file.exists()) {
             val currentLocaleMap = ResLocale()

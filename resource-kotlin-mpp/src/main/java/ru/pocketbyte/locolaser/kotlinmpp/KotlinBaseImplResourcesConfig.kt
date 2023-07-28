@@ -1,6 +1,8 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.kotlinmpp.resource.file.provider.KotlinClassResourceFileProvider
 
 abstract class KotlinBaseImplResourcesConfig : BaseResourcesConfig() {
 
@@ -17,5 +19,12 @@ abstract class KotlinBaseImplResourcesConfig : BaseResourcesConfig() {
     open val defaultInterfaceName = "$DEFAULT_PACKAGE.$DEFAULT_INTERFACE_NAME"
 
     override val defaultTempDirPath = "./build/tmp/"
+
+    override var resourceFileProvider: ResourceFileProvider = KotlinClassResourceFileProvider()
+        set(value) {
+            throw UnsupportedOperationException(
+                "Changing of resourceFileProvider is not supported for Kotlin Class based resources"
+            )
+        }
 
 }

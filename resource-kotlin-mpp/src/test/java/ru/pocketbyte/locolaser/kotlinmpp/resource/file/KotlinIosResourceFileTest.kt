@@ -27,8 +27,8 @@ class KotlinIosResourceFileTest {
             "import platform.Foundation.NSBundle\n" +
             "import platform.Foundation.localizedStringWithFormat\n" +
             "import platform.Foundation.stringWithFormat\n" +
-            "import ru.pocketbyte.locolaser.api.provider.IndexFormattedStringProvider\n" +
-            "import ru.pocketbyte.locolaser.api.provider.IosStringProvider\n"
+            "import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.IosStringProvider\n"
 
         const val SecondConstructorsStr =
             "  public constructor(bundle: NSBundle, tableName: String) : this(IosStringProvider(bundle,\n" +
@@ -314,7 +314,7 @@ class KotlinIosResourceFileTest {
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
             File(directory, classPackage.replace(".", "/")),
-            "$className${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
+            "$className.${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 }

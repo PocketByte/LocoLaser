@@ -31,27 +31,16 @@ version = "unspecified"
 localize {
     configFromFile("JsonConfig", "../config.json")
 
-    val googleSheetConfiguration = resourceConfigAction {
-        googlesheet {
-            id = "1JZxUcu30BjxLwHg12bdHTxjDgsGFX9HA9zC4Jd8cuUM"
-            keyColumn = "key"
-            commentColumn = "base"
-            quantityColumn = "quantity"
-            credentialFile("../service_account.json")
-        }
-    }
     config {
         platform {
             this.
-//            kotlinMultiplatform {
-//                srcDir = File("./build/res/kmpp/")
-//                repositoryInterface = "com.example.SuperString"
-//                repositoryClass = "com.example.SuperStringImpl"
-//                android(); ios(); js()
-//                platform("common", "test", KotlinAbsStaticResourcesConfig().apply {
-//                    formattingType = JavaFormattingType
-//                })
-//            }
+            kotlinMultiplatform {
+                srcDir = File("./build/res/kmpp/")
+                repositoryInterface = "com.example.SuperString"
+                repositoryClass = "com.example.SuperStringImpl"
+                android(); ios(); js()
+                platform("static", { KotlinAbsStaticResourcesConfig(JavaFormattingType) })
+            }
             json {
                 resourcesDir("./build/res/json")
                 indent = 2
@@ -72,7 +61,15 @@ localize {
                 resourcesDir("./build/res/ios")
             }
         }
-        source.googleSheetConfiguration()
+        source {
+            googlesheet {
+                id = "1JZxUcu30BjxLwHg12bdHTxjDgsGFX9HA9zC4Jd8cuUM"
+                keyColumn = "key"
+                commentColumn = "base"
+                quantityColumn = "quantity"
+                credentialFile("../service_account.json")
+            }
+        }
         isDuplicateComments = false
         locales = setOf("base", "ru")
     }

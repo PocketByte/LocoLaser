@@ -51,7 +51,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.provider.StringProvider\n" +
+                "import ru.pocketbyte.locolaser.provider.StringProvider\n" +
                 "\n" +
                 "public class $className(\n" +
                 "  private val stringProvider: StringProvider,\n" +
@@ -88,7 +88,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "\n" +
                 "import kotlin.Long\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.provider.IndexFormattedStringProvider\n" +
+                "import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider\n" +
                 "\n" +
                 "public class $className(\n" +
                 "  private val stringProvider: IndexFormattedStringProvider,\n" +
@@ -130,7 +130,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.provider.IndexFormattedStringProvider\n" +
+                "import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider\n" +
                 "\n" +
                 "public class $className(\n" +
                 "  private val stringProvider: IndexFormattedStringProvider,\n" +
@@ -180,7 +180,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "\n" +
                 "import com.some.interfacepcg.StrInterface\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.provider.StringProvider\n" +
+                "import ru.pocketbyte.locolaser.provider.StringProvider\n" +
                 "\n" +
                 "public class $className(\n" +
                 "  private val stringProvider: StringProvider,\n" +
@@ -220,7 +220,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "package $classPackage\n" +
                 "\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.provider.StringProvider\n" +
+                "import ru.pocketbyte.locolaser.provider.StringProvider\n" +
                 "\n" +
                 "public class $className(\n" +
                 "  private val stringProvider: StringProvider,\n" +
@@ -266,7 +266,7 @@ class AbsKeyValuePoetClassResourceFileTest {
                 "\n" +
                 "import kotlin.Long\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.provider.IndexFormattedStringProvider\n" +
+                "import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider\n" +
                 "\n" +
                 "public class $className(\n" +
                 "  private val stringProvider: IndexFormattedStringProvider,\n" +
@@ -307,7 +307,7 @@ class AbsKeyValuePoetClassResourceFileTest {
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
                 File(directory, classPackage.replace(".", "/")),
-                "$className${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
+                "$className.${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 }

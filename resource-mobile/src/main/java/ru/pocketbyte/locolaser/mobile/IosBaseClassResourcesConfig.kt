@@ -1,6 +1,9 @@
 package ru.pocketbyte.locolaser.mobile
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosClassResourceFileProvider
+import java.io.File
 
 abstract class IosBaseClassResourcesConfig : BaseResourcesConfig() {
 
@@ -10,4 +13,5 @@ abstract class IosBaseClassResourcesConfig : BaseResourcesConfig() {
     override val defaultResourcesPath = "./"
     override val defaultResourceName = "Str"
 
+    override var resourceFileProvider: ResourceFileProvider = IosClassResourceFileProvider()
 }

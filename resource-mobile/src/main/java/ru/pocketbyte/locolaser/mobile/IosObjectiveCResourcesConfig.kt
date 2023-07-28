@@ -9,7 +9,11 @@ class IosObjectiveCResourcesConfig : IosBaseClassResourcesConfig() {
     }
 
     override val type = TYPE
+
     override val resources
-        get() = IosObjectiveCResources(resourcesDir, resourceName, tableName, filter)
+        get() = IosObjectiveCResources(
+            resourcesDir, resourceName, resourceFileProvider,
+            tableName, filter
+        )
 
 }

@@ -16,6 +16,7 @@ import java.nio.file.Paths
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosClassResourceFileProvider
 
 class IosSwiftResourcesTest {
 
@@ -34,8 +35,11 @@ class IosSwiftResourcesTest {
         val tableName = "somTable"
         val sourceDir = tempFolder.newFolder()
 
-        IosSwiftResources(sourceDir, className, tableName, null)
-                .write(resMap, null)
+        IosSwiftResources(
+            sourceDir, className,
+            IosClassResourceFileProvider(),
+            tableName, null
+        ).write(resMap, null)
 
         val swiftFile = File(sourceDir, className + IosSwiftResources.SWIFT_FILE_EXTENSION)
         assertTrue(swiftFile.exists())

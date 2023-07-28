@@ -19,10 +19,10 @@ import java.io.File
 import java.util.HashSet
 
 abstract class BasePoetClassResourceFile(
-        _directory: File,
-        protected val className: String,
-        protected val classPackage: String,
-        override val formattingType: FormattingType = NoFormattingType
+    _directory: File,
+    protected val className: String,
+    protected val classPackage: String,
+    override val formattingType: FormattingType = NoFormattingType
 ) : ResourceFile {
 
     companion object {

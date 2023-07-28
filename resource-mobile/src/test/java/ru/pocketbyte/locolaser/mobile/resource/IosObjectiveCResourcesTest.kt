@@ -16,6 +16,7 @@ import java.nio.file.Paths
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosClassResourceFileProvider
 
 class IosObjectiveCResourcesTest {
 
@@ -27,20 +28,23 @@ class IosObjectiveCResourcesTest {
     fun testWriteObjcFile() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("key3", arrayOf(ResValue("value1_2", null, Quantity.OTHER))))
+        resLocale.put(prepareResItem("key3", arrayOf(
+            ResValue("value1_2", null, Quantity.OTHER)
+        )))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val className = "Strings"
         val tableName = "somAnotherTable"
         val sourceDir = tempFolder.newFolder()
 
-        IosObjectiveCResources(sourceDir, className, tableName, null)
-                .write(resMap, null)
+        IosObjectiveCResources(
+            sourceDir, className,
+            IosClassResourceFileProvider(),
+            tableName, null
+        ).write(resMap, null)
 
         val objcHFile = File(sourceDir, className + IosObjectiveCResources.OBJC_H_FILE_EXTENSION)
         val objcMFile = File(sourceDir, className + IosObjectiveCResources.OBJC_M_FILE_EXTENSION)
-        assertTrue(objcHFile.exists())
-        assertTrue(objcMFile.exists())
 
         val expectedHResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
                 "#import <Foundation/Foundation.h>\r\n" +

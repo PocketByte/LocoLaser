@@ -72,10 +72,6 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
 
     override val formattingType: FormattingType = JavaFormattingType
 
-    override fun description(): String {
-        return "IosPlural(${file.absolutePath})"
-    }
-
     override fun read(extraParams: ExtraParams?): ResMap? {
         if (file.exists()) {
             val handler = IosXmlFileParser()

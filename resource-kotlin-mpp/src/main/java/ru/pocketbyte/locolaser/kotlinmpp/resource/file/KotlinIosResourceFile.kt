@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.provider.StringProvider
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import java.io.File
@@ -17,13 +18,11 @@ class KotlinIosResourceFile(
 ) {
 
     companion object {
-        private val StringProviderImplClassName = ClassName("ru.pocketbyte.locolaser.api.provider", "IosStringProvider")
+        private val StringProviderImplClassName = ClassName(
+            StringProvider::class.java.`package`.name,
+            "IosStringProvider"
+        )
         private val BundleClassName = ClassName("platform.Foundation", "NSBundle")
-        private val StringClassName = ClassName("platform.Foundation", "NSString")
-    }
-
-    override fun description(): String {
-        return "KotlinIos(${directory.absolutePath}/${className})"
     }
 
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {

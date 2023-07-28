@@ -14,6 +14,9 @@ class KotlinJsResourcesConfig : KotlinBaseImplResourcesConfig() {
     override val defaultResourceName  = "$DEFAULT_PACKAGE.Js$DEFAULT_INTERFACE_NAME"
 
     override val resources
-        get() = KotlinJsResources(resourcesDir, resourceName, implements, filter)
+        get() = KotlinJsResources(
+            resourcesDir, resourceName, implements,
+            resourceFileProvider, filter
+        )
 
 }

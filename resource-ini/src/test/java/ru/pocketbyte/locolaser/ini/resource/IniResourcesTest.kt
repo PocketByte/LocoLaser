@@ -6,6 +6,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.ini.resource.file.provider.IniResourceFileProvider
 import ru.pocketbyte.locolaser.resource.entity.*
 import java.io.IOException
 
@@ -19,7 +20,10 @@ class IniResourcesTest {
     fun testWriteAndRead() {
         val resMap1 = prepareResMap()
 
-        val resources = IniResources(tempFolder.newFolder(), "test", null)
+        val resources = IniResources(
+            tempFolder.newFolder(), "test",
+            IniResourceFileProvider(), null
+        )
         resources.write(resMap1, null)
 
         val resMap2 = resources.read(resMap1.keys, null)

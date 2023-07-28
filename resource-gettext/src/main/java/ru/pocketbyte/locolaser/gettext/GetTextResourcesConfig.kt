@@ -6,8 +6,11 @@
 package ru.pocketbyte.locolaser.gettext
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.gettext.resource.GetTextResources
+import ru.pocketbyte.locolaser.gettext.resource.file.provider.GetTextResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
+import java.io.File
 
 /**
  * Android platform configuration.
@@ -20,15 +23,14 @@ class GetTextResourcesConfig : BaseResourcesConfig() {
         const val TYPE = "gettext"
     }
 
+    override val type = TYPE
     override val defaultTempDirPath = "./build/tmp/"
-
     override val defaultResourcesPath = "./languages/"
-
     override val defaultResourceName = "messages"
 
-    override val type = TYPE
+    override var resourceFileProvider: ResourceFileProvider = GetTextResourceFileProvider()
 
     override val resources: Resources
-        get() = GetTextResources(resourcesDir, resourceName, filter)
+        get() = GetTextResources(resourcesDir, resourceName, resourceFileProvider, filter)
 
 }

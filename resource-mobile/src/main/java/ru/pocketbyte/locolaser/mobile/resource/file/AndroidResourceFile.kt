@@ -91,10 +91,6 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
 
     override val formattingType: FormattingType = JavaFormattingType
 
-    override fun description(): String {
-        return "Android(${file.absolutePath})"
-    }
-
     override fun read(extraParams: ExtraParams?): ResMap? {
         if (file.exists()) {
             val handler = AndroidXmlFileParser()

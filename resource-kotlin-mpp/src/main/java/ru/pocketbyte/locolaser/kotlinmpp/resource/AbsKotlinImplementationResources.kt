@@ -1,26 +1,27 @@
 package ru.pocketbyte.locolaser.kotlinmpp.resource
 
+import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import java.io.File
 
 abstract class AbsKotlinImplementationResources(
-        dir: File,
-        name: String,
-        interfaceName: String?,
-        filter: ((key: String) -> Boolean)?
-) : AbsKotlinResources(dir, name, filter) {
+    dir: File,
+    name: String,
+    interfaceName: String?,
+    resourceFileProvider: ResourceFileProvider,
+    filter: ((key: String) -> Boolean)?
+) : AbsKotlinResources(dir, name, resourceFileProvider, filter) {
 
     val interfaceName: String?
     val interfacePackage: String?
 
     init {
         if (interfaceName != null) {
-            val interfaceNameParts = interfaceName.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val lastSegmentIndex = interfaceName.lastIndexOf(".")
+            if (lastSegmentIndex <= 0)
+                throw IllegalArgumentException("Invalid interface name: $interfaceName")
 
-            if (interfaceNameParts.size < 2)
-                throw IllegalArgumentException("Invalid interface name")
-
-            this.interfaceName = interfaceNameParts[interfaceNameParts.size - 1]
-            this.interfacePackage = interfaceName.substring(0, interfaceName.length - this.interfaceName.length - 1)
+            this.interfaceName = interfaceName.substring(lastSegmentIndex + 1)
+            this.interfacePackage = interfaceName.substring(0, lastSegmentIndex)
         } else {
             this.interfaceName = null
             this.interfacePackage = null

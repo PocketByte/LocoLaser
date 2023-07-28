@@ -20,6 +20,6 @@ class KotlinAbsKeyValueResourcesConfig(
     override val resources
         get() = KotlinAbsKeyValueResources(
             resourcesDir, resourceName, implements,
-            formattingType, filter
+            formattingType, resourceFileProvider, filter
         )
 }

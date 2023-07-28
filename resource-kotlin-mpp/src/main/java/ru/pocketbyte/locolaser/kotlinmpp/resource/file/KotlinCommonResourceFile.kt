@@ -20,10 +20,6 @@ class KotlinCommonResourceFile(
     formattingType: FormattingType = JavaFormattingType
 ): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
 
-    override fun description(): String {
-        return "KotlinCommon(${directory.absolutePath}/${className})"
-    }
-
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
         return TypeSpec.interfaceBuilder(className)
     }

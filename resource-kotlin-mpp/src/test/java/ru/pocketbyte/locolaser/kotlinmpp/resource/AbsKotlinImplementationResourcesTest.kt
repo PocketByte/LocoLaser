@@ -7,6 +7,7 @@ import java.io.File
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import ru.pocketbyte.locolaser.kotlinmpp.resource.file.provider.KotlinClassResourceFileProvider
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
@@ -45,7 +46,9 @@ class AbsKotlinImplementationResourcesTest {
             dir: File,
             name: String,
             interfaceName: String?
-    ) : AbsKotlinImplementationResources(dir, name, interfaceName, null) {
+    ) : AbsKotlinImplementationResources(
+        dir, name, interfaceName, KotlinClassResourceFileProvider(), null
+    ) {
 
         override val formattingType: FormattingType = NoFormattingType
 

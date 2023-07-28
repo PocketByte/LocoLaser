@@ -28,6 +28,13 @@ open class BaseResourcesConfigBuilder(
     }
 
     /**
+     * ResourceFileProvider provides resource File depending on locale, directory and name.
+     */
+    open var resourceFileProvider: ResourceFileProvider
+        get() = config.resourceFileProvider
+        set(value) { config.resourceFileProvider = value }
+
+    /**
      * Filter function. If defined, only strings that suits the filter will be written into resource.
      */
     var filter: ((key: String) -> Boolean)?

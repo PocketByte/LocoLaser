@@ -242,7 +242,7 @@ class KotlinCommonResourceFileTest {
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
             File(directory, classPackage.replace(".", "/")),
-            "$className${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
+            "$className.${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 }

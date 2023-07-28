@@ -45,10 +45,6 @@ class IosObjectiveCMResourceFile(
         }
     }
 
-    override fun description(): String {
-        return "IosObjCM(${file.absolutePath})"
-    }
-
     override fun read(extraParams: ExtraParams?): ResMap? {
         return null
     }

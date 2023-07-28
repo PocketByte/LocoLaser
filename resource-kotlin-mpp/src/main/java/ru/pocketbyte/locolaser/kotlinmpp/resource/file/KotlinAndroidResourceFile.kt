@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.provider.StringProvider
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import java.io.File
@@ -13,16 +14,12 @@ class KotlinAndroidResourceFile(
         interfaceName: String?,
         interfacePackage: String?
 ): AbsKeyValuePoetClassResourceFile(
-        file, className, classPackage, interfaceName, interfacePackage, JavaFormattingType
+    file, className, classPackage, interfaceName, interfacePackage, JavaFormattingType
 ) {
-
-    override fun description(): String {
-        return "KotlinAndroid(${directory.absolutePath}/${className})"
-    }
 
     companion object {
         private val StringProviderImplClassName = ClassName(
-            "ru.pocketbyte.locolaser.api.provider",
+            StringProvider::class.java.`package`.name,
             "AndroidStringProvider"
         )
         private val ContextClassName = ClassName("android.content", "Context")

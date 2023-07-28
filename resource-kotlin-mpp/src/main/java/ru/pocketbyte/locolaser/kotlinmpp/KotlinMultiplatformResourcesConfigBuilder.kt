@@ -93,16 +93,9 @@ class KotlinMultiplatformResourcesConfigBuilder {
     var repositoryClass: String? = null
 
     /**
-     * Path to src directory.
+     * Source dir path.
      */
-    var srcDir: File? = null
-
-    /**
-     * Path to src directory.
-     */
-    fun srcDir(path: String) {
-        srcDir = File(path)
-    }
+    private var srcDir: String? = null
 
     /**
      * Filter function.

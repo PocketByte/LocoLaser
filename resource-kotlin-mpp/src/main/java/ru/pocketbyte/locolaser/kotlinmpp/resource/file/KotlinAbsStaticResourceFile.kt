@@ -27,10 +27,6 @@ open class KotlinAbsStaticResourceFile(
         private const val FUN_NAME_GET_QUANTITY = "getQuantity"
     }
 
-    override fun description(): String {
-        return "KotlinAbsStatic(${directory.absolutePath}/${className})"
-    }
-
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
         val builder = TypeSpec.classBuilder(className)
             .addModifiers(KModifier.PUBLIC)

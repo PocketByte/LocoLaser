@@ -70,8 +70,8 @@ class BasePoetClassResourceFileTest {
     fun testFormattedArgumentsSort() {
         val testDirectory = tempFolder.newFolder()
 
-        class TestClass(): BasePoetClassResourceFileMock(
-                testDirectory, "tmp", "", JavaFormattingType
+        class TestClass: BasePoetClassResourceFileMock(
+            testDirectory, "tmp", "", JavaFormattingType
         ) {
             var formattingArguments: List<FormattingArgument>? = null
 
@@ -131,17 +131,17 @@ class BasePoetClassResourceFileTest {
         }
 
         BasePoetClassResourceFileMock(
-                tempFolder.newFolder(), "tmp", "", JavaFormattingType
+            tempFolder.newFolder(), "tmp", "", JavaFormattingType
         ).write(resMap, null)
     }
 
     private open class BasePoetClassResourceFileMock(
-            directory: File,
-            className: String,
-            classPackage: String,
-            formattingType: FormattingType = NoFormattingType
+        directory: File,
+        className: String,
+        classPackage: String,
+        formattingType: FormattingType = NoFormattingType
     ): BasePoetClassResourceFile(
-            directory, className, classPackage, formattingType)
+        directory, className, classPackage, formattingType)
     {
         override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
             return TypeSpec.classBuilder(className)

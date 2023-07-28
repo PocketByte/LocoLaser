@@ -68,7 +68,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.Quantity\n" +
+                "import ru.pocketbyte.locolaser.entity.Quantity\n" +
                 "\n" +
                 "public abstract class $className {\n" +
                 "  /**\n" +
@@ -110,7 +110,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.Quantity\n" +
+                "import ru.pocketbyte.locolaser.entity.Quantity\n" +
                 "\n" +
                 "public abstract class $className {\n" +
                 getAbstractFunctions(resourceFile.formattingType) +
@@ -123,7 +123,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "      Quantity.ONE -> \"value1_1\"\n" +
                 "      else -> \"value1_2\"\n" +
                 "    }\n" +
-                "    return stringValue.let { formatString(it, Pair(\"count\", count)) }\n" +
+                "    return formatString(stringValue, Pair(\"count\", count))\n" +
                 "  }\n" +
                 "}\n"
 
@@ -161,7 +161,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.Quantity\n" +
+                "import ru.pocketbyte.locolaser.entity.Quantity\n" +
                 "\n" +
                 "public abstract class $className {\n" +
                 "  /**\n" +
@@ -217,7 +217,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.Quantity\n" +
+                "import ru.pocketbyte.locolaser.entity.Quantity\n" +
                 "\n" +
                 "public abstract class $className : StrInterface {\n" +
                 "  public override val key1: String\n" +
@@ -261,7 +261,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.Quantity\n" +
+                "import ru.pocketbyte.locolaser.entity.Quantity\n" +
                 "\n" +
                 "public abstract class $className {\n" +
                 "  /**\n" +
@@ -298,7 +298,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Any\n" +
                 "import kotlin.Long\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.Quantity\n" +
+                "import ru.pocketbyte.locolaser.entity.Quantity\n" +
                 "\n" +
                 "public abstract class $className {\n" +
                 "  /**\n" +
@@ -312,7 +312,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "  /**\n" +
                 "   * $testValue\n" +
                 "   */\n" +
-                "  public fun key1(d1: Long, s2: String): String = \"$testValue\".let { formatString(it, d1, s2) }\n" +
+                "  public fun key1(d1: Long, s2: String): String = formatString(\"Hello %d %s\", d1, s2)\n" +
                 "\n" +
                 "  /**\n" +
                 "   * $testValue\n" +
@@ -322,7 +322,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "      Quantity.ONE -> \"value1_1\"\n" +
                 "      else -> \"$testValue\"\n" +
                 "    }\n" +
-                "    return stringValue.let { formatString(it, d1, s2) }\n" +
+                "    return formatString(stringValue, count, s2)\n" +
                 "  }\n" +
                 "}\n"
         )
@@ -344,7 +344,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "import kotlin.Long\n" +
                 "import kotlin.Pair\n" +
                 "import kotlin.String\n" +
-                "import ru.pocketbyte.locolaser.api.Quantity\n" +
+                "import ru.pocketbyte.locolaser.entity.Quantity\n" +
                 "\n" +
                 "public abstract class $className {\n" +
                 "  /**\n" +
@@ -358,8 +358,8 @@ class AbsStaticPoetClassResourceFileTest {
                 "  /**\n" +
                 "   * $testValue\n" +
                 "   */\n" +
-                "  public fun key1(count: Long, name: String): String = \"$testValue\".let {\n" +
-                "      formatString(it, Pair(\"count\", count), Pair(\"name\", name)) }\n" +
+                "  public fun key1(count: Long, name: String): String = formatString(\"Hello {{count}} {{name}}\",\n" +
+                "      Pair(\"count\", count), Pair(\"name\", name))\n" +
                 "\n" +
                 "  /**\n" +
                 "   * $testValue\n" +
@@ -369,7 +369,7 @@ class AbsStaticPoetClassResourceFileTest {
                 "      Quantity.ONE -> \"value1_1\"\n" +
                 "      else -> \"$testValue\"\n" +
                 "    }\n" +
-                "    return stringValue.let { formatString(it, Pair(\"count\", count), Pair(\"name\", name)) }\n" +
+                "    return formatString(stringValue, Pair(\"count\", count), Pair(\"name\", name))\n" +
                 "  }\n" +
                 "}\n"
         )
@@ -418,7 +418,7 @@ class AbsStaticPoetClassResourceFileTest {
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
             File(directory, classPackage.replace(".", "/")),
-            "$className${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
+            "$className.${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 

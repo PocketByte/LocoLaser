@@ -6,7 +6,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.properties.resource.file.provider.PropertiesResourceFileProvider
 import ru.pocketbyte.locolaser.resource.entity.*
+import java.io.File
 import java.io.IOException
 
 class PropertiesResourcesTest {
@@ -19,7 +21,10 @@ class PropertiesResourcesTest {
     fun testWriteAndRead() {
         val resMap1 = prepareResMap()
 
-        val resources = PropertiesResources(tempFolder.newFolder(), "test", null)
+        val resources = PropertiesResources(
+            tempFolder.newFolder(), "test",
+            PropertiesResourceFileProvider(), null
+        )
         resources.write(resMap1, null)
 
         val resMap2 = resources.read(resMap1.keys, null)

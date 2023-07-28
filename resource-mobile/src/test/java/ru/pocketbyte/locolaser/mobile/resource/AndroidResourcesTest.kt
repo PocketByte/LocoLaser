@@ -11,6 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.mobile.resource.file.provider.AndroidResourceFileProvider
 
 /**
  * Created by IAm on 21.01.2017.
@@ -25,7 +26,10 @@ class AndroidResourcesTest {
     fun testWriteAndRead() {
         val resMap1 = prepareResMap()
 
-        val resources = AndroidResources(tempFolder.newFolder(), "test", null)
+        val resources = AndroidResources(
+            tempFolder.newFolder(), "test",
+            AndroidResourceFileProvider(), null
+        )
         resources.write(resMap1, null)
 
         val resMap2 = resources.read(resMap1.keys, ExtraParams())

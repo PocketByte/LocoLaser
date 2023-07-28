@@ -3,7 +3,7 @@ package ru.pocketbyte.locolaser.kotlinmpp
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 
 class KotlinAbsKeyValueResourcesConfigBuilder(
-        private val config: KotlinAbsKeyValueResourcesConfig
+    private val config: KotlinAbsKeyValueResourcesConfig
 ): KotlinBaseImplResourcesConfigBuilder(config) {
 
     /**

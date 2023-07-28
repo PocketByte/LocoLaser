@@ -14,5 +14,8 @@ class KotlinAbsProxyResourcesConfig : KotlinBaseImplResourcesConfig() {
     override val defaultResourceName  = "$DEFAULT_PACKAGE.AbsProxy$DEFAULT_INTERFACE_NAME"
 
     override val resources
-        get() = KotlinAbsProxyResources(resourcesDir, resourceName, implements, filter)
+        get() = KotlinAbsProxyResources(
+            resourcesDir, resourceName, implements,
+            resourceFileProvider, filter
+        )
 }

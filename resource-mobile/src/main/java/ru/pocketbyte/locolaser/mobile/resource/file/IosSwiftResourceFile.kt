@@ -58,10 +58,6 @@ class IosSwiftResourceFile(
         }
     }
 
-    override fun description(): String {
-        return "IosSwift(${file.absolutePath})"
-    }
-
     override fun read(extraParams: ExtraParams?): ResMap? {
         return null
     }
