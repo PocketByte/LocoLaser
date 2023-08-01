@@ -18,8 +18,8 @@ import java.nio.file.Paths
 import java.util.regex.Pattern
 
 class PropertiesResourceFile(
-        file:File,
-        private val locale: String
+    file:File,
+    private val locale: String
 ):ResourceStreamFile(file) {
 
     companion object {

@@ -2,9 +2,10 @@ package ru.pocketbyte.locolaser.kotlinmpp
 
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 
-class KotlinAbsStaticResourcesConfigBuilder(
-    private val config: KotlinAbsStaticResourcesConfig
-): KotlinBaseImplResourcesConfigBuilder(config) {
+class KotlinAbsStaticResourcesConfigBuilder
+    : KotlinBaseImplResourcesConfigBuilder<KotlinAbsStaticResourcesConfig>(
+    KotlinAbsStaticResourcesConfig()
+) {
 
     /**
      * Values formatting type.

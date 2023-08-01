@@ -17,6 +17,7 @@ import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 /**
  * @author Denis Shurygin
  */
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class GetTextResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
     companion object {
@@ -40,8 +41,8 @@ class GetTextResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> 
                     config.resourceName = it
                 }
 
-                JsonParseUtils.getFile(resourceObject, RESOURCES_DIR, PLATFORM, false)?.let {
-                    config.resourcesDir = it
+                getString(resourceObject, RESOURCES_DIR, PLATFORM, false)?.let {
+                    config.resourcesDirPath = it
                 }
 
                 config.filter = BaseResourcesConfig.regExFilter(

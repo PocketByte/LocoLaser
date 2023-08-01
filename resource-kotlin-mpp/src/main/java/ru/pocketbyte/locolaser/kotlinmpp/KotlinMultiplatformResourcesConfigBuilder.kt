@@ -1,14 +1,16 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
+import groovy.lang.Closure
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig.Companion.DEFAULT_INTERFACE_NAME
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig.Companion.DEFAULT_PACKAGE
+import ru.pocketbyte.locolaser.utils.callWithDelegate
 import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
-import java.io.File
 
-class KotlinMultiplatformResourcesConfigBuilder {
+class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<ResourcesConfig> {
 
     abstract class BaseKmpBuilder {
 
@@ -21,7 +23,7 @@ class KotlinMultiplatformResourcesConfigBuilder {
         /**
          * Path to directory with source code.
          */
-        var sourcesDir: File? = null
+        var sourcesDir: String? = null
 
         /**
          * Filter function.
@@ -95,7 +97,7 @@ class KotlinMultiplatformResourcesConfigBuilder {
     /**
      * Source dir path.
      */
-    private var srcDir: String? = null
+    var srcDir: String? = null
 
     /**
      * Filter function.
@@ -117,17 +119,23 @@ class KotlinMultiplatformResourcesConfigBuilder {
     /**
      * Configure Repository interface in common module.
      */
-    fun common(action: KmpInterfaceBuilder.() -> Unit = {}) {
-        platformCommon.apply {
-            action(this)
-        }
+    fun common(action: KmpInterfaceBuilder.() -> Unit) {
+        action.invoke(platformCommon)
     }
 
     /**
      * Configure Repository implementation for Android platform.
      * There is no Android implementation will be generated if Android platform wasn't be configured.
      */
-    fun android(action: KmpClassBuilder<KotlinAndroidResourcesConfig>.() -> Unit = {}) {
+    fun android() {
+        android(null)
+    }
+
+    /**
+     * Configure Repository implementation for Android platform.
+     * There is no Android implementation will be generated if Android platform wasn't be configured.
+     */
+    fun android(action: (KmpClassBuilder<KotlinAndroidResourcesConfig>.() -> Unit)?) {
         platform("android", { KotlinAndroidResourcesConfig() }, action)
     }
 
@@ -135,7 +143,15 @@ class KotlinMultiplatformResourcesConfigBuilder {
      * Configure Repository implementation for iOS platform.
      * There is no iOS implementation will be generated if iOS platform wasn't be configured.
      */
-    fun ios(action: KmpClassBuilder<KotlinIosResourcesConfig>.() -> Unit = {}) {
+    fun ios() {
+        ios(null)
+    }
+
+    /**
+     * Configure Repository implementation for iOS platform.
+     * There is no iOS implementation will be generated if iOS platform wasn't be configured.
+     */
+    fun ios(action: (KmpClassBuilder<KotlinIosResourcesConfig>.() -> Unit)?) {
         platform("ios", { KotlinIosResourcesConfig() }, action)
     }
 
@@ -143,8 +159,28 @@ class KotlinMultiplatformResourcesConfigBuilder {
      * Configure Repository implementation for JS platform.
      * There is no JS implementation will be generated if JS platform wasn't be configured.
      */
-    fun js(action: KmpClassBuilder<KotlinJsResourcesConfig>.() -> Unit = {}) {
+    fun js() {
+        js(null)
+    }
+
+    /**
+     * Configure Repository implementation for JS platform.
+     * There is no JS implementation will be generated if JS platform wasn't be configured.
+     */
+    fun js(action: (KmpClassBuilder<KotlinJsResourcesConfig>.() -> Unit)?) {
         platform("js", { KotlinJsResourcesConfig() }, action)
+    }
+
+    /**
+     * Configure Repository implementation for provided platform type.
+     * @param name Name of platform.
+     * @param config Platform Configuration instance.
+     * Class should not be abstract and should have a constructor without parameters.
+     */
+    fun <T : KotlinBaseImplResourcesConfig> platform (
+        name: String, config: () -> T
+    ) {
+        platform(name, config, null)
     }
 
     /**
@@ -156,7 +192,7 @@ class KotlinMultiplatformResourcesConfigBuilder {
      */
     fun <T : KotlinBaseImplResourcesConfig> platform (
         name: String, config: () -> T,
-        action: KmpClassBuilder<T>.() -> Unit = {}
+        action: (KmpClassBuilder<T>.() -> Unit)?
     ) {
         val platformBuilder = platformMap[name]
             ?: KmpClassBuilder(name, config()).apply {
@@ -164,22 +200,22 @@ class KotlinMultiplatformResourcesConfigBuilder {
                 platformMap[name] = this
             }
 
-        action(platformBuilder as KmpClassBuilder<T>)
+        action?.invoke(platformBuilder as KmpClassBuilder<T>)
     }
 
-    internal fun build(): ResourcesConfig {
+    override fun build(): ResourcesConfig {
         val commonConfig = KotlinCommonResourcesConfig()
 
         repositoryInterface?.also { commonConfig.resourceName = it }
         srcDir?.also {
-            commonConfig.resourcesDir = File(it, "./${platformCommon.sourceSet}/kotlin/")
+            commonConfig.resourcesDirPath ="$it/${platformCommon.sourceSet}/kotlin/"
         }
         filter?.also { commonConfig.filter = it }
         platformCommon.also { commonConfig.fillFrom(it) }
 
         val platformConfigs = platformMap.values.map { builder ->
             builder.config.also { config ->
-                srcDir?.also { config.resourcesDir = File(it, "./${builder.sourceSet}/kotlin/") }
+                srcDir?.also { config.resourcesDirPath = "$it/${builder.sourceSet}/kotlin/" }
                 filter?.also { config.filter = it }
                 config.fillFrom(builder)
                 config.implements = commonConfig.resourceName
@@ -192,6 +228,53 @@ class KotlinMultiplatformResourcesConfigBuilder {
                 addAll(platformConfigs)
             }
         )
+    }
+
+    /**
+     * Configure Repository interface in common module.
+     */
+    fun common(action: Closure<Unit>) {
+        common { action.callWithDelegate(this) }
+    }
+
+    /**
+     * Configure Repository implementation for Android platform.
+     * There is no Android implementation will be generated if Android platform wasn't be configured.
+     */
+    fun android(action: Closure<Unit>) {
+        android { action.callWithDelegate(this) }
+    }
+
+    /**
+     * Configure Repository implementation for iOS platform.
+     * There is no iOS implementation will be generated if iOS platform wasn't be configured.
+     */
+    fun ios(action: Closure<Unit>) {
+        ios { action.callWithDelegate(this) }
+    }
+
+    /**
+     * Configure Repository implementation for JS platform.
+     * There is no JS implementation will be generated if JS platform wasn't be configured.
+     */
+    fun js(action: Closure<Unit>) {
+        js { action.callWithDelegate(this) }
+    }
+
+    /**
+     * Configure Repository implementation for provided platform type.
+     * @param name Name of platform.
+     * @param config Platform Configuration instance.
+     * Class should not be abstract and should have a constructor without parameters.
+     * @param action Configure action.
+     */
+    fun <T : KotlinBaseImplResourcesConfig> platform (
+        name: String, config: () -> T,
+        action: Closure<Unit>
+    ) {
+        platform(name, config) {
+            action.callWithDelegate(this)
+        }
     }
 
     private fun BaseResourcesConfig.fillFrom(platformBuilder: BaseKmpBuilder) {
@@ -214,7 +297,7 @@ class KotlinMultiplatformResourcesConfigBuilder {
                     ?: getDefaultClassName(platformBuilder.name)
             )
         }
-        platformBuilder.sourcesDir?.let { resourcesDir = it }
+        platformBuilder.sourcesDir?.let { resourcesDirPath = it }
         platformBuilder.filter?.let {
             val parentFiler = filter
             filter = if (parentFiler == null) {

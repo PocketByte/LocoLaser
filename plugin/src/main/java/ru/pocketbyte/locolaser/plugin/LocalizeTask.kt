@@ -29,7 +29,7 @@ open class LocalizeTask: DefaultTask() {
 open class LocalizeForceTask: LocalizeTask() {
     override fun getConfig(): Config {
         return super.getConfig().apply {
-            isForceImport = true
+            forceImport = true
         }
     }
 }
@@ -37,7 +37,7 @@ open class LocalizeForceTask: LocalizeTask() {
 open class LocalizeExportNewTask: LocalizeTask() {
     override fun getConfig(): Config {
         return super.getConfig().apply {
-            isForceImport = true
+            forceImport = true
             conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
         }
     }

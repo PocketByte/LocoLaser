@@ -1,11 +1,10 @@
 package ru.pocketbyte.locolaser.plugin
 
+import groovy.lang.Closure
 import org.gradle.api.Project
 import ru.pocketbyte.locolaser.ConfigParserFactory
-import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.ConfigBuilder
-import ru.pocketbyte.locolaser.config.resources.EmptyResourcesConfig
-import ru.pocketbyte.locolaser.exception.InvalidConfigException
+import ru.pocketbyte.locolaser.utils.callWithDelegate
 import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
 import java.io.File
 
@@ -13,68 +12,104 @@ open class LocalizationConfigContainer(
     private val project: Project
 ) {
 
+    companion object {
+        const val EMPTY_NAME = ""
+    }
+
     private val configParser by lazy { ConfigParserFactory().get() }
 
-    private val configs: HashMap<String, Set<LocalizeTask>> = HashMap()
+    private val configs: HashMap<String, MutableList<ConfigBuilder.() -> Unit>> = HashMap()
 
-    fun add(name: String, configProvider: () -> Config) {
-        var tasks = configs[name]
-        if (tasks == null || tasks.isEmpty()) {
-            tasks = createTasksForConfig(name)
-            configs[name] = tasks
+    fun config(name: String, configurator: ConfigBuilder.() -> Unit) {
+        val configurators = configs[name]
+        if (configurators == null) {
+            createTasksForConfig(name)
+            configs[name] = mutableListOf(configurator)
         } else {
-            throw RuntimeException("Config with name $name already registered")
-        }
-
-        tasks.forEach {
-            it.config = configProvider
+            configurators.add(configurator)
         }
     }
 
-    fun config(name: String, configSetup: ConfigBuilder.() -> Unit) {
-        add(name) {
-            Config().apply {
-                configSetup(ConfigBuilder(this))
-                if (platform == null) {
-                    platform = EmptyResourcesConfig()
-                }
-                if (source == null) {
-                    source = EmptyResourcesConfig()
-                }
-            }
-        }
+    fun config(configurator: ConfigBuilder.() -> Unit) {
+        config(EMPTY_NAME, configurator)
     }
 
-    fun config(configSetup: ConfigBuilder.() -> Unit) {
-        config("", configSetup)
-    }
-
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
     fun configFromFile(file: String) {
-        configFromFile("", File(file))
+        configFromFile(file, null as? (ConfigBuilder.() -> Unit)?)
     }
 
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(file: String, configurator: (ConfigBuilder.() -> Unit)?) {
+        configFromFile(EMPTY_NAME, file, configurator)
+    }
+
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
     fun configFromFile(name: String, file: String) {
-        configFromFile(name, File(file))
+        configFromFile(name, file, null as? (ConfigBuilder.() -> Unit)?)
     }
 
-    fun configFromFile(file: File, workDir: File? = null) {
-        configFromFile("", file, workDir)
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(name: String, file: String, configurator: (ConfigBuilder.() -> Unit)?) {
+        configFromFile(name, File(project.projectDir, file), configurator)
     }
 
-    fun configFromFile(name: String, file: File, workDir: File? = null) {
-        add(name) {
-            val configs: List<Config> = configParser.fromFile(file, workDir)
-            when {
-                configs.size == 1 -> {
-                    return@add configs.first()
-                }
-                configs.isEmpty() -> {
-                    throw InvalidConfigException("Config file is empty. $file")
-                }
-                else -> {
-                    throw InvalidConfigException("Config file with multiple configs doesn't supported in Gradle plugin. $file")
-                }
-            }
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(file: File) {
+        configFromFile(file, null as? (ConfigBuilder.() -> Unit)?)
+    }
+
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(file: File, configurator: (ConfigBuilder.() -> Unit)?) {
+        configFromFile(EMPTY_NAME, file, configurator)
+    }
+
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(name: String, file: File, configurator: (ConfigBuilder.() -> Unit)?) {
+        config(name) {
+            configParser.fillFromFile(this, file, project.projectDir)
+        }
+        if (configurator != null) {
+            config(name, configurator)
+        }
+    }
+
+    // ==================
+    // Closure ==
+
+    fun config(name: String, configurator: Closure<Unit>) {
+        config(name) {
+            configurator.callWithDelegate(this)
+        }
+    }
+
+    fun config(configurator: Closure<Unit>) {
+        config {
+            configurator.callWithDelegate(this)
+        }
+    }
+
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(file: String, configurator: Closure<Unit>?) {
+        configFromFile(EMPTY_NAME, file, configurator)
+    }
+
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(name: String, file: String, configurator: Closure<Unit>?) {
+        configFromFile(name, file) {
+            configurator?.callWithDelegate(this)
+        }
+    }
+
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(file: File, configurator: Closure<Unit>?) {
+        configFromFile(EMPTY_NAME, file, configurator)
+    }
+
+    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
+    fun configFromFile(name: String, file: File, configurator: Closure<Unit>?) {
+        configFromFile(name, file) {
+            configurator?.callWithDelegate(this)
         }
     }
 
@@ -83,7 +118,18 @@ open class LocalizationConfigContainer(
             project.tasks.create(localizeTaskName(name), LocalizeTask::class.java),
             project.tasks.create(localizeForceTaskName(name), LocalizeForceTask::class.java),
             project.tasks.create(localizeExportNewTaskName(name), LocalizeExportNewTask::class.java)
-        )
+        ).apply {
+            forEach {
+                it.config = {
+                    val builder = ConfigBuilder()
+                    builder.workDir = project.projectDir
+                    configs[name]?.forEach { configurator ->
+                        configurator.invoke(builder)
+                    }
+                    builder.build()
+                }
+            }
+        }
     }
 
     private fun localizeTaskName(configName: String?): String {

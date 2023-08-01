@@ -1,15 +1,11 @@
 package ru.pocketbyte.locolaser
 
-import ru.pocketbyte.locolaser.config.ConfigResourceBuilder
-import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
-import ru.pocketbyte.locolaser.properties.PropertiesResourceConfig
-import ru.pocketbyte.locolaser.properties.PropertiesResourceConfigBuilder
+import ru.pocketbyte.locolaser.config.ResourcesSetConfigBuilder
+import ru.pocketbyte.locolaser.properties.PropertiesResourcesConfigBuilder
 
 /**
  * Create and configure Properties resources config.
  */
-fun ConfigResourceBuilder.properties(action: BaseResourcesConfigBuilder.() -> Unit) {
-    val resourcesConfig = PropertiesResourceConfig()
-    action(PropertiesResourceConfigBuilder(resourcesConfig))
-    add(resourcesConfig)
+fun ResourcesSetConfigBuilder.properties(action: PropertiesResourcesConfigBuilder.() -> Unit) {
+    add(PropertiesResourcesConfigBuilder(), action)
 }

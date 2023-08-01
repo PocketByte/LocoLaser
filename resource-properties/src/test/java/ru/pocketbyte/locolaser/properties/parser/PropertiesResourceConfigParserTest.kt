@@ -7,6 +7,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.properties.PropertiesResourceConfig
@@ -20,14 +21,13 @@ class PropertiesResourceConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private lateinit var parser: PropertiesResourceConfigParser
+    private lateinit var parent: Config
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = PropertiesResourceConfigParser()
-
-        val workDir = tempFolder.newFolder()
-        System.setProperty("user.dir", workDir.canonicalPath)
+        parent = Config(tempFolder.newFolder())
     }
 
     @Test
@@ -50,6 +50,7 @@ class PropertiesResourceConfigParserTest {
     fun testFromJson() {
         val config = parser.parse(prepareTestPlatformJson(), true)
             ?: throw NullPointerException()
+        parent.platform = config
 
         assertEquals(PropertiesResourceConfig::class.java, config.javaClass)
 

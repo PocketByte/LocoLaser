@@ -19,7 +19,7 @@ class GoogleSheetIntegrationTest {
             keyColumn = "key"
             quantityColumn = "quantity"
             worksheetTitle = "Strings"
-            credentialFile = File("../playground", "service_account.json")
+            credentialFile = "../playground/service_account.json"
         }
         val result = config.resources.read(setOf("base", "ru"), null)
         Assert.assertNotNull(result)
@@ -32,7 +32,7 @@ class GoogleSheetIntegrationTest {
             id = sheetId
             keyColumn = "key"
             quantityColumn = "quantity"
-            credentialFile = File("../playground", "service_account.json")
+            credentialFile = "../playground/service_account.json"
         }
 
         val resMap = ResMap().apply {

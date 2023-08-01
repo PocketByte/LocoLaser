@@ -7,7 +7,14 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsKeyValueResourcesConfig
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinAndroidResourcesConfig
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinIosResourcesConfig
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinIosResourcesConfig.Companion
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinJsResourcesConfig
 import ru.pocketbyte.locolaser.mobile.parser.BaseMobileResourcesConfigParser
 import ru.pocketbyte.locolaser.resource.AbsResources
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
@@ -22,43 +29,43 @@ class KotlinImplementationResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private var parser: KotlinImplementationResourcesConfigParser? = null
+    private lateinit var parent: Config
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = KotlinImplementationResourcesConfigParser()
-
-        val workDir = tempFolder.newFolder()
-        System.setProperty("user.dir", workDir.canonicalPath)
+        parent = Config(tempFolder.newFolder())
     }
 
     @Test
     fun testConfigResources() {
-        testPlatformConfigResource(ru.pocketbyte.locolaser.kotlinmpp.KotlinAndroidResourcesConfig.TYPE)
-        testPlatformConfigResource(ru.pocketbyte.locolaser.kotlinmpp.KotlinIosResourcesConfig.TYPE)
-        testPlatformConfigResource(ru.pocketbyte.locolaser.kotlinmpp.KotlinJsResourcesConfig.TYPE)
-        testPlatformConfigResource(ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsKeyValueResourcesConfig.TYPE)
+        testPlatformConfigResource(KotlinAndroidResourcesConfig.TYPE)
+        testPlatformConfigResource(KotlinIosResourcesConfig.TYPE)
+        testPlatformConfigResource(KotlinJsResourcesConfig.TYPE)
+        testPlatformConfigResource(KotlinAbsKeyValueResourcesConfig.TYPE)
     }
 
     @Test
     fun testKotlinAbsKeyValuePlatformConfig() {
-        var json = prepareTestPlatformJson(ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsKeyValueResourcesConfig.TYPE)
+        var json = prepareTestPlatformJson(KotlinAbsKeyValueResourcesConfig.TYPE)
         assertSame(
             NoFormattingType,
-            (parser?.parse(json, true) as ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsKeyValueResourcesConfig).formattingType
+            (parser?.parse(json, true) as KotlinAbsKeyValueResourcesConfig).formattingType
         )
-        json = prepareTestPlatformJson(ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsKeyValueResourcesConfig.TYPE).apply {
+        json = prepareTestPlatformJson(KotlinAbsKeyValueResourcesConfig.TYPE).apply {
             this[KotlinImplementationResourcesConfigParser.FORMATTING_TYPE] = "java"
         }
         assertSame(
             JavaFormattingType,
-            (parser?.parse(json, true) as ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsKeyValueResourcesConfig).formattingType
+            (parser?.parse(json, true) as KotlinAbsKeyValueResourcesConfig).formattingType
         )
     }
 
     private fun testPlatformConfigResource(platform: String) {
         val json = prepareTestPlatformJson(platform)
-        val resources = (parser?.parse(json, true) as ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig).resources as AbsResources
+        parent.platform = parser?.parse(json, true)
+        val resources = (parent.platform as KotlinBaseImplResourcesConfig).resources as AbsResources
 
         assertEquals("com.test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

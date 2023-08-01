@@ -5,15 +5,12 @@
 
 package ru.pocketbyte.locolaser.utils.json
 
-import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.ContainerFactory
 import org.json.simple.parser.JSONParser
+import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.resource.formatting.*
-
-import java.io.File
-import java.io.IOException
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
@@ -85,19 +82,6 @@ object JsonParseUtils {
             } else
                 throw InvalidConfigException("Property ${keyName(key, parentKey)} must be a Strings array.")
         }
-        return null
-    }
-
-    @Throws(InvalidConfigException::class)
-    fun getFile(json: JSONObject, key: String, parentKey: String? = null, throwIfNull: Boolean = false): File? {
-        val path = getString(json, key, parentKey, throwIfNull)
-        if (path != null)
-            try {
-                return File(File(path).canonicalPath)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
         return null
     }
 

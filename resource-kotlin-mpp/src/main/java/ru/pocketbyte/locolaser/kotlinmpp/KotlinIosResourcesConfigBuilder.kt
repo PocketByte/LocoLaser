@@ -1,5 +1,6 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
-class KotlinIosResourcesConfigBuilder(
-        config: KotlinIosResourcesConfig
-): KotlinBaseImplResourcesConfigBuilder(config)
+class KotlinIosResourcesConfigBuilder
+    : KotlinBaseImplResourcesConfigBuilder<KotlinIosResourcesConfig>(
+    KotlinIosResourcesConfig()
+)

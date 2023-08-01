@@ -19,7 +19,7 @@ import java.io.File
 import java.util.HashSet
 
 abstract class BasePoetClassResourceFile(
-    _directory: File,
+    protected val directory: File,
     protected val className: String,
     protected val classPackage: String,
     override val formattingType: FormattingType = NoFormattingType
@@ -32,8 +32,6 @@ abstract class BasePoetClassResourceFile(
             String::class, Any::class
         )
     }
-
-    protected val directory = File(_directory.canonicalPath)
 
     abstract fun instantiateClassSpecBuilder(
         resMap: ResMap, extraParams: ExtraParams?

@@ -10,9 +10,10 @@ import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 
 import java.util.LinkedHashSet
 
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class ResourcesSetConfigParser(
-        private val mParsers: Set<ResourcesConfigParser<*>>,
-        private val hasMainConfig: Boolean = false
+    private val mParsers: Set<ResourcesConfigParser<*>>,
+    private val hasMainConfig: Boolean = false
 ) : ResourcesConfigParser<ResourcesConfig> {
 
     @Throws(InvalidConfigException::class)

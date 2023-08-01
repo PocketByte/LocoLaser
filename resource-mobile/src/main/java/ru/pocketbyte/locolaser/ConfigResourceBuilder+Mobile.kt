@@ -1,66 +1,61 @@
 package ru.pocketbyte.locolaser
 
-import ru.pocketbyte.locolaser.config.ConfigResourceBuilder
-import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
-import ru.pocketbyte.locolaser.mobile.*
+import ru.pocketbyte.locolaser.config.ResourcesSetConfigBuilder
+import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfig
+import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfigBuilder
+import ru.pocketbyte.locolaser.mobile.IosObjectiveCResourcesConfigBuilder
+import ru.pocketbyte.locolaser.mobile.IosPlistResourcesConfigBuilder
+import ru.pocketbyte.locolaser.mobile.IosResourcesConfig
+import ru.pocketbyte.locolaser.mobile.IosResourcesConfigBuilder
+import ru.pocketbyte.locolaser.mobile.IosSwiftResourcesConfigBuilder
 
 
 /**
  * Create and configure Android resources config.
  */
-fun ConfigResourceBuilder.android(action: BaseResourcesConfigBuilder.() -> Unit) {
-    val resourcesConfig = AndroidResourcesConfig()
-    action(AndroidResourcesConfigBuilder(resourcesConfig))
-    add(resourcesConfig)
+fun ResourcesSetConfigBuilder.android(action: AndroidResourcesConfigBuilder.() -> Unit) {
+    add(AndroidResourcesConfigBuilder(), action)
 }
 
 /**
  * Create default Android resources config.
  */
-fun ConfigResourceBuilder.android() {
+fun ResourcesSetConfigBuilder.android() {
     add(AndroidResourcesConfig())
 }
 
 /**
  * Create and configure iOS resources config.
  */
-fun ConfigResourceBuilder.ios(action: BaseResourcesConfigBuilder.() -> Unit) {
-    val resourcesConfig = IosResourcesConfig()
-    action(IosResourcesConfigBuilder(resourcesConfig))
-    add(resourcesConfig)
+fun ResourcesSetConfigBuilder.ios(action: IosResourcesConfigBuilder.() -> Unit) {
+    add(IosResourcesConfigBuilder(), action)
 }
 
 /**
  * Create default iOS resources config.
  */
-fun ConfigResourceBuilder.ios() {
+fun ResourcesSetConfigBuilder.ios() {
     add(IosResourcesConfig())
 }
 
 /**
  * Create and configure iOS Plist resources config.
  */
-fun ConfigResourceBuilder.iosPlist(action: BaseResourcesConfigBuilder.() -> Unit) {
-    val resourcesConfig = IosPlistResourcesConfig()
-    action(IosPlistResourcesConfigBuilder(resourcesConfig))
-    add(resourcesConfig)
+fun ResourcesSetConfigBuilder.iosPlist(action: IosPlistResourcesConfigBuilder.() -> Unit) {
+    add(IosPlistResourcesConfigBuilder(), action)
 }
 
 /**
  * Create and configure iOS Objective C class generator config.
  */
-fun ConfigResourceBuilder.iosObjC(action: IosClassResourcesConfigBuilder.() -> Unit) {
-    val resourcesConfig = IosObjectiveCResourcesConfig()
-    action(IosObjectiveCResourcesConfigBuilder(resourcesConfig))
-    add(resourcesConfig)
+fun ResourcesSetConfigBuilder.iosObjC(action: IosObjectiveCResourcesConfigBuilder.() -> Unit) {
+    add(IosObjectiveCResourcesConfigBuilder() ,action)
 }
 
 
 /**
  * Create and configure iOS Swift class generator config.
  */
-fun ConfigResourceBuilder.iosSwift(action: IosClassResourcesConfigBuilder.() -> Unit) {
-    val resourcesConfig = IosSwiftResourcesConfig()
-    action(IosSwiftResourcesConfigBuilder(resourcesConfig))
-    add(resourcesConfig)
+fun ResourcesSetConfigBuilder.iosSwift(action: IosSwiftResourcesConfigBuilder.() -> Unit) {
+    add(IosSwiftResourcesConfigBuilder(), action)
 }

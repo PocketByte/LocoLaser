@@ -11,6 +11,6 @@ class EmptyResourcesConfig : ResourcesConfig {
 
     override val type: String = TYPE
     override val resources = EmptyResources()
-    override val defaultTempDir = File("./temp/")
+    override val defaultTempDirPath = "./temp/"
 
 }

@@ -1,6 +1,6 @@
 
 object BuildVersion {
-    const val kotlin = "1.8.20"
+    const val kotlin = "1.9.0"
     const val kotlinPoet = "1.14.2"
 
     const val androidTool = "29.0.2"

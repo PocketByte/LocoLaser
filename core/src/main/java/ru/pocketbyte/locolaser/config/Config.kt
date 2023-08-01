@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.config
 
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.resource.Resources
+import ru.pocketbyte.locolaser.utils.buildFileFrom
 
 import java.io.File
 
@@ -15,10 +16,20 @@ import java.io.File
  *
  * @author Denis Shurygin
  */
-class Config {
+class Config(
+    val workDir: File
+) {
 
     open class Child {
-        var parent: Config? = null
+        open var parent: Config? = null
+            internal set
+
+        val workDir: File
+            get() {
+                return parent?.workDir ?: throw IllegalStateException(
+                    "${this::class.simpleName}: Parent is null"
+                )
+            }
     }
 
     enum class ConflictStrategy private constructor(val strValue: String) {
@@ -50,6 +61,7 @@ class Config {
      * File from which this config was read.
      */
     var file: File? = null
+
     /**
      * Source that contain resources.
      */
@@ -59,6 +71,7 @@ class Config {
             field = value
             (value as? Child)?.parent = this
         }
+
     /**
      * Platform that contain logic of resource creation.
      */
@@ -68,21 +81,19 @@ class Config {
             field = value
             (value as? Child)?.parent = this
         }
+
     /**
      * Defines if import should be forced even if this is not necessary.
      * True if import should be forced, false otherwise.
      */
-    var isForceImport: Boolean = false
+    var forceImport: Boolean = false
+
     /**
      * Strategy that should be used for merge conflicts.
-     * Default value: REMOVE_PLATFORM.
+     * Default value: KEEP_NEW_PLATFORM.
      * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
      */
-    var conflictStrategy: ConflictStrategy
-        get() = conflictStrategyInner ?: ConflictStrategy.KEEP_NEW_PLATFORM
-        set(value) { conflictStrategyInner = value }
-
-    private var conflictStrategyInner: ConflictStrategy? = null
+    var conflictStrategy: ConflictStrategy = ConflictStrategy.KEEP_NEW_PLATFORM
 
     /**
      * Set of locales that should be handled by LocoLaser.
@@ -98,14 +109,16 @@ class Config {
     var delay: Long = 0
 
     /**
+     * Gets temporary directory file.
+     */
+    val tempDir: File?
+        get() = tempDirPath?.let { buildFileFrom(workDir, it) }
+
+    /**
      * Defines temporary directory.
      */
-    var tempDir: File? = null
-        get() {
-            if (field == null)
-                tempDir = platform?.defaultTempDir
-            return field
-        }
+    var tempDirPath: String? = null
+        get() = field ?: platform?.defaultTempDirPath
 
     val extraParams = ExtraParams()
 
@@ -113,7 +126,7 @@ class Config {
      * Defines if comment should be written even if it equal resource value.
      * True if comment should be written even if it equal resource value, false otherwise.
      */
-    var isDuplicateComments: Boolean
+    var duplicateComments: Boolean
         get() = extraParams.duplicateComments
         set(value) {
             extraParams.duplicateComments = value

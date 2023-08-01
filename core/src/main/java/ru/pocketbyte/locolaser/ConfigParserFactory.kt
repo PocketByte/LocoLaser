@@ -12,6 +12,7 @@ import java.net.URLClassLoader
 import java.util.ArrayList
 import java.util.LinkedHashSet
 
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class ConfigParserFactory {
 
     companion object {

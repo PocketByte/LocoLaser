@@ -6,7 +6,7 @@
 package ru.pocketbyte.locolaser.summary
 
 import org.json.simple.JSONObject
-import ru.pocketbyte.locolaser.utils.HashUtils
+import ru.pocketbyte.locolaser.utils.getMD5Checksum
 
 import java.io.File
 import java.io.IOException
@@ -53,7 +53,7 @@ class FileSummary {
             bytes += file?.length() ?: 0
             if (file != null) {
                 try {
-                    val fileHash = HashUtils.getMD5Checksum(file)
+                    val fileHash = file.getMD5Checksum()
                     hash.append(fileHash)
                 } catch (e: IOException) {
                     // failed to get hash
@@ -106,7 +106,7 @@ class FileSummary {
 
     private fun getHashFromFile(file: File): String? {
         return try {
-            HashUtils.getMD5Checksum(file)
+            file.getMD5Checksum()
         } catch (e: IOException) {
             null
         }

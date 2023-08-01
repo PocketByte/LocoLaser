@@ -18,5 +18,5 @@ open class MockResourcesConfig : ResourcesConfig {
 
     override val resources = MockResources(File("./"), "mock", null)
 
-    override val defaultTempDir = File("./temp/mock/")
+    override val defaultTempDirPath = "./temp/mock/"
 }

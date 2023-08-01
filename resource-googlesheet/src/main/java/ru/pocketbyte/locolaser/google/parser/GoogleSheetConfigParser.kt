@@ -17,6 +17,7 @@ import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 /**
  * @author Denis Shurygin
  */
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>() {
 
     companion object {
@@ -47,7 +48,7 @@ class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>()
         config.worksheetTitle = getString(
                 configJson, SHEET_WORKSHEET_TITLE, SOURCE, false)
 
-        config.credentialFile = JsonParseUtils.getFile(
+        config.credentialFile = getString(
                 configJson, SHEET_CREDENTIAL_FILE, SOURCE, false)
 
         JsonParseUtils.getFormattingType(

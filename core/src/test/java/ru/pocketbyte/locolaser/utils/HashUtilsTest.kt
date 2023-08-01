@@ -28,11 +28,11 @@ class HashUtilsTest {
     fun testMD5ChecksumForSameFiles() {
         val fileContent = "text1 text2 text3 tex4 text5 te6xt te7xt"
 
-        val file_1 = prepareTestFile(fileContent)
-        assertEquals(HashUtils.getMD5Checksum(file_1), HashUtils.getMD5Checksum(file_1))
+        val file1 = prepareTestFile(fileContent)
+        assertEquals(file1.getMD5Checksum(), file1.getMD5Checksum())
 
-        val file_2 = prepareTestFile(fileContent)
-        assertEquals(HashUtils.getMD5Checksum(file_1), HashUtils.getMD5Checksum(file_2))
+        val file2 = prepareTestFile(fileContent)
+        assertEquals(file1.getMD5Checksum(), file2.getMD5Checksum())
     }
 
     @Test
@@ -43,10 +43,10 @@ class HashUtilsTest {
 
         assertNotEquals(fileContent1, fileContent2)
 
-        val file_1 = prepareTestFile(fileContent1)
-        val file_2 = prepareTestFile(fileContent2)
+        val file1 = prepareTestFile(fileContent1)
+        val file2 = prepareTestFile(fileContent2)
 
-        assertNotEquals(HashUtils.getMD5Checksum(file_1), HashUtils.getMD5Checksum(file_2))
+        assertNotEquals(file1.getMD5Checksum(), file2.getMD5Checksum())
     }
 
     @Test
@@ -55,13 +55,13 @@ class HashUtilsTest {
         val file = tempFolder.newFile()
         assertTrue(file.delete())
 
-        assertNull(HashUtils.getMD5Checksum(file))
+        assertNull(file.getMD5Checksum())
     }
 
     @Test
     @Throws(IOException::class)
     fun testMD5ChecksumForNullFile() {
-        assertNull(HashUtils.getMD5Checksum(null))
+        assertNull((null as File?).getMD5Checksum())
     }
 
     @Throws(IOException::class)

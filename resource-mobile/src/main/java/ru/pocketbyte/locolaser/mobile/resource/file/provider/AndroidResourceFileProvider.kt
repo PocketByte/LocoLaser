@@ -7,10 +7,8 @@ import java.io.File
 internal class AndroidResourceFileProvider : ResourceFileProvider {
     override fun get(locale: String, directory: File, name: String, extension: String): File {
         val localeDir = StringBuilder("values")
-        if (Resources.BASE_LOCALE == locale) {
-            localeDir.append("/")
-        } else {
-            localeDir.append("-").append(locale).append("/")
+        if (Resources.BASE_LOCALE != locale) {
+            localeDir.append("-").append(locale)
         }
 
         return File(File(directory, localeDir.toString()), "$name.$extension")

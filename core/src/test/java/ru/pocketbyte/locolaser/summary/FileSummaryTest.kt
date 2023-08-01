@@ -12,13 +12,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import ru.pocketbyte.locolaser.utils.HashUtils
 
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.utils.getMD5Checksum
 
 /**
  * @author Denis Shurygin
@@ -92,7 +92,7 @@ class FileSummaryTest {
         val file = prepareTestFile("test text")
         val fileSummary = FileSummary(file)
         assertEquals(file.length(), fileSummary.bytes)
-        assertEquals(HashUtils.getMD5Checksum(file), fileSummary.hash)
+        assertEquals(file.getMD5Checksum(), fileSummary.hash)
     }
 
     @Test
@@ -114,16 +114,16 @@ class FileSummaryTest {
 
         var fileSummary = FileSummary(arrayOf<File?>(file1, file2))
         assertEquals(file1.length() + file2.length(), fileSummary.bytes)
-        assertEquals(HashUtils.getMD5Checksum(file1) + HashUtils.getMD5Checksum(file2), fileSummary.hash)
+        assertEquals(file1.getMD5Checksum() + file2.getMD5Checksum(), fileSummary.hash)
 
         fileSummary = FileSummary(arrayOf(file1, null, file2))
         assertEquals(file1.length() + file2.length(), fileSummary.bytes)
-        assertEquals(HashUtils.getMD5Checksum(file1) + HashUtils.getMD5Checksum(file2), fileSummary.hash)
+        assertEquals(file1.getMD5Checksum() + file2.getMD5Checksum(), fileSummary.hash)
 
         assertTrue(file2.delete())
         fileSummary = FileSummary(arrayOf(file1, null, file2))
         assertEquals(file1.length(), fileSummary.bytes)
-        assertEquals(HashUtils.getMD5Checksum(file1) + "null", fileSummary.hash)
+        assertEquals(file1.getMD5Checksum() + "null", fileSummary.hash)
     }
 
     @Test

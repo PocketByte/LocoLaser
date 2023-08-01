@@ -79,7 +79,7 @@ class LocoLaserTest {
         sourceConfig = MockSourceConfig("mockSource", mResMap)
         source = sourceConfig.resources
 
-        config = Config()
+        config = Config(workDir)
         config.file = File(workDir, "config.json")
         config.platform = platformConfig
         config.source = sourceConfig
@@ -340,7 +340,7 @@ class LocoLaserTest {
     fun testForceImport() {
         prepareStateWhenLocalizationNotNeededBecauseNoChanges()
 
-        config.isForceImport = true
+        config.forceImport = true
         assertTrue(LocoLaser.localize(config))
         assertNotNull(platformResources.mMap)
         assertEquals(platformResources.mMap, source.mockMap)
@@ -570,8 +570,7 @@ class LocoLaserTest {
             override val resources: Resources
     ) : ResourcesConfig {
 
-        override val defaultTempDir: File
-            get() = File(System.getProperty("user.dir"), "./temp/")
+        override val defaultTempDirPath: String = "./temp/"
 
     }
 
@@ -605,12 +604,12 @@ class LocoLaserTest {
         }
     }
 
-    private class MockSourceConfig internal constructor(
+    private class MockSourceConfig constructor(
             override val type: String,
             resMap: ResMap
     ) : ResourcesConfig {
-        override val defaultTempDir: File
-            get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+        override val defaultTempDirPath: String
+            get() = throw NotImplementedError()
 
         override val resources: MockSource = MockSource(ResMap(resMap), null)
     }

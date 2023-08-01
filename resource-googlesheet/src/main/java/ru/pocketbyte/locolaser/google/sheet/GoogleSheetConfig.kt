@@ -10,7 +10,7 @@ import ru.pocketbyte.locolaser.google.utils.GoogleSheetGlobalPool
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
-import java.io.File
+import ru.pocketbyte.locolaser.utils.buildFileFrom
 
 /**
  * @author Denis Shurygin
@@ -27,20 +27,22 @@ class GoogleSheetConfig : BaseTableResourcesConfig() {
      * Title of the Worksheet that should be used for localization.
      */
     var worksheetTitle: String? = null
-    var credentialFile: File? = null
+    var credentialFile: String? = null
 
     var formattingType: FormattingType = JavaFormattingType
 
     override val type = TYPE
 
-    override val defaultTempDir: File = File("./temp/")
+    override val defaultTempDirPath: String = "./temp/"
 
     override val resources: Resources
         get() {
             return id?.let { id ->
                 GoogleSheet(
                     this,
-                    GoogleSheetGlobalPool.getService(id, credentialFile),
+                    GoogleSheetGlobalPool.getService(
+                        id, credentialFile?.let { buildFileFrom(workDir, it) }
+                    ),
                     formattingType
                 )
             } ?: throw IllegalStateException("Sheet ID is not set")

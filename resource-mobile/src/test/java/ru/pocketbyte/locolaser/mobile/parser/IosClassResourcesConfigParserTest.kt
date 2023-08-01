@@ -14,6 +14,7 @@ import java.io.IOException
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.mobile.IosObjectiveCResourcesConfig
 import ru.pocketbyte.locolaser.resource.AbsResources
@@ -24,14 +25,13 @@ class IosClassResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private lateinit var parser: IosClassResourcesConfigParser
+    private lateinit var parent: Config
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = IosClassResourcesConfigParser()
-
-        val workDir = tempFolder.newFolder()
-        System.setProperty("user.dir", workDir.canonicalPath)
+        parent = Config(tempFolder.newFolder())
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -45,6 +45,7 @@ class IosClassResourcesConfigParserTest {
     fun testFromJson() {
         val config = parser.parse(prepareTestPlatformJson(IosSwiftResourcesConfig.TYPE), true) as? IosSwiftResourcesConfig
             ?: throw NullPointerException()
+        parent.platform = config
 
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
@@ -60,7 +61,8 @@ class IosClassResourcesConfigParserTest {
 
     private fun testPlatformConfigResource(platform: String) {
         val json = prepareTestPlatformJson(platform)
-        val resources = (parser?.parse(json, true) as BaseResourcesConfig).resources as AbsResources
+        parent.platform = parser.parse(json, true)
+        val resources = (parent.platform as BaseResourcesConfig).resources as AbsResources
 
         assertEquals("test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

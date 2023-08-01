@@ -9,6 +9,7 @@ import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
     companion object {
@@ -56,8 +57,8 @@ abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResou
             platform.resourceName = it
         }
 
-        JsonParseUtils.getFile(platformJSON, RESOURCES_DIR, PLATFORM, false)?.let {
-            platform.resourcesDir = it
+        JsonParseUtils.getString(platformJSON, RESOURCES_DIR, PLATFORM, false)?.let {
+            platform.resourcesDirPath = it
         }
 
         platform.filter = BaseResourcesConfig.regExFilter(

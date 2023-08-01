@@ -9,6 +9,7 @@ import ru.pocketbyte.locolaser.mobile.IosObjectiveCResourcesConfig
 import ru.pocketbyte.locolaser.mobile.IosSwiftResourcesConfig
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class IosClassResourcesConfigParser : BaseMobileResourcesConfigParser() {
 
     companion object {

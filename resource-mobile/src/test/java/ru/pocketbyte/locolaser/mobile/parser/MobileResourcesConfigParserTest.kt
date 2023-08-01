@@ -11,6 +11,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
@@ -31,14 +32,13 @@ class MobileResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private lateinit var parser: MobileResourcesConfigParser
+    private lateinit var parent: Config
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = MobileResourcesConfigParser()
-
-        val workDir = tempFolder.newFolder()
-        System.setProperty("user.dir", workDir.canonicalPath)
+        parent = Config(tempFolder.newFolder())
     }
 
     @Test
@@ -79,6 +79,7 @@ class MobileResourcesConfigParserTest {
     fun testFromJson() {
         val config = parser.parse(prepareTestPlatformJson(AndroidResourcesConfig.TYPE), true)
             ?: throw NullPointerException()
+        parent.platform = config
 
         assertEquals(AndroidResourcesConfig::class.java, config.javaClass)
 
@@ -137,7 +138,8 @@ class MobileResourcesConfigParserTest {
 
     private fun testPlatformConfigResource(platform: String) {
         val json = prepareTestPlatformJson(platform)
-        val resources = (parser.parse(json, true) as BaseResourcesConfig).resources as AbsResources
+        parent.platform = parser.parse(json, true)
+        val resources = (parent.platform as BaseResourcesConfig).resources as AbsResources
 
         assertEquals("test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

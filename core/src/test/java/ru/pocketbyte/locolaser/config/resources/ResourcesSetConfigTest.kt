@@ -17,28 +17,28 @@ class ResourcesSetConfigTest {
     @Test
     @Throws(InvalidConfigException::class)
     fun testTempFolder() {
-        val testFolder1 = File("./temp/test_folder1/")
-        val testFolder2 = File("./temp/test_folder2/")
+        val testFolder1 = "./temp/test_folder1/"
+        val testFolder2 = "./temp/test_folder2/"
 
         val config1 = object : MockResourcesConfig() {
-            override val defaultTempDir: File
+            override val defaultTempDirPath: String
                 get() = testFolder1
         }
 
         val config2 = object : MockResourcesConfig() {
-            override val defaultTempDir: File
+            override val defaultTempDirPath: String
                 get() = testFolder2
         }
 
         var configSet = prepareConfig(config1, config2)
 
-        assertSame(testFolder1, configSet.defaultTempDir)
-        assertNotSame(testFolder2, configSet.defaultTempDir)
+        assertSame(testFolder1, configSet.defaultTempDirPath)
+        assertNotSame(testFolder2, configSet.defaultTempDirPath)
 
         configSet = prepareConfig(config2, config1)
 
-        assertNotSame(testFolder1, configSet.defaultTempDir)
-        assertSame(testFolder2, configSet.defaultTempDir)
+        assertNotSame(testFolder1, configSet.defaultTempDirPath)
+        assertSame(testFolder2, configSet.defaultTempDirPath)
     }
 
     private fun prepareConfig(config1: ResourcesConfig, config2: ResourcesConfig): ResourcesSetConfig {

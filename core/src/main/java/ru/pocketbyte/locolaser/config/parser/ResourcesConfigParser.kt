@@ -13,6 +13,7 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
  *
  * @author Denis Shurygin
  */
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 interface ResourcesConfigParser<out ConfigType : ResourcesConfig> {
 
     companion object {

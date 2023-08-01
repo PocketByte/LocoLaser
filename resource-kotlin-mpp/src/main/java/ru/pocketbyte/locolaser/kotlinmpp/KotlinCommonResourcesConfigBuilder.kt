@@ -1,11 +1,9 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
-import java.io.File
 
-class KotlinCommonResourcesConfigBuilder(
-    config: KotlinCommonResourcesConfig
-): BaseResourcesConfigBuilder(config) {
+class KotlinCommonResourcesConfigBuilder
+    : BaseResourcesConfigBuilder<KotlinCommonResourcesConfig>(KotlinCommonResourcesConfig()) {
 
     /**
      * Canonical name of the Repository interface that should be should be generated.
@@ -17,14 +15,7 @@ class KotlinCommonResourcesConfigBuilder(
     /**
      * Path to directory with source code.
      */
-    override var resourcesDir: File
+    override var resourcesDir: String?
         get() = super.resourcesDir
         set(value) { super.resourcesDir = value }
-
-    /**
-     * Sets Path to directory with source code.
-     */
-    override fun resourcesDir(path: String) {
-        super.resourcesDir(path)
-    }
 }

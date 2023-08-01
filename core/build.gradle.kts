@@ -20,6 +20,7 @@ application {
 dependencies {
     api(project(":runtime"))
     api("com.googlecode.json-simple:json-simple:1.1.1")
+    api(gradleApi())
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
     implementation("com.beust:jcommander:1.82")

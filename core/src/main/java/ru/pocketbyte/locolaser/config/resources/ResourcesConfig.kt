@@ -7,8 +7,6 @@ package ru.pocketbyte.locolaser.config.resources
 
 import ru.pocketbyte.locolaser.resource.Resources
 
-import java.io.File
-
 /**
  * Configuration object that contains information about localization rules for specified platform.
  *
@@ -26,8 +24,7 @@ interface ResourcesConfig {
     val resources: Resources
 
     /**
-     * Gets temporary directory.
-     * @return Temporary directory.
+     * Default temporary directory path specified for current resource and platform.
      */
-    val defaultTempDir: File
+    val defaultTempDirPath: String
 }

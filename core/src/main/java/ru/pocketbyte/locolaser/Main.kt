@@ -19,7 +19,7 @@ object Main {
     fun main(args: Array<String>) {
         try {
             parserFactory.get().fromArguments(args).forEach { config ->
-                if (!LocoLaser.localize(config)) {
+                if (!LocoLaser.localize(config.build())) {
                     exitProcess(1)
                 }
             }

@@ -16,27 +16,18 @@ import java.io.OutputStream
  *
  * @author Denis Shurygin
  */
-abstract class ResourceStreamFile(file: File) : ResourceFile {
-
+abstract class ResourceStreamFile(
     /**
      * File of the resource.
      */
     val file: File
+) : ResourceFile {
+
 
     private var stream: OutputStream? = null
 
     val isOpen: Boolean
         get() = stream != null
-
-    init {
-        try {
-            this.file = File(file.canonicalPath)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            throw RuntimeException(e)
-        }
-
-    }
 
     /**
      * Open stream for writing.

@@ -41,10 +41,10 @@ object LocoLaser {
 
         val summary = Summary.loadSummary(config)
         val isConfigFileChanged = summary?.isConfigFileChanged(config.file) ?: true
-        val isRefreshAll = config.isForceImport || isConfigFileChanged
+        val isRefreshAll = config.forceImport || isConfigFileChanged
 
         if (summary != null) {
-            if (config.isForceImport)
+            if (config.forceImport)
                 LogUtils.info("Force import. All resource files will be refreshed.")
             else if (isConfigFileChanged)
                 LogUtils.info("Config file was changed. All resource files will be refreshed.")

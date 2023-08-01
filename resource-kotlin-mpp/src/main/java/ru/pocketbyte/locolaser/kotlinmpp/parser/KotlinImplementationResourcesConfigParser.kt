@@ -9,6 +9,7 @@ import ru.pocketbyte.locolaser.mobile.parser.BaseMobileResourcesConfigParser
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class KotlinImplementationResourcesConfigParser : BaseMobileResourcesConfigParser() {
 
     companion object {

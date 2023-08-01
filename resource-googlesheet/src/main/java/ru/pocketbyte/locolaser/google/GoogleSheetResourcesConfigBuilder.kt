@@ -5,9 +5,8 @@ import ru.pocketbyte.locolaser.google.sheet.GoogleSheetConfig
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import java.io.File
 
-class GoogleSheetResourcesConfigBuilder(
-    private val config: GoogleSheetConfig
-): BaseTableResourcesConfigBuilder(config) {
+class GoogleSheetResourcesConfigBuilder
+    : BaseTableResourcesConfigBuilder<GoogleSheetConfig>(GoogleSheetConfig()) {
 
     /**
      * ID of the Google Sheet.
@@ -28,16 +27,9 @@ class GoogleSheetResourcesConfigBuilder(
     /**
      * Path to OAUth credential file.
      */
-    var credentialFile: File?
+    var credentialFile: String?
         get() = config.credentialFile
         set(value) {config.credentialFile = value }
-
-    /**
-     * Path to OAUth credential file.
-     */
-    fun credentialFile(path: String) {
-        credentialFile = File(path)
-    }
 
     /**
      * Values formatting type.

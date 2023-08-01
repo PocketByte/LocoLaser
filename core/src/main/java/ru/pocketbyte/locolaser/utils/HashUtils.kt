@@ -12,60 +12,51 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 /**
- * Utils class that calculate hash sum of the file.
- *
- * @author Denis Shurygin
+ * Gets MD5 Checksum of the file.
+ * @param file File.
+ * @return MD5 Checksum of the file.
+ * @throws IOException
  */
-object HashUtils {
+fun File?.getMD5Checksum(): String? {
+    if (this == null || !this.exists())
+        return null
 
-    /**
-     * Gets MD5 Checksum of the file.
-     * @param file File.
-     * @return MD5 Checksum of the file.
-     * @throws IOException
-     */
-    @Throws(IOException::class)
-    fun getMD5Checksum(file: File?): String? {
-        if (file == null || !file.exists())
-            return null
+    val checksum = this.createChecksum()
+    if (checksum != null) {
+        val resultBuilder = StringBuilder()
 
-        val checksum = createChecksum(file)
-        if (checksum != null) {
-            val resultBuilder = StringBuilder()
-
-            for (aChecksum in checksum) {
-                resultBuilder.append(Integer
-                        .toString((aChecksum.toInt() and 0xff) + 0x100, 16)
-                        .substring(1))
-            }
-            return resultBuilder.toString()
+        for (aChecksum in checksum) {
+            resultBuilder.append(Integer
+                .toString((aChecksum.toInt() and 0xff) + 0x100, 16)
+                .substring(1))
         }
+        return resultBuilder.toString()
+    }
+    return null
+}
+
+@Throws(IOException::class)
+private fun File.createChecksum(): ByteArray? {
+    val fileInputStream = FileInputStream(this)
+
+    val buffer = ByteArray(1024)
+    val complete: MessageDigest
+    try {
+        complete = MessageDigest.getInstance("MD5")
+    } catch (e: NoSuchAlgorithmException) {
+        e.printStackTrace()
         return null
     }
 
-    @Throws(IOException::class)
-    private fun createChecksum(file: File): ByteArray? {
-        val fileInputStream = FileInputStream(file)
+    var numRead: Int
 
-        val buffer = ByteArray(1024)
-        val complete: MessageDigest
-        try {
-            complete = MessageDigest.getInstance("MD5")
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-            return null
+    do {
+        numRead = fileInputStream.read(buffer)
+        if (numRead > 0) {
+            complete.update(buffer, 0, numRead)
         }
+    } while (numRead != -1)
 
-        var numRead: Int
-
-        do {
-            numRead = fileInputStream.read(buffer)
-            if (numRead > 0) {
-                complete.update(buffer, 0, numRead)
-            }
-        } while (numRead != -1)
-
-        fileInputStream.close()
-        return complete.digest()
-    }
+    fileInputStream.close()
+    return complete.digest()
 }

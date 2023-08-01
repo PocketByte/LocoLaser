@@ -3,9 +3,9 @@ package ru.pocketbyte.locolaser.mobile
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import java.io.File
 
-open class IosClassResourcesConfigBuilder(
-    private val config: IosBaseClassResourcesConfig
-): BaseResourcesConfigBuilder(config) {
+open class IosClassResourcesConfigBuilder<T : IosBaseClassResourcesConfig>(
+    config: T
+): BaseResourcesConfigBuilder<T>(config) {
 
     /**
      * Name of the table in iOS bundle. Default value is "Localizable".
@@ -24,7 +24,7 @@ open class IosClassResourcesConfigBuilder(
     /**
      * Directory where class file should be placed.
      */
-    override var resourcesDir: File
+    override var resourcesDir: String?
         get() = super.resourcesDir
         set(value) { super.resourcesDir = value }
 }

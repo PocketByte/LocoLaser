@@ -239,6 +239,6 @@ class BaseTableResourcesTest {
         override val resources: Resources
             get() = TableResourcesImpl(dataSet)
 
-        override val defaultTempDir = File("")
+        override val defaultTempDirPath = ""
     }
 }

@@ -1,7 +1,13 @@
-import ru.pocketbyte.locolaser.*
+import ru.pocketbyte.locolaser.android
+import ru.pocketbyte.locolaser.gettext
+import ru.pocketbyte.locolaser.googleSheet
+import ru.pocketbyte.locolaser.ini
+import ru.pocketbyte.locolaser.ios
+import ru.pocketbyte.locolaser.json
+import ru.pocketbyte.locolaser.kotlinMultiplatform
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsStaticResourcesConfig
 import ru.pocketbyte.locolaser.plugin.localize
-import ru.pocketbyte.locolaser.plugin.resourceConfigAction
+import ru.pocketbyte.locolaser.properties
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 
 buildscript {
@@ -11,7 +17,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        val localaserVersion = "2.3.0"
+        val localaserVersion = "2.3.0-alpha"
         classpath("ru.pocketbyte.locolaser:plugin:$localaserVersion")
         classpath("ru.pocketbyte.locolaser:core:$localaserVersion")
         classpath("ru.pocketbyte.locolaser:resource-gettext:$localaserVersion")
@@ -33,44 +39,43 @@ localize {
 
     config {
         platform {
-            this.
             kotlinMultiplatform {
-                srcDir = File("./build/res/kmpp/")
+                srcDir = "./build/res/kmpp/"
                 repositoryInterface = "com.example.SuperString"
                 repositoryClass = "com.example.SuperStringImpl"
                 android(); ios(); js()
-                platform("static", { KotlinAbsStaticResourcesConfig(JavaFormattingType) })
+                platform("static") { KotlinAbsStaticResourcesConfig(JavaFormattingType) }
             }
             json {
-                resourcesDir("./build/res/json")
+                resourcesDir = "./build/res/json"
                 indent = 2
             }
             gettext {
-                resourcesDir("./build/res/gettext")
+                resourcesDir = "./build/res/gettext"
             }
             ini {
-                resourcesDir("./build/res/ini")
+                resourcesDir = "./build/res/ini"
             }
             properties {
-                resourcesDir("./build/res/properties")
+                resourcesDir = "./build/res/properties"
             }
             android {
-                resourcesDir("./build/res/android")
+                resourcesDir = "./build/res/android"
             }
             ios {
-                resourcesDir("./build/res/ios")
+                resourcesDir = "./build/res/ios"
             }
         }
         source {
-            googlesheet {
+            googleSheet {
                 id = "1JZxUcu30BjxLwHg12bdHTxjDgsGFX9HA9zC4Jd8cuUM"
                 keyColumn = "key"
                 commentColumn = "base"
                 quantityColumn = "quantity"
-                credentialFile("../service_account.json")
+                credentialFile = "../service_account.json"
             }
         }
-        isDuplicateComments = false
+        duplicateComments = false
         locales = setOf("base", "ru")
     }
 }

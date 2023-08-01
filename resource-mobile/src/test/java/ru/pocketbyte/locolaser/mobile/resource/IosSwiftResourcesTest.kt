@@ -41,7 +41,7 @@ class IosSwiftResourcesTest {
             tableName, null
         ).write(resMap, null)
 
-        val swiftFile = File(sourceDir, className + IosSwiftResources.SWIFT_FILE_EXTENSION)
+        val swiftFile = File(sourceDir, "${className}.${IosSwiftResources.SWIFT_FILE_EXTENSION}")
         assertTrue(swiftFile.exists())
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +

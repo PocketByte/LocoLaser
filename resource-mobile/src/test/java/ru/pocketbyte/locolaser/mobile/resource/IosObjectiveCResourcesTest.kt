@@ -43,8 +43,8 @@ class IosObjectiveCResourcesTest {
             tableName, null
         ).write(resMap, null)
 
-        val objcHFile = File(sourceDir, className + IosObjectiveCResources.OBJC_H_FILE_EXTENSION)
-        val objcMFile = File(sourceDir, className + IosObjectiveCResources.OBJC_M_FILE_EXTENSION)
+        val objcHFile = File(sourceDir, "$className.${IosObjectiveCResources.OBJC_H_FILE_EXTENSION}")
+        val objcMFile = File(sourceDir, "$className.${IosObjectiveCResources.OBJC_M_FILE_EXTENSION}")
 
         val expectedHResult = TemplateStr.GENERATED_CLASS_COMMENT + "\r\n\r\n" +
                 "#import <Foundation/Foundation.h>\r\n" +

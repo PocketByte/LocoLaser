@@ -8,22 +8,19 @@ package ru.pocketbyte.locolaser.summary
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.json.simple.parser.ParseException
-import org.junit.Before
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
-
+import ru.pocketbyte.locolaser.testutils.mock.MockResources
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
 import java.nio.file.Files
 import java.nio.file.Paths
-
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import ru.pocketbyte.locolaser.testutils.mock.MockResources
 
 /**
  * @author Denis Shurygin
@@ -36,13 +33,6 @@ class SummaryTest {
 
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
-
-    @Before
-    @Throws(IOException::class)
-    fun init() {
-        val workDir = tempFolder.newFolder()
-        System.setProperty("user.dir", workDir.canonicalPath)
-    }
 
     @Test
     @Throws(ParseException::class, IOException::class)
@@ -120,7 +110,7 @@ class SummaryTest {
         val summary = Summary(tempFolder.newFile(), JSONObject())
         assertNull(summary.configSummary)
 
-        val config = Config()
+        val config = Config(tempFolder.newFolder())
         config.file = prepareTestFile("{}")
 
         summary.setConfigSummary(config)
@@ -150,9 +140,9 @@ class SummaryTest {
     @Test
     @Throws(ParseException::class, IOException::class)
     fun testLoad() {
-        val config = Config()
+        val config = Config(tempFolder.newFolder())
         config.file = prepareTestFile("{}")
-        config.tempDir = tempFolder.newFolder()
+        config.tempDirPath = "./temp/"
         config.platform = MockResources(
                 File(System.getProperty("user.dir"), "temp/"),
                 "mock", null) as? ResourcesConfig

@@ -98,10 +98,10 @@ class ConfigParserTest {
         val config = configs[0]
 
         assertNotNull(config)
-        assertEquals(config.file!!.canonicalPath, file.canonicalPath)
-        assertFalse(config.isForceImport)
-        assertFalse(config.isDuplicateComments)
-        assertEquals(file.parentFile.canonicalPath, System.getProperty("user.dir"))
+        assertEquals(config.file?.canonicalPath, file.canonicalPath)
+        assertFalse(config.forceImport)
+        assertFalse(config.duplicateComments)
+        assertEquals(file.parentFile.canonicalPath, config.workDir.canonicalPath)
         assertEquals(KEEP_NEW_PLATFORM, config.conflictStrategy)
         assertEquals(0, config.delay)
     }
@@ -113,10 +113,10 @@ class ConfigParserTest {
         map[ConfigParser.FORCE_IMPORT] = true
 
         var file = prepareMockFile(map)
-        var configs: List<Config> = mConfigParser.fromFile(file)
+        var configs = mConfigParser.fromFile(file)
 
         assertEquals(1, configs.size)
-        assertTrue(configs[0].isForceImport)
+        assertTrue(configs[0].forceImport)
 
         map[ConfigParser.FORCE_IMPORT] = false
 
@@ -124,7 +124,7 @@ class ConfigParserTest {
         configs = mConfigParser.fromFile(file)
 
         assertEquals(1, configs.size)
-        assertFalse(configs[0].isForceImport)
+        assertFalse(configs[0].forceImport)
     }
 
     @Test
@@ -134,10 +134,10 @@ class ConfigParserTest {
         map[ConfigParser.DUPLICATE_COMMENTS] = true
 
         var file = prepareMockFile(map)
-        var configs: List<Config> = mConfigParser.fromFile(file)
+        var configs = mConfigParser.fromFile(file)
 
         assertEquals(1, configs.size)
-        assertTrue(configs[0].isDuplicateComments)
+        assertTrue(configs[0].duplicateComments)
 
         map[ConfigParser.DUPLICATE_COMMENTS] = false
 
@@ -145,7 +145,7 @@ class ConfigParserTest {
         configs = mConfigParser.fromFile(file)
 
         assertEquals(1, configs.size)
-        assertFalse(configs[0].isDuplicateComments)
+        assertFalse(configs[0].duplicateComments)
     }
 
     @Test
@@ -156,9 +156,9 @@ class ConfigParserTest {
         map[ConfigParser.WORK_DIR] = newWorkDir
 
         val file = prepareMockFile(map)
-        mConfigParser.fromFile(file)
+        val configs = mConfigParser.fromFile(file)
 
-        assertEquals(File(file.parentFile, newWorkDir).canonicalPath, System.getProperty("user.dir"))
+        assertEquals(File(file.parentFile, newWorkDir).canonicalPath, configs[0].workDir.canonicalPath)
     }
 
     @Test
@@ -172,7 +172,7 @@ class ConfigParserTest {
         val configs = mConfigParser.fromFile(file)
 
         assertEquals(1, configs.size)
-        assertEquals(File(tempDir).canonicalPath, configs[0].tempDir!!.canonicalPath)
+        assertEquals(tempDir, configs[0].tempDir)
     }
 
     @Test
@@ -181,10 +181,8 @@ class ConfigParserTest {
         val file = prepareMockFile(HashMap())
         val configs = mConfigParser.fromFile(file)
 
-        val expected = MockResourcesConfig().defaultTempDir
-
         assertEquals(1, configs.size)
-        assertEquals(expected.canonicalPath, configs[0].tempDir!!.canonicalPath)
+        assertNull(configs[0].tempDir)
     }
 
     @Test
@@ -246,13 +244,13 @@ class ConfigParserTest {
 
         val file = prepareMockFile(map)
 
-        var configs: List<Config> = mConfigParser.fromArguments(arrayOf(file.absolutePath, "--force"))
+        var configs = mConfigParser.fromArguments(arrayOf(file.absolutePath, "--force"))
         assertEquals(1, configs.size)
-        assertTrue(configs[0].isForceImport)
+        assertTrue(configs[0].forceImport)
 
         configs = mConfigParser.fromArguments(arrayOf(file.absolutePath, "--f"))
         assertEquals(1, configs.size)
-        assertTrue(configs[0].isForceImport)
+        assertTrue(configs[0].forceImport)
     }
 
     @Test
@@ -263,7 +261,7 @@ class ConfigParserTest {
 
         val file = prepareMockFile(map)
 
-        var configs: List<Config> = mConfigParser.fromArguments(
+        var configs = mConfigParser.fromArguments(
                 arrayOf(file.absolutePath, "-cs", EXPORT_NEW_PLATFORM.strValue))
         assertEquals(1, configs.size)
         assertEquals(EXPORT_NEW_PLATFORM, configs[0].conflictStrategy)
@@ -296,21 +294,23 @@ class ConfigParserTest {
         val configs = mConfigParser.fromArguments(
                 arrayOf(file.absolutePath, "-tempDir", tempDir))
 
-        assertEquals(File(tempDir).canonicalPath, configs[0].tempDir?.canonicalPath)
+        assertEquals(tempDir, configs[0].tempDir)
     }
 
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testArgumentWorkDir() {
         val workDir = "./subDir"
-        val expectedTemp = File(workDir, MockResourcesConfig().defaultTempDir.path).canonicalPath
 
         val file = prepareMockFile(null)
 
         val configs = mConfigParser.fromArguments(
                 arrayOf(file.absolutePath, "-workDir", workDir))
 
-        assertEquals(expectedTemp, configs[0].tempDir?.canonicalPath)
+        assertEquals(
+            File(file.parentFile, workDir).canonicalPath,
+            configs[0].workDir.canonicalPath
+        )
     }
 
     @Test
@@ -337,7 +337,7 @@ class ConfigParserTest {
         assertEquals(1, configs.size)
 
         val config = configs[0]
-        assertTrue(config.isForceImport)
+        assertTrue(config.forceImport)
         assertEquals(EXPORT_NEW_PLATFORM, config.conflictStrategy)
         assertEquals(delay, config.delay)
     }

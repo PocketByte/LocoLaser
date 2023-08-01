@@ -5,8 +5,6 @@ import java.io.File
 
 class KotlinClassResourceFileProvider : ResourceFileProvider {
     override fun get(locale: String, directory: File, name: String, extension: String): File {
-        val nameParts = name.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }
-
-        return File(directory, "${nameParts.joinToString(" / ")}.$extension")
+        return File(directory, "${name.replace(".", "/")}.$extension")
     }
 }

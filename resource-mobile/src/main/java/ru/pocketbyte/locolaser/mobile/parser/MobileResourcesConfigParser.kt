@@ -14,6 +14,7 @@ import ru.pocketbyte.locolaser.mobile.IosPlistResourcesConfig
 /**
  * @author Denis Shurygin
  */
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class MobileResourcesConfigParser : BaseMobileResourcesConfigParser() {
 
     @Throws(InvalidConfigException::class)

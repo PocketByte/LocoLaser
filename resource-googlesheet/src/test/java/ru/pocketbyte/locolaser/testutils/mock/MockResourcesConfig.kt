@@ -21,7 +21,7 @@ class MockResourcesConfig : ResourcesConfig {
 
     override val type =  "mock"
 
-    override val defaultTempDir = File("./")
+    override val defaultTempDirPath = "./"
 
     override val resources = object : Resources {
         override val formattingType = NoFormattingType

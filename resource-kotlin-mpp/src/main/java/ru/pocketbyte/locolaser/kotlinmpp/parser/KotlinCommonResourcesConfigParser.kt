@@ -5,6 +5,7 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinCommonResourcesConfig
 import ru.pocketbyte.locolaser.mobile.parser.BaseMobileResourcesConfigParser
 
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class KotlinCommonResourcesConfigParser : BaseMobileResourcesConfigParser() {
 
     @Throws(InvalidConfigException::class)

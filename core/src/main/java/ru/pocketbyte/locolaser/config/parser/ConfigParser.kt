@@ -14,7 +14,10 @@ import org.json.simple.parser.ParseException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 import com.beust.jcommander.Parameter
+import ru.pocketbyte.locolaser.config.ConfigBuilder
+import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
 import ru.pocketbyte.locolaser.utils.LogUtils
+import ru.pocketbyte.locolaser.utils.buildFileFrom
 import java.io.*
 
 import java.util.ArrayList
@@ -24,6 +27,7 @@ import java.util.ArrayList
  *
  * @author Denis Shurygin
  */
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 open class ConfigParser
 /**
  * Construct new config parser
@@ -31,8 +35,8 @@ open class ConfigParser
  * @param platformConfigParser Parser of the platform config.
  */
 (
-        private val sourceConfigParser: ResourcesConfigParser<*>,
-        private val platformConfigParser: ResourcesConfigParser<*>
+    private val sourceConfigParser: ResourcesConfigParser<*>,
+    private val platformConfigParser: ResourcesConfigParser<*>
 ) {
 
     companion object {
@@ -72,20 +76,15 @@ open class ConfigParser
      * @throws ParseException if occurs an error parsing JSON.
      */
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
-    fun fromArguments(args: Array<String>?): List<Config> {
+    fun fromArguments(args: Array<String>?): List<ConfigBuilder> {
         if (args != null && args.isNotEmpty()) {
 
             val argsParser = ConfigArgsParser()
             JCommander(argsParser, *args)
 
             val file = File(File(args[0]).canonicalPath)
-            val workDir = argsParser.workDir?.let { File(File(it).canonicalPath) }
+            val workDir = argsParser.workDir?.let { File(file.parentFile, it) }
             val configs = fromFile(file, workDir)
-
-            if (workDir == null)
-                System.setProperty("user.dir", file.parentFile.canonicalPath)
-            else
-                System.setProperty("user.dir", workDir.canonicalPath)
 
             for (config in configs)
                 argsParser.applyFor(config)
@@ -105,84 +104,110 @@ open class ConfigParser
      * @throws ParseException if occurs an error parsing JSON.
      */
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
-    fun fromFile(file: File, workDir: File? = null): List<Config> {
+    fun fromFile(file: File, workDir: File? = null): List<ConfigBuilder> {
         LogUtils.info("Reading config file " + file.canonicalPath)
 
         @Suppress("NAME_SHADOWING")
         val file = File(file.canonicalPath)
-
-        if (workDir != null)
-            System.setProperty("user.dir", workDir.canonicalPath)
 
         val reader = BufferedReader(InputStreamReader(FileInputStream(file), "UTF-8"))
         val json = JsonParseUtils.JSON_PARSER.parse(reader)
         reader.close()
 
         if (json is JSONObject) {
-            if (workDir == null) {
-                JsonParseUtils.getString(json, WORK_DIR)?.let {
-                    System.setProperty("user.dir", File(file.parentFile, it).canonicalPath)
-                } ?: System.setProperty("user.dir", file.parentFile.canonicalPath)
-            }
-            return listOf(fromJsonObject(file, json))
+            return listOf(ConfigBuilder().apply { fillFromJsonObject(file, json, workDir) })
         }
         else if (json is JSONArray) {
             return json.indices.map { index ->
                 val jsonItem = json[index] as JSONObject
 
-                if (workDir == null) {
-                    JsonParseUtils.getString(jsonItem, WORK_DIR)?.let {
-                        System.setProperty("user.dir", File(file.parentFile, it).canonicalPath)
-                    } ?: System.setProperty("user.dir", file.parentFile.canonicalPath)
-                }
-
-                fromJsonObject(file, jsonItem)
+                ConfigBuilder().apply { fillFromJsonObject(file, jsonItem, workDir) }
             }
         }
 
         throw InvalidConfigException("Config file must contain JSONObject or JSONArray.")
     }
 
+    fun fillFromFile(config: ConfigBuilder, file: File, workDir: File?) {
+        LogUtils.info("Reading config file " + file.canonicalPath)
+
+        @Suppress("NAME_SHADOWING")
+        val file = File(file.canonicalPath)
+
+        val reader = BufferedReader(InputStreamReader(FileInputStream(file), "UTF-8"))
+        val json = JsonParseUtils.JSON_PARSER.parse(reader)
+        reader.close()
+
+        if (json is JSONObject) {
+            config.fillFromJsonObject(file, json, workDir)
+        } else {
+            throw InvalidConfigException("Config file must contain JSONObject.")
+        }
+    }
+
     @Throws(IOException::class, InvalidConfigException::class)
-    private fun fromJsonObject(file: File, configJson: JSONObject): Config {
-        val config = Config()
-        config.file = file
+    private fun ConfigBuilder.fillFromJsonObject(
+        file: File, configJson: JSONObject, workDir: File?
+    ) {
+        this.workDir = workDir
+            ?: JsonParseUtils.getString(configJson, WORK_DIR)?.let {
+                buildFileFrom(file.parentFile, it)
+            }
+            ?: file.parentFile
+
+        this.file = file
 
         JsonParseUtils.getBoolean(configJson, FORCE_IMPORT, null, false)?.let {
-            config.isForceImport = it
+            this.forceImport = it
         }
         JsonParseUtils.getBoolean(configJson, DUPLICATE_COMMENTS, null, false)?.let {
-            config.isDuplicateComments = it
+            this.duplicateComments = it
         }
         JsonParseUtils.getBoolean(configJson, TRIM_UNSUPPORTED_QUANTITIES, null, false)?.let {
-            config.trimUnsupportedQuantities = it
+            this.trimUnsupportedQuantities = it
         }
         JsonParseUtils.getLong(configJson, DELAY, null, false)?.let {
-            config.delay = it
+            this.delay = it
         }
-        config.tempDir = JsonParseUtils.getFile(configJson, TEMP_DIR, null, false)
+        this.tempDir = JsonParseUtils.getString(configJson, TEMP_DIR, null, false)
 
-        config.source = sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true)
-        config.platform = platformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), true)
+        sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true)?.let {
+            if (it is ResourcesSetConfig) {
+                it.main?.let { main -> this.source.add(main) }
+                it.configs.forEach { item ->
+                    if (item != it.main) {
+                        this.source.add(item)
+                    }
+                }
+            } else {
+                this.source.add(it)
+            }
+        }
+        platformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), true)?.let {
+            if (it is ResourcesSetConfig) {
+                it.main?.let { main -> this.platform.add(main) }
+                it.configs.forEach { item ->
+                    if (item != it.main) {
+                        this.platform.add(item)
+                    }
+                }
+            } else {
+                this.platform.add(it)
+            }
+        }
 
-        config.locales = JsonParseUtils.getStrings(configJson, LOCALES, null, true)?.toSet() ?:
+        this.locales = JsonParseUtils.getStrings(configJson, LOCALES, null, true)?.toSet() ?:
                 throw InvalidConfigException("\"$LOCALES\" is not set.")
 
         parseConflictStrategy(JsonParseUtils.getString(configJson, CONFLICT_STRATEGY, null, false))?.let {
-            config.conflictStrategy = it
+            this.conflictStrategy = it
         }
 
-        validate(config)
-
-        return config
+        validate(this)
     }
 
     @Throws(InvalidConfigException::class)
-    private fun validate(config: Config) {
-        if (config.platform == null)
-            throw InvalidConfigException("\"$PLATFORM\" is not set.")
-        if (config.source == null)
-            throw InvalidConfigException("\"$SOURCE\" is not set.")
+    private fun validate(config: ConfigBuilder) {
         if (config.locales.isEmpty())
             throw InvalidConfigException("\"$LOCALES\" must contain at least one item.")
     }
@@ -208,16 +233,16 @@ open class ConfigParser
         var workDir: String? = null
 
         @Throws(InvalidConfigException::class)
-        fun applyFor(config: Config) {
+        fun applyFor(config: ConfigBuilder) {
             if (forceImport)
-                config.isForceImport = true
+                config.forceImport = true
 
             parseConflictStrategy(conflictStrategy)?.let {
                 config.conflictStrategy = it
             }
 
             delay?.let { config.delay = it }
-            tempDir?.let { config.tempDir = File(File(it).canonicalPath) }
+            tempDir?.let { config.tempDir = it }
         }
     }
 }

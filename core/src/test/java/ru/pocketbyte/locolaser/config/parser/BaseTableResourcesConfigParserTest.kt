@@ -80,7 +80,7 @@ class BaseTableResourcesConfigParserTest {
 
         assertEquals(1, configs.size)
 
-        val sourceConfig = configs[0].source
+        val sourceConfig = configs[0].build().source
         assertTrue(sourceConfig is BaseTableResourcesConfig)
     }
 
@@ -90,13 +90,13 @@ class BaseTableResourcesConfigParserTest {
         val keyColumns = arrayOf("key_1", "key_2")
         for (keyColumn in keyColumns) {
             val sourceMap = prepareMinimalSourceMap()
-            sourceMap.put(BaseTableSourceConfigParser.COLUMN_KEY, keyColumn)
+            sourceMap[BaseTableSourceConfigParser.COLUMN_KEY] = keyColumn
             val file = prepareMockFile(null, sourceMap)
             val configs = mConfigParser.fromFile(file)
 
             assertEquals(1, configs.size)
 
-            val sourceConfig = configs[0].source as BaseTableResourcesConfig?
+            val sourceConfig = configs[0].build().source as BaseTableResourcesConfig?
             assertEquals(keyColumn, sourceConfig!!.keyColumn)
         }
     }
@@ -113,7 +113,7 @@ class BaseTableResourcesConfigParserTest {
 
             assertEquals(1, configs.size)
 
-            val sourceConfig = configs[0].source as BaseTableResourcesConfig?
+            val sourceConfig = configs[0].build().source as BaseTableResourcesConfig?
             assertEquals(quantityColumn, sourceConfig!!.quantityColumn)
         }
     }
@@ -130,7 +130,7 @@ class BaseTableResourcesConfigParserTest {
 
             assertEquals(1, configs.size)
 
-            val sourceConfig = configs[0].source as BaseTableResourcesConfig?
+            val sourceConfig = configs[0].build().source as BaseTableResourcesConfig?
             assertEquals(commentColumn, sourceConfig!!.commentColumn)
         }
     }

@@ -6,8 +6,8 @@
 package ru.pocketbyte.locolaser.config.resources
 
 import ru.pocketbyte.locolaser.config.Config
+import ru.pocketbyte.locolaser.utils.buildFileFrom
 import java.io.File
-import java.io.IOException
 import java.util.regex.Pattern
 
 /**
@@ -46,18 +46,13 @@ abstract class BaseResourcesConfig : Config.Child(), ResourcesConfig {
     /**
      * Resource directory.
      */
-    var resourcesDir: File
-        get() {
-            return _resourcesDir ?: try {
-                File(File(defaultResourcesPath).canonicalPath)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                File(defaultResourcesPath)
-            }.apply {
-                _resourcesDir = this
-            }
-        }
-        set(value) { _resourcesDir = value }
+    val resourcesDir: File
+        get() = buildFileFrom(workDir, resourcesDirPath ?: defaultResourcesPath)
+
+    /**
+     * Resource directory path.
+     */
+    var resourcesDirPath: String? = null
 
     /**
      * ResourceFileProvider provides resource File depending on locale, directory and name.
@@ -67,26 +62,8 @@ abstract class BaseResourcesConfig : Config.Child(), ResourcesConfig {
     var filter: ((key: String) -> Boolean)? = null
 
     // =================================================================================================================
-    // ========= Interface properties =====================================================================================
-    // =================================================================================================================
-
-    override val defaultTempDir: File by lazy {
-        try {
-            File(File(defaultTempDirPath).canonicalPath)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            File(defaultTempDirPath)
-        }
-    }
-
-    // =================================================================================================================
     // ========= Abstract properties ======================================================================================
     // =================================================================================================================
-
-    /**
-     * Default temporary directory path specified for current platform.
-     */
-    abstract val defaultTempDirPath: String
 
     /**
      * Default resource directory path specified for current platform.

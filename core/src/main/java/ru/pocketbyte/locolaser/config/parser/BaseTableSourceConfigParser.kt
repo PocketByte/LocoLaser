@@ -15,6 +15,7 @@ import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 /**
  * @author Denis Shurygin
  */
+@Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 abstract class BaseTableSourceConfigParser<SourceConfigClass : BaseTableResourcesConfig> : ResourcesConfigParser<ResourcesConfig> {
 
     companion object {

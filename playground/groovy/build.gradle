@@ -1,3 +1,14 @@
+import ru.pocketbyte.locolaser.gettext.GetTextResourcesConfigBuilder
+import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfigBuilder
+import ru.pocketbyte.locolaser.ini.IniResourcesConfigBuilder
+import ru.pocketbyte.locolaser.json.JsonResourcesConfigBuilder
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsStaticResourcesConfig
+import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfigBuilder
+import ru.pocketbyte.locolaser.mobile.IosResourcesConfigBuilder
+import ru.pocketbyte.locolaser.properties.PropertiesResourcesConfigBuilder
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+
 buildscript {
     repositories {
         mavenLocal()
@@ -5,15 +16,16 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath "ru.pocketbyte.locolaser:plugin:2.2.3"
-        classpath "ru.pocketbyte.locolaser:core:2.2.3"
-        classpath "ru.pocketbyte.locolaser:resource-gettext:2.2.3"
-        classpath "ru.pocketbyte.locolaser:resource-googlesheet:2.2.3"
-        classpath "ru.pocketbyte.locolaser:resource-ini:2.2.3"
-        classpath "ru.pocketbyte.locolaser:resource-json:2.2.3"
-        classpath "ru.pocketbyte.locolaser:resource-kotlin-mpp:2.2.3"
-        classpath "ru.pocketbyte.locolaser:resource-mobile:2.2.3"
-        classpath "ru.pocketbyte.locolaser:resource-properties:2.2.3"
+        def localaserVersion = "2.3.0-alpha"
+        classpath "ru.pocketbyte.locolaser:plugin:$localaserVersion"
+        classpath "ru.pocketbyte.locolaser:core:$localaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-gettext:$localaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-googlesheet:$localaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-ini:$localaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-json:$localaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-kotlin-mpp:$localaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-mobile:$localaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-properties:$localaserVersion"
     }
 }
 
@@ -23,4 +35,48 @@ version = "unspecified"
 
 localize {
     configFromFile("JsonConfig", "../config.json")
+
+    config {
+        platform {
+            add(new KotlinMultiplatformResourcesConfigBuilder()) {
+                srcDir = "./build/res/kmpp/"
+                repositoryInterface = "com.example.SuperString"
+                repositoryClass = "com.example.SuperStringImpl"
+                android(); ios(); js()
+                platform("static") {
+                    new KotlinAbsStaticResourcesConfig(JavaFormattingType.INSTANCE)
+                }
+            }
+            add(new JsonResourcesConfigBuilder()) {
+                resourcesDir = "./build/res/json"
+                indent = 2
+            }
+            add(new GetTextResourcesConfigBuilder()) {
+                resourcesDir = "./build/res/gettext"
+            }
+            add(new IniResourcesConfigBuilder()) {
+                resourcesDir = "./build/res/ini"
+            }
+            add(new PropertiesResourcesConfigBuilder()) {
+                resourcesDir = "./build/res/properties"
+            }
+            add(new AndroidResourcesConfigBuilder()) {
+                resourcesDir = "./build/res/android"
+            }
+            add(new IosResourcesConfigBuilder()) {
+                resourcesDir = "./build/res/ios"
+            }
+        }
+        source {
+            add(new GoogleSheetResourcesConfigBuilder()) {
+                id = "1JZxUcu30BjxLwHg12bdHTxjDgsGFX9HA9zC4Jd8cuUM"
+                keyColumn = "key"
+                commentColumn = "base"
+                quantityColumn = "quantity"
+                credentialFile = "../service_account.json"
+            }
+        }
+        duplicateComments = false
+        locales = ["base", "ru"]
+    }
 }

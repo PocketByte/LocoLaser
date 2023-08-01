@@ -1,8 +1,8 @@
 package ru.pocketbyte.locolaser.config.resources
 
-open class BaseTableResourcesConfigBuilder(
-    private val config: BaseTableResourcesConfig
-) {
+open class BaseTableResourcesConfigBuilder<T : BaseTableResourcesConfig>(
+    protected val config: T
+) : ResourcesConfigBuilder<T> {
 
     /**
      * Title of the column that contain resource Key's.
@@ -32,4 +32,7 @@ open class BaseTableResourcesConfigBuilder(
         get() = config.metadataColumn
         set(value) { config.metadataColumn = value }
 
+    override fun build(): T {
+        return config
+    }
 }

@@ -1,10 +1,8 @@
 package ru.pocketbyte.locolaser.config.resources
 
-import java.io.File
-
-open class BaseResourcesConfigBuilder(
-    private val config: BaseResourcesConfig
-) {
+open class BaseResourcesConfigBuilder<T : BaseResourcesConfig>(
+    protected val config: T
+) : ResourcesConfigBuilder<T> {
 
     /**
      * Resource name or null if should be used default name.
@@ -16,16 +14,9 @@ open class BaseResourcesConfigBuilder(
     /**
      * Resource directory.
      */
-    open var resourcesDir: File
-        get() = config.resourcesDir
-        set(value) { config.resourcesDir = value }
-
-    /**
-     * Sets Resource directory.
-     */
-    open fun resourcesDir(path: String) {
-        resourcesDir = File(path)
-    }
+    open var resourcesDir: String?
+        get() = config.resourcesDirPath
+        set(value) { config.resourcesDirPath = value }
 
     /**
      * ResourceFileProvider provides resource File depending on locale, directory and name.
@@ -49,4 +40,7 @@ open class BaseResourcesConfigBuilder(
         filter = BaseResourcesConfig.regExFilter(regExp)
     }
 
+    override fun build(): T {
+        return config
+    }
 }

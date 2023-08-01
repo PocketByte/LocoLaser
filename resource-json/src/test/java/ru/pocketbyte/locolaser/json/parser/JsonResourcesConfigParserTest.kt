@@ -6,6 +6,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 
@@ -22,14 +23,13 @@ class JsonResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private lateinit var parser: JsonResourcesConfigParser
+    private lateinit var parent: Config
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = JsonResourcesConfigParser()
-
-        val workDir = tempFolder.newFolder()
-        System.setProperty("user.dir", workDir.canonicalPath)
+        parent = Config(tempFolder.newFolder())
     }
 
     @Test
@@ -52,6 +52,7 @@ class JsonResourcesConfigParserTest {
     fun testFromJson() {
         val config = parser.parse(prepareTestPlatformJson(), true)
             ?: throw NullPointerException()
+        parent.platform = config
 
         assertEquals(JsonResourcesConfig::class.java, config.javaClass)
 
@@ -91,7 +92,8 @@ class JsonResourcesConfigParserTest {
     @Test
     fun testConfigResources() {
         val json = prepareTestPlatformJson()
-        val resources = (parser.parse(json, true) as JsonResourcesConfig).resources as AbsResources
+        parent.platform = parser.parse(json, true)
+        val resources = (parent.platform as JsonResourcesConfig).resources as AbsResources
 
         assertEquals("test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

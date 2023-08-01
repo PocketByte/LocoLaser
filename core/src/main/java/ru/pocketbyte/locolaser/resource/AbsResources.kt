@@ -41,7 +41,9 @@ abstract class AbsResources(
         extension: String = this.fileExtension
     ): File {
         return resourceFileProvider.get(locale, directory, name, extension).apply {
-            if (!this.parentFile.mkdirs()) {
+            val parent = this.parentFile
+            parent.mkdirs()
+            if (!parent.exists()) {
                 throw RuntimeException("Failed to create folder ${parentFile.absolutePath}")
             }
         }

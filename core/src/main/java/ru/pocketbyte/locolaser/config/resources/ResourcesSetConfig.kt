@@ -8,11 +8,18 @@ import java.io.File
 import java.util.LinkedHashSet
 
 class ResourcesSetConfig(
-        private val configs: Set<ResourcesConfig>,
-        private val main: ResourcesConfig? = null
+    val configs: Set<ResourcesConfig>,
+    val main: ResourcesConfig? = null
 ) : Config.Child(), ResourcesConfig {
 
     override val type: String = "set"
+
+    override var parent: Config?
+        get() = super.parent
+        set(value) {
+            super.parent = value
+            configs.forEach { (it as? Config.Child)?.parent = value }
+        }
 
     override val resources: ResourcesSet
         get() {
@@ -28,6 +35,6 @@ class ResourcesSetConfig(
             return ResourcesSet(resourcesSet, mainResource)
         }
 
-    override val defaultTempDir: File
-        get() = configs.first().defaultTempDir
+    override val defaultTempDirPath: String
+        get() = configs.first().defaultTempDirPath
 }
