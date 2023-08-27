@@ -7,6 +7,8 @@ import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig.Companion.DEFAULT_INTERFACE_NAME
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig.Companion.DEFAULT_PACKAGE
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.utils.callWithDelegate
 import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
 
@@ -169,6 +171,41 @@ class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<Resourc
      */
     fun js(action: (KmpClassBuilder<KotlinJsResourcesConfig>.() -> Unit)?) {
         platform("js", { KotlinJsResourcesConfig() }, action)
+    }
+
+    /**
+     * Configure abstract KeyValue Repository implementation for provided platform name.
+     * This config generates abstract strings Repository implementation, that can be used in any target.
+     */
+    fun absKeyValue(
+        name: String,
+        formattingType: FormattingType = JavaFormattingType,
+        action: (KmpClassBuilder<KotlinAbsKeyValueResourcesConfig>.() -> Unit)?
+    ) {
+        platform(name, { KotlinAbsKeyValueResourcesConfig(formattingType) }, action)
+    }
+
+    /**
+     * Configure abstract Static Repository implementation for provided platform name.
+     * This config generates abstract strings Repository implementation, that can be used in any target.
+     */
+    fun absStatic(
+        name: String,
+        formattingType: FormattingType = JavaFormattingType,
+        action: (KmpClassBuilder<KotlinAbsStaticResourcesConfig>.() -> Unit)?
+    ) {
+        platform(name, { KotlinAbsStaticResourcesConfig(formattingType) }, action)
+    }
+
+    /**
+     * Configure abstract Proxy Repository implementation for provided platform name.
+     * This config generates abstract strings Repository implementation, that can be used in any target.
+     */
+    fun absProxy(
+        name: String,
+        action: (KmpClassBuilder<KotlinAbsProxyResourcesConfig>.() -> Unit)?
+    ) {
+        platform(name, { KotlinAbsProxyResourcesConfig() }, action)
     }
 
     /**
