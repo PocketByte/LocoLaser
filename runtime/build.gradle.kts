@@ -22,6 +22,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
+    buildTypes {
+        getByName("release") {
+            //
+        }
+        getByName("debug") {
+            //
+        }
+    }
 }
 
 kotlin {
@@ -29,7 +38,7 @@ kotlin {
     ios()
     iosSimulatorArm64()
 
-    android {
+    androidTarget {
         publishLibraryVariants("release")
     }
 
@@ -76,10 +85,9 @@ publishing {
     }
 }
 
-
-//signing {
-//    sign(publishing.publications)
-//}
+signing {
+    sign(publishing.publications)
+}
 
 fun configurePomDefault(pom: MavenPom, targetName: String?) {
     pom.apply {
@@ -109,7 +117,7 @@ publishing {
 // Configure Target publications
 kotlin {
     targets.forEach {
-        val targetName = name.upperFirstChar()
+        val targetName = it.name.upperFirstChar()
         if (it is KotlinAndroidTarget) {
             this@kotlin.android {
                 afterEvaluate {
@@ -130,3 +138,12 @@ kotlin {
 }
 
 registerPlatformDependentPublishingTasks()
+
+// Workaround for
+// https://youtrack.jetbrains.com/issue/KT-46466/Kotlin-MPP-publishing-Gradle-7-disables-optimizations-because-of-task-dependencies
+tasks.withType(Sign::class, configureAction = {
+    val signingTask = this
+    tasks.withType(AbstractPublishToMaven::class, configureAction = {
+        this.dependsOn(signingTask)
+    })
+})
