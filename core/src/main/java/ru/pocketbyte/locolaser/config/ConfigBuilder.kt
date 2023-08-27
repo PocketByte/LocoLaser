@@ -1,18 +1,12 @@
 package ru.pocketbyte.locolaser.config
 
 import groovy.lang.Closure
-import org.gradle.internal.HasInternalProtocol
 import ru.pocketbyte.locolaser.utils.callWithDelegate
 import java.io.File
 
-@HasInternalProtocol
 open class ConfigBuilder {
 
-    companion object {
-        private val defaultConfig = Config(File("./"))
-    }
-
-    var workDir: File = defaultConfig.workDir
+    var workDir: File? = null
 
     var file: File? = null
 
@@ -21,31 +15,31 @@ open class ConfigBuilder {
      * Defines if import should be forced even if this is not necessary.
      * True if import should be forced, false otherwise.
      */
-    var forceImport: Boolean = defaultConfig.forceImport
+    var forceImport: Boolean = false
 
     /**
      * Strategy that should be used for merge conflicts.
      * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
      */
-    var conflictStrategy: Config.ConflictStrategy = defaultConfig.conflictStrategy
+    var conflictStrategy: Config.ConflictStrategy = Config.DEFAULT_CONFLICT_STRATEGY
 
     /**
      * Defines temporary directory.
      */
-    var tempDir: String? = defaultConfig.tempDirPath
+    var tempDir: String? = null
 
     /**
      * Set of locales that should be handled by LocoLaser.
      * You can use [ru.pocketbyte.locolaser.resource.Resources.BASE_LOCALE] to specify base locale.
      */
-    var locales: Set<String> = defaultConfig.locales
+    var locales: Set<String> = Config.DEFAULT_LOCALES
 
     /**
      * Defines time in minutes that define delay for next localization.
      * Localization will executed not more often the specified delay.
      * If force import switched on delay will be ignored.
      */
-    var delay: Long = defaultConfig.delay
+    var delay: Long = Config.DEFAULT_DELAY
 
     val extraParams: ExtraParams = ExtraParams()
 

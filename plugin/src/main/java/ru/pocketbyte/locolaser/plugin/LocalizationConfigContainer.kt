@@ -8,6 +8,7 @@ import ru.pocketbyte.locolaser.utils.callWithDelegate
 import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
 import java.io.File
 
+@Suppress("DeprecatedCallableAddReplaceWith")
 open class LocalizationConfigContainer(
     private val project: Project
 ) {
@@ -118,16 +119,14 @@ open class LocalizationConfigContainer(
             project.tasks.create(localizeTaskName(name), LocalizeTask::class.java),
             project.tasks.create(localizeForceTaskName(name), LocalizeForceTask::class.java),
             project.tasks.create(localizeExportNewTaskName(name), LocalizeExportNewTask::class.java)
-        ).apply {
-            forEach {
-                it.config = {
-                    val builder = ConfigBuilder()
-                    builder.workDir = project.projectDir
-                    configs[name]?.forEach { configurator ->
-                        configurator.invoke(builder)
-                    }
-                    builder.build()
+        ).onEach {
+            it.config = {
+                val builder = ConfigBuilder()
+                builder.workDir = project.projectDir
+                configs[name]?.forEach { configurator ->
+                    configurator.invoke(builder)
                 }
+                builder.build()
             }
         }
     }

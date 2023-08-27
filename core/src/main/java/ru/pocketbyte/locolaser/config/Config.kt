@@ -17,22 +17,24 @@ import java.io.File
  * @author Denis Shurygin
  */
 class Config(
-    val workDir: File
+    val workDir: File? = null
 ) {
 
     open class Child {
         open var parent: Config? = null
             internal set
 
-        val workDir: File
+        val workDir: File?
             get() {
-                return parent?.workDir ?: throw IllegalStateException(
-                    "${this::class.simpleName}: Parent is null"
-                )
+                return parent.also {
+                    if (it == null) {
+                        throw IllegalStateException("${this::class.simpleName}: Parent is null")
+                    }
+                }?.workDir
             }
     }
 
-    enum class ConflictStrategy private constructor(val strValue: String) {
+    public enum class ConflictStrategy private constructor(val strValue: String) {
 
         /** Remove platform resources and replace it with resources from source.  */
         REMOVE_PLATFORM("remove_platform"),
@@ -55,6 +57,12 @@ class Config(
 
         val isExportStrategy: Boolean
             get() = this == EXPORT_NEW_PLATFORM || this == EXPORT_PLATFORM
+    }
+
+    companion object {
+        val DEFAULT_CONFLICT_STRATEGY = ConflictStrategy.KEEP_NEW_PLATFORM
+        val DEFAULT_LOCALES = setOf(Resources.BASE_LOCALE)
+        const val DEFAULT_DELAY = 0L
     }
 
     /**
@@ -93,20 +101,20 @@ class Config(
      * Default value: KEEP_NEW_PLATFORM.
      * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
      */
-    var conflictStrategy: ConflictStrategy = ConflictStrategy.KEEP_NEW_PLATFORM
+    var conflictStrategy: ConflictStrategy = DEFAULT_CONFLICT_STRATEGY
 
     /**
      * Set of locales that should be handled by LocoLaser.
      * You can use [Resources.BASE_LOCALE] to specify base locale.
      */
-    var locales: Set<String> = setOf(Resources.BASE_LOCALE)
+    var locales: Set<String> = DEFAULT_LOCALES
 
     /**
      * Defines time in minutes that define delay for next localization.
      * Localization will executed not more often the specified delay.
      * If force import switched on delay will be ignored.
      */
-    var delay: Long = 0
+    var delay: Long = DEFAULT_DELAY
 
     /**
      * Gets temporary directory file.
