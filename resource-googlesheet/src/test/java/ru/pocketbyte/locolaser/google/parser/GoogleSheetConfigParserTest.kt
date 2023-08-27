@@ -83,7 +83,7 @@ class GoogleSheetConfigParserTest {
 
         assertEquals(1, config.size)
 
-        val sourceConfig = config[0].source
+        val sourceConfig = config[0].source.build()
         assertTrue(sourceConfig is GoogleSheetConfig)
     }
 
@@ -99,7 +99,7 @@ class GoogleSheetConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source as GoogleSheetConfig
+            val sourceConfig = config[0].source.build() as GoogleSheetConfig
             assertEquals(expectedValue, sourceConfig.id)
         }
     }
@@ -116,7 +116,7 @@ class GoogleSheetConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source as GoogleSheetConfig
+            val sourceConfig = config[0].source.build() as GoogleSheetConfig
             assertEquals(expectedValue, sourceConfig.worksheetTitle)
         }
     }
@@ -133,9 +133,8 @@ class GoogleSheetConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source as GoogleSheetConfig
-            assertEquals(File(expectedValue).canonicalPath,
-                    sourceConfig.credentialFile!!.canonicalPath)
+            val sourceConfig = config[0].source.build() as GoogleSheetConfig
+            assertEquals(expectedValue, sourceConfig.credentialFile)
         }
     }
 

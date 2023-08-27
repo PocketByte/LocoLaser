@@ -3,36 +3,43 @@ package ru.pocketbyte.locolaser.google.sheet
 import org.junit.Assert
 import org.junit.Ignore
 import org.junit.Test
+import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.*
 import java.io.File
 
+@Ignore
 class GoogleSheetIntegrationTest {
 
     private val sheetId = "1G-hI9MilctvIm5-5m0z9YgUEIRzS9lIl9d1mXXMJHEg"
 
-    @Ignore
     @Test
     fun testRead() {
-        val config = GoogleSheetConfig().apply {
+        val sourceConfig = GoogleSheetConfig().apply {
             id = sheetId
             keyColumn = "key"
             quantityColumn = "quantity"
             worksheetTitle = "Strings"
             credentialFile = "../playground/service_account.json"
         }
-        val result = config.resources.read(setOf("base", "ru"), null)
+        val config = Config(File("./")).apply {
+            source = sourceConfig
+        }
+        val result = sourceConfig.resources.read(setOf("base", "ru"), null)
         Assert.assertNotNull(result)
     }
 
-    @Ignore
     @Test
     fun testWrite() {
-        val config = GoogleSheetConfig().apply {
+        val sourceConfig = GoogleSheetConfig().apply {
             id = sheetId
             keyColumn = "key"
             quantityColumn = "quantity"
             credentialFile = "../playground/service_account.json"
+        }
+
+        val config = Config(File("./")).apply {
+            source = sourceConfig
         }
 
         val resMap = ResMap().apply {
@@ -86,7 +93,7 @@ class GoogleSheetIntegrationTest {
             )
         }
 
-        config.resources.write(resMap, null)
+        sourceConfig.resources.write(resMap, null)
     }
 
     private fun prepareResItem(key: String, values: Array<ResValue>): ResItem {
