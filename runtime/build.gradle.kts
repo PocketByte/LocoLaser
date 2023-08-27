@@ -58,6 +58,9 @@ kotlin {
 
         val jvmMain by getting {
             dependsOn(commonMain)
+            dependencies {
+                implementation("com.ibm.icu:icu4j:73.2")
+            }
         }
 
         val jvmTest by getting {
