@@ -5,22 +5,37 @@ import com.ibm.icu.util.ULocale
 import ru.pocketbyte.locolaser.entity.Quantity
 import java.util.*
 
+private typealias FallbackHandler =
+            (bundle: ResourceBundle, locale: Locale, key: String) -> String
+
 class JvmBundleStringProvider(
     private val bundle: ResourceBundle,
-    private val locale: Locale = Locale.getDefault()
+    private val locale: Locale = Locale.getDefault(),
+    private val fallbackHandler: FallbackHandler = defaultFallbackHandler
 ) : IndexFormattedStringProvider {
+
+    companion object {
+        private val defaultFallbackHandler: FallbackHandler = { bundle, locale, key ->
+            throw MissingResourceException(
+                "Can't find resource for bundle",
+                bundle.javaClass.name,
+                key
+            )
+        }
+    }
 
     constructor(
         resClassLoader: ClassLoader,
         bundleName: String = "strings",
         bundlePath: String = "strings",
-        locale: Locale = Locale.getDefault()
+        locale: Locale = Locale.getDefault(),
+        fallbackHandler: FallbackHandler = defaultFallbackHandler
     ) : this (
         ResourceBundle.getBundle(
             "$bundlePath/$bundleName", locale, resClassLoader,
             ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT)
         ),
-        locale
+        locale, fallbackHandler
     )
 
     override fun getPluralString(key: String, count: Long, vararg args: Any): String {
@@ -46,7 +61,10 @@ class JvmBundleStringProvider(
     }
 
     override fun getString(key: String): String {
-        return bundle.getString(key)
+        if (bundle.containsKey(key)) {
+            return bundle.getString(key)
+        }
+        return fallbackHandler(bundle, locale, key)
     }
 
 }

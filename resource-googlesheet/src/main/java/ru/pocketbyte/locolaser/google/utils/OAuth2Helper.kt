@@ -9,10 +9,10 @@ import com.google.api.client.auth.oauth2.*
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import com.google.api.client.googleapis.util.Utils
 import com.google.api.client.http.GenericUrl
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.JsonFactory
-import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.DataStoreFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import java.io.File
@@ -34,7 +34,7 @@ object OAuth2Helper {
 
     val HTTP_TRANSPORT = NetHttpTransport()
 
-    val JSON_FACTORY: JsonFactory = JacksonFactory.getDefaultInstance()
+    val JSON_FACTORY: JsonFactory = Utils.getDefaultJsonFactory()
     private var DATA_STORE_FACTORY: DataStoreFactory? = null
 
     private val apiKey: String

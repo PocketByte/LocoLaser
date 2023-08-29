@@ -13,8 +13,7 @@ object GoogleSheetGlobalPool {
 
     fun getService(sheetId: String, credentialFile: File?): Sheets {
         val sheetKey = "$sheetId/${credentialFile?.canonicalPath ?: "null"}"
-        return sheetsMap[sheetKey] ?: {
-
+        return sheetsMap[sheetKey] ?: run {
             val credentials = if (credentialFile != null)
                 try {
                     OAuth2Helper.credentialFromFile(credentialFile)
@@ -27,15 +26,13 @@ object GoogleSheetGlobalPool {
                 } catch (e: IOException) {
                     throw RuntimeException(e)
                 }
-
             val service = Sheets.Builder(
-                    OAuth2Helper.HTTP_TRANSPORT,
-                    OAuth2Helper.JSON_FACTORY,
-                    credentials
+                OAuth2Helper.HTTP_TRANSPORT,
+                OAuth2Helper.JSON_FACTORY,
+                credentials
             ).setApplicationName(APPLICATION_NAME).build()
-
             sheetsMap[sheetKey] = service
             service
-        }()
+        }
     }
 }
