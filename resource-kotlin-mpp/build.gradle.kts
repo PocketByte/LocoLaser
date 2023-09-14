@@ -1,10 +1,17 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("kotlin")
     id("org.jetbrains.kotlin.jvm")
     id("maven-publish")
     id("signing")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
@@ -34,6 +41,12 @@ tasks {
     }
 }
 
+tasks.withType(KotlinCompile::class.java).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
 publishing {
     repositories {
         sonatype(sonatypeUser, sonatypePassword)
@@ -55,6 +68,12 @@ publishing {
             artifact(tasks.getByPath("sourceJar"))
             artifact(tasks.getByPath("sourceDoc"))
         }
+    }
+}
+
+tasks.withType(KotlinCompile::class.java).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 

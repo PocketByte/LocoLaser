@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.pocketbyte.kotlin.gradle.plugin.mpp_publish.upperFirstChar
 import ru.pocketbyte.kotlin_mpp.plugin.publish.registerPlatformDependentPublishingTasks
 
@@ -7,6 +8,11 @@ plugins {
     id("com.android.library")
     id("maven-publish")
     id("signing")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 android {
@@ -34,6 +40,7 @@ android {
 }
 
 kotlin {
+
     jvm()
     ios()
     iosSimulatorArm64()
@@ -68,6 +75,14 @@ kotlin {
             dependsOn(commonTest)
         }
 
+        val iosMain by getting {
+            dependsOn(commonMain)
+        }
+
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+
 //        val jsMain by getting {
 //            dependsOn(commonMain)
 //            dependencies {
@@ -76,6 +91,12 @@ kotlin {
 //        }
     }
     jvmToolchain(8)
+}
+
+tasks.withType(KotlinCompile::class.java).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 val javadocJar by tasks.registering(Jar::class) {

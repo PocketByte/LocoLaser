@@ -16,16 +16,16 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        def localaserVersion = "2.3.0-alpha"
-        classpath "ru.pocketbyte.locolaser:plugin:$localaserVersion"
-        classpath "ru.pocketbyte.locolaser:core:$localaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-gettext:$localaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-googlesheet:$localaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-ini:$localaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-json:$localaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-kotlin-mpp:$localaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-mobile:$localaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-properties:$localaserVersion"
+        def locolaserVersion = "2.3.0-alpha2"
+        classpath "ru.pocketbyte.locolaser:plugin:$locolaserVersion"
+        classpath "ru.pocketbyte.locolaser:core:$locolaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-gettext:$locolaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-googlesheet:$locolaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-ini:$locolaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-json:$locolaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-kotlin-mpp:$locolaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-mobile:$locolaserVersion"
+        classpath "ru.pocketbyte.locolaser:resource-properties:$locolaserVersion"
     }
 }
 

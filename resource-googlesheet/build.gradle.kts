@@ -1,4 +1,5 @@
 @file:Suppress("UnstableApiUsage")
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
@@ -6,6 +7,11 @@ plugins {
     id("org.jetbrains.kotlin.jvm")
     id("maven-publish")
     id("signing")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
@@ -75,6 +81,12 @@ tasks {
     findByName("processResources")?.finalizedBy(copyAppProperties)
     findByName("jar")?.dependsOn(copyAppProperties)
     findByName("test")?.dependsOn(copyAppProperties)
+}
+
+tasks.withType(KotlinCompile::class.java).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 publishing {
