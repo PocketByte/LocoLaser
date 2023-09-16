@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import kotlin.collections.listOf
 
 plugins {
-    id("kotlin")
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "1.2.0"
     id("maven-publish")
@@ -15,10 +14,14 @@ java {
 }
 
 dependencies {
-    implementation(gradleApi())
-    implementation(localGroovy())
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    api(project(":core"))
+    api(project(":plugin"))
+    api(project(":resource-gettext"))
+    api(project(":resource-googlesheet"))
+    api(project(":resource-ini"))
+    api(project(":resource-json"))
+    api(project(":resource-kotlin-mpp"))
+    api(project(":resource-mobile"))
+    api(project(":resource-properties"))
 }
 
 tasks.withType(KotlinCompile::class.java).all {
@@ -31,13 +34,12 @@ gradlePlugin {
     website.set("https://github.com/PocketByte/LocoLaser/")
     vcsUrl.set("https://github.com/PocketByte/LocoLaser/")
     plugins {
-        create("locolaserPlugin") {
-            id = "ru.pocketbyte.locolaser"
+        create("locolaserAllPlugin") {
+            id = "ru.pocketbyte.locolaser.all"
             implementationClass = "ru.pocketbyte.locolaser.plugin.LocoLaserPlugin"
-            displayName = "Minimalistic Plugin for LocoLaser"
+            displayName = "Plugin for LocoLaser"
             description =
-                "Plugin for LocoLaser without any dependency. " +
-                "You should provide all necessary dependencies manually."
+                "Extended Plugin for LocoLaser that also attaches all known dependencies."
             tags.set(listOf("localization", "tool"))
         }
     }

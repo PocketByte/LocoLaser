@@ -17,11 +17,9 @@ java {
 
 android {
     compileSdk = AndroidSdk.compile
-    buildToolsVersion = BuildVersion.androidTool
 
     defaultConfig {
         minSdk = AndroidSdk.min
-        targetSdk = AndroidSdk.target
     }
 
     compileOptions {
@@ -47,6 +45,10 @@ kotlin {
 
     android {
         publishLibraryVariants("release")
+    }
+
+    js(IR) {
+        browser()
     }
 
     sourceSets {
@@ -83,12 +85,9 @@ kotlin {
             dependsOn(iosMain)
         }
 
-//        val jsMain by getting {
-//            dependsOn(commonMain)
-//            dependencies {
-//                api("ru.pocketbyte.locolaser:i18next-externals:1.0")
-//            }
-//        }
+        val jsMain by getting {
+            dependsOn(commonMain)
+        }
     }
     jvmToolchain(8)
 }
