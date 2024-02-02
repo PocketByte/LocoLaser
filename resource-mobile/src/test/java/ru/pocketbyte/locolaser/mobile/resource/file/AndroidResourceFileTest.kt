@@ -71,7 +71,7 @@ class AndroidResourceFileTest {
                 TemplateStr.XML_DECLARATION + "\r\n" +
                         TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                         "<resources>\r\n" +
-                        "    /* Comment */\r\n" +
+                        "    <!-- Comment -->\r\n" +
                         "    <string name=\"string1\">Value1</string>\r\n" +
                         "    <string name=\"string2\">Value2</string>\r\n" +
                         "\r\n" +
@@ -85,7 +85,7 @@ class AndroidResourceFileTest {
 
         val expectedMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("string1", arrayOf(ResValue("Value1", null, Quantity.OTHER))))
+        resLocale.put(prepareResItem("string1", arrayOf(ResValue("Value1", "Comment", Quantity.OTHER))))
         resLocale.put(prepareResItem("string2", arrayOf(ResValue("Value2", null, Quantity.OTHER))))
         resLocale.put(prepareResItem("string3", arrayOf(ResValue("Value 3", null, Quantity.OTHER))))
         expectedMap[testLocale] = resLocale
@@ -101,7 +101,7 @@ class AndroidResourceFileTest {
                 TemplateStr.XML_DECLARATION + "\r\n" +
                         TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                         "<resources>\r\n" +
-                        "    /* Comment */\r\n" +
+                        "    <!-- Comment -->\r\n" +
                         "    <string name=\"string1\">Value1 %1\$s</string>\r\n" +
                         "    <string name=\"string2\">Value2 %.2f</string>\r\n" +
                         "    <string name=\"string3\">Value 3</string>\r\n" +
@@ -115,7 +115,7 @@ class AndroidResourceFileTest {
         val expectedMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("string1", arrayOf(
-            ResValue("Value1 %1\$s", null, Quantity.OTHER, JavaFormattingType,
+            ResValue("Value1 %1\$s", "Comment", Quantity.OTHER, JavaFormattingType,
                 listOf(FormattingArgument(null, 1, parameters("s", "")))))))
         resLocale.put(prepareResItem("string2", arrayOf(
             ResValue("Value2 %.2f", null, Quantity.OTHER, JavaFormattingType,
@@ -135,7 +135,7 @@ class AndroidResourceFileTest {
                 (TemplateStr.XML_DECLARATION + "\r\n" +
                         TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                         "<resources>\r\n" +
-                        "    /* Comment */\r\n" +
+                        "    <!-- Comment -->\r\n" +
                         "    <plurals name=\"string1\">\r\n" +
                         "        <item quantity=\"other\">String</item>\r\n" +
                         "        <item quantity=\"one\">String one</item>\r\n" +
@@ -144,7 +144,7 @@ class AndroidResourceFileTest {
                         "    <string name=\"string2\">Value2</string>\r\n" +
                         "\r\n" +
                         "    <plurals name=\"string3\">\r\n" +
-                        "        /* Comment */\r\n" +
+                        "        <!-- Comment -->\r\n" +
                         "        <item quantity=\"other\">String 3</item>\r\n" +
                         "        <item quantity=\"few\">String 3 few</item>\r\n" +
                         "        <item quantity=\"zero\">String 3 zero</item>\r\n" +
@@ -159,13 +159,13 @@ class AndroidResourceFileTest {
         val expectedMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("string1", arrayOf(
-                ResValue("String", null, Quantity.OTHER),
+                ResValue("String", "Comment", Quantity.OTHER),
                 ResValue("String one", null, Quantity.ONE),
                 ResValue("String two", null, Quantity.TWO))))
         resLocale.put(prepareResItem("string2", arrayOf(
                 ResValue("Value2", null, Quantity.OTHER))))
         resLocale.put(prepareResItem("string3", arrayOf(
-                ResValue("String 3", null, Quantity.OTHER),
+                ResValue("String 3", "Comment", Quantity.OTHER),
                 ResValue("String 3 few", null, Quantity.FEW),
                 ResValue("String 3 zero", null, Quantity.ZERO))))
         expectedMap[testLocale] = resLocale
@@ -181,14 +181,14 @@ class AndroidResourceFileTest {
                 (TemplateStr.XML_DECLARATION + "\r\n" +
                         TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                         "<resources>\r\n" +
-                        "    /* Comment */\r\n" +
+                        "    <!-- Comment -->\r\n" +
                         "    <plurals name=\"string1\">\r\n" +
                         "        <item quantity=\"other\">String %d</item>\r\n" +
                         "        <item quantity=\"one\">String one</item>\r\n" +
                         "        <item quantity=\"two\">String two</item>\r\n" +
                         "    </plurals>\r\n" +
                         "    <plurals name=\"string3\">\r\n" +
-                        "        /* Comment */\r\n" +
+                        "        <!-- Comment -->\r\n" +
                         "        <item quantity=\"other\">String 3 %d</item>\r\n" +
                         "        <item quantity=\"few\">String 3 few %d</item>\r\n" +
                         "        <item quantity=\"zero\">String 3 zero</item>\r\n" +
@@ -203,12 +203,12 @@ class AndroidResourceFileTest {
         val expectedMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("string1", arrayOf(
-            ResValue("String %d", null, Quantity.OTHER, JavaFormattingType,
+            ResValue("String %d", "Comment", Quantity.OTHER, JavaFormattingType,
                 listOf(FormattingArgument(null, null, parameters("d", "")))),
             ResValue("String one", null, Quantity.ONE, NoFormattingType, null),
             ResValue("String two", null, Quantity.TWO, NoFormattingType, null))))
         resLocale.put(prepareResItem("string3", arrayOf(
-            ResValue("String 3 %d", null, Quantity.OTHER, JavaFormattingType,
+            ResValue("String 3 %d", "Comment", Quantity.OTHER, JavaFormattingType,
                 listOf(FormattingArgument(null, null, parameters("d", "")))),
             ResValue("String 3 few %d", null, Quantity.FEW, JavaFormattingType,
                 listOf(FormattingArgument(null, null, parameters("d", "")))),
@@ -226,13 +226,13 @@ class AndroidResourceFileTest {
                 TemplateStr.XML_DECLARATION + "\r\n" +
                         TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                         "<resources>\r\n" +
-                        "    /* Comment */\r\n" +
+                        "    <!-- Comment -->\r\n" +
                         "    <string name=\"string1\" formatted=\"true\">Value1</string>\r\n" +
                         "    <string name=\"string2\" formatted=\"false\">Value2</string>\r\n" +
                         "    <string name=\"string3\">Value3</string>\r\n" +
                         "\r\n" +
                         "    <plurals name=\"string4\">\r\n" +
-                        "        /* Comment */\r\n" +
+                        "        <!-- Comment -->\r\n" +
                         "        <item quantity=\"other\" formatted=\"true\">String 4</item>\r\n" +
                         "        <item quantity=\"few\" formatted=\"false\">String 4 few</item>\r\n" +
                         "        <item quantity=\"zero\">String 4 zero</item>\r\n" +
@@ -246,13 +246,13 @@ class AndroidResourceFileTest {
 
         val expectedMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("string1", arrayOf(ResValue("Value1", null, Quantity.OTHER,
+        resLocale.put(prepareResItem("string1", arrayOf(ResValue("Value1", "Comment", Quantity.OTHER,
                 meta = mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_ON))))))
         resLocale.put(prepareResItem("string2", arrayOf(ResValue("Value2", null, Quantity.OTHER,
                 meta = mapOf(Pair(AndroidResourceFile.META_FORMATTED, AndroidResourceFile.META_FORMATTED_OFF))))))
         resLocale.put(prepareResItem("string3", arrayOf(ResValue("Value3", null, Quantity.OTHER))))
         resLocale.put(prepareResItem("string4", arrayOf(
-                ResValue("String 4", null, Quantity.OTHER),
+                ResValue("String 4", "Comment", Quantity.OTHER),
                 ResValue("String 4 few", null, Quantity.FEW),
                 ResValue("String 4 zero", null, Quantity.ZERO))))
 
@@ -260,6 +260,35 @@ class AndroidResourceFileTest {
 
         assertEquals(expectedMap, resMap)
 
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteAndRead() {
+        val testLocale = "ru"
+        val redundantLocale = "base"
+
+        val resMap = ResMap()
+
+        val resLocale1 = ResLocale()
+        resLocale1.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
+        resLocale1.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
+        resMap[testLocale] = resLocale1
+
+        // Redundant locale. Shouldn't be written into file.
+        val resLocale2 = ResLocale()
+        resLocale2.put(prepareResItem("key1", arrayOf(ResValue("value1_2", null, Quantity.OTHER))))
+        resLocale2.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
+        resMap[redundantLocale] = resLocale2
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = AndroidResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = ResMap()
+        expectedResult[testLocale] = resLocale1
+
+        assertEquals(expectedResult, resourceFile.read(null))
     }
 
     @Test
@@ -288,9 +317,9 @@ class AndroidResourceFileTest {
         val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
-                "    /* Comment */\r\n" +
+                "    <!-- Comment -->\r\n" +
                 "    <string name=\"key1\">value1_1</string>\r\n" +
-                "    /* value2_1 */\r\n" +
+                "    <!-- value2_1 -->\r\n" +
                 "    <string name=\"key2\">value2_1</string>\r\n" +
                 "</resources>")
 
@@ -379,7 +408,7 @@ class AndroidResourceFileTest {
         val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
-                "    /* Comment */\r\n" +
+                "    <!-- Comment -->\r\n" +
                 "    <string name=\"key1\">value1_1</string>\r\n" +
                 "    <string name=\"key2\">value2_1</string>\r\n" +
                 "</resources>")
@@ -414,12 +443,14 @@ class AndroidResourceFileTest {
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
                 "    <plurals name=\"string1\">\r\n" +
+                "        <!-- Comment -->\r\n" +
                 "        <item quantity=\"other\">String</item>\r\n" +
                 "        <item quantity=\"one\">String one</item>\r\n" +
                 "        <item quantity=\"two\">String two</item>\r\n" +
                 "    </plurals>\r\n" +
                 "    <string name=\"string2\">Value2</string>\r\n" +
                 "    <plurals name=\"string3\">\r\n" +
+                "        <!-- Comment -->\r\n" +
                 "        <item quantity=\"other\">String 3</item>\r\n" +
                 "        <item quantity=\"few\">String 3 few</item>\r\n" +
                 "        <item quantity=\"zero\">String 3 zero</item>\r\n" +
@@ -459,11 +490,13 @@ class AndroidResourceFileTest {
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
                 "    <plurals name=\"string1\">\r\n" +
+                "        <!-- Comment -->\r\n" +
                 "        <item quantity=\"other\">String %s</item>\r\n" +
                 "        <item quantity=\"one\">String one</item>\r\n" +
                 "        <item quantity=\"two\">String two</item>\r\n" +
                 "    </plurals>\r\n" +
                 "    <plurals name=\"string3\">\r\n" +
+                "        <!-- Comment -->\r\n" +
                 "        <item quantity=\"other\">String 3 %d.</item>\r\n" +
                 "        <item quantity=\"few\">String %d few</item>\r\n" +
                 "        <item quantity=\"zero\">String 3 zero</item>\r\n" +
@@ -492,7 +525,7 @@ class AndroidResourceFileTest {
         val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
-                "    /* Comment */\r\n" +
+                "    <!-- Comment -->\r\n" +
                 "    <string name=\"key1\"><![CDATA[value1_1]]></string>\r\n" +
                 "</resources>")
 
@@ -529,9 +562,9 @@ class AndroidResourceFileTest {
         val expectedResult = (TemplateStr.XML_DECLARATION + "\r\n" +
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
-                "    /* Comment */\r\n" +
+                "    <!-- Comment -->\r\n" +
                 "    <string name=\"key1\" formatted=\"true\">value1</string>\r\n" +
-                "    /* Comment 2 */\r\n" +
+                "    <!-- Comment 2 -->\r\n" +
                 "    <string name=\"key2\" formatted=\"false\">value2</string>\r\n" +
                 "    <plurals name=\"key3\">\r\n" +
                 "        <item quantity=\"one\">value3 1</item>\r\n" +
@@ -567,6 +600,7 @@ class AndroidResourceFileTest {
                 TemplateStr.GENERATED_XML_COMMENT + "\r\n\r\n" +
                 "<resources>\r\n" +
                 "    <plurals name=\"string1\">\r\n" +
+                "        <!-- Comment -->\r\n" +
                 "        <item quantity=\"other\"><![CDATA[String]]></item>\r\n" +
                 "        <item quantity=\"one\"><![CDATA[String one]]></item>\r\n" +
                 "        <item quantity=\"two\">String two</item>\r\n" +

@@ -5,13 +5,11 @@
 
 package ru.pocketbyte.locolaser.mobile.resource.file
 
-import org.xml.sax.Attributes
-import org.xml.sax.SAXException
-import org.xml.sax.helpers.DefaultHandler
-import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.duplicateComments
-import ru.pocketbyte.locolaser.mobile.utils.TemplateStr
+import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.mobile.utils.TemplateStr.GENERATED_COMMENT_STRINGS
+import ru.pocketbyte.locolaser.mobile.utils.TemplateStr.GENERATED_NEW_LINE
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
@@ -19,9 +17,18 @@ import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
-import javax.xml.parsers.ParserConfigurationException
-import javax.xml.parsers.SAXParserFactory
+import javax.xml.namespace.QName
+import javax.xml.stream.XMLInputFactory
+import javax.xml.stream.XMLOutputFactory
+import javax.xml.stream.XMLStreamConstants
+import javax.xml.stream.XMLStreamWriter
+import javax.xml.stream.events.Characters
+import javax.xml.stream.events.Comment
+import javax.xml.stream.events.EndElement
+import javax.xml.stream.events.StartElement
 
 /**
  * ResourceFile implementation for Android platform.
@@ -31,18 +38,6 @@ import javax.xml.parsers.SAXParserFactory
 class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStreamFile(file) {
 
     companion object {
-
-        private fun convertToFileURL(file: File): String {
-            var path = file.absolutePath
-            if (File.separatorChar != '/') {
-                path = path.replace(File.separatorChar, '/')
-            }
-
-            if (!path.startsWith("/")) {
-                path = "/$path"
-            }
-            return "file:$path"
-        }
 
         private fun escapeComment(string: String): String {
             return string
@@ -78,6 +73,8 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
             return result
         }
 
+        public const val INDENT = "    "
+
         public const val META_CDATA = "xml-cdata"
         public const val META_CDATA_ON = "true"
 
@@ -85,199 +82,339 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
         public const val META_FORMATTED_ON = "true"
         public const val META_FORMATTED_OFF = "false"
 
-        public const val XML_CDATA_PREFIX = "<![CDATA["
-        public const val XML_CDATA_POSTFIX = "]]>"
+        public const val ELEMENT_RESOURCES = "resources"
+        public const val ELEMENT_STRING = "string"
+        public const val ELEMENT_PLURALS_ITEM = "item"
+        public const val ELEMENT_PLURALS = "plurals"
+
+        public const val ATTRIBUTE_FORMATTED = "formatted"
+        public const val ATTRIBUTE_NAME = "name"
+        public const val ATTRIBUTE_QUANTITY = "quantity"
     }
 
     override val formattingType: FormattingType = JavaFormattingType
 
     override fun read(extraParams: ExtraParams?): ResMap? {
-        if (file.exists()) {
-            val handler = AndroidXmlFileParser()
-            val spf = SAXParserFactory.newInstance()
-            try {
-                val saxParser = spf.newSAXParser()
-                val xmlReader = saxParser.xmlReader
-                xmlReader.contentHandler = handler
-                xmlReader.parse(convertToFileURL(file))
-
-            } catch (e: ParserConfigurationException) {
-                e.printStackTrace()
-            } catch (e: SAXException) {
-                e.printStackTrace()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
-            val resMap = ResMap()
-            resMap[mLocale] = handler.map
-            return resMap
+        if (file.exists().not()) {
+            return null
         }
-        return null
+
+        val resBuilder = ResBuilder()
+        val reader = XMLInputFactory.newInstance()
+            .createXMLEventReader(FileInputStream(file))
+
+        while (reader.hasNext()) {
+            val event = reader.nextEvent()
+
+            when (event.eventType) {
+                XMLStreamConstants.START_DOCUMENT -> {
+                    resBuilder.onStartDocument()
+                }
+                XMLStreamConstants.END_DOCUMENT -> {
+                    resBuilder.onEndDocument()
+                }
+                XMLStreamConstants.START_ELEMENT -> {
+                    resBuilder.onStartElement(event.asStartElement())
+                }
+                XMLStreamConstants.END_ELEMENT -> {
+                    resBuilder.onEndElement(event.asEndElement())
+                }
+                XMLStreamConstants.CHARACTERS -> {
+                    resBuilder.onCharacters(event.asCharacters())
+                }
+                XMLStreamConstants.COMMENT -> {
+                    resBuilder.onComment((event as Comment).text.trim())
+                }
+                XMLStreamConstants.SPACE -> {
+                    resBuilder.onSpace()
+                }
+                else -> {
+                    // Do nothing
+                }
+            }
+        }
+
+        reader.close()
+
+        return resBuilder.build()
     }
 
     @Throws(IOException::class)
     override fun write(resMap: ResMap, extraParams: ExtraParams?) {
-        open()
-        writeStringLn(TemplateStr.XML_DECLARATION)
-        writeStringLn(TemplateStr.GENERATED_XML_COMMENT)
-        writeln()
-        writeStringLn("<resources>")
+        file.parentFile.mkdirs()
+
+        val writer = XMLOutputFactory.newInstance().createXMLStreamWriter(FileOutputStream(file))
+
+        writer.writeStartDocument("utf-8", "1.0")
+        writer.writeNewLine()
+
+        GENERATED_COMMENT_STRINGS.forEach {
+            writer.writeComment(" $it ")
+            writer.writeNewLine()
+        }
+
+        writer.writeNewLine()
+        writer.writeStartElement(ELEMENT_RESOURCES)
 
         val items = resMap[mLocale]
 
+        var indentLevel = 1
         items?.keys?.forEach { key ->
             val resItem = items[key]
             if (resItem != null) {
-
+                writer.writeNewLine(indentLevel)
                 if (!resItem.isHasQuantities) {
                     val resValue = formattingType.convert(resItem.values[0])
                     val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
-                    val comment = resValue.comment
                     val value = resValue.value
-                    if (comment != null && (extraParams == null || extraParams.duplicateComments || comment != value)) {
-                        writeString("    /* ")
-                        writeString(escapeComment(comment))
-                        writeStringLn(" */")
+                    val comment = resValue.comment
+
+                    val writeComment = extraParams?.duplicateComments != false || comment != value
+                    if (comment != null && writeComment) {
+                        writer.writeComment(" $comment ")
+                        writer.writeNewLine(indentLevel)
                     }
 
-                    writeString("    <string name=\"")
-                    writeString(resItem.key.trim { it <= ' ' })
-                    writeString("\"")
+                    writer.writeStartElement(ELEMENT_STRING)
+                    writer.writeAttribute(ATTRIBUTE_NAME, resItem.key.trim { it <= ' ' })
+                    writer.writeAttributes(resValue)
 
-                    when(resValue.meta?.get(META_FORMATTED)) {
-                        META_FORMATTED_ON -> writeString(" formatted=\"true\"")
-                        META_FORMATTED_OFF -> writeString(" formatted=\"false\"")
-                        else -> { /* Do nothing */ }
+                    if (isCDATA) {
+                        writer.writeCData(toPlatformValue(value))
+                    } else {
+                        writer.writeCharacters(toPlatformValue(value))
                     }
 
-                    writeString(">")
-
-                    if (isCDATA) writeString(XML_CDATA_PREFIX)
-                    writeString(toPlatformValue(value))
-                    if (isCDATA) writeString(XML_CDATA_POSTFIX)
-                    writeStringLn("</string>")
+                    writer.writeEndElement()
                 } else {
-                    writeString("    <plurals name=\"")
-                    writeString(resItem.key.trim { it <= ' ' })
-                    writeStringLn("\">")
+                    writer.writeStartElement(ELEMENT_PLURALS)
+                    writer.writeAttribute(ATTRIBUTE_NAME, resItem.key.trim { it <= ' ' })
 
+                    indentLevel += 1
                     resItem.values.forEach {
+                        writer.writeNewLine(indentLevel)
                         val resValue = formattingType.convert(it)
                         val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
+                        val value = resValue.value
+                        val comment = resValue.comment
 
-                        writeString("        <item quantity=\"")
-                        writeString(resValue.quantity.toString())
-                        writeString("\">")
-                        if (isCDATA) writeString(XML_CDATA_PREFIX)
-                        writeString(toPlatformValue(resValue.value))
-                        if (isCDATA) writeString(XML_CDATA_POSTFIX)
-                        writeStringLn("</item>")
+                        val writeComment = extraParams?.duplicateComments != false || comment != value
+                        if (comment != null && writeComment) {
+                            writer.writeComment(" $comment ")
+                            writer.writeNewLine(indentLevel)
+                        }
+
+                        writer.writeStartElement(ELEMENT_PLURALS_ITEM)
+                        writer.writeAttribute(ATTRIBUTE_QUANTITY, resValue.quantity.toString())
+
+                        if (isCDATA) {
+                            writer.writeCData(toPlatformValue(value))
+                        } else {
+                            writer.writeCharacters(toPlatformValue(value))
+                        }
+
+                        writer.writeEndElement()
                     }
-                    writeStringLn("    </plurals>")
+                    indentLevel -= 1
+                    writer.writeNewLine(indentLevel)
+                    writer.writeEndElement()
                 }
             }
         }
 
-        writeString("</resources>")
-        close()
+        writer.writeNewLine()
+        writer.writeEndElement()
+        writer.writeEndDocument()
+
+        writer.flush()
+        writer.close()
     }
 
-    private fun ResItem.addValue(
-        value: String,
-        comment: String?,
-        quantity: Quantity = Quantity.OTHER,
-        meta: Map<String, String>? = null
-    ) {
-        val formattingArguments = formattingType.argumentsFromValue(value)
-        val formattingType = if (formattingArguments?.isEmpty() != false) NoFormattingType else formattingType
-        this.addValue(ResValue(value, comment, quantity, formattingType, formattingArguments, meta))
-    }
-
-    private inner class AndroidXmlFileParser : DefaultHandler() {
+    private inner class ResBuilder {
         val map: ResLocale = ResLocale()
 
-        private var mItem: ResItem? = null
-        private var isPlural: Boolean = false
-        private var mQuantity: Quantity? = null
-        private var mValue: StringBuilder? = null
-        private var mComment: String? = null //TODO comments not work
-        private var mMetaData: Map<String, String>? = null
+        private var activeItem: ResItem? = null
+        private var isActivePlural: Boolean = false
+        private var activeQuantity: Quantity? = null
+        private var activeValue: StringBuilder? = null
+        private var activeComment: String? = null
+        private var activeMetaData: Map<String, String>? = null
 
-        @Throws(SAXException::class)
-        override fun startDocument() { }
+        private var isDocumentStart = false
+        private var isResourcesElement = false
 
-        @Throws(SAXException::class)
-        override fun startElement(uri: String?, localName: String?, qName: String?, attributes: Attributes?) {
-            if ("string" == qName) {
-                mItem = ResItem(attributes!!.getValue("name"))
-                isPlural = false
-                mQuantity = null
-                mMetaData = getMetaFromAttributes(qName, attributes)
-            } else if ("plurals" == qName) {
-                mItem = ResItem(attributes!!.getValue("name"))
-                isPlural = true
-                mQuantity = null
-            } else if (mItem != null && isPlural && "item" == qName) {
-                mQuantity = PluralUtils.quantityFromString(attributes!!.getValue("quantity"))
-                mMetaData = getMetaFromAttributes(qName, attributes)
-            } else {
-                mItem = null
-                isPlural = false
-                mQuantity = null
+        fun build(): ResMap {
+            val resMap = ResMap()
+            resMap[mLocale] = map
+            return resMap
+        }
+
+        fun onStartDocument() {
+            isDocumentStart = true
+        }
+
+        fun onEndDocument() {
+            isDocumentStart = false
+        }
+
+        fun onStartElement(startElement: StartElement) {
+            if (!isDocumentStart) {
+                return
+            }
+
+            val name = startElement.name.localPart
+
+            when {
+                ELEMENT_RESOURCES == name -> {
+                    isResourcesElement = true
+                    activeItem = null
+                    isActivePlural = false
+                    activeQuantity = null
+                    activeComment = null
+                }
+                !isResourcesElement -> {
+                    return
+                }
+                ELEMENT_STRING == name -> {
+                    activeItem = ResItem(
+                        startElement.getAttributeValue(ATTRIBUTE_NAME) ?: return
+                    )
+                    isActivePlural = false
+                    activeQuantity = null
+                    activeMetaData = getMetaFromAttributes(startElement)
+                }
+                ELEMENT_PLURALS == name -> {
+                    activeItem = ResItem(
+                        startElement.getAttributeValue(ATTRIBUTE_NAME) ?: return
+                    )
+                    isActivePlural = true
+                    activeQuantity = null
+                }
+                ELEMENT_PLURALS_ITEM == name && activeItem != null && isActivePlural -> {
+                    activeQuantity = PluralUtils.quantityFromString(
+                        startElement.getAttributeValue(ATTRIBUTE_QUANTITY)
+                    )
+                    activeMetaData = getMetaFromAttributes(startElement)
+                }
+                else -> {
+                    activeItem = null
+                    isActivePlural = false
+                    activeQuantity = null
+                    activeComment = null
+                }
             }
         }
 
-        @Throws(SAXException::class)
-        override fun characters(ch: CharArray?, start: Int, length: Int) {
-            if (mItem != null && (!isPlural || mQuantity != null)) {
-                if (mValue == null)
-                    mValue = StringBuilder()
-                mValue!!.append(fromPlatformValue(String(ch!!, start, length)))
+        fun onCharacters(characters: Characters) {
+            if (activeItem != null && (!isActivePlural || activeQuantity != null)) {
+                if (activeValue == null)
+                    activeValue = StringBuilder()
+                activeValue?.append(fromPlatformValue(characters.data))
             }
         }
 
-        @Throws(SAXException::class)
-        override fun endElement(uri: String?, localName: String?, qName: String?) {
-            val item = mItem
-            val value = mValue
-
-            if (item != null && value != null && "string" == qName) {
-                item.addValue(mValue!!.toString(), mComment, meta = mMetaData)
-                map.put(item)
-                mItem = null
-                mMetaData = null
-            } else if (item != null && value != null && "item" == qName && isPlural) {
-                item.addValue(value.toString(), mComment, mQuantity ?: Quantity.OTHER, meta = mMetaData)
-                mMetaData = null
-            } else if (item != null && "plurals" == qName && isPlural) {
-                map.put(item)
-                mItem = null
+        fun onEndElement(endElement: EndElement) {
+            if (!isDocumentStart || !isResourcesElement) {
+                return
             }
 
-            mValue = null
-            mComment = null
-            mQuantity = null
+            val item = activeItem
+            val value = activeValue
+
+            val name = endElement.name.localPart
+
+            when {
+                ELEMENT_RESOURCES == name -> {
+                    isResourcesElement = false
+                }
+                ELEMENT_STRING == name && item != null && value != null -> {
+                    item.addValue(value.toString(), activeComment, meta = activeMetaData)
+                    map.put(item)
+                    activeItem = null
+                    activeMetaData = null
+                }
+                ELEMENT_PLURALS_ITEM == name && item != null && value != null && isActivePlural -> {
+                    item.addValue(value.toString(), activeComment, activeQuantity, activeMetaData)
+                    activeMetaData = null
+                }
+                ELEMENT_PLURALS == name && item != null && isActivePlural -> {
+                    map.put(item)
+                    activeItem = null
+                }
+            }
+
+            activeValue = null
+            activeComment = null
+            activeQuantity = null
         }
 
-        private fun getMetaFromAttributes(qName: String?, attributes: Attributes?): Map<String, String>? {
-            if (attributes == null)
+        fun onComment(comment: String) {
+            activeComment = comment
+        }
+
+        fun onSpace() {
+            activeComment = null
+        }
+
+        private fun getMetaFromAttributes(startElement: StartElement): Map<String, String>? {
+            if (startElement.attributes.hasNext().not())
                 return null
 
             val map = mutableMapOf<String, String>()
 
-            if (qName == "string") {
-                val formatted = when (attributes.getValue("formatted")) {
-                    "true" -> META_FORMATTED_ON
-                    "false" -> META_FORMATTED_OFF
-                    else -> null
-                }
+            if (startElement.name.localPart == ELEMENT_STRING) {
+                val formatted = startElement.getAttributeValue(ATTRIBUTE_FORMATTED)
 
-                if (formatted != null)
+                if (!formatted.isNullOrBlank())
                     map[META_FORMATTED] = formatted
             }
 
-            return if (map.isNotEmpty()) map else null
+            return map.ifEmpty { null }
+        }
+
+        private fun ResItem.addValue(
+            value: String,
+            comment: String?,
+            quantity: Quantity? = null,
+            meta: Map<String, String>? = null
+        ) {
+            val formattingArguments = formattingType.argumentsFromValue(value)
+            val formattingType = if (formattingArguments?.isEmpty() != false) {
+                NoFormattingType
+            } else {
+                formattingType
+            }
+            this.addValue(
+                ResValue(
+                    value = value,
+                    comment = comment,
+                    quantity = quantity ?: Quantity.OTHER,
+                    formattingType = formattingType,
+                    formattingArguments = formattingArguments,
+                    meta = meta
+                )
+            )
         }
     }
+}
+
+private fun StartElement.getAttributeValue(name: String): String? {
+    return getAttributeByName(QName.valueOf(name))?.value
+}
+
+private fun XMLStreamWriter.writeAttributes(resValue: ResValue) {
+    resValue.meta?.get(AndroidResourceFile.META_FORMATTED)?.let {
+        writeAttribute(AndroidResourceFile.ATTRIBUTE_FORMATTED, it)
+    }
+}
+
+private fun XMLStreamWriter.writeIndents(count: Int) {
+    for (i in 0 until count) {
+        writeCharacters(AndroidResourceFile.INDENT)
+    }
+}
+
+private fun XMLStreamWriter.writeNewLine(indent: Int = 0) {
+    writeCharacters(GENERATED_NEW_LINE)
+    writeIndents(indent)
 }
