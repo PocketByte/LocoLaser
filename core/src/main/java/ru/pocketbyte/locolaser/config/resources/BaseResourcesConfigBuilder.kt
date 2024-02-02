@@ -1,36 +1,33 @@
 package ru.pocketbyte.locolaser.config.resources
 
-open class BaseResourcesConfigBuilder<T : BaseResourcesConfig>(
-    protected val config: T
-) : ResourcesConfigBuilder<T> {
+abstract class BaseResourcesConfigBuilder<out T : BaseResourcesConfig> : ResourcesConfigBuilder<T> {
+
+    protected abstract fun buildConfig(
+        resourceName: String?,
+        resourcesDir: String?,
+        resourceFileProvider: ResourceFileProvider?,
+        filter: ((key: String) -> Boolean)?,
+    ) : T
 
     /**
      * Resource name or null if should be used default name.
      */
-    open var resourceName: String
-        get() = config.resourceName
-        set(value) { config.resourceName = value }
+    open var resourceName: String? = null
 
     /**
-     * Resource directory.
+     * Resource directory path or null if should be used default.
      */
-    open var resourcesDir: String?
-        get() = config.resourcesDirPath
-        set(value) { config.resourcesDirPath = value }
+    open var resourcesDir: String? = null
 
     /**
      * ResourceFileProvider provides resource File depending on locale, directory and name.
      */
-    open var resourceFileProvider: ResourceFileProvider
-        get() = config.resourceFileProvider
-        set(value) { config.resourceFileProvider = value }
+    open var resourceFileProvider: ResourceFileProvider? = null
 
     /**
      * Filter function. If defined, only strings that suits the filter will be written into resource.
      */
-    var filter: ((key: String) -> Boolean)?
-        get() = config.filter
-        set(value) { config.filter = value }
+    var filter: ((key: String) -> Boolean)? = null
 
     /**
      * If defined, only strings with keys that matches RegExp will be written into resource.
@@ -40,7 +37,7 @@ open class BaseResourcesConfigBuilder<T : BaseResourcesConfig>(
         filter = BaseResourcesConfig.regExFilter(regExp)
     }
 
-    override fun build(): T {
-        return config
+    final override fun build(): T {
+        return buildConfig(resourceName, resourcesDir, resourceFileProvider, filter)
     }
 }

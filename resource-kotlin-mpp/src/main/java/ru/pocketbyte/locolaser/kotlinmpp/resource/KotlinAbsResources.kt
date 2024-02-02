@@ -5,7 +5,7 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.resource.AbsResources
 import java.io.File
 
-abstract class AbsKotlinResources(
+abstract class KotlinAbsResources(
     dir: File,
     name: String,
     resourceFileProvider: ResourceFileProvider,

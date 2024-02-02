@@ -5,13 +5,13 @@
 
 package ru.pocketbyte.locolaser.json.parser
 
-import ru.pocketbyte.locolaser.json.JsonResourcesConfig
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.PLATFORM
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
+import ru.pocketbyte.locolaser.json.JsonResourcesConfig
+import ru.pocketbyte.locolaser.json.JsonResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getLong
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 
@@ -26,6 +26,7 @@ class JsonResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
         const val RESOURCES_DIR = "res_dir"
         const val INDENT = "indent"
         const val FILTER = "filter"
+        const val KEY_PLURALIZATION_RULE = "key_pluralization_rule"
     }
 
     @Throws(InvalidConfigException::class)
@@ -33,18 +34,18 @@ class JsonResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
         if (resourceObject is String) {
             if (checkType(resourceObject, throwIfWrongType))
-                return JsonResourcesConfig()
+                return JsonResourcesConfigBuilder().build()
         } else if (resourceObject is JSONObject) {
 
             if (checkType(getString(resourceObject, ResourcesConfigParser.RESOURCE_TYPE, PLATFORM, true), throwIfWrongType)) {
-                val platform = JsonResourcesConfig()
+                val platform = JsonResourcesConfigBuilder()
 
                 getString(resourceObject, RESOURCE_NAME, PLATFORM, false)?.let {
                     platform.resourceName = it
                 }
 
                 getString(resourceObject, RESOURCES_DIR, PLATFORM, false)?.let {
-                    platform.resourcesDirPath = it
+                    platform.resourcesDir = it
                 }
 
                 platform.filter = BaseResourcesConfig.regExFilter(
@@ -54,7 +55,7 @@ class JsonResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
                     platform.indent = it.toInt()
                 }
 
-                return platform
+                return platform.build()
             }
         }
 

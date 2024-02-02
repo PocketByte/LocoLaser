@@ -1,7 +1,6 @@
 package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 
 import com.squareup.kotlinpoet.*
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.entity.Quantity
@@ -16,14 +15,14 @@ import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.anyName
 import java.io.File
 
-open class AbsKeyValuePoetClassResourceFile(
+open class KotlinAbsKeyValueResourceFile(
     file: File,
     className: String,
     classPackage: String,
     private val interfaceName: String?,
     private val interfacePackage: String?,
     formattingType: FormattingType = NoFormattingType
-): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
+): BaseKotlinPoetClassResourceFile(file, className, classPackage, formattingType) {
 
     private val stringProviderClassName by lazy {
         when (formattingType.argumentsSubstitution) {

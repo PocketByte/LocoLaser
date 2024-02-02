@@ -3,7 +3,7 @@
  * Licensed under the Apache License, Version 2.0
  */
 
-package ru.pocketbyte.locolaser.google.sheet
+package ru.pocketbyte.locolaser.google.resource
 
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest
@@ -12,6 +12,7 @@ import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.BaseTableResources
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
@@ -21,10 +22,10 @@ import java.io.IOException
 /**
  * @author Denis Shurygin
  */
-class GoogleSheet(
-        private val sourceConfig: GoogleSheetConfig,
-        private val service: Sheets,
-        override val formattingType: FormattingType
+class GoogleSheetResources(
+    private val sourceConfig: GoogleSheetResourcesConfig,
+    private val service: Sheets,
+    override val formattingType: FormattingType
 ) : BaseTableResources() {
 
     companion object {

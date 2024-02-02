@@ -11,6 +11,7 @@ import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.PLATFORM
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
+import ru.pocketbyte.locolaser.gettext.GetTextResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 
@@ -31,24 +32,24 @@ class GetTextResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> 
 
         if (resourceObject is String) {
             if (checkType(resourceObject, throwIfWrongType))
-                return GetTextResourcesConfig()
+                return GetTextResourcesConfigBuilder().build()
         } else if (resourceObject is JSONObject) {
 
             if (checkType(getString(resourceObject, ResourcesConfigParser.RESOURCE_TYPE, PLATFORM, true), throwIfWrongType)) {
-                val config = GetTextResourcesConfig()
+                val config = GetTextResourcesConfigBuilder()
 
                 getString(resourceObject, RESOURCE_NAME, PLATFORM, false)?.let {
                     config.resourceName = it
                 }
 
                 getString(resourceObject, RESOURCES_DIR, PLATFORM, false)?.let {
-                    config.resourcesDirPath = it
+                    config.resourcesDir = it
                 }
 
                 config.filter = BaseResourcesConfig.regExFilter(
                         getString(resourceObject, FILTER, PLATFORM, false))
 
-                return config
+                return config.build()
             }
         }
 

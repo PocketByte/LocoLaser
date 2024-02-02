@@ -1,5 +1,5 @@
 package ru.pocketbyte.locolaser.config.resources
 
-interface ResourcesConfigBuilder<T : ResourcesConfig> {
+interface ResourcesConfigBuilder<out T : ResourcesConfig> {
     fun build() : T
 }

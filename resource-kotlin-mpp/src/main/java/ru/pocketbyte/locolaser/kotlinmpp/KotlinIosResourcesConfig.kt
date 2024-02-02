@@ -1,11 +1,23 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinIosResources
 
-class KotlinIosResourcesConfig : KotlinBaseImplResourcesConfig() {
+class KotlinIosResourcesConfig(
+    resourceName: String?,
+    resourcesDirPath: String?,
+    interfaceName: String?,
+    filter: ((key: String) -> Boolean)?
+) : KotlinBaseResourcesConfig(
+    resourceName, resourcesDirPath, interfaceName, filter
+) {
 
-    companion object {
+    companion object : ResourcesConfigBuilderFactory<KotlinIosResourcesConfig, KotlinIosResourcesConfigBuilder> {
         const val TYPE = "kotlin-ios"
+
+        override fun getBuilder(): KotlinIosResourcesConfigBuilder {
+            return KotlinIosResourcesConfigBuilder()
+        }
     }
 
     override val type = TYPE

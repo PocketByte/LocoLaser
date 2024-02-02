@@ -6,13 +6,12 @@
 package ru.pocketbyte.locolaser.json.resource
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.json.KeyPluralizationRule
 import ru.pocketbyte.locolaser.json.resource.file.JsonResourceFile
 import ru.pocketbyte.locolaser.resource.AbsResources
-import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 
@@ -24,6 +23,7 @@ class JsonResources(
     fileName: String,
     resourceFileProvider: ResourceFileProvider,
     private val indent: Int,
+    private val pluralKeyRule: KeyPluralizationRule.Postfix,
     filter: ((key: String) -> Boolean)?
 ) : AbsResources(resourcesDir, fileName, resourceFileProvider, filter) {
 
@@ -33,7 +33,11 @@ class JsonResources(
     override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
         val localesArray = locales?.toTypedArray() ?: return null
         return Array(locales.size) { i ->
-            JsonResourceFile(getFileForLocale(localesArray[i]), localesArray[i], indent)
+            JsonResourceFile(
+                getFileForLocale(localesArray[i]),
+                localesArray[i], indent,
+                pluralKeyRule
+            )
         }
     }
 }

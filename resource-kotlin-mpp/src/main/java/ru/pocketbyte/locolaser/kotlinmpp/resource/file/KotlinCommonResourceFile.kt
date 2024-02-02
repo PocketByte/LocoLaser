@@ -18,7 +18,7 @@ class KotlinCommonResourceFile(
     className: String,
     classPackage: String,
     formattingType: FormattingType = JavaFormattingType
-): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
+): BaseKotlinPoetClassResourceFile(file, className, classPackage, formattingType) {
 
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
         return TypeSpec.interfaceBuilder(className)

@@ -1,8 +1,7 @@
-package ru.pocketbyte.locolaser.properties.parser
+package ru.pocketbyte.locolaser.ini.parser
 
 import org.json.simple.JSONObject
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -10,33 +9,33 @@ import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.properties.PropertiesResourceConfig
+import ru.pocketbyte.locolaser.ini.IniResourcesConfig
 import java.io.File
 import java.io.IOException
 import java.util.*
 
-class PropertiesResourceConfigParserTest {
+class IniResourcesConfigParserTest {
 
     @JvmField @Rule
     var tempFolder = TemporaryFolder()
 
-    private lateinit var parser: PropertiesResourceConfigParser
+    private lateinit var parser: IniResourcesConfigParser
     private lateinit var parent: Config
 
     @Before
     @Throws(IOException::class)
     fun init() {
-        parser = PropertiesResourceConfigParser()
+        parser = IniResourcesConfigParser()
         parent = Config(tempFolder.newFolder())
     }
 
     @Test
     @Throws(InvalidConfigException::class)
     fun testFromString() {
-        val config = parser.parse(PropertiesResourceConfig.TYPE, true)
+        val config = parser.parse(IniResourcesConfig.TYPE, true)
             ?: throw NullPointerException()
 
-        assertEquals(PropertiesResourceConfig::class.java, config.javaClass)
+        assertEquals(IniResourcesConfig::class.java, config.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -52,7 +51,7 @@ class PropertiesResourceConfigParserTest {
             ?: throw NullPointerException()
         parent.platform = config
 
-        assertEquals(PropertiesResourceConfig::class.java, config.javaClass)
+        assertEquals(IniResourcesConfig::class.java, config.javaClass)
 
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
@@ -72,11 +71,11 @@ class PropertiesResourceConfigParserTest {
     @Throws(InvalidConfigException::class)
     fun testFromJsonOnlyType() {
         val json = JSONObject()
-        json[ResourcesConfigParser.RESOURCE_TYPE] = PropertiesResourceConfig.TYPE
+        json[ResourcesConfigParser.RESOURCE_TYPE] = IniResourcesConfig.TYPE
         val config = parser.parse(json, true)
             ?: throw NullPointerException()
 
-        assertEquals(PropertiesResourceConfig::class.java, config.javaClass)
+        assertEquals(IniResourcesConfig::class.java, config.javaClass)
     }
 
     @Test(expected = InvalidConfigException::class)
@@ -87,9 +86,9 @@ class PropertiesResourceConfigParserTest {
 
     private fun prepareTestPlatformJson(): JSONObject {
         val json = JSONObject()
-        json[ResourcesConfigParser.RESOURCE_TYPE] = PropertiesResourceConfig.TYPE
-        json[PropertiesResourceConfigParser.RESOURCE_NAME] = "test_res"
-        json[PropertiesResourceConfigParser.RESOURCES_DIR] = "test_res_dir"
+        json[ResourcesConfigParser.RESOURCE_TYPE] = IniResourcesConfig.TYPE
+        json[IniResourcesConfigParser.RESOURCE_NAME] = "test_res"
+        json[IniResourcesConfigParser.RESOURCES_DIR] = "test_res_dir"
         return json
     }
 }

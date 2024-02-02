@@ -5,11 +5,12 @@ import ru.pocketbyte.locolaser.config.parser.ConfigParser
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.ini.IniResourceConfig
+import ru.pocketbyte.locolaser.ini.IniResourcesConfig
+import ru.pocketbyte.locolaser.ini.IniResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-class IniResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
+class IniResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
     companion object {
         const val RESOURCE_NAME = "res_name"
@@ -21,22 +22,22 @@ class IniResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
         if (resourceObject is String) {
             if (checkType(resourceObject as String?, throwIfWrongType))
-                return IniResourceConfig()
+                return IniResourcesConfigBuilder().build()
         } else if (resourceObject is JSONObject) {
             val platformJSON = resourceObject as JSONObject?
 
             if (checkType(JsonParseUtils.getString(platformJSON!!, ResourcesConfigParser.RESOURCE_TYPE, ConfigParser.PLATFORM, true), throwIfWrongType)) {
-                val platform = IniResourceConfig()
+                val platform = IniResourcesConfigBuilder()
 
                 JsonParseUtils.getString(platformJSON, RESOURCE_NAME, ConfigParser.PLATFORM, false)?.let {
                     platform.resourceName = it
                 }
 
                 JsonParseUtils.getString(platformJSON, RESOURCES_DIR, ConfigParser.PLATFORM, false)?.let {
-                    platform.resourcesDirPath = it
+                    platform.resourcesDir = it
                 }
 
-                return platform
+                return platform.build()
             }
         }
 
@@ -48,9 +49,9 @@ class IniResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
     @Throws(InvalidConfigException::class)
     private fun checkType(type: String?, throwIfWrongType: Boolean): Boolean {
-        if (IniResourceConfig.TYPE != type) {
+        if (IniResourcesConfig.TYPE != type) {
             if (throwIfWrongType)
-                throw InvalidConfigException("Source type is \"" + type + "\", but expected \"" + IniResourceConfig.TYPE + "\".")
+                throw InvalidConfigException("Source type is \"" + type + "\", but expected \"" + IniResourcesConfig.TYPE + "\".")
 
             return false
         }

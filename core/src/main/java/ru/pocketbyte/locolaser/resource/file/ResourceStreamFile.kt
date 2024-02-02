@@ -47,11 +47,11 @@ abstract class ResourceStreamFile(
      */
     @Throws(IOException::class)
     fun close() {
-        if (stream != null) {
-            stream!!.flush()
-            stream!!.close()
-            stream = null
+        stream?.apply {
+            flush()
+            close()
         }
+        stream = null
     }
 
     /**
@@ -64,7 +64,7 @@ abstract class ResourceStreamFile(
         if (stream == null)
             throw IllegalStateException("You should open file before write")
 
-        stream!!.write(string.toByteArray(charset("UTF-8")))
+        stream?.write(string.toByteArray(charset("UTF-8")))
     }
 
     @Throws(IOException::class)
@@ -82,8 +82,8 @@ abstract class ResourceStreamFile(
         if (stream == null)
             throw IllegalStateException("You should open file before write")
 
-        stream!!.write(0x0D)
-        stream!!.write(0x0A)
+        stream?.write(0x0D)
+        stream?.write(0x0A)
     }
 
 }

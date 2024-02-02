@@ -1,16 +1,17 @@
 package ru.pocketbyte.locolaser.mobile.parser
 
 import org.json.simple.JSONObject
-import ru.pocketbyte.locolaser.config.parser.ConfigParser
 import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.PLATFORM
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser.Companion.RESOURCE_TYPE
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
+abstract class BaseMobileResourcesConfigParser<ConfigBuilder : BaseResourcesConfigBuilder<*>>
+    : ResourcesConfigParser<BaseResourcesConfig> {
 
     companion object {
         const val RESOURCE_NAME = "res_name"
@@ -26,7 +27,7 @@ abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResou
      * @throws InvalidConfigException if platform is unknown.
      */
     @Throws(InvalidConfigException::class)
-    protected abstract fun platformByType(type: String?, throwIfWrongType: Boolean): BaseResourcesConfig?
+    protected abstract fun builderByType(type: String?, throwIfWrongType: Boolean): ConfigBuilder?
 
     @Throws(InvalidConfigException::class)
     override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): BaseResourcesConfig? {
@@ -34,7 +35,7 @@ abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResou
         if (resourceObject is String) {
             return parseString(resourceObject, throwIfWrongType)
         } else if (resourceObject is JSONObject) {
-            return parseJSONObject(resourceObject, throwIfWrongType)
+            return parseJSONObject(resourceObject, throwIfWrongType)?.build()
         }
 
         if (throwIfWrongType)
@@ -45,20 +46,20 @@ abstract class BaseMobileResourcesConfigParser : ResourcesConfigParser<BaseResou
 
     @Throws(InvalidConfigException::class)
     protected fun parseString(type: String, throwIfWrongType: Boolean): BaseResourcesConfig? {
-        return platformByType(type, throwIfWrongType)
+        return builderByType(type, throwIfWrongType)?.build()
     }
 
     @Throws(InvalidConfigException::class)
-    protected open fun parseJSONObject(platformJSON: JSONObject, throwIfWrongType: Boolean): BaseResourcesConfig? {
+    protected open fun parseJSONObject(platformJSON: JSONObject, throwIfWrongType: Boolean): ConfigBuilder? {
         val type = JsonParseUtils.getString(platformJSON, RESOURCE_TYPE, PLATFORM, true)
-        val platform = platformByType(type, throwIfWrongType) ?: return null
+        val platform = builderByType(type, throwIfWrongType) ?: return null
 
         JsonParseUtils.getString(platformJSON, RESOURCE_NAME, PLATFORM, false)?.let {
             platform.resourceName = it
         }
 
         JsonParseUtils.getString(platformJSON, RESOURCES_DIR, PLATFORM, false)?.let {
-            platform.resourcesDirPath = it
+            platform.resourcesDir = it
         }
 
         platform.filter = BaseResourcesConfig.regExFilter(

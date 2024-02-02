@@ -73,12 +73,12 @@ object JsonParseUtils {
         val jsonObject = getObject(json, key, parentKey, throwIfNull)
         if (jsonObject != null) {
             if (jsonObject is JSONArray) {
-                (jsonObject as JSONArray?)!!
-                        .filter { it !is String }
-                        .forEach { _ ->
-                            throw InvalidConfigException("Property ${keyName(key, parentKey)} must be a Strings array.")
-                        }
-                return jsonObject as? List<String>
+                return jsonObject.map {
+                    it as? String
+                        ?: throw InvalidConfigException(
+                            "Property ${keyName(key, parentKey)} must be a Strings array."
+                        )
+                }
             } else
                 throw InvalidConfigException("Property ${keyName(key, parentKey)} must be a Strings array.")
         }

@@ -11,10 +11,10 @@ import java.io.File
 class KotlinAndroidResources(
     dir: File,
     name: String,
-    interfaceName: String,
+    interfaceName: String?,
     resourceFileProvider: ResourceFileProvider,
     filter: ((key: String) -> Boolean)?
-) : AbsKotlinImplementationResources(dir, name, interfaceName, resourceFileProvider, filter) {
+) : KotlinAbsImplementationResources(dir, name, interfaceName, resourceFileProvider, filter) {
 
     override val formattingType: FormattingType = JavaFormattingType
 

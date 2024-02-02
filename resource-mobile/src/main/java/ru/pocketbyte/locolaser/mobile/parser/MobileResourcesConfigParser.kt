@@ -5,26 +5,32 @@
 
 package ru.pocketbyte.locolaser.mobile.parser
 
-import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfig
-import ru.pocketbyte.locolaser.mobile.IosResourcesConfig
+import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfigBuilder
 import ru.pocketbyte.locolaser.mobile.IosPlistResourcesConfig
+import ru.pocketbyte.locolaser.mobile.IosPlistResourcesConfigBuilder
+import ru.pocketbyte.locolaser.mobile.IosResourcesConfig
+import ru.pocketbyte.locolaser.mobile.IosResourcesConfigBuilder
 
 /**
  * @author Denis Shurygin
  */
 @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-class MobileResourcesConfigParser : BaseMobileResourcesConfigParser() {
+class MobileResourcesConfigParser
+    : BaseMobileResourcesConfigParser<BaseResourcesConfigBuilder<*>>() {
 
     @Throws(InvalidConfigException::class)
-    override fun platformByType(type: String?, throwIfWrongType: Boolean): BaseResourcesConfig? {
+    override fun builderByType(
+        type: String?, throwIfWrongType: Boolean
+    ): BaseResourcesConfigBuilder<*>? {
         if (AndroidResourcesConfig.TYPE == type)
-            return AndroidResourcesConfig()
+            return AndroidResourcesConfigBuilder()
         if (IosResourcesConfig.TYPE == type)
-            return IosResourcesConfig()
+            return IosResourcesConfigBuilder()
         if (IosPlistResourcesConfig.TYPE == type)
-            return IosPlistResourcesConfig()
+            return IosPlistResourcesConfigBuilder()
 
         if (throwIfWrongType)
             throw InvalidConfigException("Unknown platform: $type")

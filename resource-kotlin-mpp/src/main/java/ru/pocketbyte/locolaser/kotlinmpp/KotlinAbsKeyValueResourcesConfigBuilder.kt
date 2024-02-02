@@ -1,19 +1,19 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
-import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 
 class KotlinAbsKeyValueResourcesConfigBuilder
-    : KotlinBaseImplResourcesConfigBuilder<KotlinAbsKeyValueResourcesConfig>(
-    KotlinAbsKeyValueResourcesConfig()
-) {
+    : KotlinBaseCustomFormattingResourceConfigBuilder<KotlinAbsKeyValueResourcesConfig>() {
 
-    /**
-     * Values formatting type.
-     * Depending on formatting arguments substitution type will be generated various implementations.
-     * @see FormattingType.ArgumentsSubstitution
-     */
-    var formattingType: FormattingType
-        get() = config.formattingType
-        set(value) { config.formattingType = value }
+    override fun buildConfig(
+        resourceName: String?,
+        resourcesDir: String?,
+        resourceFileProvider: ResourceFileProvider?,
+        filter: ((key: String) -> Boolean)?
+    ): KotlinAbsKeyValueResourcesConfig {
+        return KotlinAbsKeyValueResourcesConfig(
+            resourceName, resourcesDir, implements, formattingType, filter
+        )
+    }
 
 }

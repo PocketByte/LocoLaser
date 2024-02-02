@@ -27,6 +27,11 @@ open class LocalizeTask: DefaultTask() {
 }
 
 open class LocalizeForceTask: LocalizeTask() {
+
+    init {
+        outputs.upToDateWhen { false }
+    }
+
     override fun getConfig(): Config {
         return super.getConfig().apply {
             forceImport = true
@@ -35,6 +40,11 @@ open class LocalizeForceTask: LocalizeTask() {
 }
 
 open class LocalizeExportNewTask: LocalizeTask() {
+
+    init {
+        outputs.upToDateWhen { false }
+    }
+
     override fun getConfig(): Config {
         return super.getConfig().apply {
             forceImport = true

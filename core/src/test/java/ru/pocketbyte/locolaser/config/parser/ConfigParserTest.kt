@@ -101,7 +101,7 @@ class ConfigParserTest {
         assertEquals(config.file?.canonicalPath, file.canonicalPath)
         assertFalse(config.forceImport)
         assertFalse(config.duplicateComments)
-        assertEquals(file.parentFile.canonicalPath, config.workDir.canonicalPath)
+        assertEquals(file.parentFile.canonicalPath, config.workDir?.canonicalPath)
         assertEquals(KEEP_NEW_PLATFORM, config.conflictStrategy)
         assertEquals(0, config.delay)
     }
@@ -158,7 +158,7 @@ class ConfigParserTest {
         val file = prepareMockFile(map)
         val configs = mConfigParser.fromFile(file)
 
-        assertEquals(File(file.parentFile, newWorkDir).canonicalPath, configs[0].workDir.canonicalPath)
+        assertEquals(File(file.parentFile, newWorkDir).canonicalPath, configs[0].workDir?.canonicalPath)
     }
 
     @Test
@@ -309,7 +309,7 @@ class ConfigParserTest {
 
         assertEquals(
             File(file.parentFile, workDir).canonicalPath,
-            configs[0].workDir.canonicalPath
+            configs[0].workDir?.canonicalPath
         )
     }
 

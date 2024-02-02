@@ -26,6 +26,7 @@ import java.util.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import ru.pocketbyte.locolaser.resource.Resources
+import ru.pocketbyte.locolaser.testutils.mock.MockTableResourcesConfigBuilder
 
 /**
  * @author Denis Shurygin
@@ -39,13 +40,13 @@ class BaseTableResourcesConfigParserTest {
 
     @Before
     fun init() {
-        val sourceConfigParser = object : BaseTableSourceConfigParser<MockTableResourcesConfig>() {
-
+        val sourceConfigParser = object : BaseTableSourceConfigParser<MockTableResourcesConfigBuilder>() {
             @Throws(InvalidConfigException::class)
-            override fun sourceByType(type: String?, throwIfWrongType: Boolean): MockTableResourcesConfig {
-                return MockTableResourcesConfig()
+            override fun builderByType(type: String?, throwIfWrongType: Boolean): MockTableResourcesConfigBuilder {
+                return MockTableResourcesConfigBuilder()
             }
         }
+
         val platformConfigParser = object : ResourcesConfigParser<ResourcesConfig> {
             @Throws(InvalidConfigException::class)
             override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig {

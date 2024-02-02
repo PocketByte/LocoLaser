@@ -10,7 +10,8 @@ import ru.pocketbyte.locolaser.config.parser.BaseTableSourceConfigParser
 import ru.pocketbyte.locolaser.config.parser.ConfigParser
 import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.SOURCE
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.google.sheet.GoogleSheetConfig
+import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
+import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
 
@@ -18,7 +19,7 @@ import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
  * @author Denis Shurygin
  */
 @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>() {
+class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetResourcesConfigBuilder>() {
 
     companion object {
         const val SHEET_ID = "id"
@@ -28,41 +29,41 @@ class GoogleSheetConfigParser : BaseTableSourceConfigParser<GoogleSheetConfig>()
     }
 
     @Throws(InvalidConfigException::class)
-    override fun sourceByType(type: String?, throwIfWrongType: Boolean): GoogleSheetConfig? {
-        if (type != null && type != GoogleSheetConfig.TYPE) {
+    override fun builderByType(type: String?, throwIfWrongType: Boolean): GoogleSheetResourcesConfigBuilder? {
+        if (type != null && type != GoogleSheetResourcesConfig.TYPE) {
             if (throwIfWrongType) {
-                throw InvalidConfigException("Source type is \"$type\", but expected \"${GoogleSheetConfig.TYPE}\".")
+                throw InvalidConfigException("Source type is \"$type\", but expected \"${GoogleSheetResourcesConfig.TYPE}\".")
             } else {
                 return null
             }
         }
 
-        return GoogleSheetConfig()
+        return GoogleSheetResourcesConfigBuilder()
     }
 
     @Throws(InvalidConfigException::class)
-    override fun fillFromJSON(config: GoogleSheetConfig, configJson: JSONObject) {
-        super.fillFromJSON(config, configJson)
-        config.id = getString(configJson, SHEET_ID, SOURCE, true)
+    override fun fillFromJSON(builder: GoogleSheetResourcesConfigBuilder, configJson: JSONObject) {
+        super.fillFromJSON(builder, configJson)
+        builder.id = getString(configJson, SHEET_ID, SOURCE, true)
 
-        config.worksheetTitle = getString(
+        builder.worksheetTitle = getString(
                 configJson, SHEET_WORKSHEET_TITLE, SOURCE, false)
 
-        config.credentialFile = getString(
+        builder.credentialFile = getString(
                 configJson, SHEET_CREDENTIAL_FILE, SOURCE, false)
 
         JsonParseUtils.getFormattingType(
             configJson, FORMATTING_TYPE, ConfigParser.PLATFORM, false
         )?.let {
-            config.formattingType = it
+            builder.formattingType = it
         }
     }
 
     @Throws(InvalidConfigException::class)
-    override fun validate(source: GoogleSheetConfig) {
-        super.validate(source)
+    override fun validate(builder: GoogleSheetResourcesConfigBuilder) {
+        super.validate(builder)
 
-        if (source.id?.isEmpty() != false)
+        if (builder.id?.isEmpty() != false)
             throw InvalidConfigException("\"$SOURCE.$SHEET_ID\" is not set.")
 
     }

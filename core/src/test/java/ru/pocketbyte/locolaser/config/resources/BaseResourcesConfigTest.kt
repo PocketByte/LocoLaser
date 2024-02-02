@@ -20,24 +20,25 @@ class BaseResourcesConfigTest {
 
     @Test
     fun testCustomProperties() {
-        val config = BaseResourcesConfigImpl()
-
-        config.resourceName = "custom_res_name"
-        config.resourcesDirPath = "custom_res_dir"
+        val config = BaseResourcesConfigImpl(
+            "custom_res_name",
+            "custom_res_dir"
+        )
 
         assertEquals("custom_res_name", config.resourceName)
         assertEquals("custom_res_dir", config.resourcesDirPath)
     }
 
-    private class BaseResourcesConfigImpl: BaseResourcesConfig() {
+    private class BaseResourcesConfigImpl(
+        resourceName: String? = null,
+        resourcesDirPath: String? = null,
+    ): BaseResourcesConfig(resourceName, resourcesDirPath, MockResourceFileProvider(), null) {
 
         override val type: String = "mock"
 
         override val defaultTempDirPath: String = "default_temp"
         override val defaultResourcesPath: String = "default_res_path"
         override val defaultResourceName: String= "default_res_name"
-
-        override var resourceFileProvider: ResourceFileProvider = MockResourceFileProvider()
 
         override val resources: Resources
             get() {

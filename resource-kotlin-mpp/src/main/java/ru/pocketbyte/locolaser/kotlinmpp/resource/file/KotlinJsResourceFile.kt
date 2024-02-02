@@ -13,7 +13,7 @@ class KotlinJsResourceFile(
     classPackage: String,
     interfaceName: String?,
     interfacePackage: String?,
-): AbsKeyValuePoetClassResourceFile(
+): KotlinAbsKeyValueResourceFile(
     file, className, classPackage, interfaceName, interfacePackage, WebFormattingType
 ) {
 

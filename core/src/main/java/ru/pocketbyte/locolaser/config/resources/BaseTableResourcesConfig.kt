@@ -12,27 +12,27 @@ import ru.pocketbyte.locolaser.config.Config
  *
  * @author Denis Shurygin
  */
-abstract class BaseTableResourcesConfig : Config.Child(), ResourcesConfig {
-
+abstract class BaseTableResourcesConfig(
     /**
      * Title of the column that contain resource Key's.
      */
-    var keyColumn: String? = null
+    val keyColumn: String,
 
     /**
      * Title of the column that contain resource quantity.
      */
-    var quantityColumn: String? = null
+    val quantityColumn: String?,
 
     /**
      * Title of the column that contain comments.
      */
-    var commentColumn: String? = null
+    val commentColumn: String?,
 
     /**
      * Title of the column that contain meta data quantity.
      */
-    var metadataColumn: String? = null
+    val metadataColumn: String?
+) : Config.Child(), ResourcesConfig {
 
     override fun toString(): String {
         return type

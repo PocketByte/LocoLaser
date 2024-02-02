@@ -10,14 +10,14 @@ import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.anyName
 import java.io.File
 
-class AbsProxyClassResourceFile(
+class KotlinAbsProxyResourceFile(
     file: File,
     className: String,
     classPackage: String,
     private val interfaceName: String,
     private val interfacePackage: String,
     formattingType: FormattingType = NoFormattingType
-): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
+): BaseKotlinPoetClassResourceFile(file, className, classPackage, formattingType) {
 
     companion object {
         private const val PROPERTY_REPOSITORY = "stringRepository"

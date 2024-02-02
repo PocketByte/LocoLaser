@@ -13,7 +13,7 @@ class KotlinCommonResources(
     name: String,
     resourceFileProvider: ResourceFileProvider,
     filter: ((key: String) -> Boolean)?
-) : AbsKotlinResources(dir, name, resourceFileProvider, filter) {
+) : KotlinAbsResources(dir, name, resourceFileProvider, filter) {
 
     override val formattingType: FormattingType = JavaFormattingType
 

@@ -16,11 +16,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.kotlinmpp.resource.AbsKotlinResources
+import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinAbsResources
 import ru.pocketbyte.locolaser.kotlinmpp.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 
-class AbsKeyValuePoetClassResourceFileTest {
+class KotlinAbsKeyValueResourceFileTest {
 
     @Rule @JvmField
     var tempFolder = TemporaryFolder()
@@ -28,7 +28,7 @@ class AbsKeyValuePoetClassResourceFileTest {
     @Test
     @Throws(IOException::class)
     fun testRead() {
-        val resourceFile = AbsKeyValuePoetClassResourceFile(tempFolder.newFile(),
+        val resourceFile = KotlinAbsKeyValueResourceFile(tempFolder.newFile(),
                 "Str", "com.package", null, null)
         assertNull(resourceFile.read(ExtraParams()))
     }
@@ -44,7 +44,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(testDirectory, className, classPackage, null, null)
+        val resourceFile = KotlinAbsKeyValueResourceFile(testDirectory, className, classPackage, null, null)
         resourceFile.write(resMap, null)
 
         val expectedResult = TemplateStr.GENERATED_CLASS_COMMENT + "\n" +
@@ -77,7 +77,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(
+        val resourceFile = KotlinAbsKeyValueResourceFile(
             testDirectory, className, classPackage,
             null, null, JavaFormattingType
         )
@@ -120,7 +120,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(
+        val resourceFile = KotlinAbsKeyValueResourceFile(
             testDirectory, className, classPackage,
             null, null, JavaFormattingType
         )
@@ -169,7 +169,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "StrImpl"
         val classPackage = "com.some.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(
+        val resourceFile = KotlinAbsKeyValueResourceFile(
             testDirectory, className, classPackage,
             "StrInterface", "com.some.interfacepcg"
         )
@@ -209,7 +209,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Strings"
         val classPackage = "ru.pocketbyte"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(
+        val resourceFile = KotlinAbsKeyValueResourceFile(
             testDirectory, className, classPackage,
             null, null
         )
@@ -255,7 +255,7 @@ class AbsKeyValuePoetClassResourceFileTest {
         val testDirectory = tempFolder.newFolder()
         val className = "Str"
         val classPackage = "com.pcg"
-        val resourceFile = AbsKeyValuePoetClassResourceFile(
+        val resourceFile = KotlinAbsKeyValueResourceFile(
             testDirectory, className, classPackage,
             null, null, JavaFormattingType
         )
@@ -307,7 +307,7 @@ class AbsKeyValuePoetClassResourceFileTest {
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
             File(directory, classPackage.replace(".", "/")),
-            "$className.${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
+            "$className.${KotlinAbsResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 }

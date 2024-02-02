@@ -18,7 +18,7 @@ import ru.pocketbyte.locolaser.utils.TextUtils
 import java.io.File
 import java.util.HashSet
 
-abstract class BasePoetClassResourceFile(
+abstract class BaseKotlinPoetClassResourceFile(
     protected val directory: File,
     protected val className: String,
     protected val classPackage: String,

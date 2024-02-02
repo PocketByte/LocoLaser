@@ -17,7 +17,7 @@ import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 
-class BasePoetClassResourceFileTest {
+class BaseKotlinPoetClassResourceFileTest {
 
     @Rule
     @JvmField
@@ -27,7 +27,7 @@ class BasePoetClassResourceFileTest {
     fun testFormattedArgumentsHandling() {
         val testDirectory = tempFolder.newFolder()
 
-        class TestClass(formattingType: FormattingType): BasePoetClassResourceFileMock(
+        class TestClass(formattingType: FormattingType): BaseKotlinPoetClassResourceFileMock(
             testDirectory, "tmp", "", formattingType
         ) {
             val formattedProperties = mutableSetOf<String>()
@@ -70,7 +70,7 @@ class BasePoetClassResourceFileTest {
     fun testFormattedArgumentsSort() {
         val testDirectory = tempFolder.newFolder()
 
-        class TestClass: BasePoetClassResourceFileMock(
+        class TestClass: BaseKotlinPoetClassResourceFileMock(
             testDirectory, "tmp", "", JavaFormattingType
         ) {
             var formattingArguments: List<FormattingArgument>? = null
@@ -130,17 +130,17 @@ class BasePoetClassResourceFileTest {
             })
         }
 
-        BasePoetClassResourceFileMock(
+        BaseKotlinPoetClassResourceFileMock(
             tempFolder.newFolder(), "tmp", "", JavaFormattingType
         ).write(resMap, null)
     }
 
-    private open class BasePoetClassResourceFileMock(
+    private open class BaseKotlinPoetClassResourceFileMock(
         directory: File,
         className: String,
         classPackage: String,
         formattingType: FormattingType = NoFormattingType
-    ): BasePoetClassResourceFile(
+    ): BaseKotlinPoetClassResourceFile(
         directory, className, classPackage, formattingType)
     {
         override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {

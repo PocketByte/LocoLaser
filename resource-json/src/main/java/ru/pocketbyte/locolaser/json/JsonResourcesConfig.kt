@@ -7,23 +7,37 @@ package ru.pocketbyte.locolaser.json
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.json.resource.JsonResources
 import ru.pocketbyte.locolaser.json.resource.file.provider.JsonResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
-import java.io.File
 
 /**
  * JSON resources configuration.
  *
  * @author Denis Shurygin
  */
-class JsonResourcesConfig : BaseResourcesConfig() {
+class JsonResourcesConfig(
+    val indent: Int,
+    val pluralKeyRule: KeyPluralizationRule.Postfix,
+    resourceName: String?,
+    resourcesDirPath: String?,
+    resourceFileProvider: ResourceFileProvider?,
+    filter: ((key: String) -> Boolean)?
+) : BaseResourcesConfig(
+    resourceName,
+    resourcesDirPath,
+    resourceFileProvider ?: JsonResourceFileProvider(),
+    filter
+) {
 
-    companion object {
+    companion object : ResourcesConfigBuilderFactory<JsonResourcesConfig, JsonResourcesConfigBuilder> {
         const val TYPE = "json"
-    }
 
-    var indent: Int = -1
+        override fun getBuilder(): JsonResourcesConfigBuilder {
+            return JsonResourcesConfigBuilder()
+        }
+    }
 
     override val type = TYPE
 
@@ -31,9 +45,10 @@ class JsonResourcesConfig : BaseResourcesConfig() {
     override val defaultResourcesPath = "./locales/"
     override val defaultResourceName = "strings"
 
-    override var resourceFileProvider: ResourceFileProvider = JsonResourceFileProvider()
-
     override val resources: Resources
-        get() = JsonResources(resourcesDir, resourceName, resourceFileProvider, indent, filter)
+        get() = JsonResources(
+            resourcesDir, resourceName, resourceFileProvider,
+            indent, pluralKeyRule, filter
+        )
 
 }

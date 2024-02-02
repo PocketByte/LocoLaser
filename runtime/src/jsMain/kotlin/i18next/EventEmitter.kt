@@ -1,5 +1,7 @@
 package i18next
 
+@JsModule("i18next")
+@JsNonModule
 open external class EventEmitter {
 
     fun on(events: String, listener: (arguments: Array<Any?>) -> Unit)

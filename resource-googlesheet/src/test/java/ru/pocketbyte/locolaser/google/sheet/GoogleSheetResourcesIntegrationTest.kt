@@ -5,23 +5,26 @@ import org.junit.Ignore
 import org.junit.Test
 import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
 import ru.pocketbyte.locolaser.resource.entity.*
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import java.io.File
 
-@Ignore
-class GoogleSheetIntegrationTest {
+//@Ignore
+class GoogleSheetResourcesIntegrationTest {
 
     private val sheetId = "1G-hI9MilctvIm5-5m0z9YgUEIRzS9lIl9d1mXXMJHEg"
 
     @Test
     fun testRead() {
-        val sourceConfig = GoogleSheetConfig().apply {
-            id = sheetId
-            keyColumn = "key"
-            quantityColumn = "quantity"
-            worksheetTitle = "Strings"
-            credentialFile = "../playground/service_account.json"
-        }
+        val sourceConfig = GoogleSheetResourcesConfig(
+            id = sheetId,
+            keyColumn = "key",
+            quantityColumn = "quantity",
+            worksheetTitle = "Strings",
+            credentialFile = "../playground/service_account.json",
+            formattingType = JavaFormattingType
+        )
         val config = Config(File("./")).apply {
             source = sourceConfig
         }
@@ -31,12 +34,13 @@ class GoogleSheetIntegrationTest {
 
     @Test
     fun testWrite() {
-        val sourceConfig = GoogleSheetConfig().apply {
-            id = sheetId
-            keyColumn = "key"
-            quantityColumn = "quantity"
-            credentialFile = "../playground/service_account.json"
-        }
+        val sourceConfig = GoogleSheetResourcesConfig(
+            id = sheetId,
+            keyColumn = "key",
+            quantityColumn = "quantity",
+            credentialFile = "../playground/service_account.json",
+            formattingType = JavaFormattingType
+        )
 
         val config = Config(File("./")).apply {
             source = sourceConfig

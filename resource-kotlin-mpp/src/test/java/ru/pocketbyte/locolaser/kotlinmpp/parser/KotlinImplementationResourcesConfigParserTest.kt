@@ -11,9 +11,8 @@ import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsKeyValueResourcesConfig
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinAndroidResourcesConfig
-import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseImplResourcesConfig
+import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseResourcesConfig
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinIosResourcesConfig
-import ru.pocketbyte.locolaser.kotlinmpp.KotlinIosResourcesConfig.Companion
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinJsResourcesConfig
 import ru.pocketbyte.locolaser.mobile.parser.BaseMobileResourcesConfigParser
 import ru.pocketbyte.locolaser.resource.AbsResources
@@ -65,7 +64,7 @@ class KotlinImplementationResourcesConfigParserTest {
     private fun testPlatformConfigResource(platform: String) {
         val json = prepareTestPlatformJson(platform)
         parent.platform = parser?.parse(json, true)
-        val resources = (parent.platform as KotlinBaseImplResourcesConfig).resources as AbsResources
+        val resources = (parent.platform as KotlinBaseResourcesConfig).resources as AbsResources
 
         assertEquals("com.test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

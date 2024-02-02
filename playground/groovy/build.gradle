@@ -1,12 +1,11 @@
-import ru.pocketbyte.locolaser.gettext.GetTextResourcesConfigBuilder
-import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfigBuilder
-import ru.pocketbyte.locolaser.ini.IniResourcesConfigBuilder
-import ru.pocketbyte.locolaser.json.JsonResourcesConfigBuilder
+import ru.pocketbyte.locolaser.gettext.GetTextResourcesConfig
+import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
+import ru.pocketbyte.locolaser.ini.IniResourcesConfig
+import ru.pocketbyte.locolaser.json.JsonResourcesConfig
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
-import ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsStaticResourcesConfig
-import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfigBuilder
-import ru.pocketbyte.locolaser.mobile.IosResourcesConfigBuilder
-import ru.pocketbyte.locolaser.properties.PropertiesResourcesConfigBuilder
+import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfig
+import ru.pocketbyte.locolaser.mobile.IosResourcesConfig
+import ru.pocketbyte.locolaser.properties.PropertiesResourcesConfig
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 
 buildscript {
@@ -16,7 +15,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        def locolaserVersion = "2.3.0-alpha2"
+        def locolaserVersion = "2.3.0-alpha6"
         classpath "ru.pocketbyte.locolaser:plugin:$locolaserVersion"
         classpath "ru.pocketbyte.locolaser:core:$locolaserVersion"
         classpath "ru.pocketbyte.locolaser:resource-gettext:$locolaserVersion"
@@ -43,32 +42,36 @@ localize {
                 repositoryInterface = "com.example.SuperString"
                 repositoryClass = "com.example.SuperStringImpl"
                 android(); ios(); js()
-                platform("static") {
-                    new KotlinAbsStaticResourcesConfig(JavaFormattingType.INSTANCE)
+                absStatic("static") {
+                    formattingType = JavaFormattingType.INSTANCE
                 }
+                absKeyValue("keyValue") {
+                    formattingType = JavaFormattingType.INSTANCE
+                }
+                absProxy("proxy") {}
             }
-            add(new JsonResourcesConfigBuilder()) {
+            add(JsonResourcesConfig.@Companion) {
                 resourcesDir = "./build/res/json"
                 indent = 2
             }
-            add(new GetTextResourcesConfigBuilder()) {
+            add(GetTextResourcesConfig.@Companion) {
                 resourcesDir = "./build/res/gettext"
             }
-            add(new IniResourcesConfigBuilder()) {
+            add(IniResourcesConfig.@Companion) {
                 resourcesDir = "./build/res/ini"
             }
-            add(new PropertiesResourcesConfigBuilder()) {
+            add(PropertiesResourcesConfig.@Companion) {
                 resourcesDir = "./build/res/properties"
             }
-            add(new AndroidResourcesConfigBuilder()) {
+            add(AndroidResourcesConfig.@Companion) {
                 resourcesDir = "./build/res/android"
             }
-            add(new IosResourcesConfigBuilder()) {
+            add(IosResourcesConfig.@Companion) {
                 resourcesDir = "./build/res/ios"
             }
         }
         source {
-            add(new GoogleSheetResourcesConfigBuilder()) {
+            add(GoogleSheetResourcesConfig.@Companion) {
                 id = "1JZxUcu30BjxLwHg12bdHTxjDgsGFX9HA9zC4Jd8cuUM"
                 keyColumn = "key"
                 commentColumn = "base"

@@ -18,7 +18,24 @@ import java.util.regex.Pattern
 /**
  * Construct new Platform object.
  */
-abstract class BaseResourcesConfig : Config.Child(), ResourcesConfig {
+abstract class BaseResourcesConfig(
+    /**
+     * Resource name or null if should be used default name.
+     */
+    private val resName: String?,
+
+    /**
+     * Resource directory path.
+     */
+    val resourcesDirPath: String?,
+
+    /**
+     * ResourceFileProvider provides resource File depending on locale, directory and name.
+     */
+    val resourceFileProvider: ResourceFileProvider,
+
+    val filter: ((key: String) -> Boolean)?
+) : Config.Child(), ResourcesConfig {
 
     companion object {
         fun regExFilter(filter: String?): ((key: String) -> Boolean)? {
@@ -32,16 +49,11 @@ abstract class BaseResourcesConfig : Config.Child(), ResourcesConfig {
         }
     }
 
-    private var _resourceName: String? = null
-
     /**
-     * Resource name or null if should be used default name.
+     * Resource name.
      */
-    var resourceName: String
-        get() = _resourceName ?: defaultResourceName
-        set(value) { _resourceName = value }
-
-    private var _resourcesDir: File? = null
+    val resourceName: String
+        get() = resName ?: defaultResourceName
 
     /**
      * Resource directory.
@@ -49,26 +61,16 @@ abstract class BaseResourcesConfig : Config.Child(), ResourcesConfig {
     val resourcesDir: File
         get() = buildFileFrom(workDir, resourcesDirPath ?: defaultResourcesPath)
 
-    /**
-     * Resource directory path.
-     */
-    var resourcesDirPath: String? = null
-
-    /**
-     * ResourceFileProvider provides resource File depending on locale, directory and name.
-     */
-    abstract var resourceFileProvider: ResourceFileProvider
-
-    var filter: ((key: String) -> Boolean)? = null
-
     // =================================================================================================================
     // ========= Abstract properties ======================================================================================
     // =================================================================================================================
 
+
+
     /**
      * Default resource directory path specified for current platform.
      */
-    abstract val defaultResourcesPath: String
+    protected abstract val defaultResourcesPath: String
 
     /**
      * Default resource name specified for current platform.

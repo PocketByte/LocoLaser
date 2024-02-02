@@ -11,6 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.json.KeyPluralizationRule
 import ru.pocketbyte.locolaser.json.resource.file.provider.JsonResourceFileProvider
 
 class JsonResourcesTest {
@@ -25,7 +26,8 @@ class JsonResourcesTest {
 
         val resources = JsonResources(
             tempFolder.newFolder(), "test",
-            JsonResourceFileProvider(),  -1, null
+            JsonResourceFileProvider(),  -1,
+            KeyPluralizationRule.Postfix.Named(), null
         )
         resources.write(resMap1, null)
 

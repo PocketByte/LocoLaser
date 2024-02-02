@@ -2,6 +2,8 @@ package i18next
 
 import kotlin.js.Promise
 
+@JsModule("i18next")
+@JsNonModule
 external class I18n: EventEmitter {
 
     fun init(options: dynamic = definedExternally, callback: (err: Any?, t: Any?) -> Unit): Promise<Any?>
@@ -21,4 +23,6 @@ external class I18n: EventEmitter {
 
 }
 
-external var i18next: I18n
+@JsModule("i18next")
+@JsNonModule
+external val i18next: I18n

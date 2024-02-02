@@ -11,17 +11,17 @@ import ru.pocketbyte.locolaser.kotlinmpp.resource.file.provider.KotlinClassResou
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
-class AbsKotlinImplementationResourcesTest {
+class KotlinAbsImplementationResourcesTest {
 
     @Test
     fun testConstructor() {
-        var resources = AbsKotlinResourcesImpl(
+        var resources = KotlinAbsImplementationResourcesImpl(
                 File("./"), "package.FileName", "com.package.InterfaceName")
 
         assertEquals("InterfaceName", resources.interfaceName)
         assertEquals("com.package", resources.interfacePackage)
 
-        resources = AbsKotlinResourcesImpl(
+        resources = KotlinAbsImplementationResourcesImpl(
                 File("./"), "package.FileName", "ru.pocketbyte.StrInterface")
 
         assertEquals("StrInterface", resources.interfaceName)
@@ -30,23 +30,23 @@ class AbsKotlinImplementationResourcesTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testConstructorInvalidInterfaceName() {
-        AbsKotlinResourcesImpl(File("./"), "package.FileName", "Interface")
+        KotlinAbsImplementationResourcesImpl(File("./"), "package.FileName", "Interface")
     }
 
     @Test
     fun testConstructorNullInterfaceName() {
-        val resources = AbsKotlinResourcesImpl(
+        val resources = KotlinAbsImplementationResourcesImpl(
                 File("./"), "package.FileName", null)
 
         assertNull(resources.interfaceName)
         assertNull(resources.interfacePackage)
     }
 
-    private class AbsKotlinResourcesImpl(
+    private class KotlinAbsImplementationResourcesImpl(
             dir: File,
             name: String,
             interfaceName: String?
-    ) : AbsKotlinImplementationResources(
+    ) : KotlinAbsImplementationResources(
         dir, name, interfaceName, KotlinClassResourceFileProvider(), null
     ) {
 

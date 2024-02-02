@@ -2,7 +2,6 @@ package ru.pocketbyte.locolaser.kotlinmpp.parser
 
 import org.json.simple.JSONObject
 import ru.pocketbyte.locolaser.config.parser.ConfigParser
-import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.kotlinmpp.*
 import ru.pocketbyte.locolaser.mobile.parser.BaseMobileResourcesConfigParser
@@ -10,7 +9,8 @@ import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-class KotlinImplementationResourcesConfigParser : BaseMobileResourcesConfigParser() {
+class KotlinImplementationResourcesConfigParser
+    : BaseMobileResourcesConfigParser<KotlinBaseResourcesConfigBuilder<*>>() {
 
     companion object {
         const val INTERFACE = "implements"
@@ -18,15 +18,17 @@ class KotlinImplementationResourcesConfigParser : BaseMobileResourcesConfigParse
     }
 
     @Throws(InvalidConfigException::class)
-    override fun parseJSONObject(platformJSON: JSONObject, throwIfWrongType: Boolean): BaseResourcesConfig? {
-        val config = super.parseJSONObject(platformJSON, throwIfWrongType) as? KotlinBaseImplResourcesConfig
+    override fun parseJSONObject(
+        platformJSON: JSONObject, throwIfWrongType: Boolean
+    ): KotlinBaseResourcesConfigBuilder<*>? {
+        val config = super.parseJSONObject(platformJSON, throwIfWrongType)
 
         if (config != null) {
             JsonParseUtils.getString(platformJSON, INTERFACE, ConfigParser.PLATFORM, false)?.let {
                 config.implements = it
             }
 
-            if (config is KotlinResourcesConfigWithFormattingType) {
+            if (config is KotlinBaseCustomFormattingResourceConfigBuilder) {
                 config.formattingType = JsonParseUtils.getFormattingType(
                         platformJSON, FORMATTING_TYPE, ConfigParser.PLATFORM, false
                 ) ?: NoFormattingType
@@ -37,19 +39,21 @@ class KotlinImplementationResourcesConfigParser : BaseMobileResourcesConfigParse
     }
 
     @Throws(InvalidConfigException::class)
-    override fun platformByType(type: String?, throwIfWrongType: Boolean): BaseResourcesConfig? {
+    override fun builderByType(
+        type: String?, throwIfWrongType: Boolean
+    ): KotlinBaseResourcesConfigBuilder<*>? {
         if (KotlinAndroidResourcesConfig.TYPE == type)
-            return KotlinAndroidResourcesConfig()
+            return KotlinAndroidResourcesConfigBuilder()
         if (KotlinIosResourcesConfig.TYPE == type)
-            return KotlinIosResourcesConfig()
+            return KotlinIosResourcesConfigBuilder()
         if (KotlinJsResourcesConfig.TYPE == type)
-            return KotlinJsResourcesConfig()
+            return KotlinJsResourcesConfigBuilder()
         if (KotlinAbsKeyValueResourcesConfig.TYPE == type)
-            return KotlinAbsKeyValueResourcesConfig()
+            return KotlinAbsKeyValueResourcesConfigBuilder()
         if (KotlinAbsStaticResourcesConfig.TYPE == type)
-            return KotlinAbsStaticResourcesConfig()
+            return KotlinAbsStaticResourcesConfigBuilder()
         if (KotlinAbsProxyResourcesConfig.TYPE == type)
-            return KotlinAbsProxyResourcesConfig()
+            return KotlinAbsProxyResourcesConfigBuilder()
 
         if (throwIfWrongType)
             throw InvalidConfigException("Unknown platform: $type")

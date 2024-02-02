@@ -10,17 +10,17 @@ import ru.pocketbyte.locolaser.kotlinmpp.resource.file.provider.KotlinClassResou
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
-class AbsKotlinResourcesTest {
+class KotlinAbsResourcesTest {
 
     @Test
     fun testConstructor() {
-        var resources = AbsKotlinResourcesImpl(
+        var resources = KotlinAbsResourcesImpl(
                 File("./"), "com.package.FileName")
 
         assertEquals("FileName", resources.className)
         assertEquals("com.package", resources.classPackage)
 
-        resources = AbsKotlinResourcesImpl(
+        resources = KotlinAbsResourcesImpl(
                 File("./"), "ru.pocketbyte.StrClass")
 
         assertEquals("StrClass", resources.className)
@@ -29,12 +29,12 @@ class AbsKotlinResourcesTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testConstructorInvalidName() {
-        AbsKotlinResourcesImpl(File("./"), "ClassName")
+        KotlinAbsResourcesImpl(File("./"), "ClassName")
     }
 
-    private class AbsKotlinResourcesImpl(
+    private class KotlinAbsResourcesImpl(
         dir: File, name: String
-    ) : AbsKotlinResources(dir, name, KotlinClassResourceFileProvider(), null) {
+    ) : KotlinAbsResources(dir, name, KotlinClassResourceFileProvider(), null) {
 
         override val formattingType: FormattingType = NoFormattingType
 

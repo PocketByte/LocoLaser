@@ -1,17 +1,17 @@
 package ru.pocketbyte.locolaser.properties.parser
 
 import org.json.simple.JSONObject
-import ru.pocketbyte.locolaser.config.parser.ConfigParser
 import ru.pocketbyte.locolaser.config.parser.ConfigParser.Companion.PLATFORM
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser.Companion.RESOURCE_TYPE
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
-import ru.pocketbyte.locolaser.properties.PropertiesResourceConfig
+import ru.pocketbyte.locolaser.properties.PropertiesResourcesConfig
+import ru.pocketbyte.locolaser.properties.PropertiesResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-class PropertiesResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
+class PropertiesResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
 
     companion object {
         const val RESOURCE_NAME = "res_name"
@@ -23,22 +23,22 @@ class PropertiesResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig
 
         if (resourceObject is String) {
             if (checkType(resourceObject as String?, throwIfWrongType))
-                return PropertiesResourceConfig()
+                return PropertiesResourcesConfigBuilder().build()
         } else if (resourceObject is JSONObject) {
             val platformJSON = resourceObject as JSONObject?
 
             if (checkType(JsonParseUtils.getString(platformJSON!!, RESOURCE_TYPE, PLATFORM, true), throwIfWrongType)) {
-                val platform = PropertiesResourceConfig()
+                val platform = PropertiesResourcesConfigBuilder()
 
                 JsonParseUtils.getString(platformJSON, RESOURCE_NAME, PLATFORM, false)?.let {
                     platform.resourceName = it
                 }
 
                 JsonParseUtils.getString(platformJSON, RESOURCES_DIR, PLATFORM, false)?.let {
-                    platform.resourcesDirPath = it
+                    platform.resourcesDir = it
                 }
 
-                return platform
+                return platform.build()
             }
         }
 
@@ -50,9 +50,9 @@ class PropertiesResourceConfigParser : ResourcesConfigParser<BaseResourcesConfig
 
     @Throws(InvalidConfigException::class)
     private fun checkType(type: String?, throwIfWrongType: Boolean): Boolean {
-        if (PropertiesResourceConfig.TYPE != type) {
+        if (PropertiesResourcesConfig.TYPE != type) {
             if (throwIfWrongType)
-                throw InvalidConfigException("Source type is \"$type\", but expected \"${PropertiesResourceConfig.TYPE}\".")
+                throw InvalidConfigException("Source type is \"$type\", but expected \"${PropertiesResourcesConfig.TYPE}\".")
 
             return false
         }

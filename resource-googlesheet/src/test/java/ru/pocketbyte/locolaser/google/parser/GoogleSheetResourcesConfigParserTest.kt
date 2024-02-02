@@ -20,7 +20,7 @@ import ru.pocketbyte.locolaser.config.parser.ResourcesConfigParser
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.resource.Resources
-import ru.pocketbyte.locolaser.google.sheet.GoogleSheetConfig
+import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
 import ru.pocketbyte.locolaser.testutils.mock.MockResourcesConfig
 import java.io.File
 import java.io.IOException
@@ -30,7 +30,7 @@ import java.util.*
 /**
  * @author Denis Shurygin
  */
-class GoogleSheetConfigParserTest {
+class GoogleSheetResourcesConfigParserTest {
 
     private var mConfigParser: ConfigParser? = null
 
@@ -84,7 +84,7 @@ class GoogleSheetConfigParserTest {
         assertEquals(1, config.size)
 
         val sourceConfig = config[0].source.build()
-        assertTrue(sourceConfig is GoogleSheetConfig)
+        assertTrue(sourceConfig is GoogleSheetResourcesConfig)
     }
 
     @Test
@@ -99,7 +99,7 @@ class GoogleSheetConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source.build() as GoogleSheetConfig
+            val sourceConfig = config[0].source.build() as GoogleSheetResourcesConfig
             assertEquals(expectedValue, sourceConfig.id)
         }
     }
@@ -116,7 +116,7 @@ class GoogleSheetConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source.build() as GoogleSheetConfig
+            val sourceConfig = config[0].source.build() as GoogleSheetResourcesConfig
             assertEquals(expectedValue, sourceConfig.worksheetTitle)
         }
     }
@@ -133,7 +133,7 @@ class GoogleSheetConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source.build() as GoogleSheetConfig
+            val sourceConfig = config[0].source.build() as GoogleSheetResourcesConfig
             assertEquals(expectedValue, sourceConfig.credentialFile)
         }
     }

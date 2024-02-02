@@ -3,11 +3,12 @@ package ru.pocketbyte.locolaser.google.sheet
 import org.junit.Test
 
 import org.junit.Assert.assertEquals
+import ru.pocketbyte.locolaser.google.resource.GoogleSheetResources
 
 /**
  * Created by dshurygin on 2017-03-23.
  */
-class GoogleSheetTest {
+class GoogleSheetResourcesTest {
 
     companion object {
 
@@ -53,14 +54,14 @@ class GoogleSheetTest {
     @Test
     fun testValueToSourceValue() {
         for (i in TEST_VALUES.indices) {
-            assertEquals(TEST_SOURCE_VALUES[i], GoogleSheet.valueToSourceValue(TEST_VALUES[i]))
+            assertEquals(TEST_SOURCE_VALUES[i], GoogleSheetResources.valueToSourceValue(TEST_VALUES[i]))
         }
     }
 
     @Test
     fun testSourceValueToValue() {
         for (i in TEST_SOURCE_VALUES.indices) {
-            assertEquals(TEST_VALUES[i], GoogleSheet.sourceValueToValue(TEST_SOURCE_VALUES[i]))
+            assertEquals(TEST_VALUES[i], GoogleSheetResources.sourceValueToValue(TEST_SOURCE_VALUES[i]))
         }
     }
 }

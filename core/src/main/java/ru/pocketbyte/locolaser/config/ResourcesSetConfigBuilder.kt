@@ -5,6 +5,7 @@ import org.gradle.internal.HasInternalProtocol
 import ru.pocketbyte.locolaser.config.resources.EmptyResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
 import ru.pocketbyte.locolaser.utils.callWithDelegate
 
@@ -23,6 +24,10 @@ class ResourcesSetConfigBuilder(
         add(builder.build())
     }
 
+    fun add(builderFactory: ResourcesConfigBuilderFactory<*, *>,) {
+        add(builderFactory.getBuilder())
+    }
+
     fun <T : ResourcesConfigBuilder<*>> add(builder: T, configurator: T.() -> Unit) {
         configurator.invoke(builder)
         add(builder)
@@ -30,6 +35,22 @@ class ResourcesSetConfigBuilder(
 
     fun <T : ResourcesConfigBuilder<*>> add(builder: T, configurator: Closure<Unit>) {
         add(builder) {
+            configurator.callWithDelegate(this)
+        }
+    }
+
+    fun <T : ResourcesConfigBuilder<*>> add(
+        builderFactory: ResourcesConfigBuilderFactory<*, T>,
+        configurator: T.() -> Unit
+    ) {
+        add(builderFactory.getBuilder(), configurator)
+    }
+
+    fun <T : ResourcesConfigBuilder<*>> add(
+        builderFactory: ResourcesConfigBuilderFactory<*, T>,
+        configurator: Closure<Unit>
+    ) {
+        add(builderFactory) {
             configurator.callWithDelegate(this)
         }
     }

@@ -46,8 +46,7 @@ class BaseTableResourcesTest {
         dataSet.add("key1", null, null, arrayOf("value1_1", "value1_2"), null)
         dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), null)
 
-        val sourceConfig = BaseTableResourcesConfigImpl(dataSet)
-        sourceConfig.keyColumn = "key"
+        val sourceConfig = BaseTableResourcesConfigImpl(dataSet, keyColumn = "key")
 
         val source = sourceConfig.resources
         val result = source.read(setOf("en", "ru"), null)
@@ -98,8 +97,7 @@ class BaseTableResourcesTest {
         dataSet.add("key1", Quantity.ONE.toString(), "Some comment", arrayOf("value2"), null)
         dataSet.add("key2", Quantity.FEW.toString(), "Some comment", arrayOf("value"), null)
 
-        val sourceConfig = BaseTableResourcesConfigImpl(dataSet)
-        sourceConfig.keyColumn = "key"
+        val sourceConfig = BaseTableResourcesConfigImpl(dataSet, keyColumn = "key")
 
         val source = sourceConfig.resources
         val result = source.read(setOf(Resources.BASE_LOCALE, "ru"), null)
@@ -129,8 +127,7 @@ class BaseTableResourcesTest {
         dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"), null)
         dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), null)
 
-        val sourceConfig = BaseTableResourcesConfigImpl(dataSet)
-        sourceConfig.keyColumn = "key"
+        val sourceConfig = BaseTableResourcesConfigImpl(dataSet, keyColumn = "key")
 
         val source = sourceConfig.resources
         val result = source.read(setOf(Resources.BASE_LOCALE, "ru", "en"), null)
@@ -148,8 +145,7 @@ class BaseTableResourcesTest {
         dataSet.add("key1", Quantity.ZERO.toString(), "Some comment", arrayOf("value2", "value1_2"), null)
         dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), null)
 
-        val sourceConfig = BaseTableResourcesConfigImpl(dataSet)
-        sourceConfig.keyColumn = "key"
+        val sourceConfig = BaseTableResourcesConfigImpl(dataSet, keyColumn = "key")
 
         val source = sourceConfig.resources
         val result = source.read(setOf(Resources.BASE_LOCALE, "en", "true_base", "ru"), null)
@@ -168,8 +164,7 @@ class BaseTableResourcesTest {
         dataSet.add("key1", Quantity.ONE.toString(), "Some comment", arrayOf("value2", "value1_2"), "invalid meta")
         dataSet.add("key2", null, "Some comment", arrayOf("value2_1", "value2_2"), "format=1;case=UPPER")
 
-        val sourceConfig = BaseTableResourcesConfigImpl(dataSet)
-        sourceConfig.keyColumn = "key"
+        val sourceConfig = BaseTableResourcesConfigImpl(dataSet, keyColumn = "key")
 
         val source = sourceConfig.resources
         val result = source.read(setOf(Resources.BASE_LOCALE, "ru"), null)
@@ -229,9 +224,15 @@ class BaseTableResourcesTest {
         }
     }
 
-    private class BaseTableResourcesConfigImpl internal constructor(
-            private val dataSet: MockDataSet
-    ) : BaseTableResourcesConfig() {
+    private class BaseTableResourcesConfigImpl(
+        private val dataSet: MockDataSet,
+        keyColumn: String,
+        quantityColumn: String? = null,
+        commentColumn: String? = null,
+        metadataColumn: String? = null
+    ) : BaseTableResourcesConfig(
+        keyColumn, quantityColumn, commentColumn, metadataColumn
+    ) {
 
         override val type: String
             get() = "mock"

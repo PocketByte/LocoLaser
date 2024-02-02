@@ -15,6 +15,7 @@ import java.nio.file.Paths
 
 import org.junit.Assert.*
 import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.json.KeyPluralizationRule.Postfix
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
@@ -31,7 +32,7 @@ class JsonResourceFileTest {
         if (testFile.exists())
             assertTrue(testFile.delete())
 
-        val resourceFile = JsonResourceFile(testFile, "en", -1)
+        val resourceFile = JsonResourceFile(testFile, "en", -1, Postfix.Named())
 
         assertNull(resourceFile.read(ExtraParams()))
     }
@@ -41,13 +42,14 @@ class JsonResourceFileTest {
     fun testRead() {
         val testLocale = "ru"
         val testFile = prepareTestFile(
-                        "{\r\n" +
-                            "    \"string1\":\"Value1\",\r\n" +
-                            "    \"string2\":\"Value2\",\r\n" +
-                            "    \"string3\":\"Value 3\"\r\n" +
-                            "}")
+            "{\r\n" +
+                "    \"string1\":\"Value1\",\r\n" +
+                "    \"string2\":\"Value2\",\r\n" +
+                "    \"string3\":\"Value 3\"\r\n" +
+                "}"
+        )
 
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
         val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
@@ -72,7 +74,7 @@ class JsonResourceFileTest {
                     "    \"string2\":\"Not Formatted Value2\"\r\n" +
                     "}")
 
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
         val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
@@ -104,7 +106,8 @@ class JsonResourceFileTest {
 
         assertEquals(
             listOf("string1", "string2", "string3"),
-            JsonResourceFile(testFile1, testLocale, -1).read(ExtraParams())!![testLocale]!!.keys.map { it }
+            JsonResourceFile(testFile1, testLocale, -1, Postfix.Named())
+                .read(ExtraParams())!![testLocale]!!.keys.map { it }
         )
 
         val testFile2 = prepareTestFile(
@@ -116,23 +119,24 @@ class JsonResourceFileTest {
 
         assertEquals(
             listOf("string3", "string2", "string1"),
-            JsonResourceFile(testFile2, testLocale, -1).read(ExtraParams())!![testLocale]!!.keys.map { it }
+            JsonResourceFile(testFile2, testLocale, -1, Postfix.Named())
+                .read(ExtraParams())!![testLocale]!!.keys.map { it }
         )
     }
 
     @Test
     @Throws(IOException::class)
-    fun testReadPlural() {
+    fun testReadNumericPostfixPlural() {
         val testLocale = "ru"
         val testFile = prepareTestFile(
                 "{" +
                     "\"key2\":\"value2_1\"," +
                     "\"key1_plural_2\":\"value1_3\"," +
-                    "\"key1_plural_5\":\"value1_1\"," +
+                    "\"key1_plural_3\":\"value1_1\"," +
                     "\"key1_plural_0\":\"value1_2\"" +
                     "}")
 
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Numeric())
         val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
@@ -152,17 +156,17 @@ class JsonResourceFileTest {
 
     @Test
     @Throws(IOException::class)
-    fun testReadFormattedPlural() {
+    fun testReadNamedPostfixPlural() {
         val testLocale = "ru"
         val testFile = prepareTestFile(
-                "{" +
+            "{" +
                     "\"key2\":\"value2_1\"," +
-                    "\"key1_plural_2\":\"value1_3 {{count}}\"," +
-                    "\"key1_plural_5\":\"{{string}} value1_1\"," +
-                    "\"key1_plural_0\":\"value1_2\"" +
+                    "\"key1_plural_many\":\"value1_3\"," +
+                    "\"key1_plural_other\":\"value1_1\"," +
+                    "\"key1_plural_one\":\"value1_2\"" +
                     "}")
 
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
         val resMap = resourceFile.read(ExtraParams())
 
         assertNotNull(resMap)
@@ -170,12 +174,75 @@ class JsonResourceFileTest {
         val expectedMap = ResMap()
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-                ResValue("{{string}} value1_1", null, Quantity.OTHER,
-                        WebFormattingType, WebFormattingType.argumentsFromValue("{{string}}")),
-                ResValue("value1_2", null, Quantity.ONE,
-                        NoFormattingType, null),
-                ResValue("value1_3 {{count}}", null, Quantity.MANY,
-                        WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}"))
+            ResValue("value1_1", null, Quantity.OTHER),
+            ResValue("value1_2", null, Quantity.ONE),
+            ResValue("value1_3", null, Quantity.MANY)
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", null, Quantity.OTHER))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testReadNumericPostfixFormattedPlural() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+            "{" +
+                    "\"key2\":\"value2_1\"," +
+                    "\"key1_plural_2\":\"value1_3 {{count}}\"," +
+                    "\"key1_plural_3\":\"{{string}} value1_1\"," +
+                    "\"key1_plural_0\":\"value1_2\"" +
+                    "}")
+
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Numeric())
+        val resMap = resourceFile.read(ExtraParams())
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("{{string}} value1_1", null, Quantity.OTHER,
+                WebFormattingType, WebFormattingType.argumentsFromValue("{{string}}")),
+            ResValue("value1_2", null, Quantity.ONE,
+                NoFormattingType, null),
+            ResValue("value1_3 {{count}}", null, Quantity.MANY,
+                WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}"))
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", null, Quantity.OTHER))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testReadNamedPostfixFormattedPlural() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+            "{" +
+                    "\"key2\":\"value2_1\"," +
+                    "\"key1_plural_many\":\"value1_3 {{count}}\"," +
+                    "\"key1_plural_other\":\"{{string}} value1_1\"," +
+                    "\"key1_plural_one\":\"value1_2\"" +
+                    "}")
+
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
+        val resMap = resourceFile.read(ExtraParams())
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("{{string}} value1_1", null, Quantity.OTHER,
+                WebFormattingType, WebFormattingType.argumentsFromValue("{{string}}")),
+            ResValue("value1_2", null, Quantity.ONE,
+                NoFormattingType, null),
+            ResValue("value1_3 {{count}}", null, Quantity.MANY,
+                WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}"))
         )))
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", null, Quantity.OTHER))))
         expectedMap[testLocale] = resLocale
@@ -203,7 +270,7 @@ class JsonResourceFileTest {
         resMap[redundantLocale] = resLocale
 
         val testFile = tempFolder.newFile()
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
         resourceFile.write(resMap, null)
 
         val expectedResult = "{\"key1\": \"value1_1\",\"key2\": \"value2_1\"}"
@@ -223,7 +290,7 @@ class JsonResourceFileTest {
         resMap[testLocale] = resLocale
 
         val testFile = tempFolder.newFile()
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
         resourceFile.write(resMap, null)
 
         val expectedResult = "{\"key1\": \"value1_1 {{count}}.\"}"
@@ -245,7 +312,7 @@ class JsonResourceFileTest {
         resMap[testLocale] = resLocale
 
         val testFile = tempFolder.newFile()
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
         resourceFile.write(resMap, null)
 
         val expectedResult = "{\"key1\": \"value1_1 {{javaString}}.\"}"
@@ -260,7 +327,7 @@ class JsonResourceFileTest {
 
         val testFile1 = tempFolder.newFile()
 
-        JsonResourceFile(testFile1, testLocale, -1).write(
+        JsonResourceFile(testFile1, testLocale, -1, Postfix.Named()).write(
             ResMap().apply {
                 this[testLocale] = ResLocale().apply {
                     put(prepareResItem("key1", arrayOf(ResValue("v", null))))
@@ -278,7 +345,7 @@ class JsonResourceFileTest {
 
         val testFile2 = tempFolder.newFile()
 
-        JsonResourceFile(testFile2, testLocale, -1).write(
+        JsonResourceFile(testFile2, testLocale, -1, Postfix.Named()).write(
             ResMap().apply {
                 this[testLocale] = ResLocale().apply {
                     put(prepareResItem("key3", arrayOf(ResValue("v", null))))
@@ -297,59 +364,119 @@ class JsonResourceFileTest {
 
     @Test
     @Throws(IOException::class)
-    fun testWritePlurals() {
+    fun testWriteNumericPostfixPlurals() {
         val testLocale = "ru"
 
         val resMap = ResMap()
 
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-                ResValue("value1_0", null, Quantity.ZERO),
-                ResValue("value1_many", "Comment", Quantity.MANY),
-                ResValue("value1_other", "Comment", Quantity.OTHER)
+            ResValue("value1_0", null, Quantity.ZERO),
+            ResValue("value1_many", "Comment", Quantity.MANY),
+            ResValue("value1_other", "Comment", Quantity.OTHER)
         )))
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
         resMap[testLocale] = resLocale
 
         val testFile = tempFolder.newFile()
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Numeric())
         resourceFile.write(resMap, null)
 
         val expectedResult =
-                "{" +
-                "\"key1_plural_2\": \"value1_many\"," +
-                "\"key1_plural_3\": \"value1_other\"," +
-                "\"key2\": \"value2_1\"" +
-                "}"
+            "{" +
+                    "\"key1_plural_2\": \"value1_many\"," +
+                    "\"key1_plural_3\": \"value1_other\"," +
+                    "\"key2\": \"value2_1\"" +
+                    "}"
 
         assertEquals(expectedResult, readFile(testFile))
     }
 
     @Test
     @Throws(IOException::class)
-    fun testWritePluralsFormatted() {
+    fun testWriteNamedPostfixPlurals() {
         val testLocale = "ru"
 
         val resMap = ResMap()
 
         val resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(
-                ResValue("value1_many {{count}}", "Comment", Quantity.MANY,
-                        WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}")),
-                ResValue("value1_other {{count}}", "Comment", Quantity.OTHER,
-                        WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}"))
+            ResValue("value1_0", null, Quantity.ZERO),
+            ResValue("value1_many", "Comment", Quantity.MANY),
+            ResValue("value1_other", "Comment", Quantity.OTHER)
+        )))
+        resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
+        resourceFile.write(resMap, null)
+
+        val expectedResult =
+            "{" +
+                    "\"key1_plural_zero\": \"value1_0\"," +
+                    "\"key1_plural_many\": \"value1_many\"," +
+                    "\"key1_plural_other\": \"value1_other\"," +
+                    "\"key2\": \"value2_1\"" +
+                    "}"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteNumericPostfixFormattedPlurals() {
+        val testLocale = "ru"
+
+        val resMap = ResMap()
+
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_many {{count}}", "Comment", Quantity.MANY,
+                WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}")),
+            ResValue("value1_other {{count}}", "Comment", Quantity.OTHER,
+                WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}"))
         )))
         resMap[testLocale] = resLocale
 
         val testFile = tempFolder.newFile()
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Numeric())
         resourceFile.write(resMap, null)
 
         val expectedResult =
-                "{" +
-                "\"key1_plural_2\": \"value1_many {{count}}\"," +
-                "\"key1_plural_3\": \"value1_other {{count}}\"" +
-                "}"
+            "{" +
+                    "\"key1_plural_2\": \"value1_many {{count}}\"," +
+                    "\"key1_plural_3\": \"value1_other {{count}}\"" +
+                    "}"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteNamedPostfixFormattedPlurals() {
+        val testLocale = "ru"
+
+        val resMap = ResMap()
+
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("key1", arrayOf(
+            ResValue("value1_many {{count}}", "Comment", Quantity.MANY,
+                WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}")),
+            ResValue("value1_other {{count}}", "Comment", Quantity.OTHER,
+                WebFormattingType, WebFormattingType.argumentsFromValue("{{count}}"))
+        )))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
+        resourceFile.write(resMap, null)
+
+        val expectedResult =
+            "{" +
+                    "\"key1_plural_many\": \"value1_many {{count}}\"," +
+                    "\"key1_plural_other\": \"value1_other {{count}}\"" +
+                    "}"
 
         assertEquals(expectedResult, readFile(testFile))
     }
@@ -377,13 +504,13 @@ class JsonResourceFileTest {
         resMap[testLocale] = resLocale
 
         val testFile = tempFolder.newFile()
-        val resourceFile = JsonResourceFile(testFile, testLocale, -1)
+        val resourceFile = JsonResourceFile(testFile, testLocale, -1, Postfix.Named())
         resourceFile.write(resMap, null)
 
         val expectedResult =
                 "{" +
-                "\"key1_plural_2\": \"value1_many {{some_d}}, {{some_s}}\"," +
-                "\"key1_plural_3\": \"value1_other {{javaString}}\"" +
+                "\"key1_plural_many\": \"value1_many {{some_d}}, {{some_s}}\"," +
+                "\"key1_plural_other\": \"value1_other {{javaString}}\"" +
                 "}"
 
         assertEquals(expectedResult, readFile(testFile))
@@ -403,13 +530,15 @@ class JsonResourceFileTest {
             }
         }
 
-        JsonResourceFile(testFile, testLocale, -1).write(resMap, null)
+        JsonResourceFile(testFile, testLocale, -1, Postfix.Named()).write(resMap, null)
+
         assertEquals(
                 "{\"key1\": \"v\",\"key2\": \"v\",\"key3\": \"v\"}",
                 readFile(testFile)
         )
 
-        JsonResourceFile(testFile, testLocale, 0).write(resMap, null)
+        JsonResourceFile(testFile, testLocale, 0, Postfix.Named()).write(resMap, null)
+
         assertEquals(
                 "{\n" +
                         "\"key1\": \"v\",\n" +
@@ -419,7 +548,7 @@ class JsonResourceFileTest {
                 readFile(testFile)
         )
 
-        JsonResourceFile(testFile, testLocale, 2).write(resMap, null)
+        JsonResourceFile(testFile, testLocale, 2, Postfix.Named()).write(resMap, null)
         assertEquals(
                 "{\n" +
                         "  \"key1\": \"v\",\n" +
@@ -429,7 +558,7 @@ class JsonResourceFileTest {
                 readFile(testFile)
         )
 
-        JsonResourceFile(testFile, testLocale, 10).write(resMap, null)
+        JsonResourceFile(testFile, testLocale, 10, Postfix.Named()).write(resMap, null)
         assertEquals(
                 "{\n" +
                         "          \"key1\": \"v\",\n" +

@@ -15,7 +15,7 @@ class JvmBundleStringProvider(
 ) : IndexFormattedStringProvider {
 
     companion object {
-        private val defaultFallbackHandler: FallbackHandler = { bundle, locale, key ->
+        private val defaultFallbackHandler: FallbackHandler = { bundle, _, key ->
             throw MissingResourceException(
                 "Can't find resource for bundle",
                 bundle.javaClass.name,

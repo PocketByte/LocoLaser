@@ -7,6 +7,7 @@ import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.*
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType.ArgumentsSubstitution
 import java.io.File
 
 open class KotlinAbsStaticResourceFile(
@@ -16,7 +17,7 @@ open class KotlinAbsStaticResourceFile(
     private val interfaceName: String?,
     private val interfacePackage: String?,
     formattingType: FormattingType = WebFormattingType
-): BasePoetClassResourceFile(file, className, classPackage, formattingType) {
+): BaseKotlinPoetClassResourceFile(file, className, classPackage, formattingType) {
 
     companion object {
         private const val PARAMETER_NAME_COUNT = "count"
@@ -37,7 +38,10 @@ open class KotlinAbsStaticResourceFile(
         }
 
         builder.addFunction(instantiateGetQuantitySpecBuilder().build())
-        builder.addFunction(instantiateFormatStringSpecBuilder().build())
+
+        if (formattingType.argumentsSubstitution != ArgumentsSubstitution.NO) {
+            builder.addFunction(instantiateFormatStringSpecBuilder().build())
+        }
 
         return builder
     }
@@ -90,13 +94,17 @@ open class KotlinAbsStaticResourceFile(
                 ?: throw IllegalArgumentException("item must have OTHER quantity")
         ).value
 
-        builder.addStatement(
-            StringBuilder("return $FUN_NAME_FORMAT_STRING(%S")
-                .appendFormatFunctionArguments(formattingArguments, isPlural = false)
-                .append(")")
-                .toString(),
-            otherValue
-        )
+        if (formattingType.argumentsSubstitution != ArgumentsSubstitution.NO) {
+            builder.addStatement(
+                StringBuilder("return $FUN_NAME_FORMAT_STRING(%S")
+                    .appendFormatFunctionArguments(formattingArguments, isPlural = false)
+                    .append(")")
+                    .toString(),
+                otherValue
+            )
+        } else {
+            builder.addStatement("return %S", otherValue)
+        }
 
         return builder
     }
@@ -140,12 +148,17 @@ open class KotlinAbsStaticResourceFile(
         codeBlock.addStatement("else -> %S", formattedValue.value)
         codeBlock.endControlFlow()
 
-        codeBlock.addStatement(
-            StringBuilder("return $FUN_NAME_FORMAT_STRING(stringValue")
-                .appendFormatFunctionArguments(formattingArguments, isPlural = true)
-                .append(")")
-                .toString()
-        )
+
+        if (formattingType.argumentsSubstitution != ArgumentsSubstitution.NO) {
+            codeBlock.addStatement(
+                StringBuilder("return $FUN_NAME_FORMAT_STRING(stringValue")
+                    .appendFormatFunctionArguments(formattingArguments, isPlural = true)
+                    .append(")")
+                    .toString()
+            )
+        } else {
+            codeBlock.addStatement("return stringValue")
+        }
 
         builder.addCode(codeBlock.build())
 
@@ -168,16 +181,16 @@ open class KotlinAbsStaticResourceFile(
             .returns(String::class)
 
         when (formattingType.argumentsSubstitution) {
-            FormattingType.ArgumentsSubstitution.BY_INDEX -> {
+            ArgumentsSubstitution.BY_INDEX -> {
                 builder.addParameter(PARAMETER_NAME_ARGS, Any::class, KModifier.VARARG)
             }
-            FormattingType.ArgumentsSubstitution.BY_NAME -> {
+            ArgumentsSubstitution.BY_NAME -> {
                 builder.addParameter(PARAMETER_NAME_ARGS,
                     KeyValuePairClassName,
                     KModifier.VARARG
                 )
             }
-            FormattingType.ArgumentsSubstitution.NO -> {
+            ArgumentsSubstitution.NO -> {
                 // Do nothing
             }
         }
@@ -196,7 +209,7 @@ open class KotlinAbsStaticResourceFile(
                 argument.anyName(index)
             }
             when (formattingType.argumentsSubstitution) {
-                FormattingType.ArgumentsSubstitution.BY_NAME -> {
+                ArgumentsSubstitution.BY_NAME -> {
                     append("Pair(\"")
                     append(argumentName)
                     append("\", ")

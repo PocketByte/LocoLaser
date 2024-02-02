@@ -87,6 +87,9 @@ kotlin {
 
         val jsMain by getting {
             dependsOn(commonMain)
+            dependencies {
+                implementation(npm("i18next", "23.7.11"))
+            }
         }
     }
     jvmToolchain(8)

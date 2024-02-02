@@ -16,7 +16,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertEquals
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.kotlinmpp.resource.AbsKotlinResources
+import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinAbsResources
 import ru.pocketbyte.locolaser.kotlinmpp.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
@@ -242,7 +242,7 @@ class KotlinCommonResourceFileTest {
     private fun fileForClass(directory: File, className: String, classPackage: String): File {
         return File(
             File(directory, classPackage.replace(".", "/")),
-            "$className.${AbsKotlinResources.KOTLIN_FILE_EXTENSION}"
+            "$className.${KotlinAbsResources.KOTLIN_FILE_EXTENSION}"
         )
     }
 }

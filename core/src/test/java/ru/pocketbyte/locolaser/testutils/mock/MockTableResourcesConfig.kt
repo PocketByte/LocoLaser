@@ -12,7 +12,14 @@ import java.io.File
 /**
  * @author Denis Shurygin
  */
-class MockTableResourcesConfig : BaseTableResourcesConfig() {
+class MockTableResourcesConfig(
+    keyColumn: String = "key",
+    quantityColumn: String? = null,
+    commentColumn: String? = null,
+    metadataColumn: String? = null
+) : BaseTableResourcesConfig(
+    keyColumn, quantityColumn, commentColumn, metadataColumn
+) {
 
     override val type = "mock"
     override val resources: Resources = MockResources(File(""), "mock", null)

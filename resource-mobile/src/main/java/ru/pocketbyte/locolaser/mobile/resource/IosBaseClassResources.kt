@@ -17,7 +17,7 @@ abstract class IosBaseClassResources(
 
     override val formattingType: FormattingType = NoFormattingType
 
-    var tableName: String = tableName ?: defaultTableName
+    val tableName: String = tableName ?: defaultTableName
 
     protected val defaultTableName: String
         get() = "Localizable"
