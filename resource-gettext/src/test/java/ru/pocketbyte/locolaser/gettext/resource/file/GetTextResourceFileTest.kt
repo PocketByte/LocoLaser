@@ -147,6 +147,7 @@ class GetTextResourceFileTest {
         var resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key4", arrayOf(ResValue("value4_1", "", Quantity.OTHER))))
         resMap[testLocale] = resLocale
 
         // Redundant locale. Shouldn't be written into file.
@@ -159,14 +160,19 @@ class GetTextResourceFileTest {
         val resourceFile = GetTextResourceFile(testFile, testLocale)
         resourceFile.write(resMap, null)
 
-        val expectedResult = (GetTextResourceFile.GENERATED_GETTEXT_COMMENT + "\r\n\r\n" +
+        val expectedResult = (
+            GetTextResourceFile.GENERATED_GETTEXT_COMMENT + "\r\n\r\n" +
                 "# Comment\r\n" +
                 "msgid \"key1\"\r\n" +
                 "msgstr \"value1_1\"\r\n" +
                 "\r\n" +
                 "# value2_1\r\n" +
                 "msgid \"key2\"\r\n" +
-                "msgstr \"value2_1\"")
+                "msgstr \"value2_1\"" +
+                "\r\n" +
+                "msgid \"key4\"\r\n" +
+                "msgstr \"value4_1\""
+        )
 
         assertEquals(expectedResult, readFile(testFile))
     }

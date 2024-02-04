@@ -17,19 +17,11 @@ buildscript {
     }
     dependencies {
         val locolaserVersion = "2.3.0-alpha6"
-        classpath("ru.pocketbyte.locolaser:plugin:$locolaserVersion")
-        classpath("ru.pocketbyte.locolaser:core:$locolaserVersion")
-        classpath("ru.pocketbyte.locolaser:resource-gettext:$locolaserVersion")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:$locolaserVersion")
-        classpath("ru.pocketbyte.locolaser:resource-ini:$locolaserVersion")
-        classpath("ru.pocketbyte.locolaser:resource-json:$locolaserVersion")
-        classpath("ru.pocketbyte.locolaser:resource-kotlin-mpp:$locolaserVersion")
-        classpath("ru.pocketbyte.locolaser:resource-mobile:$locolaserVersion")
-        classpath("ru.pocketbyte.locolaser:resource-properties:$locolaserVersion")
+        classpath("ru.pocketbyte.locolaser:plugin-all:$locolaserVersion")
     }
 }
 
-plugins.apply("ru.pocketbyte.locolaser")
+plugins.apply("ru.pocketbyte.locolaser.all")
 
 version = "unspecified"
 

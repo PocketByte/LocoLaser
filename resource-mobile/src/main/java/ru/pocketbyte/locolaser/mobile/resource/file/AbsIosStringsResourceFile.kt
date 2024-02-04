@@ -2,7 +2,6 @@ package ru.pocketbyte.locolaser.mobile.resource.file
 
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.mobile.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
@@ -10,6 +9,7 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.LogUtils
+import ru.pocketbyte.locolaser.utils.commentShouldBeWritten
 import java.io.File
 import java.io.IOException
 import java.io.LineNumberReader
@@ -169,13 +169,12 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                     }
 
                     val resValue = formattingType.convert(resItem.values[0])
-                    val comment = resValue.comment
                     val value = resValue.value
 
-                    if (comment != null && (extraParams == null || extraParams.duplicateComments || comment != value)) {
+                    if (commentShouldBeWritten(resValue, extraParams)) {
                         writeString(COMMENT_MULTILINE_START_2)
                         writeString(" ")
-                        writeString(comment)
+                        writeString(resValue.comment ?: "")
                         writeString(" ")
                         writeString(COMMENT_MULTILINE_END)
                         writeln()

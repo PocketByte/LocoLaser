@@ -6,7 +6,6 @@
 package ru.pocketbyte.locolaser.mobile.resource.file
 
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.mobile.utils.TemplateStr.GENERATED_COMMENT_STRINGS
 import ru.pocketbyte.locolaser.mobile.utils.TemplateStr.GENERATED_NEW_LINE
@@ -16,6 +15,7 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.PluralUtils
+import ru.pocketbyte.locolaser.utils.commentShouldBeWritten
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -167,11 +167,9 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                     val resValue = formattingType.convert(resItem.values[0])
                     val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
                     val value = resValue.value
-                    val comment = resValue.comment
 
-                    val writeComment = extraParams?.duplicateComments != false || comment != value
-                    if (comment != null && writeComment) {
-                        writer.writeComment(" $comment ")
+                    if (commentShouldBeWritten(resValue, extraParams)) {
+                        writer.writeComment(" ${resValue.comment ?: ""} ")
                         writer.writeNewLine(indentLevel)
                     }
 
@@ -196,11 +194,9 @@ class AndroidResourceFile(file: File, private val mLocale: String) : ResourceStr
                         val resValue = formattingType.convert(it)
                         val isCDATA = META_CDATA_ON == resValue.meta?.get(META_CDATA)
                         val value = resValue.value
-                        val comment = resValue.comment
 
-                        val writeComment = extraParams?.duplicateComments != false || comment != value
-                        if (comment != null && writeComment) {
-                            writer.writeComment(" $comment ")
+                        if (commentShouldBeWritten(resValue, extraParams)) {
+                            writer.writeComment(" ${resValue.comment ?: ""} ")
                             writer.writeNewLine(indentLevel)
                         }
 

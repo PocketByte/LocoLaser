@@ -94,6 +94,7 @@ class IosPlistResourceFileTest {
         var resLocale = ResLocale()
         resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
         resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
+        resLocale.put(prepareResItem("key4", arrayOf(ResValue("value4_1", "", Quantity.OTHER))))
         resMap[testLocale] = resLocale
 
         // Redundant locale. Shouldn't be written into file.
@@ -111,7 +112,8 @@ class IosPlistResourceFileTest {
                 "key1 = \"value1_1\";\r\n" +
                 "\r\n" +
                 "/* value2_1 */\r\n" +
-                "key2 = \"value2_1\";")
+                "key2 = \"value2_1\";" +
+                "key4 = \"value4_1\";")
 
         assertEquals(expectedResult, readFile(testFile))
     }

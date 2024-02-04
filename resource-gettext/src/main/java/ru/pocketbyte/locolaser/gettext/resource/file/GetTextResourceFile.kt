@@ -6,13 +6,13 @@
 package ru.pocketbyte.locolaser.gettext.resource.file
 
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResLocale
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.entity.ResValue
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.utils.commentShouldBeWritten
 import java.io.File
 import java.io.IOException
 import java.io.LineNumberReader
@@ -167,13 +167,12 @@ class GetTextResourceFile(file: File, private val mLocale: String) : ResourceStr
                 }
 
                 val resValue = formattingType.convert(resItem.values[0])
-                val comment = resValue.comment
                 val value = resValue.value
 
-                if (comment != null && (extraParams == null || extraParams.duplicateComments || comment != value)) {
+                if (commentShouldBeWritten(resValue, extraParams)) {
                     writeString(COMMENT_SINGLE_LINE)
                     writeString(" ")
-                    writeString(comment)
+                    writeString(resValue.comment ?: "")
                     writeln()
                 }
                 writeString("msgid \"")

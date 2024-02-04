@@ -2,13 +2,13 @@ package ru.pocketbyte.locolaser.ini.resource.file
 
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.utils.PluralUtils
+import ru.pocketbyte.locolaser.utils.commentShouldBeWritten
 import java.io.File
 import java.io.IOException
 import java.io.LineNumberReader
@@ -188,7 +188,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>?):ResourceStre
 
                         for (value in resItem.values)
                         {
-                            if (isCommentShouldBeWritten(value, extraParams))
+                            if (commentShouldBeWritten(value, extraParams))
                             {
                                 writeString(COMMENT_SINGLE_LINE)
                                 writeString(" ")
@@ -206,7 +206,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>?):ResourceStre
                         val value = resItem.valueForQuantity(Quantity.OTHER)
                         if (value != null)
                         {
-                            if (isCommentShouldBeWritten(value, extraParams))
+                            if (commentShouldBeWritten(value, extraParams))
                             {
                                 writeString(COMMENT_SINGLE_LINE)
                                 writeString(" ")
@@ -222,10 +222,6 @@ class IniResourceFile(file:File, private val mLocales:Set<String>?):ResourceStre
         }
 
         close()
-    }
-
-    private fun isCommentShouldBeWritten(value:ResValue, extraParams: ExtraParams?):Boolean {
-        return value.comment != null && (extraParams?.duplicateComments != false || value.comment != value.value)
     }
 
     private fun ResItem.addValue(value: String, comment: String?, quantity: Quantity) {
