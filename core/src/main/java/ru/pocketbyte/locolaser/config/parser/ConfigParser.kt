@@ -15,6 +15,8 @@ import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 
 import com.beust.jcommander.Parameter
 import ru.pocketbyte.locolaser.config.ConfigBuilder
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
+import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
 import ru.pocketbyte.locolaser.utils.LogUtils
 import ru.pocketbyte.locolaser.utils.buildFileFrom
@@ -171,28 +173,28 @@ open class ConfigParser
         }
         this.tempDir = JsonParseUtils.getString(configJson, TEMP_DIR, null, false)
 
-        sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), true)?.let {
+        sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), workDir, true)?.let {
             if (it is ResourcesSetConfig) {
-                it.main?.let { main -> this.source.add(main) }
+                it.main?.let { main -> this.source.add(main.asBuilder()) }
                 it.configs.forEach { item ->
                     if (item != it.main) {
-                        this.source.add(item)
+                        this.source.add(item.asBuilder())
                     }
                 }
             } else {
-                this.source.add(it)
+                this.source.add(it.asBuilder())
             }
         }
-        platformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), true)?.let {
+        platformConfigParser.parse(JsonParseUtils.getObject(configJson, PLATFORM, null, true), workDir, true)?.let {
             if (it is ResourcesSetConfig) {
-                it.main?.let { main -> this.platform.add(main) }
+                it.main?.let { main -> this.platform.add(main.asBuilder()) }
                 it.configs.forEach { item ->
                     if (item != it.main) {
-                        this.platform.add(item)
+                        this.platform.add(item.asBuilder())
                     }
                 }
             } else {
-                this.platform.add(it)
+                this.platform.add(it.asBuilder())
             }
         }
 
@@ -210,6 +212,19 @@ open class ConfigParser
     private fun validate(config: ConfigBuilder) {
         if (config.locales.isEmpty())
             throw InvalidConfigException("\"$LOCALES\" must contain at least one item.")
+    }
+
+    private fun <T : ResourcesConfig> T.asBuilder(): ResourcesConfigBuilder<T> {
+        return BuilderImitator(this)
+    }
+
+    // FIXME: Temp solution while ConfigParser is not removed.
+    private class BuilderImitator<T : ResourcesConfig>(
+        val config: T
+    ): ResourcesConfigBuilder<T> {
+        override fun build(workDir: File?): T {
+            return config
+        }
     }
 
     class ConfigArgsParser {

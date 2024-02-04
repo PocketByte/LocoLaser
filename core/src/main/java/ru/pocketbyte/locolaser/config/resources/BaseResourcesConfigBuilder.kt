@@ -1,8 +1,11 @@
 package ru.pocketbyte.locolaser.config.resources
 
+import java.io.File
+
 abstract class BaseResourcesConfigBuilder<out T : BaseResourcesConfig> : ResourcesConfigBuilder<T> {
 
     protected abstract fun buildConfig(
+        workDir: File?,
         resourceName: String?,
         resourcesDir: String?,
         resourceFileProvider: ResourceFileProvider?,
@@ -37,7 +40,7 @@ abstract class BaseResourcesConfigBuilder<out T : BaseResourcesConfig> : Resourc
         filter = BaseResourcesConfig.regExFilter(regExp)
     }
 
-    final override fun build(): T {
-        return buildConfig(resourceName, resourcesDir, resourceFileProvider, filter)
+    final override fun build(workDir: File?): T {
+        return buildConfig(workDir, resourceName, resourcesDir, resourceFileProvider, filter)
     }
 }

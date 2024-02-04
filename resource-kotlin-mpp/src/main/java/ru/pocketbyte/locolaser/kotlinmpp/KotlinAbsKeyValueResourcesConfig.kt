@@ -4,15 +4,17 @@ import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinAbsKeyValueResources
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import java.io.File
 
 class KotlinAbsKeyValueResourcesConfig(
+    workDir: File?,
     resourceName: String?,
     resourcesDirPath: String?,
     interfaceName: String?,
     override val formattingType: FormattingType = NoFormattingType,
     filter: ((key: String) -> Boolean)?
 ) : KotlinBaseResourcesConfig(
-    resourceName, resourcesDirPath, interfaceName, filter
+    workDir, resourceName, resourcesDirPath, interfaceName, filter
 ), KotlinResourcesConfigWithFormattingType {
 
     companion object : ResourcesConfigBuilderFactory<KotlinAbsKeyValueResourcesConfig, KotlinAbsKeyValueResourcesConfigBuilder> {
@@ -27,9 +29,14 @@ class KotlinAbsKeyValueResourcesConfig(
     override val defaultResourcesPath = "./build/generated/src/main/kotlin/"
     override val defaultResourceName  = "$DEFAULT_PACKAGE.AbsKeyValue$DEFAULT_INTERFACE_NAME"
 
-    override val resources
-        get() = KotlinAbsKeyValueResources(
-            resourcesDir, resourceName, implements,
-            formattingType, resourceFileProvider, filter
+    override val resources by lazy {
+        KotlinAbsKeyValueResources(
+            dir = this.resourcesDir,
+            name = this.resourceName,
+            interfaceName = this.implements,
+            formattingType = this.formattingType,
+            resourceFileProvider = this.resourceFileProvider,
+            filter = this.filter
         )
+    }
 }

@@ -14,6 +14,7 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.gettext.GetTextResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
+import java.io.File
 
 /**
  * @author Denis Shurygin
@@ -28,11 +29,11 @@ class GetTextResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> 
     }
 
     @Throws(InvalidConfigException::class)
-    override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): BaseResourcesConfig? {
+    override fun parse(resourceObject: Any?, workDir: File?, throwIfWrongType: Boolean): BaseResourcesConfig? {
 
         if (resourceObject is String) {
             if (checkType(resourceObject, throwIfWrongType))
-                return GetTextResourcesConfigBuilder().build()
+                return GetTextResourcesConfigBuilder().build(workDir)
         } else if (resourceObject is JSONObject) {
 
             if (checkType(getString(resourceObject, ResourcesConfigParser.RESOURCE_TYPE, PLATFORM, true), throwIfWrongType)) {
@@ -49,7 +50,7 @@ class GetTextResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> 
                 config.filter = BaseResourcesConfig.regExFilter(
                         getString(resourceObject, FILTER, PLATFORM, false))
 
-                return config.build()
+                return config.build(workDir)
             }
         }
 

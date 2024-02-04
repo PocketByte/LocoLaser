@@ -7,6 +7,7 @@ package ru.pocketbyte.locolaser.config.parser
 
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
+import java.io.File
 
 /**
  * Parser interface that parse ResourcesConfig object from some object(JSON or String).
@@ -28,6 +29,6 @@ interface ResourcesConfigParser<out ConfigType : ResourcesConfig> {
      * @throws InvalidConfigException if config has some logic errors or doesn't contain some required fields.
      */
     @Throws(InvalidConfigException::class)
-    fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ConfigType?
+    fun parse(resourceObject: Any?, workDir: File?, throwIfWrongType: Boolean): ConfigType?
 
 }

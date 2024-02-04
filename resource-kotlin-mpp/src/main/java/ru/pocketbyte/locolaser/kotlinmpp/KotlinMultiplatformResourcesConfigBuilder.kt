@@ -12,6 +12,7 @@ import ru.pocketbyte.locolaser.kotlinmpp.builder.KmpClassCustomFormattingBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.builder.KmpClassFixedFormattingBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.builder.KmpInterfaceBuilder
 import ru.pocketbyte.locolaser.utils.callWithDelegate
+import java.io.File
 
 class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<ResourcesConfig> {
 
@@ -267,14 +268,14 @@ class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<Resourc
         action(platformBuilder)
     }
 
-    override fun build(): ResourcesConfig {
+    override fun build(workDir: File?): ResourcesConfig {
         val resultSet = LinkedHashSet<ResourcesConfig>()
 
-        val commonConfig = platformCommon.build(this)
+        val commonConfig = platformCommon.build(workDir, this)
         resultSet.add(commonConfig)
 
         platformMap.values.forEach { builder ->
-            builder.build(this) {
+            builder.build(workDir, this) {
                 this.implements = commonConfig.resourceName
             }.let {
                 resultSet.add(it)

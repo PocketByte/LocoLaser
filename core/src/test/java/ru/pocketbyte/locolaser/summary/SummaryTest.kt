@@ -110,8 +110,10 @@ class SummaryTest {
         val summary = Summary(tempFolder.newFile(), JSONObject())
         assertNull(summary.configSummary)
 
-        val config = Config(tempFolder.newFolder())
-        config.file = prepareTestFile("{}")
+        val config = Config(
+            tempFolder.newFolder(),
+            file = prepareTestFile("{}")
+        )
 
         summary.setConfigSummary(config)
 
@@ -140,12 +142,12 @@ class SummaryTest {
     @Test
     @Throws(ParseException::class, IOException::class)
     fun testLoad() {
-        val config = Config(tempFolder.newFolder())
-        config.file = prepareTestFile("{}")
-        config.tempDirPath = "./temp/"
-        config.platform = MockResources(
-                File(System.getProperty("user.dir"), "temp/"),
-                "mock", null) as? ResourcesConfig
+        val config = Config(
+            tempFolder.newFolder(),
+            file = prepareTestFile("{}"),
+            tempDirPath = "./temp/",
+            platform = null
+        )
 
         val jsonString = (JSON_PARSER.parse("{" +
                 "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(config.file).toJson() + "," +

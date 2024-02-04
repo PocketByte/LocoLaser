@@ -10,6 +10,7 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.mobile.resource.IosResources
 import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosResourceFileProvider
+import java.io.File
 
 /**
  * iOS platform configuration.
@@ -17,11 +18,13 @@ import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosResourceFileProv
  * @author Denis Shurygin
  */
 class IosResourcesConfig(
+    workDir: File?,
     resourceName: String?,
     resourcesDirPath: String?,
     resourceFileProvider: ResourceFileProvider?,
     filter: ((key: String) -> Boolean)?
 ) : BaseResourcesConfig(
+    workDir,
     resourceName,
     resourcesDirPath,
     resourceFileProvider ?: IosResourceFileProvider(),
@@ -42,7 +45,12 @@ class IosResourcesConfig(
     override val defaultResourcesPath = "./"
     override val defaultResourceName = "Localizable"
 
-    override val resources
-        get() = IosResources(resourcesDir, resourceName, resourceFileProvider, filter)
-
+    override val resources by lazy {
+        IosResources(
+            resourcesDir = this.resourcesDir,
+            name = this.resourceName,
+            resourceFileProvider = this.resourceFileProvider,
+            filter = this.filter
+        )
+    }
 }

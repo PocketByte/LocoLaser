@@ -23,19 +23,19 @@ class JsonResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private lateinit var parser: JsonResourcesConfigParser
-    private lateinit var parent: Config
+    private lateinit var workDir: File
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = JsonResourcesConfigParser()
-        parent = Config(tempFolder.newFolder())
+        workDir = tempFolder.newFolder()
     }
 
     @Test
     @Throws(InvalidConfigException::class)
     fun testFromString() {
-        val config = parser.parse(JsonResourcesConfig.TYPE, true)
+        val config = parser.parse(JsonResourcesConfig.TYPE, workDir, true)
             ?: throw NullPointerException()
 
         assertEquals(JsonResourcesConfig::class.java, config.javaClass)
@@ -44,15 +44,14 @@ class JsonResourcesConfigParserTest {
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testUnknownFromString() {
-        parser.parse("invalid_platform", true)
+        parser.parse("invalid_platform", workDir, true)
     }
 
     @Test
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJson() {
-        val config = parser.parse(prepareTestPlatformJson(), true)
+        val config = parser.parse(prepareTestPlatformJson(), workDir, true)
             ?: throw NullPointerException()
-        parent.platform = config
 
         assertEquals(JsonResourcesConfig::class.java, config.javaClass)
 
@@ -69,7 +68,7 @@ class JsonResourcesConfigParserTest {
         val json = prepareTestPlatformJson()
         json.remove(ResourcesConfigParser.RESOURCE_TYPE)
 
-        parser.parse(json, true)
+        parser.parse(json, workDir, true)
     }
 
     @Test
@@ -77,7 +76,7 @@ class JsonResourcesConfigParserTest {
     fun testFromJsonOnlyType() {
         val json = JSONObject()
         json[ResourcesConfigParser.RESOURCE_TYPE] = JsonResourcesConfig.TYPE
-        val config = parser.parse(json, true)
+        val config = parser.parse(json, workDir, true)
             ?: throw NullPointerException()
 
         assertEquals(JsonResourcesConfig::class.java, config.javaClass)
@@ -86,14 +85,14 @@ class JsonResourcesConfigParserTest {
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testFromInvalidClass() {
-        parser.parse(ArrayList<String>(), true)
+        parser.parse(ArrayList<String>(), workDir, true)
     }
 
     @Test
     fun testConfigResources() {
         val json = prepareTestPlatformJson()
-        parent.platform = parser.parse(json, true)
-        val resources = (parent.platform as JsonResourcesConfig).resources as AbsResources
+        val config = parser.parse(json, workDir, true)
+        val resources = (config as JsonResourcesConfig).resources as AbsResources
 
         assertEquals("test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)
@@ -106,7 +105,7 @@ class JsonResourcesConfigParserTest {
             this[JsonResourcesConfigParser.FILTER] = "test_filter"
         }
 
-        assertNotNull(parser.parse(json, true)?.filter)
+        assertNotNull(parser.parse(json, workDir, true)?.filter)
     }
 
     @Test
@@ -114,16 +113,16 @@ class JsonResourcesConfigParserTest {
         val json = prepareTestPlatformJson()
 
         json[JsonResourcesConfigParser.INDENT] = 5L
-        var config = parser.parse(json, true) as JsonResourcesConfig
+        var config = parser.parse(json, workDir, true) as JsonResourcesConfig
         assertEquals(5, config.indent)
 
         json[JsonResourcesConfigParser.INDENT] = 1L
-        config = parser.parse(json, true) as JsonResourcesConfig
+        config = parser.parse(json, workDir, true) as JsonResourcesConfig
         assertEquals(1, config.indent)
 
         // default -1
         json.remove(JsonResourcesConfigParser.INDENT)
-        config = parser.parse(json, true) as JsonResourcesConfig
+        config = parser.parse(json, workDir, true) as JsonResourcesConfig
         assertEquals(-1, config.indent)
     }
 

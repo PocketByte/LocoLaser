@@ -14,6 +14,7 @@ import ru.pocketbyte.locolaser.json.JsonResourcesConfig
 import ru.pocketbyte.locolaser.json.JsonResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getLong
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils.getString
+import java.io.File
 
 /**
  * @author Denis Shurygin
@@ -30,11 +31,11 @@ class JsonResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
     }
 
     @Throws(InvalidConfigException::class)
-    override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): BaseResourcesConfig? {
+    override fun parse(resourceObject: Any?, workDir: File?, throwIfWrongType: Boolean): BaseResourcesConfig? {
 
         if (resourceObject is String) {
             if (checkType(resourceObject, throwIfWrongType))
-                return JsonResourcesConfigBuilder().build()
+                return JsonResourcesConfigBuilder().build(workDir)
         } else if (resourceObject is JSONObject) {
 
             if (checkType(getString(resourceObject, ResourcesConfigParser.RESOURCE_TYPE, PLATFORM, true), throwIfWrongType)) {
@@ -55,7 +56,7 @@ class JsonResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
                     platform.indent = it.toInt()
                 }
 
-                return platform.build()
+                return platform.build(workDir)
             }
         }
 

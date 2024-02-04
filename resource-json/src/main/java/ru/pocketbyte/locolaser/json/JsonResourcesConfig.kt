@@ -11,6 +11,7 @@ import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.json.resource.JsonResources
 import ru.pocketbyte.locolaser.json.resource.file.provider.JsonResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
+import java.io.File
 
 /**
  * JSON resources configuration.
@@ -18,6 +19,7 @@ import ru.pocketbyte.locolaser.resource.Resources
  * @author Denis Shurygin
  */
 class JsonResourcesConfig(
+    workDir: File?,
     val indent: Int,
     val pluralKeyRule: KeyPluralizationRule.Postfix,
     resourceName: String?,
@@ -25,6 +27,7 @@ class JsonResourcesConfig(
     resourceFileProvider: ResourceFileProvider?,
     filter: ((key: String) -> Boolean)?
 ) : BaseResourcesConfig(
+    workDir,
     resourceName,
     resourcesDirPath,
     resourceFileProvider ?: JsonResourceFileProvider(),
@@ -45,10 +48,15 @@ class JsonResourcesConfig(
     override val defaultResourcesPath = "./locales/"
     override val defaultResourceName = "strings"
 
-    override val resources: Resources
-        get() = JsonResources(
-            resourcesDir, resourceName, resourceFileProvider,
-            indent, pluralKeyRule, filter
+    override val resources: Resources by lazy {
+        JsonResources(
+            resourcesDir = this.resourcesDir,
+            fileName = this.resourceName,
+            resourceFileProvider = this.resourceFileProvider,
+            indent = this.indent,
+            pluralKeyRule = this.pluralKeyRule,
+            filter = this.filter
         )
+    }
 
 }

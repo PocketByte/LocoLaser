@@ -42,7 +42,11 @@ class GoogleSheetResourcesConfigParserTest {
         val sourceConfigParser = GoogleSheetConfigParser()
 
         val platformConfigParser = object : ResourcesConfigParser<ResourcesConfig> {
-            override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig? {
+            override fun parse(
+                resourceObject: Any?,
+                workDir: File?,
+                throwIfWrongType: Boolean
+            ): ResourcesConfig {
                 return MockResourcesConfig()
             }
         }
@@ -83,7 +87,7 @@ class GoogleSheetResourcesConfigParserTest {
 
         assertEquals(1, config.size)
 
-        val sourceConfig = config[0].source.build()
+        val sourceConfig = config[0].build().source
         assertTrue(sourceConfig is GoogleSheetResourcesConfig)
     }
 
@@ -99,7 +103,7 @@ class GoogleSheetResourcesConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source.build() as GoogleSheetResourcesConfig
+            val sourceConfig = config[0].build().source as GoogleSheetResourcesConfig
             assertEquals(expectedValue, sourceConfig.id)
         }
     }
@@ -116,7 +120,7 @@ class GoogleSheetResourcesConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source.build() as GoogleSheetResourcesConfig
+            val sourceConfig = config[0].build().source as GoogleSheetResourcesConfig
             assertEquals(expectedValue, sourceConfig.worksheetTitle)
         }
     }
@@ -133,7 +137,7 @@ class GoogleSheetResourcesConfigParserTest {
 
             assertEquals(1, config.size)
 
-            val sourceConfig = config[0].source.build() as GoogleSheetResourcesConfig
+            val sourceConfig = config[0].build().source as GoogleSheetResourcesConfig
             assertEquals(expectedValue, sourceConfig.credentialFile)
         }
     }

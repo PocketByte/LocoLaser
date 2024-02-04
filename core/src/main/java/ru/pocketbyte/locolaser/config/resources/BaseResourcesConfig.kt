@@ -19,6 +19,7 @@ import java.util.regex.Pattern
  * Construct new Platform object.
  */
 abstract class BaseResourcesConfig(
+    private val workDir: File?,
     /**
      * Resource name or null if should be used default name.
      */
@@ -35,7 +36,7 @@ abstract class BaseResourcesConfig(
     val resourceFileProvider: ResourceFileProvider,
 
     val filter: ((key: String) -> Boolean)?
-) : Config.Child(), ResourcesConfig {
+) : ResourcesConfig {
 
     companion object {
         fun regExFilter(filter: String?): ((key: String) -> Boolean)? {

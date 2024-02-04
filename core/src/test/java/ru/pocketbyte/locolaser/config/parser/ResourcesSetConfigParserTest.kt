@@ -5,6 +5,7 @@ import org.junit.Test
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.testutils.mock.MockResourcesConfig
+import java.io.File
 import java.util.*
 
 class ResourcesSetConfigParserTest {
@@ -17,20 +18,20 @@ class ResourcesSetConfigParserTest {
 
         val parser = prepareParser(config1, config2)
 
-        assertSame(config1, parser.parse("type_1", true))
-        assertSame(config2, parser.parse("type_2", true))
+        assertSame(config1, parser.parse("type_1", null, true))
+        assertSame(config2, parser.parse("type_2", null, true))
     }
 
     @Test
     @Throws(InvalidConfigException::class)
     fun testNullForWrongType() {
-        assertSame(null, prepareParser().parse("wrong", false))
+        assertSame(null, prepareParser().parse("wrong", null, false))
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testThrowForWrongType() {
-        assertSame(null, prepareParser().parse("wrong", true))
+        assertSame(null, prepareParser().parse("wrong", null, true))
     }
 
     private fun prepareParser(
@@ -49,7 +50,11 @@ class ResourcesSetConfigParserTest {
     ) : ResourcesConfigParser<ResourcesConfig> {
 
         @Throws(InvalidConfigException::class)
-        override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig? {
+        override fun parse(
+            resourceObject: Any?,
+            workDir: File?,
+            throwIfWrongType: Boolean
+        ): ResourcesConfig? {
             if (mType == resourceObject)
                 return mConfig
 

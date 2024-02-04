@@ -12,11 +12,13 @@ import ru.pocketbyte.locolaser.google.utils.GoogleSheetGlobalPool
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.utils.buildFileFrom
+import java.io.File
 
 /**
  * @author Denis Shurygin
  */
 class GoogleSheetResourcesConfig(
+    private val workDir: File?,
 
     val id: String,
 
@@ -47,14 +49,13 @@ class GoogleSheetResourcesConfig(
 
     override val defaultTempDirPath: String = "./temp/"
 
-    override val resources: Resources
-        get() {
-            return GoogleSheetResources(
-                this,
-                GoogleSheetGlobalPool.getService(
-                    id, credentialFile?.let { buildFileFrom(workDir, it) }
-                ),
-                formattingType
-            )
-        }
+    override val resources: Resources by lazy {
+        GoogleSheetResources(
+            sourceConfig = this,
+            service = GoogleSheetGlobalPool.getService(
+                id, credentialFile?.let { buildFileFrom(workDir, it) }
+            ),
+            formattingType = formattingType
+        )
+    }
 }

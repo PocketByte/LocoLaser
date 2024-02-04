@@ -11,6 +11,7 @@ import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.BaseTableResourcesConfigBuilder
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
+import java.io.File
 
 /**
  * @author Denis Shurygin
@@ -45,9 +46,9 @@ abstract class BaseTableSourceConfigParser<ConfigBuilder : BaseTableResourcesCon
      * @throws InvalidConfigException
      */
     @Throws(InvalidConfigException::class)
-    override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig? {
+    override fun parse(resourceObject: Any?, workDir: File?, throwIfWrongType: Boolean): ResourcesConfig? {
         if (resourceObject is JSONObject) {
-            return parseFromJson(resourceObject, throwIfWrongType)
+            return parseFromJson(resourceObject, workDir, throwIfWrongType)
         } else if (throwIfWrongType) {
             throw InvalidConfigException("Source must be a JSONObject or JSONArray.")
         }
@@ -55,12 +56,12 @@ abstract class BaseTableSourceConfigParser<ConfigBuilder : BaseTableResourcesCon
     }
 
     @Throws(InvalidConfigException::class)
-    protected fun parseFromJson(configJson: JSONObject, throwIfWrongType: Boolean): ResourcesConfig? {
+    protected fun parseFromJson(configJson: JSONObject, workDir: File?, throwIfWrongType: Boolean): ResourcesConfig? {
         val type = JsonParseUtils.getString(configJson, TYPE, SOURCE, false)
         val builder = builderByType(type, throwIfWrongType) ?: return null
         fillFromJSON(builder, configJson)
         validate(builder)
-        return builder.build()
+        return builder.build(workDir)
     }
 
     /**

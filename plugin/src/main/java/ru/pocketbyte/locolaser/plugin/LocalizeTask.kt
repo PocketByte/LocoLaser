@@ -33,9 +33,9 @@ open class LocalizeForceTask: LocalizeTask() {
     }
 
     override fun getConfig(): Config {
-        return super.getConfig().apply {
+        return super.getConfig().copy(
             forceImport = true
-        }
+        )
     }
 }
 
@@ -46,9 +46,9 @@ open class LocalizeExportNewTask: LocalizeTask() {
     }
 
     override fun getConfig(): Config {
-        return super.getConfig().apply {
-            forceImport = true
+        return super.getConfig().copy(
+            forceImport = true,
             conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
-        }
+        )
     }
 }

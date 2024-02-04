@@ -21,20 +21,20 @@ class KotlinCommonResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private var parser: KotlinCommonResourcesConfigParser? = null
-    private lateinit var parent: Config
+    private lateinit var workDir: File
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = KotlinCommonResourcesConfigParser()
-        parent = Config(tempFolder.newFolder())
+        workDir = tempFolder.newFolder()
     }
 
     @Test
     fun testConfigResources() {
         val json = prepareTestPlatformJson()
-        parent.platform = parser?.parse(json, true)
-        val resources = (parent.platform as KotlinCommonResourcesConfig).resources as AbsResources
+        val config = parser?.parse(json, workDir, true)
+        val resources = (config as KotlinCommonResourcesConfig).resources as AbsResources
 
         Assert.assertEquals("com.test_res", resources.name)
         Assert.assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

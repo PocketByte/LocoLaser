@@ -4,6 +4,7 @@ import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
+import java.io.File
 
 abstract class BaseKmpBuilder<
         ConfigType: BaseResourcesConfig,
@@ -41,6 +42,7 @@ abstract class BaseKmpBuilder<
     }
 
     internal fun build(
+        workDir: File?,
         mainBuilder: KotlinMultiplatformResourcesConfigBuilder,
         postProcessor: BuilderType.() -> Unit = {}
     ): ConfigType {
@@ -61,7 +63,7 @@ abstract class BaseKmpBuilder<
 
                 postProcessor.invoke(this)
             }
-            .build()
+            .build(workDir)
     }
 
     protected open fun configure(builder: BuilderType) {

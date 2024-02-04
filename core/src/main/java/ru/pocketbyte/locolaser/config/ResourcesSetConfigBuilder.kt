@@ -2,29 +2,27 @@ package ru.pocketbyte.locolaser.config
 
 import groovy.lang.Closure
 import org.gradle.internal.HasInternalProtocol
+import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.EmptyResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
 import ru.pocketbyte.locolaser.utils.callWithDelegate
+import java.io.File
 
 @HasInternalProtocol
 class ResourcesSetConfigBuilder(
     private val hasMainResource: Boolean = false
 ) {
 
-    private val resources = LinkedHashSet<ResourcesConfig>()
-
-    fun add(resourcesConfig: ResourcesConfig) {
-        resources.add(resourcesConfig)
-    }
+    private val resources = LinkedHashSet<ResourcesConfigBuilder<*>>()
 
     fun add(builder: ResourcesConfigBuilder<*>) {
-        add(builder.build())
+        resources.add(builder)
     }
 
-    fun add(builderFactory: ResourcesConfigBuilderFactory<*, *>,) {
+    fun add(builderFactory: ResourcesConfigBuilderFactory<*, *>) {
         add(builderFactory.getBuilder())
     }
 
@@ -55,13 +53,15 @@ class ResourcesSetConfigBuilder(
         }
     }
 
-    fun build(): ResourcesConfig {
+    internal fun build(workDir: File?): ResourcesConfig {
         return if (resources.isEmpty()) {
             EmptyResourcesConfig()
         } else if (resources.size == 1) {
-            resources.first()
+            resources.first().build(workDir)
         } else {
-            ResourcesSetConfig(resources, if (hasMainResource) resources.first() else null)
+            resources.map { it.build(workDir) }.toSet().let {
+                ResourcesSetConfig(it, if (hasMainResource) it.first() else null)
+            }
         }
     }
 }

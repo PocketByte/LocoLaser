@@ -28,13 +28,13 @@ class KotlinImplementationResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private var parser: KotlinImplementationResourcesConfigParser? = null
-    private lateinit var parent: Config
+    private lateinit var workDir: File
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = KotlinImplementationResourcesConfigParser()
-        parent = Config(tempFolder.newFolder())
+        workDir = tempFolder.newFolder()
     }
 
     @Test
@@ -50,21 +50,21 @@ class KotlinImplementationResourcesConfigParserTest {
         var json = prepareTestPlatformJson(KotlinAbsKeyValueResourcesConfig.TYPE)
         assertSame(
             NoFormattingType,
-            (parser?.parse(json, true) as KotlinAbsKeyValueResourcesConfig).formattingType
+            (parser?.parse(json, workDir, true) as KotlinAbsKeyValueResourcesConfig).formattingType
         )
         json = prepareTestPlatformJson(KotlinAbsKeyValueResourcesConfig.TYPE).apply {
             this[KotlinImplementationResourcesConfigParser.FORMATTING_TYPE] = "java"
         }
         assertSame(
             JavaFormattingType,
-            (parser?.parse(json, true) as KotlinAbsKeyValueResourcesConfig).formattingType
+            (parser?.parse(json, workDir, true) as KotlinAbsKeyValueResourcesConfig).formattingType
         )
     }
 
     private fun testPlatformConfigResource(platform: String) {
         val json = prepareTestPlatformJson(platform)
-        parent.platform = parser?.parse(json, true)
-        val resources = (parent.platform as KotlinBaseResourcesConfig).resources as AbsResources
+        val config = parser?.parse(json, workDir, true)
+        val resources = (config as KotlinBaseResourcesConfig).resources as AbsResources
 
         assertEquals("com.test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

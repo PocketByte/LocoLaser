@@ -20,19 +20,19 @@ class PropertiesResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private lateinit var parser: PropertiesResourcesConfigParser
-    private lateinit var parent: Config
+    private lateinit var workDir: File
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = PropertiesResourcesConfigParser()
-        parent = Config(tempFolder.newFolder())
+        workDir = tempFolder.newFolder()
     }
 
     @Test
     @Throws(InvalidConfigException::class)
     fun testFromString() {
-        val config = parser.parse(PropertiesResourcesConfig.TYPE, true)
+        val config = parser.parse(PropertiesResourcesConfig.TYPE, workDir, true)
             ?: throw NullPointerException()
 
         assertEquals(PropertiesResourcesConfig::class.java, config.javaClass)
@@ -41,15 +41,14 @@ class PropertiesResourcesConfigParserTest {
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testUnknownFromString() {
-        parser.parse("invalid_platform", true)
+        parser.parse("invalid_platform", workDir, true)
     }
 
     @Test
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJson() {
-        val config = parser.parse(prepareTestPlatformJson(), true)
+        val config = parser.parse(prepareTestPlatformJson(), workDir, true)
             ?: throw NullPointerException()
-        parent.platform = config
 
         assertEquals(PropertiesResourcesConfig::class.java, config.javaClass)
 
@@ -64,7 +63,7 @@ class PropertiesResourcesConfigParserTest {
         val json = prepareTestPlatformJson()
         json.remove(ResourcesConfigParser.RESOURCE_TYPE)
 
-        parser.parse(json, true)
+        parser.parse(json, workDir, true)
     }
 
     @Test
@@ -72,7 +71,7 @@ class PropertiesResourcesConfigParserTest {
     fun testFromJsonOnlyType() {
         val json = JSONObject()
         json[ResourcesConfigParser.RESOURCE_TYPE] = PropertiesResourcesConfig.TYPE
-        val config = parser.parse(json, true)
+        val config = parser.parse(json, workDir, true)
             ?: throw NullPointerException()
 
         assertEquals(PropertiesResourcesConfig::class.java, config.javaClass)
@@ -81,7 +80,7 @@ class PropertiesResourcesConfigParserTest {
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testFromInvalidClass() {
-        parser.parse(ArrayList<String>(), true)
+        parser.parse(ArrayList<String>(), workDir, true)
     }
 
     private fun prepareTestPlatformJson(): JSONObject {

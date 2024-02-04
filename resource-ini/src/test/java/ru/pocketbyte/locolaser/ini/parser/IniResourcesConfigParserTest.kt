@@ -20,19 +20,19 @@ class IniResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private lateinit var parser: IniResourcesConfigParser
-    private lateinit var parent: Config
+    private lateinit var workDir: File
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = IniResourcesConfigParser()
-        parent = Config(tempFolder.newFolder())
+        workDir = tempFolder.newFolder()
     }
 
     @Test
     @Throws(InvalidConfigException::class)
     fun testFromString() {
-        val config = parser.parse(IniResourcesConfig.TYPE, true)
+        val config = parser.parse(IniResourcesConfig.TYPE, workDir, true)
             ?: throw NullPointerException()
 
         assertEquals(IniResourcesConfig::class.java, config.javaClass)
@@ -41,15 +41,14 @@ class IniResourcesConfigParserTest {
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testUnknownFromString() {
-        parser.parse("invalid_platform", true)
+        parser.parse("invalid_platform", workDir, true)
     }
 
     @Test
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJson() {
-        val config = parser.parse(prepareTestPlatformJson(), true)
+        val config = parser.parse(prepareTestPlatformJson(), workDir, true)
             ?: throw NullPointerException()
-        parent.platform = config
 
         assertEquals(IniResourcesConfig::class.java, config.javaClass)
 
@@ -64,7 +63,7 @@ class IniResourcesConfigParserTest {
         val json = prepareTestPlatformJson()
         json.remove(ResourcesConfigParser.RESOURCE_TYPE)
 
-        parser.parse(json, true)
+        parser.parse(json, workDir, true)
     }
 
     @Test
@@ -72,7 +71,7 @@ class IniResourcesConfigParserTest {
     fun testFromJsonOnlyType() {
         val json = JSONObject()
         json[ResourcesConfigParser.RESOURCE_TYPE] = IniResourcesConfig.TYPE
-        val config = parser.parse(json, true)
+        val config = parser.parse(json, workDir, true)
             ?: throw NullPointerException()
 
         assertEquals(IniResourcesConfig::class.java, config.javaClass)
@@ -81,7 +80,7 @@ class IniResourcesConfigParserTest {
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testFromInvalidClass() {
-        parser.parse(ArrayList<String>(), true)
+        parser.parse(ArrayList<String>(), workDir, true)
     }
 
     private fun prepareTestPlatformJson(): JSONObject {

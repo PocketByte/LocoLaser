@@ -2,18 +2,20 @@ package ru.pocketbyte.locolaser.kotlinmpp
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import java.io.File
 
 class KotlinCommonResourcesConfigBuilder
     : BaseResourcesConfigBuilder<KotlinCommonResourcesConfig>() {
 
     override fun buildConfig(
+        workDir: File?,
         resourceName: String?,
         resourcesDir: String?,
         resourceFileProvider: ResourceFileProvider?,
         filter: ((key: String) -> Boolean)?
     ): KotlinCommonResourcesConfig {
         return KotlinCommonResourcesConfig(
-            resourceName, resourcesDir, filter
+            workDir, resourceName, resourcesDir, filter
         )
     }
 

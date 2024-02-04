@@ -3,17 +3,20 @@ package ru.pocketbyte.locolaser.google
 import ru.pocketbyte.locolaser.config.resources.BaseTableResourcesConfigBuilder
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import java.io.File
 
 class GoogleSheetResourcesConfigBuilder
     : BaseTableResourcesConfigBuilder<GoogleSheetResourcesConfig>() {
 
     override fun buildConfig(
+        workDir: File?,
         keyColumn: String,
         quantityColumn: String?,
         commentColumn: String?,
         metadataColumn: String?
     ): GoogleSheetResourcesConfig {
         return GoogleSheetResourcesConfig(
+            workDir,
             id ?: throw IllegalStateException("Sheet ID is not set"),
             worksheetTitle,
             credentialFile,

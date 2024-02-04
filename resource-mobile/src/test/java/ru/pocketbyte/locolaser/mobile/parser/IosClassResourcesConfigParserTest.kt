@@ -13,7 +13,6 @@ import java.io.File
 import java.io.IOException
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.mobile.IosObjectiveCResourcesConfig
@@ -25,27 +24,26 @@ class IosClassResourcesConfigParserTest {
     var tempFolder = TemporaryFolder()
 
     private lateinit var parser: IosClassResourcesConfigParser
-    private lateinit var parent: Config
+    private lateinit var workDir: File
 
     @Before
     @Throws(IOException::class)
     fun init() {
         parser = IosClassResourcesConfigParser()
-        parent = Config(tempFolder.newFolder())
+        workDir = tempFolder.newFolder()
     }
 
     @Test(expected = InvalidConfigException::class)
     @Throws(InvalidConfigException::class)
     fun testUnknownFromString() {
-        parser.parse("invalid_platform", true)
+        parser.parse("invalid_platform", workDir, true)
     }
 
     @Test
     @Throws(InvalidConfigException::class, IOException::class)
     fun testFromJson() {
-        val config = parser.parse(prepareTestPlatformJson(IosSwiftResourcesConfig.TYPE), true) as? IosSwiftResourcesConfig
+        val config = parser.parse(prepareTestPlatformJson(IosSwiftResourcesConfig.TYPE), workDir, true) as? IosSwiftResourcesConfig
             ?: throw NullPointerException()
-        parent.platform = config
 
         assertEquals("test_res", config.resourceName)
         assertEquals(File("test_res_dir").canonicalPath,
@@ -61,8 +59,8 @@ class IosClassResourcesConfigParserTest {
 
     private fun testPlatformConfigResource(platform: String) {
         val json = prepareTestPlatformJson(platform)
-        parent.platform = parser.parse(json, true)
-        val resources = (parent.platform as BaseResourcesConfig).resources as AbsResources
+        val config = parser.parse(json, workDir, true)
+        val resources = (config as BaseResourcesConfig).resources as AbsResources
 
         assertEquals("test_res", resources.name)
         assertEquals(File("test_res_dir").canonicalPath, resources.directory.canonicalPath)

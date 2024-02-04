@@ -49,7 +49,11 @@ class BaseTableResourcesConfigParserTest {
 
         val platformConfigParser = object : ResourcesConfigParser<ResourcesConfig> {
             @Throws(InvalidConfigException::class)
-            override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): ResourcesConfig {
+            override fun parse(
+                resourceObject: Any?,
+                workDir: File?,
+                throwIfWrongType: Boolean
+            ): ResourcesConfig {
                 return MockResourcesConfig()
             }
         }

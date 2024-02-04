@@ -20,7 +20,9 @@ interface ResourcesConfig {
      */
     val type: String
 
-    // TODO docs
+    /**
+     * Gets resources of the platform.
+     */
     val resources: Resources
 
     /**

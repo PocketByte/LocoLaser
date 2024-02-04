@@ -39,6 +39,7 @@ open class ConfigBuilder {
      * Localization will executed not more often the specified delay.
      * If force import switched on delay will be ignored.
      */
+    @Deprecated("To avoid unnecessary localization calls should be used Gradle tasks cache mechanism")
     var delay: Long = Config.DEFAULT_DELAY
 
     val extraParams: ExtraParams = ExtraParams()
@@ -102,16 +103,17 @@ open class ConfigBuilder {
         }
 
     fun build(): Config {
-        val config = Config(workDir)
-        config.file = file
-        config.forceImport = forceImport
-        config.conflictStrategy = conflictStrategy
-        config.tempDirPath = tempDir
-        config.locales = locales
-        config.delay = delay
-        config.extraParams.putAll(extraParams)
-        config.platform = platform.build()
-        config.source = source.build()
-        return config
+        return Config(
+            workDir = workDir,
+            file = file,
+            forceImport = forceImport,
+            conflictStrategy = conflictStrategy,
+            tempDirPath = tempDir,
+            locales = locales,
+            delay = delay,
+            extraParams = ExtraParams().apply { putAll(extraParams) },
+            platform = platform.build(workDir),
+            source = source.build(workDir),
+        )
     }
 }

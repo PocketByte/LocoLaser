@@ -8,6 +8,7 @@ import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
+import java.io.File
 
 @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 abstract class BaseMobileResourcesConfigParser<ConfigBuilder : BaseResourcesConfigBuilder<*>>
@@ -30,12 +31,12 @@ abstract class BaseMobileResourcesConfigParser<ConfigBuilder : BaseResourcesConf
     protected abstract fun builderByType(type: String?, throwIfWrongType: Boolean): ConfigBuilder?
 
     @Throws(InvalidConfigException::class)
-    override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): BaseResourcesConfig? {
+    override fun parse(resourceObject: Any?, workDir: File?, throwIfWrongType: Boolean): BaseResourcesConfig? {
 
         if (resourceObject is String) {
-            return parseString(resourceObject, throwIfWrongType)
+            return parseString(resourceObject, workDir, throwIfWrongType)
         } else if (resourceObject is JSONObject) {
-            return parseJSONObject(resourceObject, throwIfWrongType)?.build()
+            return parseJSONObject(resourceObject, throwIfWrongType)?.build(workDir)
         }
 
         if (throwIfWrongType)
@@ -45,8 +46,8 @@ abstract class BaseMobileResourcesConfigParser<ConfigBuilder : BaseResourcesConf
     }
 
     @Throws(InvalidConfigException::class)
-    protected fun parseString(type: String, throwIfWrongType: Boolean): BaseResourcesConfig? {
-        return builderByType(type, throwIfWrongType)?.build()
+    protected fun parseString(type: String, workDir: File?, throwIfWrongType: Boolean): BaseResourcesConfig? {
+        return builderByType(type, throwIfWrongType)?.build(workDir)
     }
 
     @Throws(InvalidConfigException::class)

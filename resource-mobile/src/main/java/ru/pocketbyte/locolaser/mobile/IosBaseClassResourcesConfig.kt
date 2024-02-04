@@ -6,12 +6,14 @@ import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosClassResourceFil
 import java.io.File
 
 abstract class IosBaseClassResourcesConfig(
+    workDir: File?,
     resourceName: String?,
     resourcesDirPath: String?,
     resourceFileProvider: ResourceFileProvider?,
     val tableName: String?,
     filter: ((key: String) -> Boolean)?
 ) : BaseResourcesConfig(
+    workDir,
     resourceName,
     resourcesDirPath,
     resourceFileProvider ?: IosClassResourceFileProvider(),

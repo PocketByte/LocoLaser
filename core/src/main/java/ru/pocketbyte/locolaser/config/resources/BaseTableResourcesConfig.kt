@@ -32,7 +32,7 @@ abstract class BaseTableResourcesConfig(
      * Title of the column that contain meta data quantity.
      */
     val metadataColumn: String?
-) : Config.Child(), ResourcesConfig {
+) : ResourcesConfig {
 
     override fun toString(): String {
         return type

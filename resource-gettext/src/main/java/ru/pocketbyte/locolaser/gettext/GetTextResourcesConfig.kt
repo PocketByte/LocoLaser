@@ -11,6 +11,7 @@ import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.gettext.resource.GetTextResources
 import ru.pocketbyte.locolaser.gettext.resource.file.provider.GetTextResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
+import java.io.File
 
 /**
  * Android platform configuration.
@@ -18,11 +19,13 @@ import ru.pocketbyte.locolaser.resource.Resources
  * @author Denis Shurygin
  */
 class GetTextResourcesConfig(
+    workDir: File?,
     resourceName: String?,
     resourcesDirPath: String?,
     resourceFileProvider: ResourceFileProvider?,
     filter: ((key: String) -> Boolean)?
 ) : BaseResourcesConfig(
+    workDir,
     resourceName,
     resourcesDirPath,
     resourceFileProvider ?: GetTextResourceFileProvider(),
@@ -42,7 +45,12 @@ class GetTextResourcesConfig(
     override val defaultResourcesPath = "./languages/"
     override val defaultResourceName = "messages"
 
-    override val resources: Resources
-        get() = GetTextResources(resourcesDir, resourceName, resourceFileProvider, filter)
-
+    override val resources: Resources by lazy {
+        GetTextResources(
+            resourcesDir = this.resourcesDir,
+            fileName = this.resourceName,
+            resourceFileProvider = this.resourceFileProvider,
+            filter = this.filter
+        )
+    }
 }

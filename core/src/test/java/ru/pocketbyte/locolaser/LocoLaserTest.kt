@@ -26,6 +26,7 @@ import java.io.IOException
 import java.io.PrintWriter
 
 import org.junit.Assert.*
+import ru.pocketbyte.locolaser.config.trimUnsupportedQuantities
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
@@ -79,11 +80,13 @@ class LocoLaserTest {
         sourceConfig = MockSourceConfig("mockSource", mResMap)
         source = sourceConfig.resources
 
-        config = Config(workDir)
-        config.file = File(workDir, "config.json")
-        config.platform = platformConfig
-        config.source = sourceConfig
-        config.locales = setOf("en", "ru")
+        config = Config(
+            workDir = workDir,
+            file = File(workDir, "config.json"),
+            platform = platformConfig,
+            source = sourceConfig,
+            locales = setOf("en", "ru")
+        )
 
         // Write config file to make it not empty
         config.file?.let {
@@ -105,14 +108,16 @@ class LocoLaserTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun testNullPlatform() {
-        config.platform = null
-        LocoLaser.localize(config)
+        LocoLaser.localize(config.copy(
+            platform = null
+        ))
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun testNullSources() {
-        config.source = null
-        LocoLaser.localize(config)
+        LocoLaser.localize(config.copy(
+            source = null
+        ))
     }
 
     // ====================================================
@@ -120,12 +125,10 @@ class LocoLaserTest {
 
     @Test
     fun testConflictStrategyRemovePlatform() {
-        config.conflictStrategy = Config.ConflictStrategy.REMOVE_PLATFORM
-
         val locale = "en"
         val newKey = "newKey"
         // Check if original map doesn't contain new key
-        assertFalse(mResMap[locale]!!.containsKey(newKey))
+        assertEquals(false, mResMap[locale]?.containsKey(newKey))
 
         val resLocale = ResLocale()
         resLocale.put(buildItem(newKey, "value"))
@@ -134,14 +137,14 @@ class LocoLaserTest {
             put(locale, resLocale)
         }
 
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            conflictStrategy = Config.ConflictStrategy.REMOVE_PLATFORM
+        )))
         assertEquals(platformResources.mMap, source.mockMap)
     }
 
     @Test
     fun testConflictStrategyKeepNewPlatform() {
-        config.conflictStrategy = Config.ConflictStrategy.KEEP_NEW_PLATFORM
-
         val locale = "en"
         val newKey = "newKey"
         // Check if original map doesn't contain new key
@@ -162,7 +165,9 @@ class LocoLaserTest {
             put(locale, resLocale)
         }
 
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            conflictStrategy = Config.ConflictStrategy.KEEP_NEW_PLATFORM
+        )))
         assertNotEquals(platformResources.mMap, source.mockMap)
 
         platformResources.mMap?.get(locale)?.remove(newKey)
@@ -171,8 +176,6 @@ class LocoLaserTest {
 
     @Test
     fun testConflictStrategyKeepPlatform() {
-        config.conflictStrategy = Config.ConflictStrategy.KEEP_PLATFORM
-
         val locale = "en"
         val newKey = "newKey"
         // Check if original map doesn't contain new value
@@ -193,7 +196,9 @@ class LocoLaserTest {
             put(locale, resLocale)
         }
 
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            conflictStrategy = Config.ConflictStrategy.KEEP_PLATFORM
+        )))
         assertNotEquals(platformResources.mMap, source.mockMap)
 
         platformResources.mMap?.get(locale)?.remove(newKey)
@@ -211,8 +216,6 @@ class LocoLaserTest {
 
     @Test
     fun testConflictStrategyExportNewLocal() {
-        config.conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
-
         val locale = "en"
         val newKey = "newKey"
         // Check if original map doesn't contain new value
@@ -233,7 +236,9 @@ class LocoLaserTest {
             put(locale, resLocale)
         }
 
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
+        )))
         assertEquals(platformResources.mMap, source.mockMap)
 
         source.mockMap?.get(locale)?.run {
@@ -249,8 +254,6 @@ class LocoLaserTest {
 
     @Test
     fun testConflictStrategyExportLocal() {
-        config.conflictStrategy = Config.ConflictStrategy.EXPORT_PLATFORM
-
         val locale = "en"
         val newKey = "newKey"
         // Check if original map doesn't contain new value
@@ -271,7 +274,9 @@ class LocoLaserTest {
             put(locale, resLocale)
         }
 
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            conflictStrategy = Config.ConflictStrategy.EXPORT_PLATFORM
+        )))
         assertEquals(platformResources.mMap, source.mockMap)
 
         source.mockMap?.get(locale)?.run {
@@ -288,15 +293,15 @@ class LocoLaserTest {
 
     @Test
     fun testConflictStrategyExportMissedValues() {
-        config.conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
-
         val missedKey = "key1"
         val locale = "ru"
 
         platformResources.mMap = ResMap(mResMap)
         assertNotNull(source.mockMap?.get(locale)?.remove(missedKey))
 
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
+        )))
         assertEquals(platformResources.mMap, source.mockMap)
 
         val missedItem = source.mockMap?.get(locale)?.get(missedKey)
@@ -340,8 +345,9 @@ class LocoLaserTest {
     fun testForceImport() {
         prepareStateWhenLocalizationNotNeededBecauseNoChanges()
 
-        config.forceImport = true
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            forceImport = true
+        )))
         assertNotNull(platformResources.mMap)
         assertEquals(platformResources.mMap, source.mockMap)
     }
@@ -454,9 +460,12 @@ class LocoLaserTest {
         source.mockMap?.get("ru")?.put(pluralItem)
         source.mockMap?.get("en")?.put(pluralItem)
 
-        config.trimUnsupportedQuantities = false
-
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            extraParams = ExtraParams().apply {
+                putAll(config.extraParams)
+                trimUnsupportedQuantities = false
+            }
+        )))
 
         assertEquals(
             ResItem("value3").apply {
@@ -496,9 +505,12 @@ class LocoLaserTest {
         source.mockMap?.get("ru")?.put(pluralItem)
         source.mockMap?.get("en")?.put(pluralItem)
 
-        config.trimUnsupportedQuantities = true
-
-        assertTrue(LocoLaser.localize(config))
+        assertTrue(LocoLaser.localize(config.copy(
+            extraParams = ExtraParams().apply {
+                putAll(config.extraParams)
+                trimUnsupportedQuantities = true
+            }
+        )))
 
         assertEquals(
             ResItem("value3").apply {
@@ -565,7 +577,7 @@ class LocoLaserTest {
         return summary
     }
 
-    private inner class MockResourcesConfig internal constructor(
+    private inner class MockResourcesConfig constructor(
             override val type: String,
             override val resources: Resources
     ) : ResourcesConfig {
@@ -574,7 +586,7 @@ class LocoLaserTest {
 
     }
 
-    private inner class MockResources internal constructor(
+    private inner class MockResources constructor(
             var mMap: ResMap?,
             var mSummaryMap: MutableMap<String, FileSummary>?
     ) : Resources {

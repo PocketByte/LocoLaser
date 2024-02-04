@@ -32,7 +32,7 @@ class BaseResourcesConfigTest {
     private class BaseResourcesConfigImpl(
         resourceName: String? = null,
         resourcesDirPath: String? = null,
-    ): BaseResourcesConfig(resourceName, resourcesDirPath, MockResourceFileProvider(), null) {
+    ): BaseResourcesConfig(null, resourceName, resourcesDirPath, MockResourceFileProvider(), null) {
 
         override val type: String = "mock"
 

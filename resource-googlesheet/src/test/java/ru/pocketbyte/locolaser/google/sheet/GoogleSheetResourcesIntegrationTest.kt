@@ -17,7 +17,9 @@ class GoogleSheetResourcesIntegrationTest {
 
     @Test
     fun testRead() {
+        val workDir = File("./")
         val sourceConfig = GoogleSheetResourcesConfig(
+            workDir = workDir,
             id = sheetId,
             keyColumn = "key",
             quantityColumn = "quantity",
@@ -25,16 +27,20 @@ class GoogleSheetResourcesIntegrationTest {
             credentialFile = "../playground/service_account.json",
             formattingType = JavaFormattingType
         )
-        val config = Config(File("./")).apply {
+        val config = Config(
+            workDir = workDir,
             source = sourceConfig
-        }
+        )
+
         val result = sourceConfig.resources.read(setOf("base", "ru"), null)
         Assert.assertNotNull(result)
     }
 
     @Test
     fun testWrite() {
+        val workDir = File("./")
         val sourceConfig = GoogleSheetResourcesConfig(
+            workDir = workDir,
             id = sheetId,
             keyColumn = "key",
             quantityColumn = "quantity",
@@ -42,9 +48,10 @@ class GoogleSheetResourcesIntegrationTest {
             formattingType = JavaFormattingType
         )
 
-        val config = Config(File("./")).apply {
+        val config = Config(
+            workDir = workDir,
             source = sourceConfig
-        }
+        )
 
         val resMap = ResMap().apply {
             put("base",

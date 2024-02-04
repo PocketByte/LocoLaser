@@ -16,25 +16,61 @@ import java.io.File
  *
  * @author Denis Shurygin
  */
-class Config(
-    val workDir: File? = null
+data class Config(
+    val workDir: File? = null,
+
+    /**
+     * File from which this config was read.
+     */
+    val file: File? = null,
+
+    /**
+     * Source that contain resources.
+     */
+    val source: ResourcesConfig? = null,
+
+    /**
+     * Platform that contain logic of resource creation.
+     */
+    val platform: ResourcesConfig? = null,
+
+
+    /**
+     * Defines if import should be forced even if this is not necessary.
+     * True if import should be forced, false otherwise.
+     */
+    val forceImport: Boolean = false,
+
+    /**
+     * Strategy that should be used for merge conflicts.
+     * Default value: KEEP_NEW_PLATFORM.
+     * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
+     */
+    val conflictStrategy: ConflictStrategy = DEFAULT_CONFLICT_STRATEGY,
+
+    /**
+     * Set of locales that should be handled by LocoLaser.
+     * You can use [Resources.BASE_LOCALE] to specify base locale.
+     */
+    val locales: Set<String> = DEFAULT_LOCALES,
+
+    /**
+     * Defines time in minutes that define delay for next localization.
+     * Localization will executed not more often the specified delay.
+     * If force import switched on delay will be ignored.
+     */
+    val delay: Long = DEFAULT_DELAY,
+
+
+    /**
+     * Defines temporary directory.
+     */
+    val tempDirPath: String? =  platform?.defaultTempDirPath,
+
+    val extraParams: ExtraParams = ExtraParams()
 ) {
 
-    open class Child {
-        open var parent: Config? = null
-            internal set
-
-        val workDir: File?
-            get() {
-                return parent.also {
-                    if (it == null) {
-                        throw IllegalStateException("${this::class.simpleName}: Parent is null")
-                    }
-                }?.workDir
-            }
-    }
-
-    public enum class ConflictStrategy private constructor(val strValue: String) {
+    enum class ConflictStrategy constructor(val strValue: String) {
 
         /** Remove platform resources and replace it with resources from source.  */
         REMOVE_PLATFORM("remove_platform"),
@@ -66,87 +102,23 @@ class Config(
     }
 
     /**
-     * File from which this config was read.
-     */
-    var file: File? = null
-
-    /**
-     * Source that contain resources.
-     */
-    var source: ResourcesConfig? = null
-        set(value) {
-            (field as? Child)?.parent = null
-            field = value
-            (value as? Child)?.parent = this
-        }
-
-    /**
-     * Platform that contain logic of resource creation.
-     */
-    var platform: ResourcesConfig? = null
-        set(value) {
-            (field as? Child)?.parent = null
-            field = value
-            (value as? Child)?.parent = this
-        }
-
-    /**
-     * Defines if import should be forced even if this is not necessary.
-     * True if import should be forced, false otherwise.
-     */
-    var forceImport: Boolean = false
-
-    /**
-     * Strategy that should be used for merge conflicts.
-     * Default value: KEEP_NEW_PLATFORM.
-     * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
-     */
-    var conflictStrategy: ConflictStrategy = DEFAULT_CONFLICT_STRATEGY
-
-    /**
-     * Set of locales that should be handled by LocoLaser.
-     * You can use [Resources.BASE_LOCALE] to specify base locale.
-     */
-    var locales: Set<String> = DEFAULT_LOCALES
-
-    /**
-     * Defines time in minutes that define delay for next localization.
-     * Localization will executed not more often the specified delay.
-     * If force import switched on delay will be ignored.
-     */
-    var delay: Long = DEFAULT_DELAY
-
-    /**
      * Gets temporary directory file.
      */
     val tempDir: File?
         get() = tempDirPath?.let { buildFileFrom(workDir, it) }
 
     /**
-     * Defines temporary directory.
-     */
-    var tempDirPath: String? = null
-        get() = field ?: platform?.defaultTempDirPath
-
-    val extraParams = ExtraParams()
-
-    /**
      * Defines if comment should be written even if it equal resource value.
      * True if comment should be written even if it equal resource value, false otherwise.
      */
-    var duplicateComments: Boolean
+    val duplicateComments: Boolean
         get() = extraParams.duplicateComments
-        set(value) {
-            extraParams.duplicateComments = value
-        }
 
     /**
      * Defines if unsupported quantities should be throw away if is not supported by locale.
      * True if unsupported quantities should be throw away, false otherwise.
      */
-    var trimUnsupportedQuantities: Boolean
+    val trimUnsupportedQuantities: Boolean
         get() = extraParams.trimUnsupportedQuantities
-        set(value) {
-            extraParams.trimUnsupportedQuantities = value
-        }
+
 }

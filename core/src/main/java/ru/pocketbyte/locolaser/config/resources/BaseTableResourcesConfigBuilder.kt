@@ -1,9 +1,12 @@
 package ru.pocketbyte.locolaser.config.resources
 
+import java.io.File
+
 abstract class BaseTableResourcesConfigBuilder<T : BaseTableResourcesConfig>
     : ResourcesConfigBuilder<T> {
 
     abstract fun buildConfig(
+        workDir: File?,
         keyColumn: String,
         quantityColumn: String?,
         commentColumn: String?,
@@ -31,7 +34,7 @@ abstract class BaseTableResourcesConfigBuilder<T : BaseTableResourcesConfig>
     var metadataColumn: String? = null
 
 
-    final override fun build(): T {
-        return buildConfig(keyColumn, quantityColumn, commentColumn, metadataColumn)
+    final override fun build(workDir: File?): T {
+        return buildConfig(workDir, keyColumn, quantityColumn, commentColumn, metadataColumn)
     }
 }

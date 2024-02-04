@@ -8,6 +8,7 @@ import ru.pocketbyte.locolaser.exception.InvalidConfigException
 import ru.pocketbyte.locolaser.ini.IniResourcesConfig
 import ru.pocketbyte.locolaser.ini.IniResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
+import java.io.File
 
 @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
 class IniResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
@@ -18,11 +19,11 @@ class IniResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
     }
 
     @Throws(InvalidConfigException::class)
-    override fun parse(resourceObject: Any?, throwIfWrongType: Boolean): BaseResourcesConfig? {
+    override fun parse(resourceObject: Any?, workDir: File?, throwIfWrongType: Boolean): BaseResourcesConfig? {
 
         if (resourceObject is String) {
             if (checkType(resourceObject as String?, throwIfWrongType))
-                return IniResourcesConfigBuilder().build()
+                return IniResourcesConfigBuilder().build(workDir)
         } else if (resourceObject is JSONObject) {
             val platformJSON = resourceObject as JSONObject?
 
@@ -37,7 +38,7 @@ class IniResourcesConfigParser : ResourcesConfigParser<BaseResourcesConfig> {
                     platform.resourcesDir = it
                 }
 
-                return platform.build()
+                return platform.build(workDir)
             }
         }
 
