@@ -168,7 +168,7 @@ class GetTextResourceFileTest {
                 "\r\n" +
                 "# value2_1\r\n" +
                 "msgid \"key2\"\r\n" +
-                "msgstr \"value2_1\"" +
+                "msgstr \"value2_1\"\r\n" +
                 "\r\n" +
                 "msgid \"key4\"\r\n" +
                 "msgstr \"value4_1\""

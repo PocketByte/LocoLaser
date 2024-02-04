@@ -119,7 +119,8 @@ class IosResourceFileTest {
                 "\"key1\" = \"value1_1\";\r\n" +
                 "\r\n" +
                 "/* value2_1 */\r\n" +
-                "\"key2\" = \"value2_1\";" +
+                "\"key2\" = \"value2_1\";\r\n" +
+                "\r\n" +
                 "\"key4\" = \"value4_1\";")
 
         assertEquals(expectedResult, readFile(testFile))
