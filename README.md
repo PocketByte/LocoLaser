@@ -1,55 +1,75 @@
 # LocoLaser
+
 LocoLaser - Localization tool to import localized strings from external source to your project.
 Utility support following resource types:
+- Google Sheets
 - Android resources: strings.xml
 - iOS resources: Localizable.strings
+- Kotlin Multiplatform: Generates repository classes for Android, iOS, macOS and JavaSript that can be used in common code.
 - GetText resources: messages.pom
 - Java Script i18next: strings.json
-- Kotlin Multiplatform: Generates repository classes for Android, iOS, macOS and JavaSript that can be used in common code.
-- Google Sheets
-- INI File
+- INI File: strings.ini
+- Java properties: strings.properties
 
 ##### Migration to 2.0.0
+
 Please read [Migration instruction](docs/migration.md) to migrate to version 2.0.0
 
 ##### Related Git's
-Gradle plugin: https://github.com/PocketByte/locolaser-gradle-plugin  
+
 Android Example: https://github.com/PocketByte/locolaser-android-example  
 iOS Example: https://github.com/PocketByte/locolaser-ios-example  
 Kotlin MPP Example: https://github.com/PocketByte/locolaser-kotlin-mpp-example  
+
 ### How does it work
-At first, you need to create configuration file in JSON format that contains configuration of platforms and sources.
-Here is the detailed instruction for configuring: [LocoLaser Config](CONFIG.md)  
-Example of Android config that gets strings from Google Sheets:
-```json
-{
-    "platform" : "android",
-    "source" : {
-        "type" : "googlesheet",
-        "column_key" : "key",
-        "id" : "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
-    },
-    "locales" : ["en", "fi"],
-    "delay" : 30
+You need to apply LocoLaser plugin in `build.gradle.kts` and configure `localize` extension.  
+Example of Android configuration that gets strings from Google Sheets:
+
+```kotlin
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven("https://plugins.gradle.org/m2/")
+    }
+    dependencies {
+        classpath("ru.pocketbyte.locolaser:plugin-all:2.3.0")
+    }
+}
+
+plugins {
+    apply("ru.pocketbyte.locolaser.all")
+}
+
+localize {
+    config {
+        platform {
+            android()
+        }
+        source {
+            googleSheet {
+                id = "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
+                keyColumn = "key"
+                commentColumn = "base"
+                quantityColumn = "quantity"
+                credentialFile = "../service_account.json"
+            }
+        }
+        locales = setOf("base", "fi")
+    }
 }
 ```
-When configuration is created you should run LocoLaser with corresponding set of jar artifacts which supports platforms and sources from configuration.
-Example of console command that starts LocoLaser:
-``` Bash
-java -cp "core.jar:platform-mobile.jar:source-googlesheet.jar" ru.pocketbyte.locolaser.Main "localization_config.json"
-```
-These artifacts can be downloaded from [maven repository](https://bintray.com/pocketbyte/maven).
-But there is another simplest ways. 
-If you use gradle you can use [LocoLaser gradle plugin](https://github.com/PocketByte/locolaser-gradle-plugin) instead.
-Otherwise, in [LocaLaser iOS Example](https://github.com/PocketByte/locolaser-ios-example/) you can find [localize.command](https://github.com/PocketByte/locolaser-ios-example/blob/master/locloaser-example-ios/localize.command), the bash scripts that simplify work with LocoLaser on Unix based systems.
 
-### Console arguments
-You can override config properties by adding additional console arguments:
-- **`--force`** or **`--f`** - Sets `force_import = true`.
-- **`-cs`** - String. Override config property `conflict_strategy`.
-- **`-delay`** - Long. Override config property `delay`.
+When configuration is done it creates localization tasks in `localization` group.
+
+### Config overrides
+
+You can override config properties by calling corresponded tasks:
+- `localize[ConfigName]ExportNew`: Exports new strings from platform resources to source.
+- `localize[ConfigName]Force`: Forces localization ignoring cache.
 
 ## License
+
 ```
 Copyright © 2017 Denis Shurygin. All rights reserved.
 Contacts: <mail@pocketbyte.ru>
