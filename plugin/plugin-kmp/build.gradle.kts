@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import kotlin.collections.listOf
 
 plugins {
+    id("kotlin")
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "1.2.0"
     id("maven-publish")
@@ -33,7 +34,7 @@ gradlePlugin {
     plugins {
         create("locolaserKmpPlugin") {
             id = "ru.pocketbyte.locolaser.kmp"
-            implementationClass = "ru.pocketbyte.locolaser.plugin.LocoLaserPlugin"
+            implementationClass = "ru.pocketbyte.locolaser.plugin.LocoLaserPluginKmp"
             displayName = "KMP Plugin for LocoLaser"
             description =
                 "Extended Plugin for LocoLaser that also attaches all required dependencies " +

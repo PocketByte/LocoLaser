@@ -75,7 +75,6 @@ kotlin {
         }
 
         jvmTest {
-            dependsOn(jvmMain.get())
             dependsOn(commonTest.get())
         }
 

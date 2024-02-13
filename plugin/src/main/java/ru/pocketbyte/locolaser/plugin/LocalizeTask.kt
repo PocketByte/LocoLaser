@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.plugin
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 import ru.pocketbyte.locolaser.config.Config
@@ -21,6 +22,7 @@ open class LocalizeTask: DefaultTask() {
         LocoLaser.localize(getConfigOrThrow())
     }
 
+    @Internal
     protected open fun getConfigOrThrow(): Config {
         return config ?: throw IllegalStateException("Config not set")
     }

@@ -33,7 +33,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin-all:2.3.0")
+        classpath("ru.pocketbyte.locolaser:plugin-all:2.3.1")
     }
 }
 
