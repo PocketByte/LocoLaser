@@ -1,5 +1,7 @@
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinAndroidTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 import ru.pocketbyte.kotlin.gradle.plugin.mpp_publish.upperFirstChar
 import ru.pocketbyte.kotlin_mpp.plugin.publish.registerPlatformDependentPublishingTasks
 
@@ -40,10 +42,11 @@ android {
 kotlin {
 
     jvm()
-    ios()
+    iosX64()
+    iosArm64()
     iosSimulatorArm64()
 
-    android {
+    androidTarget {
         publishLibraryVariants("release")
     }
 
@@ -52,41 +55,40 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-stdlib")
             }
         }
 
-        val commonTest by getting {
-            dependsOn(commonMain)
+        commonTest {
             dependencies {
                 implementation(kotlin("test"))
             }
         }
 
-        val jvmMain by getting {
-            dependsOn(commonMain)
+        jvmMain {
+            dependsOn(commonMain.get())
             dependencies {
                 implementation("com.ibm.icu:icu4j:73.2")
             }
         }
 
-        val jvmTest by getting {
-            dependsOn(jvmMain)
-            dependsOn(commonTest)
+        jvmTest {
+            dependsOn(jvmMain.get())
+            dependsOn(commonTest.get())
         }
 
-        val iosMain by getting {
-            dependsOn(commonMain)
+        iosMain {
+            dependsOn(commonMain.get())
         }
 
         val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
+            dependsOn(iosMain.get())
         }
 
-        val jsMain by getting {
-            dependsOn(commonMain)
+        jsMain {
+            dependsOn(commonMain.get())
             dependencies {
                 implementation(npm("i18next", "23.7.11"))
             }

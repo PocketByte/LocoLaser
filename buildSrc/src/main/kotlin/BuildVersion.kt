@@ -1,6 +1,6 @@
 
 object BuildVersion {
-    const val kotlin = "1.8.22"
+    const val kotlin = "1.9.22"
     const val kotlinPoet = "1.14.2"
 
     const val googleApiClient = "2.2.0"

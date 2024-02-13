@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.plugin
 
 import groovy.lang.Closure
+import org.gradle.api.Action
 import org.gradle.api.Project
 import ru.pocketbyte.locolaser.ConfigParserFactory
 import ru.pocketbyte.locolaser.config.ConfigBuilder
@@ -24,7 +25,7 @@ open class LocalizationConfigContainer(
     fun config(name: String, configurator: ConfigBuilder.() -> Unit) {
         val configurators = configs[name]
         if (configurators == null) {
-            createTasksForConfig(name)
+            registerTasksForConfig(name)
             configs[name] = mutableListOf(configurator)
         } else {
             configurators.add(configurator)
@@ -114,21 +115,30 @@ open class LocalizationConfigContainer(
         }
     }
 
-    private fun createTasksForConfig(name: String?): Set<LocalizeTask> {
-        return setOf(
-            project.tasks.create(localizeTaskName(name), LocalizeTask::class.java),
-            project.tasks.create(localizeForceTaskName(name), LocalizeForceTask::class.java),
-            project.tasks.create(localizeExportNewTaskName(name), LocalizeExportNewTask::class.java)
-        ).onEach {
-            it.config = {
-                val builder = ConfigBuilder()
+    private fun registerTasksForConfig(name: String?) {
+        val configurator: Action<LocalizeTask> = Action {
+            it.config = ConfigBuilder().also { builder ->
                 builder.workDir = project.projectDir
                 configs[name]?.forEach { configurator ->
                     configurator.invoke(builder)
                 }
-                builder.build()
-            }
+            }.build()
         }
+        project.tasks.register(
+            localizeTaskName(name),
+            LocalizeTask::class.java,
+            configurator
+        )
+        project.tasks.register(
+            localizeForceTaskName(name),
+            LocalizeForceTask::class.java,
+            configurator
+        )
+        project.tasks.register(
+            localizeExportNewTaskName(name),
+            LocalizeExportNewTask::class.java,
+            configurator
+        )
     }
 
     private fun localizeTaskName(configName: String?): String {

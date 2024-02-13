@@ -14,15 +14,15 @@ open class LocalizeTask: DefaultTask() {
     }
 
     @Input
-    var config: () -> Config = { throw IllegalArgumentException("Config not set") }
+    var config: Config? = null
 
     @TaskAction
     fun localize() {
-        LocoLaser.localize(getConfig())
+        LocoLaser.localize(getConfigOrThrow())
     }
 
-    protected open fun getConfig(): Config {
-        return config()
+    protected open fun getConfigOrThrow(): Config {
+        return config ?: throw IllegalStateException("Config not set")
     }
 }
 
@@ -32,8 +32,8 @@ open class LocalizeForceTask: LocalizeTask() {
         outputs.upToDateWhen { false }
     }
 
-    override fun getConfig(): Config {
-        return super.getConfig().copy(
+    override fun getConfigOrThrow(): Config {
+        return super.getConfigOrThrow().copy(
             forceImport = true
         )
     }
@@ -45,8 +45,8 @@ open class LocalizeExportNewTask: LocalizeTask() {
         outputs.upToDateWhen { false }
     }
 
-    override fun getConfig(): Config {
-        return super.getConfig().copy(
+    override fun getConfigOrThrow(): Config {
+        return super.getConfigOrThrow().copy(
             forceImport = true,
             conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
         )
