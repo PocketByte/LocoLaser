@@ -103,6 +103,19 @@ kotlin {
         }
     }
     jvmToolchain(8)
+
+    // Fix to generate unique name in klib manifest for commonMain artifact
+    // https://youtrack.jetbrains.com/issue/KT-57914/Task-compileIosMainKotlinMetadata-during-build-task-fails-without-kotlin.mpp.hierarchicalStructureSupportfalse
+    metadata {
+        compilations.configureEach {
+            if (name == KotlinSourceSet.COMMON_MAIN_SOURCE_SET_NAME) {
+                compileTaskProvider {
+                    this as KotlinCompileCommon
+                    moduleName.set("${project.group}:${moduleName.get()}")
+                }
+            }
+        }
+    }
 }
 
 tasks.withType(KotlinCompile::class.java).all {

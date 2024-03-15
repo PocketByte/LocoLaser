@@ -1,16 +1,25 @@
 # LocoLaser Gradle plugin
-LocoLaser - Is Localization tool for many types of string resources. See https://github.com/PocketByte/LocoLaser/ for more details.  
+
+LocoLaser - Is Localization tool for many types of string resources.  
 This gradle plugin simplify work with LocoLaser by adding several tasks and extensions.
+
 ### Usage
+
 ##### 1. Apply plugin
-In **`build.gradle.kts`** of the module apply LocoLaser
+
+In **`build.gradle.kts`** of the module, apply LocoLaser plugin:
+
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.2.5")
+    id("ru.pocketbyte.locolaser").version("2.3.1")
 }
 ```
+
 ##### 2. Add dependency
-Choose which type of artifact you will use and also add it as **`classpath`** dependency in **`build.gradle.kts`** of the module:
+
+Choose which type of artifact you will use and also add it as **`classpath`** dependency
+in **`build.gradle.kts`** of the module:
+
 ```kotlin
 buildscript {
     repositories {
@@ -18,14 +27,17 @@ buildscript {
         ...
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.2.5")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.2.5")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:2.3.1")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.3.1")
         ...
     }
 }
 ```
+
 ##### 2. Create configuration
+
 In same **`build.gradle.kts`** create localization configuration:
+
 ```kotlin
 import ru.pocketbyte.locolaser.*
 import ru.pocketbyte.locolaser.plugin.localize
@@ -49,21 +61,25 @@ localize {
     }
 }
 ```
+
 Here `kotlinMultiplatform`, `android`, `ios` and `json` is an extensions for `ConfigResourceBuilder`.
 Each locolaser artifact that you add in section `buildscript.dependencies` adds its own Kotlin Extension.
 
-##### Tasks
-Plugin add 3 tasks into **`localization`** group:
-- **`localize[ConfigName]`** - Run LocoLaser with default parameters;
-- **`localize[ConfigName]Force`** - Run LocoLaser with force;
-- **`localize[ConfigName]ExportNew`** - Run LocoLaser with force and conflict strategy = export_new_platform.
-
 ##### Extension
+
 Plugin add **`localize`** extension. This extension has following methods:
 - **`config(name, configSetup)`** - Creates config with provided name and configure it with closure configSetup.
-- **`configFromFile(name, file, workDir)`** - Creates config with provided name from JSON File with localization config. Default value `"localize_config.json"`. About configuration file format you can read in https://github.com/PocketByte/LocoLaser/blob/master/README.md
+- **`configFromFile(name, file, workDir)`** - **Depecated**. Don't use it. Will be removed in future.
+
+##### Tasks
+
+Plugin add 3 tasks into **`localization`** group:
+- **`localize[ConfigName]`** - Run LocoLaser with default parameters;
+- **`localize[ConfigName]Force`** - Run LocoLaser with force (ignoring cache);
+- **`localize[ConfigName]ExportNew`** - Run LocoLaser with force and conflict strategy = export_new_platform.
 
 ### License
+
 ```
 Copyright © 2017 Denis Shurygin. All rights reserved.
 Contacts: <mail@pocketbyte.ru>
