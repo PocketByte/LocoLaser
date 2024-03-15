@@ -8,6 +8,7 @@ import ru.pocketbyte.locolaser.kotlinMultiplatform
 import ru.pocketbyte.locolaser.plugin.localize
 import ru.pocketbyte.locolaser.properties
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 
 buildscript {
     repositories {
@@ -35,7 +36,16 @@ localize {
                 repositoryClass = "com.example.SuperStringImpl"
                 android(); ios(); js()
                 absStatic("absStatic") {
-                    formattingType = JavaFormattingType
+                    sourceSet = "absMain"
+                    className = "AbsStaticString"
+                }
+                absKeyValue("absKeyValue") {
+                    sourceSet = "absMain"
+                    className = "AbsKeyValueString"
+                }
+                absProxy("absProxy") {
+                    sourceSet = "absMain"
+                    className = "AbsProxyString"
                 }
             }
             json {

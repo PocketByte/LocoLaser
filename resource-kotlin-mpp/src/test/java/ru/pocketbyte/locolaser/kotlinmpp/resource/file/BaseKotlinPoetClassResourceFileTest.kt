@@ -58,10 +58,9 @@ class BaseKotlinPoetClassResourceFileTest {
             assertEquals(setOf("key2"), it.formattedProperties)
         }
 
-        // NoFormattingType's should be ignored
         TestClass(NoFormattingType).let {
             it.write(resMap, null)
-            assertTrue(it.formattedProperties.isEmpty())
+            assertEquals(setOf("key2"), it.formattedProperties)
         }
 
     }

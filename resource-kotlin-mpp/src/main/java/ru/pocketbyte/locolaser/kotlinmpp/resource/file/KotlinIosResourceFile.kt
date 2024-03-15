@@ -56,8 +56,6 @@ class KotlinIosResourceFile(
     override fun instantiateFileSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): FileSpec.Builder {
         val builder = super.instantiateFileSpecBuilder(resMap, extraParams)
 
-        builder.addImport("platform.Foundation", "localizedStringWithFormat")
-        builder.addImport("platform.Foundation", "stringWithFormat")
         builder.addImport(
             StringProviderImplClassName.packageName,
             StringProviderImplClassName.simpleName

@@ -90,18 +90,17 @@ abstract class BaseKotlinPoetClassResourceFile(
                             instantiatePropertySpecBuilder(propertyName, item, resMap, extraParams)
                                 .build()
                         )
-                        if (formattingType.argumentsSubstitution != ArgumentsSubstitution.NO) {
-                            val formattingArguments = sortFormattingArguments(
-                                item.valueForQuantity(Quantity.OTHER)?.formattingArguments
+
+                        val formattingArguments = sortFormattingArguments(
+                            item.valueForQuantity(Quantity.OTHER)?.formattingArguments
+                        )
+                        if (formattingArguments?.isEmpty() == false) {
+                            classSpec.addFunction(
+                                instantiateFormattedPropertySpecBuilder(
+                                    propertyName, formattingArguments,
+                                    item, resMap, extraParams
+                                ).build()
                             )
-                            if (formattingArguments?.isEmpty() == false) {
-                                classSpec.addFunction(
-                                    instantiateFormattedPropertySpecBuilder(
-                                        propertyName, formattingArguments,
-                                        item, resMap, extraParams
-                                    ).build()
-                                )
-                            }
                         }
                     }
                 }
