@@ -14,7 +14,7 @@ abstract class KotlinBaseResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    KotlinClassResourceFileProvider(),
+    KotlinClassResourceFileProvider,
     filter
 ) {
 

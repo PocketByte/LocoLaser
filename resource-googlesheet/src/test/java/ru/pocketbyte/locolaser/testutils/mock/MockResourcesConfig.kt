@@ -28,6 +28,7 @@ class MockResourcesConfig : ResourcesConfig {
         override fun read(locales: Set<String>?, extraParams: ExtraParams?) = ResMap()
         override fun write(resMap: ResMap, extraParams: ExtraParams?) { }
         override fun summaryForLocale(locale: String) = FileSummary(0, null)
+        override fun allFiles(locales: Set<String>): List<File> = emptyList()
     }
 
 }

@@ -34,7 +34,7 @@ class KotlinAbsResourcesTest {
 
     private class KotlinAbsResourcesImpl(
         dir: File, name: String
-    ) : KotlinAbsResources(dir, name, KotlinClassResourceFileProvider(), null) {
+    ) : KotlinAbsResources(dir, name, KotlinClassResourceFileProvider, null) {
 
         override val formattingType: FormattingType = NoFormattingType
 

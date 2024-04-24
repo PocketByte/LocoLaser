@@ -54,4 +54,9 @@ class IosResources(
     private fun getPluralFileForLocale(locale: String): File {
         return getFileForLocale(locale, extension = PLURAL_RES_FILE_EXTENSION)
     }
+
+    override fun allFiles(locales: Set<String>): List<File> {
+        return locales.map { getFileForLocale(it) } +
+                locales.map { getPluralFileForLocale(it) }
+    }
 }

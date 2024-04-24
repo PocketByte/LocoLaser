@@ -4,7 +4,7 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
-internal class IosResourceFileProvider : ResourceFileProvider {
+internal object IosResourceFileProvider : ResourceFileProvider {
     override fun get(locale: String, directory: File, name: String, extension: String): File {
         val localeDir = StringBuilder()
         if (Resources.BASE_LOCALE == locale)

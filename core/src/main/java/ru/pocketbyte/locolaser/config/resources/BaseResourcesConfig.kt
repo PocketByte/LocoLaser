@@ -5,7 +5,6 @@
 
 package ru.pocketbyte.locolaser.config.resources
 
-import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.utils.buildFileFrom
 import java.io.File
 import java.util.regex.Pattern

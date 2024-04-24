@@ -27,7 +27,7 @@ class AndroidResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    resourceFileProvider ?: AndroidResourceFileProvider(),
+    resourceFileProvider ?: AndroidResourceFileProvider,
     filter
 ) {
 

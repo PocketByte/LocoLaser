@@ -37,7 +37,7 @@ class IosSwiftResourcesTest {
 
         IosSwiftResources(
             sourceDir, className,
-            IosClassResourceFileProvider(),
+            IosClassResourceFileProvider,
             tableName, null
         ).write(resMap, null)
 

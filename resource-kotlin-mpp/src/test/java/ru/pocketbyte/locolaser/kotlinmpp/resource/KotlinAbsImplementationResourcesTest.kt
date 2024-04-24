@@ -47,7 +47,7 @@ class KotlinAbsImplementationResourcesTest {
             name: String,
             interfaceName: String?
     ) : KotlinAbsImplementationResources(
-        dir, name, interfaceName, KotlinClassResourceFileProvider(), null
+        dir, name, interfaceName, KotlinClassResourceFileProvider, null
     ) {
 
         override val formattingType: FormattingType = NoFormattingType

@@ -34,14 +34,6 @@ open class ConfigBuilder {
      */
     var locales: Set<String> = Config.DEFAULT_LOCALES
 
-    /**
-     * Defines time in minutes that define delay for next localization.
-     * Localization will executed not more often the specified delay.
-     * If force import switched on delay will be ignored.
-     */
-    @Deprecated("To avoid unnecessary localization calls should be used Gradle tasks cache mechanism")
-    var delay: Long = Config.DEFAULT_DELAY
-
     val extraParams: ExtraParams = ExtraParams()
 
     /**
@@ -110,7 +102,6 @@ open class ConfigBuilder {
             conflictStrategy = conflictStrategy,
             tempDirPath = tempDir,
             locales = locales,
-            delay = delay,
             extraParams = ExtraParams().apply { putAll(extraParams) },
             platform = platform.build(workDir),
             source = source.build(workDir),

@@ -6,13 +6,14 @@
 package ru.pocketbyte.locolaser.config.resources
 
 import ru.pocketbyte.locolaser.resource.Resources
+import java.io.Serializable
 
 /**
  * Configuration object that contains information about localization rules for specified platform.
  *
  * @author Denis Shurygin
  */
-interface ResourcesConfig {
+interface ResourcesConfig : Serializable {
 
     /**
      * Gets name of the platform.

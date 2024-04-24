@@ -106,7 +106,6 @@ abstract class BaseKotlinPoetClassResourceFile(
                 }
             }
 
-            println("${className}: Save to ${directory.absoluteFile}")
             instantiateFileSpecBuilder(resMap, extraParams)
                 .addType(classSpec.build())
                 .build()

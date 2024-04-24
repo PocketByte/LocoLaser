@@ -16,7 +16,7 @@ abstract class IosBaseClassResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    resourceFileProvider ?: IosClassResourceFileProvider(),
+    resourceFileProvider ?: IosClassResourceFileProvider,
     filter
 ) {
 

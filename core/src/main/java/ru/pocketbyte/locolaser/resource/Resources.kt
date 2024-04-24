@@ -9,6 +9,7 @@ import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
+import java.io.File
 
 import java.io.IOException
 
@@ -34,5 +35,8 @@ interface Resources {
     @Throws(IOException::class)
     fun write(resMap: ResMap, extraParams: ExtraParams?)
 
+    @Deprecated("Cache should be handled on Gradle side")
     fun summaryForLocale(locale: String): FileSummary?
+
+    fun allFiles(locales: Set<String>): List<File>
 }

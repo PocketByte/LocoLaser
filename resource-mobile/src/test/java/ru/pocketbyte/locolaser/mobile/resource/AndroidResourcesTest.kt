@@ -28,7 +28,7 @@ class AndroidResourcesTest {
 
         val resources = AndroidResources(
             tempFolder.newFolder(), "test",
-            AndroidResourceFileProvider(), null
+            AndroidResourceFileProvider, null
         )
         resources.write(resMap1, null)
 

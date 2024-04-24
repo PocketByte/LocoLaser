@@ -18,7 +18,7 @@ class IniResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    resourceFileProvider ?: IniResourceFileProvider(),
+    resourceFileProvider ?: IniResourceFileProvider,
     filter
 ) {
 

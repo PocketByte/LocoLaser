@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
 import groovy.lang.Closure
+import org.gradle.api.Project
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
@@ -11,6 +12,7 @@ import ru.pocketbyte.locolaser.kotlinmpp.builder.FixedFormattingClassBuilderFact
 import ru.pocketbyte.locolaser.kotlinmpp.builder.KmpClassCustomFormattingBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.builder.KmpClassFixedFormattingBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.builder.KmpInterfaceBuilder
+import ru.pocketbyte.locolaser.kotlinmpp.extension.kotlin
 import ru.pocketbyte.locolaser.utils.callWithDelegate
 import java.io.File
 
@@ -38,7 +40,7 @@ class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<Resourc
     /**
      * Source dir path.
      */
-    var srcDir: String? = null
+    var srcDir: String = "./build/generated/locolaser/"
 
     /**
      * Filter function.
@@ -48,6 +50,46 @@ class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<Resourc
 
     private val platformCommon: KmpInterfaceBuilder = KmpInterfaceBuilder()
     private val platformMap = mutableMapOf<String, BaseKmpClassBuilder<*, *>>()
+
+    private var isAddedToSourceSets = false
+
+    fun Project.addToSourceSets(strict: Boolean = true) {
+        if (isAddedToSourceSets) {
+            throw IllegalStateException("LocoLaser Config already added to source sets")
+        }
+        kotlin {
+            sourceSets.apply {
+                commonMain {
+                    val sourcesDir = platformCommon.sourcesDir
+                        ?: if (strict) {
+                            throw IllegalArgumentException(
+                                "Missing sourceSet for common target`"
+                            )
+                        } else {
+                            return@commonMain
+                        }
+
+                    kotlin.srcDir(sourcesDir)
+                }
+
+                platformMap.values.forEach { builder ->
+                    val sourcesDir = builder.sourcesDir ?: return@forEach
+                    val sourceSet = findByName(builder.sourceSet)
+                    if (sourceSet == null) {
+                        if (strict) {
+                            throw IllegalArgumentException(
+                                "Missing sourceSet `${builder.sourceSet}`"
+                            )
+                        }
+                        return@forEach
+                    }
+
+                    sourceSet.kotlin.srcDir(sourcesDir)
+                }
+            }
+        }
+        isAddedToSourceSets = true
+    }
 
     /**
      * If defined, only strings with keys that matches RegExp will be added as Repository fields.
@@ -221,6 +263,7 @@ class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<Resourc
         builderFactory: FixedFormattingClassBuilderFactory,
         action: (KmpClassFixedFormattingBuilder.() -> Unit)
     ) {
+        assertNotAddedToSourceSetsOnConfiguration()
         val platformBuilder = platformMap[name] as? KmpClassFixedFormattingBuilder
             ?: KmpClassFixedFormattingBuilder(name, builderFactory).apply {
                 sourceSet = "${name}Main"
@@ -259,6 +302,7 @@ class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<Resourc
         builderFactory: CustomFormattingClassBuilderFactory,
         action: (KmpClassCustomFormattingBuilder.() -> Unit)
     ) {
+        assertNotAddedToSourceSetsOnConfiguration()
         val platformBuilder = platformMap[name] as? KmpClassCustomFormattingBuilder
             ?: KmpClassCustomFormattingBuilder(name, builderFactory).apply {
                 sourceSet = "${name}Main"
@@ -283,5 +327,14 @@ class KotlinMultiplatformResourcesConfigBuilder : ResourcesConfigBuilder<Resourc
         }
 
         return ResourcesSetConfig(resultSet)
+    }
+
+    private fun assertNotAddedToSourceSetsOnConfiguration() {
+        if (isAddedToSourceSets) {
+            throw IllegalStateException(
+                "LocoLaser Config already added to source sets. " +
+                "You should,t do any `kotlinMultiplatform` configurations after calling `addToSourceSets`"
+            )
+        }
     }
 }

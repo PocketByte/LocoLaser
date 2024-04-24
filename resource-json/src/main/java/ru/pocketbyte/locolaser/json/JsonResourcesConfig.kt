@@ -30,7 +30,7 @@ class JsonResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    resourceFileProvider ?: JsonResourceFileProvider(),
+    resourceFileProvider ?: JsonResourceFileProvider,
     filter
 ) {
 

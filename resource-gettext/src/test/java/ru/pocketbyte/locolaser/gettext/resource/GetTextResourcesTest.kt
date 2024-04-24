@@ -25,7 +25,7 @@ class GetTextResourcesTest {
 
         val resources = GetTextResources(
             tempFolder.newFolder(), "test",
-            GetTextResourceFileProvider(), null
+            GetTextResourceFileProvider, null
         )
         resources.write(resMap1, null)
 

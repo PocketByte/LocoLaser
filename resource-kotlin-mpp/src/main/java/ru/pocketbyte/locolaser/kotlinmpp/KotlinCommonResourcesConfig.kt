@@ -17,7 +17,7 @@ class KotlinCommonResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    KotlinClassResourceFileProvider(),
+    KotlinClassResourceFileProvider,
     filter
 ) {
 

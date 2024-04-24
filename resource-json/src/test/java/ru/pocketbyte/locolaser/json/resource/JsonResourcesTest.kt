@@ -26,7 +26,7 @@ class JsonResourcesTest {
 
         val resources = JsonResources(
             tempFolder.newFolder(), "test",
-            JsonResourceFileProvider(),  -1,
+            JsonResourceFileProvider,  -1,
             KeyPluralizationRule.Postfix.Named(), null
         )
         resources.write(resMap1, null)

@@ -18,7 +18,7 @@ class PropertiesResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    resourceFileProvider ?: PropertiesResourceFileProvider(),
+    resourceFileProvider ?: PropertiesResourceFileProvider,
     filter
 ) {
 

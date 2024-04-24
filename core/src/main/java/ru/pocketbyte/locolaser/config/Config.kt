@@ -10,6 +10,7 @@ import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.utils.buildFileFrom
 
 import java.io.File
+import java.io.Serializable
 
 /**
  * Configuration object that contain information about localization rules.
@@ -54,13 +55,6 @@ data class Config(
      */
     val locales: Set<String> = DEFAULT_LOCALES,
 
-    /**
-     * Defines time in minutes that define delay for next localization.
-     * Localization will executed not more often the specified delay.
-     * If force import switched on delay will be ignored.
-     */
-    val delay: Long = DEFAULT_DELAY,
-
 
     /**
      * Defines temporary directory.
@@ -68,7 +62,7 @@ data class Config(
     val tempDirPath: String? =  platform?.defaultTempDirPath,
 
     val extraParams: ExtraParams = ExtraParams()
-) {
+): Serializable {
 
     enum class ConflictStrategy constructor(val strValue: String) {
 
@@ -121,4 +115,13 @@ data class Config(
     val trimUnsupportedQuantities: Boolean
         get() = extraParams.trimUnsupportedQuantities
 
+    fun allSourceFiles(): List<File> {
+        return source?.resources?.allFiles(locales)
+            ?: emptyList()
+    }
+
+    fun allPlatformFiles(): List<File> {
+        return platform?.resources?.allFiles(locales)
+            ?: emptyList()
+    }
 }

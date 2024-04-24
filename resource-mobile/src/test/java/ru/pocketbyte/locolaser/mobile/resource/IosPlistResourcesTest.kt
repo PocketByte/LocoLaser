@@ -25,7 +25,7 @@ class IosPlistResourcesTest {
 
         val resources = IosResources(
             tempFolder.newFolder(), "test",
-            IosResourceFileProvider(), null
+            IosResourceFileProvider, null
         )
         resources.write(resMap1, null)
 

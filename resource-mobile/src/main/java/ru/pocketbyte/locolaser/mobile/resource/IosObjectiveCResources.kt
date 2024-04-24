@@ -44,4 +44,8 @@ class IosObjectiveCResources(
     override fun summaryForLocale(locale: String): FileSummary {
         return FileSummary(arrayOf(objcHFile, objcMFile))
     }
+
+    override fun allFiles(locales: Set<String>): List<File> {
+        return listOf(objcHFile, objcMFile)
+    }
 }

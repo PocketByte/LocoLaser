@@ -28,7 +28,7 @@ class GetTextResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    resourceFileProvider ?: GetTextResourceFileProvider(),
+    resourceFileProvider ?: GetTextResourceFileProvider,
     filter
 ) {
 

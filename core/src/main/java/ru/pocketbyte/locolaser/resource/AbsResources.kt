@@ -53,6 +53,10 @@ abstract class AbsResources(
         return FileSummary(getFileForLocale(locale))
     }
 
+    override fun allFiles(locales: Set<String>): List<File> {
+        return locales.map { getFileForLocale(it) }
+    }
+
     override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap {
         val resMap = ResMap()
         getResourceFiles(locales)?.forEach { resFile ->

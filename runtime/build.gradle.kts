@@ -39,21 +39,10 @@ android {
     }
 }
 
+
+// =================================
+// Common Source Sets
 kotlin {
-
-    jvm()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
-    androidTarget {
-        publishLibraryVariants("release")
-    }
-
-    js(IR) {
-        browser()
-    }
-
     sourceSets {
         commonMain {
             dependencies {
@@ -67,42 +56,14 @@ kotlin {
             }
         }
 
-        jvmMain {
+        nativeMain {
             dependsOn(commonMain.get())
-            dependencies {
-                implementation("com.ibm.icu:icu4j:73.2")
-            }
         }
 
-        jvmTest {
+        nativeTest {
             dependsOn(commonTest.get())
         }
-
-        iosMain {
-            dependsOn(commonMain.get())
-        }
-
-
-        val iosX64Main by getting {
-            dependsOn(iosMain.get())
-        }
-
-        val iosArm64Main by getting {
-            dependsOn(iosMain.get())
-        }
-
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain.get())
-        }
-
-        jsMain {
-            dependsOn(commonMain.get())
-            dependencies {
-                implementation(npm("i18next", "23.7.11"))
-            }
-        }
     }
-    jvmToolchain(8)
 
     // Fix to generate unique name in klib manifest for commonMain artifact
     // https://youtrack.jetbrains.com/issue/KT-57914/Task-compileIosMainKotlinMetadata-during-build-task-fails-without-kotlin.mpp.hierarchicalStructureSupportfalse
@@ -115,6 +76,119 @@ kotlin {
                 }
             }
         }
+    }
+}
+
+// =================================
+// JVM based targets
+kotlin {
+    jvm()
+    androidTarget {
+        publishLibraryVariants("release")
+    }
+
+    sourceSets {
+        jvmMain {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation("com.ibm.icu:icu4j:73.2")
+            }
+        }
+
+        jvmTest {
+            dependsOn(commonTest.get())
+        }
+    }
+    jvmToolchain(8)
+}
+
+
+// =================================
+// JS Target
+kotlin {
+    js(IR) {
+        browser()
+        nodejs()
+        binaries.library()
+    }
+
+    sourceSets {
+        jsMain {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation(npm("i18next", "23.7.11"))
+            }
+        }
+    }
+}
+
+// =================================
+// Android Native Targets
+kotlin {
+//    androidNativeArm32()
+    androidNativeArm64()
+    androidNativeX64()
+    androidNativeX86()
+
+    sourceSets {
+        // AndroidNative implementation not yet implemented
+    }
+}
+
+// =================================
+// Apple Targets (macOS required)
+kotlin {
+    val targets = arrayOf(
+        macosX64(),
+        macosArm64(),
+
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+
+        watchosArm32(),
+        watchosArm64(),
+        watchosX64(),
+        watchosSimulatorArm64(),
+
+        tvosX64(),
+        tvosArm64(),
+        tvosSimulatorArm64()
+    )
+    sourceSets {
+        appleMain {
+            dependsOn(commonMain.get())
+            targets.forEach {
+                getByName("${it.name}Main").dependsOn(this)
+            }
+        }
+
+        appleTest {
+            targets.forEach {
+                getByName("${it.name}Test").dependsOn(this)
+            }
+        }
+    }
+}
+
+// =================================
+// Linux targets
+kotlin {
+    linuxX64()
+    linuxArm64()
+
+    sourceSets {
+        // Linux implementation not yet implemented
+    }
+}
+
+// =================================
+// Windows targets
+kotlin {
+    mingwX64()
+
+    sourceSets {
+        // Windows implementation not yet implemented
     }
 }
 
@@ -168,7 +242,7 @@ kotlin {
     targets.forEach {
         val targetName = it.name.upperFirstChar()
         if (it is KotlinAndroidTarget) {
-            this@kotlin.android {
+            this@kotlin.androidTarget {
                 afterEvaluate {
                     mavenPublication {
                         val variant = if (this.artifactId.endsWith("debug")) // FIXME

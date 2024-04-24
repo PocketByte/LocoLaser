@@ -49,13 +49,8 @@ abstract class BaseKmpBuilder<
         return builderFactory
             .getBuilder()
             .apply {
-                mainBuilder.srcDir?.let {
-                    resourcesDir = "$it/${sourceSet}/kotlin/"
-                }
-
-                mainBuilder.filter?.let {
-                    filter = it
-                }
+                resourcesDir = "${mainBuilder.srcDir}/${sourceSet}/kotlin/"
+                filter = mainBuilder.filter
 
                 configure(this)
 

@@ -614,6 +614,10 @@ class LocoLaserTest {
         override fun summaryForLocale(locale: String): FileSummary? {
             return mSummaryMap?.get(locale)
         }
+
+        override fun allFiles(locales: Set<String>): List<File> {
+            throw RuntimeException("This method shouldn't be called")
+        }
     }
 
     private class MockSourceConfig constructor(
@@ -646,6 +650,10 @@ class LocoLaserTest {
                 mockMap = ResMap(resMap)
             else
                 mockMap.merge(resMap)
+        }
+
+        override fun allFiles(locales: Set<String>): List<File> {
+            throw RuntimeException("This method shouldn't be called")
         }
     }
 }

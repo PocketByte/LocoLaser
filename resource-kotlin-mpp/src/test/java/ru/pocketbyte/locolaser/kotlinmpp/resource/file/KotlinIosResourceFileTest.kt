@@ -25,8 +25,6 @@ class KotlinIosResourceFileTest {
         const val CommonImportsStr =
             "import kotlin.String\n" +
             "import platform.Foundation.NSBundle\n" +
-            "import platform.Foundation.localizedStringWithFormat\n" +
-            "import platform.Foundation.stringWithFormat\n" +
             "import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider\n" +
             "import ru.pocketbyte.locolaser.provider.IosStringProvider\n"
 

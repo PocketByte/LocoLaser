@@ -33,4 +33,8 @@ class IosSwiftResources(
     override fun summaryForLocale(locale: String): FileSummary {
         return FileSummary(getFileForLocale(Resources.BASE_LOCALE))
     }
+
+    override fun allFiles(locales: Set<String>): List<File> {
+        return listOf(getFileForLocale(Resources.BASE_LOCALE))
+    }
 }

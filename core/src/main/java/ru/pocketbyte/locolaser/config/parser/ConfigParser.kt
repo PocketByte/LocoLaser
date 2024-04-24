@@ -53,7 +53,6 @@ open class ConfigParser
         const val CONFLICT_STRATEGY = "conflict_strategy"
         const val DUPLICATE_COMMENTS = "duplicate_comments"
         const val TRIM_UNSUPPORTED_QUANTITIES = "trim_unsupported_quantities"
-        const val DELAY = "delay"
 
         @Throws(InvalidConfigException::class)
         private fun parseConflictStrategy(strategy: String?): Config.ConflictStrategy? {
@@ -168,9 +167,6 @@ open class ConfigParser
         JsonParseUtils.getBoolean(configJson, TRIM_UNSUPPORTED_QUANTITIES, null, false)?.let {
             this.trimUnsupportedQuantities = it
         }
-        JsonParseUtils.getLong(configJson, DELAY, null, false)?.let {
-            this.delay = it
-        }
         this.tempDir = JsonParseUtils.getString(configJson, TEMP_DIR, null, false)
 
         sourceConfigParser.parse(JsonParseUtils.getObject(configJson, SOURCE, null, true), workDir, true)?.let {
@@ -238,9 +234,6 @@ open class ConfigParser
         @Parameter(names = ["-cs"])
         private var conflictStrategy: String? = null
 
-        @Parameter(names = ["-delay"])
-        private var delay: Long? = null
-
         @Parameter(names = ["-tempDir"])
         private var tempDir: String? = null
 
@@ -256,7 +249,6 @@ open class ConfigParser
                 config.conflictStrategy = it
             }
 
-            delay?.let { config.delay = it }
             tempDir?.let { config.tempDir = it }
         }
     }

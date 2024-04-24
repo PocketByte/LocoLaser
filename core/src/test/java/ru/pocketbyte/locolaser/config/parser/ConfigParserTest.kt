@@ -69,13 +69,11 @@ class ConfigParserTest {
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testConfigsArray() {
-        val delay1: Long = 141
         val map1 = HashMap<String, Any>()
-        map1[ConfigParser.DELAY] = delay1
+        map1[ConfigParser.FORCE_IMPORT] = true
 
-        val delay2: Long = 873
         val map2 = HashMap<String, Any>()
-        map2[ConfigParser.DELAY] = delay2
+        map2[ConfigParser.FORCE_IMPORT] = false
 
         val file = prepareMockFileWithArray(map1, map2)
 
@@ -86,8 +84,8 @@ class ConfigParserTest {
         assertNotNull(configs[0])
         assertNotNull(configs[1])
 
-        assertEquals(delay1, configs[0].delay)
-        assertEquals(delay2, configs[1].delay)
+        assertEquals(true, configs[0].forceImport)
+        assertEquals(false, configs[1].forceImport)
 
     }
 
@@ -107,7 +105,6 @@ class ConfigParserTest {
         assertFalse(config.duplicateComments)
         assertEquals(file.parentFile.canonicalPath, config.workDir?.canonicalPath)
         assertEquals(KEEP_NEW_PLATFORM, config.conflictStrategy)
-        assertEquals(0, config.delay)
     }
 
     @Test
@@ -213,15 +210,14 @@ class ConfigParserTest {
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testJsonDelay() {
-        val delay: Long = 1
         val map = HashMap<String, Any>()
-        map[ConfigParser.DELAY] = delay
+        map[ConfigParser.FORCE_IMPORT] = true
 
         val file = prepareMockFile(map)
         val configs = mConfigParser.fromFile(file)
 
         assertEquals(1, configs.size)
-        assertEquals(delay, configs[0].delay)
+        assertEquals(true, configs[0].forceImport)
     }
 
     @Test
@@ -277,19 +273,6 @@ class ConfigParserTest {
 
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
-    fun testArgumentDelay() {
-        val delay: Long = 1
-
-        val file = prepareMockFile(null)
-
-        val configs = mConfigParser.fromArguments(
-                arrayOf(file.absolutePath, "-delay", delay.toString()))
-        assertEquals(1, configs.size)
-        assertEquals(delay, configs[0].delay)
-    }
-
-    @Test
-    @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testArgumentTempDir() {
         val tempDir = "./some_dir/another/temp/"
 
@@ -330,20 +313,16 @@ class ConfigParserTest {
     @Test
     @Throws(IOException::class, ParseException::class, InvalidConfigException::class)
     fun testManyArguments() {
-        val delay: Long = 1
-
         val file = prepareMockFile(null)
 
         val configs = mConfigParser.fromArguments(
-                arrayOf(file.absolutePath, "--force", "-cs", EXPORT_NEW_PLATFORM.strValue,
-                        "-delay", delay.toString()))
+                arrayOf(file.absolutePath, "--force", "-cs", EXPORT_NEW_PLATFORM.strValue))
 
         assertEquals(1, configs.size)
 
         val config = configs[0]
         assertTrue(config.forceImport)
         assertEquals(EXPORT_NEW_PLATFORM, config.conflictStrategy)
-        assertEquals(delay, config.delay)
     }
 
 

@@ -46,11 +46,8 @@ object LocoLaser {
         if (summary != null) {
             if (config.forceImport)
                 LogUtils.info("Force import. All resource files will be refreshed.")
-            else if (isConfigFileChanged)
+            else if (isConfigFileChanged) {
                 LogUtils.info("Config file was changed. All resource files will be refreshed.")
-            else if (!summary.isDelayPassed(config.delay)) {
-                LogUtils.info("Delay is not passed. Localization stopped.")
-                return true
             }
         }
 

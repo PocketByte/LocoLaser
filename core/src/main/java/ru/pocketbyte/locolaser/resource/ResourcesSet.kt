@@ -12,6 +12,7 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.MixedFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import ru.pocketbyte.locolaser.summary.FileSummary
+import java.io.File
 
 import java.io.IOException
 
@@ -69,5 +70,13 @@ class ResourcesSet(
         }
 
         return FileSummary(bytes, hash.toString())
+    }
+
+    override fun allFiles(locales: Set<String>): List<File> {
+        return resources.fold(mutableListOf()) { list, resource ->
+            list.apply {
+                addAll(resource.allFiles(locales))
+            }
+        }
     }
 }

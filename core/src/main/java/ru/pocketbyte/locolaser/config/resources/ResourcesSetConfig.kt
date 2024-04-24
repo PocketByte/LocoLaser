@@ -3,7 +3,7 @@ package ru.pocketbyte.locolaser.config.resources
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.ResourcesSet
 
-class ResourcesSetConfig(
+data class ResourcesSetConfig(
     val configs: Set<ResourcesConfig>,
     val main: ResourcesConfig? = null
 ) : ResourcesConfig {

@@ -11,7 +11,7 @@ open class MockResources(
     resourcesDir: File,
     name: String,
     filter: ((key: String) -> Boolean)?
-) : AbsResources(resourcesDir, name, MockResourceFileProvider(), filter) {
+) : AbsResources(resourcesDir, name, MockResourceFileProvider, filter) {
 
     override val fileExtension: String = "mock"
     override val formattingType: FormattingType = NoFormattingType
@@ -22,5 +22,9 @@ open class MockResources(
 
     override fun summaryForLocale(locale: String): FileSummary {
         return FileSummary(0, null)
+    }
+
+    override fun allFiles(locales: Set<String>): List<File> {
+        return emptyList()
     }
 }

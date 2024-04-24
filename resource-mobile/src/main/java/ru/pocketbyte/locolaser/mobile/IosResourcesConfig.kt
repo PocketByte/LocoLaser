@@ -27,7 +27,7 @@ class IosResourcesConfig(
     workDir,
     resourceName,
     resourcesDirPath,
-    resourceFileProvider ?: IosResourceFileProvider(),
+    resourceFileProvider ?: IosResourceFileProvider,
     filter
 ) {
 

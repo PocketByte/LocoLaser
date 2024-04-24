@@ -23,7 +23,7 @@ class PropertiesResourcesTest {
 
         val resources = PropertiesResources(
             tempFolder.newFolder(), "test",
-            PropertiesResourceFileProvider(), null
+            PropertiesResourceFileProvider, null
         )
         resources.write(resMap1, null)
 

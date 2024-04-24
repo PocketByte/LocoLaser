@@ -206,6 +206,10 @@ class BaseTableResourcesTest {
             return FileSummary(0, null)
         }
 
+        override fun allFiles(locales: Set<String>): List<File> {
+            throw RuntimeException("This method shouldn't be called")
+        }
+
         override val firstRow: Int
             get() = 0
 

@@ -22,7 +22,7 @@ class IniResourcesTest {
 
         val resources = IniResources(
             tempFolder.newFolder(), "test",
-            IniResourceFileProvider(), null
+            IniResourceFileProvider, null
         )
         resources.write(resMap1, null)
 

@@ -1,54 +1,74 @@
 package ru.pocketbyte.locolaser.plugin
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
+import org.gradle.api.internal.TaskInputsInternal
+import org.gradle.api.internal.TaskOutputsInternal
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.LocoLaser
 
-open class LocalizeTask: DefaultTask() {
+abstract class LocalizeTask: DefaultTask() {
 
     init {
         group = "localization"
     }
 
-    @Input
+    @Internal
     var config: Config? = null
+
+    override fun getInputs(): TaskInputsInternal {
+        return super.getInputs().apply {
+            val config = getConfigOrThrow()
+            files(config.allSourceFiles())
+        }
+    }
+
+    override fun getOutputs(): TaskOutputsInternal {
+        return super.getOutputs().apply {
+            val config = getConfigOrThrow()
+            files(config.allPlatformFiles())
+        }
+    }
 
     @TaskAction
     fun localize() {
-        LocoLaser.localize(getConfigOrThrow())
+        val configInstance = processConfig(getConfigOrThrow())
+        LocoLaser.localize(configInstance)
     }
 
-    @Internal
-    protected open fun getConfigOrThrow(): Config {
+    protected open fun processConfig(config: Config): Config {
+        return config
+    }
+
+    private fun getConfigOrThrow(): Config {
         return config ?: throw IllegalStateException("Config not set")
     }
 }
 
-open class LocalizeForceTask: LocalizeTask() {
+abstract class LocalizeForceTask: LocalizeTask() {
 
     init {
         outputs.upToDateWhen { false }
     }
 
-    override fun getConfigOrThrow(): Config {
-        return super.getConfigOrThrow().copy(
+    override fun processConfig(config: Config): Config {
+        return super.processConfig(config).copy(
             forceImport = true
         )
     }
 }
 
-open class LocalizeExportNewTask: LocalizeTask() {
+abstract class LocalizeExportNewTask: LocalizeTask() {
 
     init {
         outputs.upToDateWhen { false }
     }
 
-    override fun getConfigOrThrow(): Config {
-        return super.getConfigOrThrow().copy(
+    override fun processConfig(config: Config): Config {
+        return super.processConfig(config).copy(
             forceImport = true,
             conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
         )
