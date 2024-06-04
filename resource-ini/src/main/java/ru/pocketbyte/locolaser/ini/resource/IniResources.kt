@@ -7,7 +7,6 @@ import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 
@@ -23,10 +22,6 @@ class IniResources(
 
     override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
         return arrayOf(IniResourceFile(getFileForLocale(Resources.BASE_LOCALE), locales))
-    }
-
-    override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(getFileForLocale(Resources.BASE_LOCALE))
     }
 
     override fun allFiles(locales: Set<String>): List<File> {

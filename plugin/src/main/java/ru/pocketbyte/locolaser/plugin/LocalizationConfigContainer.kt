@@ -3,13 +3,11 @@ package ru.pocketbyte.locolaser.plugin
 import groovy.lang.Closure
 import org.gradle.api.Action
 import org.gradle.api.Project
-import ru.pocketbyte.locolaser.ConfigParserFactory
+import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.ConfigBuilder
 import ru.pocketbyte.locolaser.utils.callWithDelegate
 import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
-import java.io.File
 
-@Suppress("DeprecatedCallableAddReplaceWith")
 open class LocalizationConfigContainer(
     private val project: Project
 ) {
@@ -18,62 +16,39 @@ open class LocalizationConfigContainer(
         const val EMPTY_NAME = ""
     }
 
-    private val configParser by lazy { ConfigParserFactory().get() }
+    private val configs: HashMap<String, ConfigBuilder> = HashMap()
 
-    private val configs: HashMap<String, MutableList<ConfigBuilder.() -> Unit>> = HashMap()
+    init {
+        project.afterEvaluate {
+            val dependsOnCompile = configs.entries.mapNotNull {
+                if (it.value.isDependsOnCompileTasks) {
+                    localizeTaskName(it.key)
+                } else {
+                    null
+                }
+            }
+
+            if (dependsOnCompile.isNotEmpty()) {
+                project.tasks.configureEach {
+                    if (it.name.startsWith("compile")) {
+                        it.dependsOn(*dependsOnCompile.toTypedArray())
+                    }
+                }
+            }
+        }
+    }
 
     fun config(name: String, configurator: ConfigBuilder.() -> Unit) {
-        val configurators = configs[name]
-        if (configurators == null) {
+        val builder = configs[name] ?: ConfigBuilder().apply {
+            workDir = project.projectDir
+            configs[name] = this
             registerTasksForConfig(name)
-            configs[name] = mutableListOf(configurator)
-        } else {
-            configurators.add(configurator)
         }
+        builder.apply(configurator)
     }
 
     fun config(configurator: ConfigBuilder.() -> Unit) {
         config(EMPTY_NAME, configurator)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(file: String) {
-        configFromFile(file, null as? (ConfigBuilder.() -> Unit)?)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(file: String, configurator: (ConfigBuilder.() -> Unit)?) {
-        configFromFile(EMPTY_NAME, file, configurator)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(name: String, file: String) {
-        configFromFile(name, file, null as? (ConfigBuilder.() -> Unit)?)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(name: String, file: String, configurator: (ConfigBuilder.() -> Unit)?) {
-        configFromFile(name, File(project.projectDir, file), configurator)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(file: File) {
-        configFromFile(file, null as? (ConfigBuilder.() -> Unit)?)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(file: File, configurator: (ConfigBuilder.() -> Unit)?) {
-        configFromFile(EMPTY_NAME, file, configurator)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(name: String, file: File, configurator: (ConfigBuilder.() -> Unit)?) {
-        config(name) {
-            configParser.fillFromFile(this, file, project.projectDir)
-        }
-        if (configurator != null) {
-            config(name, configurator)
-        }
     }
 
     // ==================
@@ -91,38 +66,16 @@ open class LocalizationConfigContainer(
         }
     }
 
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(file: String, configurator: Closure<Unit>?) {
-        configFromFile(EMPTY_NAME, file, configurator)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(name: String, file: String, configurator: Closure<Unit>?) {
-        configFromFile(name, file) {
-            configurator?.callWithDelegate(this)
-        }
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(file: File, configurator: Closure<Unit>?) {
-        configFromFile(EMPTY_NAME, file, configurator)
-    }
-
-    @Deprecated("JSON configs is deprecated feature. You should use Gradle config configuration")
-    fun configFromFile(name: String, file: File, configurator: Closure<Unit>?) {
-        configFromFile(name, file) {
-            configurator?.callWithDelegate(this)
-        }
+    internal fun buildConfigWithName(name: String): Config? {
+        return configs[name]?.build()
     }
 
     private fun registerTasksForConfig(name: String?) {
         val configurator: Action<LocalizeTask> = Action {
-            it.config = ConfigBuilder().also { builder ->
-                builder.workDir = project.projectDir
-                configs[name]?.forEach { configurator ->
-                    configurator.invoke(builder)
-                }
-            }.build()
+            it.configName.convention(name)
+            it.notCompatibleWithConfigurationCache(
+                "LocoLaser doesn't support ConfigurationCache for now"
+            )
         }
         project.tasks.register(
             localizeTaskName(name),
@@ -144,7 +97,6 @@ open class LocalizationConfigContainer(
     private fun localizeTaskName(configName: String?): String {
         return "localize${configName.firstCharToUpperCase()}"
     }
-
 
     private fun localizeForceTaskName(configName: String?): String {
         return "localize${configName.firstCharToUpperCase()}Force"

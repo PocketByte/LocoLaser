@@ -4,7 +4,6 @@ import ru.pocketbyte.locolaser.resource.AbsResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 import java.io.File
 
 open class MockResources(
@@ -18,10 +17,6 @@ open class MockResources(
 
     override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
         return null
-    }
-
-    override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(0, null)
     }
 
     override fun allFiles(locales: Set<String>): List<File> {

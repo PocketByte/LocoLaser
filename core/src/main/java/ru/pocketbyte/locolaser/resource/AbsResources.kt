@@ -11,7 +11,6 @@ import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.entity.filter
 import ru.pocketbyte.locolaser.resource.entity.merge
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
-import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 import java.io.IOException
@@ -47,10 +46,6 @@ abstract class AbsResources(
                 throw RuntimeException("Failed to create folder ${parentFile.absolutePath}")
             }
         }
-    }
-
-    override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(getFileForLocale(locale))
     }
 
     override fun allFiles(locales: Set<String>): List<File> {

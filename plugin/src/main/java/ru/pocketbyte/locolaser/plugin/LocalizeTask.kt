@@ -1,75 +1,34 @@
 package ru.pocketbyte.locolaser.plugin
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.internal.TaskInputsInternal
 import org.gradle.api.internal.TaskOutputsInternal
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.TaskAction
-
+import org.gradle.api.tasks.Input
 import ru.pocketbyte.locolaser.config.Config
-import ru.pocketbyte.locolaser.LocoLaser
 
-abstract class LocalizeTask: DefaultTask() {
+internal abstract class LocalizeTask: AbsLocalizeTask() {
 
-    init {
-        group = "localization"
+    @Input
+    val configName: Property<String> = project.objects.property(String::class.java)
+
+    override fun getConfigOrThrow(): Config {
+        return project.localize.buildConfigWithName(configName.get())
+            ?: throw IllegalArgumentException("Localization config with name '$name' not found")
     }
+}
 
-    @Internal
-    var config: Config? = null
-
-    override fun getInputs(): TaskInputsInternal {
-        return super.getInputs().apply {
-            val config = getConfigOrThrow()
-            files(config.allSourceFiles())
-        }
-    }
+internal abstract class LocalizeForceTask: LocalizeTask() {
 
     override fun getOutputs(): TaskOutputsInternal {
         return super.getOutputs().apply {
-            val config = getConfigOrThrow()
-            files(config.allPlatformFiles())
+            upToDateWhen { false }
         }
     }
-
-    @TaskAction
-    fun localize() {
-        val configInstance = processConfig(getConfigOrThrow())
-        LocoLaser.localize(configInstance)
-    }
-
-    protected open fun processConfig(config: Config): Config {
-        return config
-    }
-
-    private fun getConfigOrThrow(): Config {
-        return config ?: throw IllegalStateException("Config not set")
-    }
 }
 
-abstract class LocalizeForceTask: LocalizeTask() {
-
-    init {
-        outputs.upToDateWhen { false }
-    }
+internal abstract class LocalizeExportNewTask: LocalizeForceTask() {
 
     override fun processConfig(config: Config): Config {
         return super.processConfig(config).copy(
-            forceImport = true
-        )
-    }
-}
-
-abstract class LocalizeExportNewTask: LocalizeTask() {
-
-    init {
-        outputs.upToDateWhen { false }
-    }
-
-    override fun processConfig(config: Config): Config {
-        return super.processConfig(config).copy(
-            forceImport = true,
             conflictStrategy = Config.ConflictStrategy.EXPORT_NEW_PLATFORM
         )
     }

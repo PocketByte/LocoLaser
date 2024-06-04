@@ -16,7 +16,6 @@ import ru.pocketbyte.locolaser.testutils.mock.MockDataSet
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 import java.io.File
 
 /**
@@ -201,10 +200,6 @@ class BaseTableResourcesTest {
     ) : BaseTableResources() {
 
         override val formattingType: FormattingType = NoFormattingType
-
-        override fun summaryForLocale(locale: String): FileSummary {
-            return FileSummary(0, null)
-        }
 
         override fun allFiles(locales: Set<String>): List<File> {
             throw RuntimeException("This method shouldn't be called")

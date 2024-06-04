@@ -5,9 +5,6 @@ import ru.pocketbyte.locolaser.mobile.resource.file.IosObjectiveCHResourceFile
 import ru.pocketbyte.locolaser.mobile.resource.file.IosObjectiveCMResourceFile
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
-import ru.pocketbyte.locolaser.resource.formatting.FormattingType
-import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 
@@ -39,10 +36,6 @@ class IosObjectiveCResources(
             IosObjectiveCHResourceFile(objcHFile, name),
             IosObjectiveCMResourceFile(objcMFile, name, tableName)
         )
-    }
-
-    override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(arrayOf(objcHFile, objcMFile))
     }
 
     override fun allFiles(locales: Set<String>): List<File> {

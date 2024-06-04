@@ -35,13 +35,6 @@ data class Config(
      */
     val platform: ResourcesConfig? = null,
 
-
-    /**
-     * Defines if import should be forced even if this is not necessary.
-     * True if import should be forced, false otherwise.
-     */
-    val forceImport: Boolean = false,
-
     /**
      * Strategy that should be used for merge conflicts.
      * Default value: KEEP_NEW_PLATFORM.

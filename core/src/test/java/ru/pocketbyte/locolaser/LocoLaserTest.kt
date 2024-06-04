@@ -5,9 +5,7 @@
 
 package ru.pocketbyte.locolaser
 
-import org.json.simple.JSONObject
-import org.json.simple.parser.ParseException
-import org.junit.After
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -15,23 +13,15 @@ import org.junit.rules.TemporaryFolder
 import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
+import ru.pocketbyte.locolaser.config.trimUnsupportedQuantities
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.entity.*
-import ru.pocketbyte.locolaser.summary.FileSummary
-import ru.pocketbyte.locolaser.summary.Summary
-import ru.pocketbyte.locolaser.utils.json.JsonParseUtils
-
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
-
-import org.junit.Assert.*
-import ru.pocketbyte.locolaser.config.trimUnsupportedQuantities
-import ru.pocketbyte.locolaser.entity.Quantity
-import ru.pocketbyte.locolaser.resource.formatting.FormattingType
-import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-import ru.pocketbyte.locolaser.summary.plus
-import kotlin.collections.HashMap
 
 /**
  * @author Denis Shurygin
@@ -56,12 +46,6 @@ class LocoLaserTest {
         val workDir = tempFolder.newFolder()
         System.setProperty("user.dir", workDir.canonicalPath)
 
-        Summary.setFactory(object : Summary.Factory {
-            override fun loadSummary(config: Config?): Summary? {
-                return null
-            }
-        })
-
         val localeEn = ResLocale()
         localeEn.put(buildItem("key1", "valueEn1"))
         localeEn.put(buildItem("key2", "valueEn2"))
@@ -74,7 +58,7 @@ class LocoLaserTest {
         mResMap["en"] = localeEn
         mResMap["ru"] = localeRu
 
-        platformResources = MockResources(null, null)
+        platformResources = MockResources(null)
         platformConfig = MockResourcesConfig("mockPlatform", platformResources)
 
         sourceConfig = MockSourceConfig("mockSource", mResMap)
@@ -96,11 +80,6 @@ class LocoLaserTest {
                 close()
             }
         }
-    }
-
-    @After
-    fun deInit() {
-        Summary.setFactory(null)
     }
 
     // ====================================================
@@ -332,122 +311,6 @@ class LocoLaserTest {
     }
 
     @Test
-    @Throws(ParseException::class, IOException::class)
-    fun testLocalizationNotNeeded() {
-        prepareStateWhenLocalizationNotNeededBecauseNoChanges()
-
-        assertTrue(LocoLaser.localize(config))
-        assertNull(platformResources.mMap)
-    }
-
-    @Test
-    @Throws(ParseException::class, IOException::class)
-    fun testForceImport() {
-        prepareStateWhenLocalizationNotNeededBecauseNoChanges()
-
-        assertTrue(LocoLaser.localize(config.copy(
-            forceImport = true
-        )))
-        assertNotNull(platformResources.mMap)
-        assertEquals(platformResources.mMap, source.mockMap)
-    }
-
-    @Test
-    @Throws(ParseException::class, IOException::class)
-    fun testConfigChanged() {
-        prepareStateWhenLocalizationNotNeededBecauseNoChanges()
-
-        // Override config file
-        val writer = PrintWriter(config.file!!)
-        writer.write("{\"key\":\"wrong\"}")
-        writer.flush()
-        writer.close()
-
-        assertTrue(LocoLaser.localize(config))
-        assertNotNull(platformResources.mMap)
-        assertEquals(platformResources.mMap, source.mockMap)
-    }
-
-    @Test
-    @Throws(ParseException::class, IOException::class)
-    fun testSourceChanged() {
-        prepareStateWhenLocalizationNotNeededBecauseNoChanges()
-
-        source.mSummaryMap = HashMap<String, FileSummary>(2).apply {
-            put("en", FileSummary(45, "changed"))
-            put("ru", FileSummary(928, "changed"))
-        }
-
-        assertTrue(LocoLaser.localize(config))
-        assertNotNull(platformResources.mMap)
-        assertEquals(platformResources.mMap, source.mockMap)
-    }
-
-    @Test
-    @Throws(ParseException::class, IOException::class)
-    fun testLocalResourceChanged() {
-        prepareStateWhenLocalizationNotNeededBecauseNoChanges()
-
-        val changedLocale = "en"
-        val localeSummary = platformResources.mSummaryMap!![changedLocale]!!
-
-        platformResources.mSummaryMap?.put(changedLocale, FileSummary(localeSummary.bytes + 1, "hash_en"))
-
-        assertTrue(LocoLaser.localize(config))
-        assertNotNull(platformResources.mMap)
-        assertNotEquals(platformResources.mMap, source.mockMap)
-        assertEquals(1, platformResources.mMap?.size)
-        assertEquals(platformResources.mMap!![changedLocale], source.mockMap!![changedLocale])
-    }
-
-    @Test
-    @Throws(ParseException::class, IOException::class)
-    fun testSaveSummary() {
-        platformResources.mSummaryMap = HashMap<String, FileSummary>(2).apply {
-            put("en", FileSummary(2300000, "p_hash_en"))
-            put("ru", FileSummary(2123000, "p_hash_ru"))
-        }
-
-        source.mSummaryMap = HashMap<String, FileSummary>(2).apply {
-            put("en", FileSummary(5, "s_hash_en"))
-            put("ru", FileSummary(19, "s_hash_ru"))
-        }
-
-        val jsonString = "{" +
-                "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(12312, "old_config").toJson() + "," +
-                "\"" + Summary.RESOURCE_FILES + "\":{" +
-                "\"en\":" + FileSummary(23213, "old_en").toJson() + "," +
-                "\"ru\":" + FileSummary(24563, "old_ru").toJson() + "}" +
-                "}"
-
-        val tempDir = config.tempDir
-        if (!tempDir!!.exists())
-            assertTrue(tempDir.mkdirs())
-        val summaryFile = File(tempDir, Summary.SUMMARY_FILE_NAME)
-
-        val writer = PrintWriter(summaryFile)
-        writer.write(jsonString)
-        writer.flush()
-        writer.close()
-
-        Summary.setFactory(null)
-
-        //Check if summary saved
-        var summary = Summary.loadSummary(config)!!
-        assertEquals(FileSummary(12312, "old_config"), summary.configSummary)
-        assertEquals(FileSummary(23213, "old_en"), summary.getResourceSummary("en"))
-        assertEquals(FileSummary(24563, "old_ru"), summary.getResourceSummary("ru"))
-
-        assertTrue(LocoLaser.localize(config))
-
-        //Check if summary changed
-        summary = Summary.loadSummary(config)!!
-        assertEquals(FileSummary(config.file), summary.configSummary)
-        assertEquals(FileSummary(2300005, "p_hash_ens_hash_en"), summary.getResourceSummary("en"))
-        assertEquals(FileSummary(2123019, "p_hash_rus_hash_ru"), summary.getResourceSummary("ru"))
-    }
-
-    @Test
     fun testNoTrimUnsupportedQuantities() {
         val pluralItem = ResItem("value3").apply {
             addValue(ResValue("value ZERO", null, quantity = Quantity.ZERO))
@@ -540,43 +403,6 @@ class LocoLaserTest {
         return item
     }
 
-    @Throws(IOException::class, ParseException::class)
-    private fun prepareStateWhenLocalizationNotNeededBecauseNoChanges(): Summary {
-        platformResources.mSummaryMap = HashMap<String, FileSummary>(2).apply {
-            put("en", FileSummary(23, "p_hash_en"))
-            put("ru", FileSummary(2123123, "p_hash_ru"))
-        }
-
-        source.mSummaryMap = HashMap<String, FileSummary>(2).apply {
-            put("en", FileSummary(45, "s_hash_en"))
-            put("ru", FileSummary(928, "s_hash_ru"))
-        }
-
-        val jsonString = "{" +
-                "\"" + Summary.CONFIG_FILE + "\":" + FileSummary(config.file).toJson() + "," +
-                "\"" + Summary.RESOURCE_FILES + "\":{" +
-                "\"en\":" + (
-                    platformResources.mSummaryMap?.get("en") +
-                    source.mSummaryMap?.get("en")
-                )?.toJson() + "," +
-                "\"ru\":" + (
-                    platformResources.mSummaryMap?.get("ru") +
-                    source.mSummaryMap?.get("ru")
-                )?.toJson() + "}" +
-                "}"
-
-        val summary = Summary(tempFolder.newFile(),
-                JsonParseUtils.JSON_PARSER.parse(jsonString) as JSONObject)
-
-        Summary.setFactory(object : Summary.Factory {
-            override fun loadSummary(config: Config?): Summary {
-                return summary
-            }
-        })
-
-        return summary
-    }
-
     private inner class MockResourcesConfig constructor(
             override val type: String,
             override val resources: Resources
@@ -586,9 +412,8 @@ class LocoLaserTest {
 
     }
 
-    private inner class MockResources constructor(
-            var mMap: ResMap?,
-            var mSummaryMap: MutableMap<String, FileSummary>?
+    private inner class MockResources (
+            var mMap: ResMap?
     ) : Resources {
 
         override val formattingType: FormattingType = NoFormattingType
@@ -611,35 +436,26 @@ class LocoLaserTest {
             mExtraParams = extraParams
         }
 
-        override fun summaryForLocale(locale: String): FileSummary? {
-            return mSummaryMap?.get(locale)
-        }
-
         override fun allFiles(locales: Set<String>): List<File> {
             throw RuntimeException("This method shouldn't be called")
         }
     }
 
-    private class MockSourceConfig constructor(
+    private class MockSourceConfig (
             override val type: String,
             resMap: ResMap
     ) : ResourcesConfig {
         override val defaultTempDirPath: String
             get() = throw NotImplementedError()
 
-        override val resources: MockSource = MockSource(ResMap(resMap), null)
+        override val resources: MockSource = MockSource(ResMap(resMap))
     }
 
     private class MockSource(
-        var mockMap: ResMap?,
-        var mSummaryMap: MutableMap<String, FileSummary>?
+        var mockMap: ResMap?
     ) : Resources {
 
         override val formattingType: FormattingType = NoFormattingType
-
-        override fun summaryForLocale(locale: String): FileSummary {
-            return mSummaryMap?.get(locale) ?: FileSummary(0, null)
-        }
 
         override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap? {
             return ResMap(mockMap)

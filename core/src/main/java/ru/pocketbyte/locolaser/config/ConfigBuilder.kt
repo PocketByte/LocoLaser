@@ -11,13 +11,6 @@ open class ConfigBuilder {
     var file: File? = null
 
     /**
-     * Import doesn't execute without a need.
-     * Defines if import should be forced even if this is not necessary.
-     * True if import should be forced, false otherwise.
-     */
-    var forceImport: Boolean = false
-
-    /**
      * Strategy that should be used for merge conflicts.
      * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
      */
@@ -60,6 +53,9 @@ open class ConfigBuilder {
      */
     val source: ResourcesSetConfigBuilder = ResourcesSetConfigBuilder(true)
 
+    var isDependsOnCompileTasks: Boolean = false
+        private set
+
     /**
      * Source that contain resources.
      */
@@ -72,6 +68,10 @@ open class ConfigBuilder {
      */
     fun source(action: Closure<Unit>) {
         action.callWithDelegate(source)
+    }
+
+    fun dependsOnCompileTasks() {
+        isDependsOnCompileTasks = true
     }
 
     /**
@@ -98,7 +98,6 @@ open class ConfigBuilder {
         return Config(
             workDir = workDir,
             file = file,
-            forceImport = forceImport,
             conflictStrategy = conflictStrategy,
             tempDirPath = tempDir,
             locales = locales,

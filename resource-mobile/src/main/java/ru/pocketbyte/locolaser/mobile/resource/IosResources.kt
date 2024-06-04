@@ -9,7 +9,6 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.mobile.resource.file.IosPluralResourceFile
 import ru.pocketbyte.locolaser.mobile.resource.file.IosResourceFile
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
-import ru.pocketbyte.locolaser.summary.FileSummary
 import java.io.File
 
 /**
@@ -45,10 +44,6 @@ class IosResources(
                 )
             }
         }
-    }
-
-    override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(arrayOf(getFileForLocale(locale), getPluralFileForLocale(locale)))
     }
 
     private fun getPluralFileForLocale(locale: String): File {

@@ -1,5 +1,6 @@
 package ru.pocketbyte.locolaser
 
+import org.gradle.api.Project
 import ru.pocketbyte.locolaser.config.ResourcesSetConfigBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsKeyValueResourcesConfigBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinAbsProxyResourcesConfigBuilder
@@ -83,9 +84,11 @@ fun ResourcesSetConfigBuilder.kotlinAbsProxy(
 /**
  * Create and configure Kotlin Multiplatform config.
  * This config generates strings Repository interface ant it's implementation.
+ * @param project if provided, generated files will be registered in kotlin source sets of the project.
  */
 fun ResourcesSetConfigBuilder.kotlinMultiplatform(
+    project: Project? = null,
     action: KotlinMultiplatformResourcesConfigBuilder.() -> Unit
 ) {
-    add(KotlinMultiplatformResourcesConfigBuilder(), action)
+    add(KotlinMultiplatformResourcesConfigBuilder(project), action)
 }

@@ -11,7 +11,6 @@ import ru.pocketbyte.locolaser.resource.entity.merge
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.MixedFormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 import java.io.File
 
 import java.io.IOException
@@ -51,25 +50,6 @@ class ResourcesSet(
                 it.write(resMap, extraParams)
             }
         }
-    }
-
-    override fun summaryForLocale(locale: String): FileSummary {
-        var bytes: Long = 0
-        val hash = StringBuilder()
-
-        resources.map { it.summaryForLocale(locale) }.forEach {
-            bytes += it?.bytes ?: 0
-            hash.append(it?.hash)
-        }
-
-        resources.forEach { resource ->
-            resource.summaryForLocale(locale).let {
-                bytes += it?.bytes ?: 0
-                hash.append(it?.hash)
-            }
-        }
-
-        return FileSummary(bytes, hash.toString())
     }
 
     override fun allFiles(locales: Set<String>): List<File> {

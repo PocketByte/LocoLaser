@@ -8,11 +8,9 @@ package ru.pocketbyte.locolaser.mobile.resource
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.resource.AbsResources
 import ru.pocketbyte.locolaser.mobile.resource.file.AndroidResourceFile
-import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 

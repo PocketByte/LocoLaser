@@ -10,7 +10,6 @@ import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 
 import java.io.File
 
@@ -27,7 +26,6 @@ class MockResourcesConfig : ResourcesConfig {
         override val formattingType = NoFormattingType
         override fun read(locales: Set<String>?, extraParams: ExtraParams?) = ResMap()
         override fun write(resMap: ResMap, extraParams: ExtraParams?) { }
-        override fun summaryForLocale(locale: String) = FileSummary(0, null)
         override fun allFiles(locales: Set<String>): List<File> = emptyList()
     }
 

@@ -7,8 +7,6 @@ import ru.pocketbyte.locolaser.json
 import ru.pocketbyte.locolaser.kotlinMultiplatform
 import ru.pocketbyte.locolaser.plugin.localize
 import ru.pocketbyte.locolaser.properties
-import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
-import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 
 buildscript {
     repositories {

@@ -15,7 +15,6 @@ import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
-import ru.pocketbyte.locolaser.summary.FileSummary
 import ru.pocketbyte.locolaser.utils.LogUtils
 import java.io.File
 import java.io.IOException
@@ -50,10 +49,6 @@ class GoogleSheetResources(
     private var mTitleRow = -1
 
     private var mQuery: List<List<Any>>? = null
-
-    override fun summaryForLocale(locale: String): FileSummary {
-        return FileSummary(0, System.currentTimeMillis().toString()) // FIXME use sheet update time
-    }
 
     override fun allFiles(locales: Set<String>): List<File> {
         return emptyList()

@@ -2,7 +2,6 @@ package ru.pocketbyte.locolaser.config
 
 import groovy.lang.Closure
 import org.gradle.internal.HasInternalProtocol
-import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.EmptyResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
