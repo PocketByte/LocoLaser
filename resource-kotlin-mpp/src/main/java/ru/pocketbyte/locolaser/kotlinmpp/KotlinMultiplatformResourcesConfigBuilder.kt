@@ -6,6 +6,7 @@ import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
+import ru.pocketbyte.locolaser.kotlinmpp.builder.BaseKmpBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.builder.BaseKmpClassBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.builder.CustomFormattingClassBuilderFactory
 import ru.pocketbyte.locolaser.kotlinmpp.builder.FixedFormattingClassBuilderFactory
@@ -65,15 +66,14 @@ class KotlinMultiplatformResourcesConfigBuilder(
                 sourceSets.apply {
                     commonMain {
                         val sourcesDir = platformCommon.sourcesDir
-                            ?: throw IllegalArgumentException(
-                                "Missing sourceSet for common target`"
-                            )
+                            ?: BaseKmpBuilder.defaultSourcesDir(srcDir, platformCommon)
 
                         kotlin.srcDir(sourcesDir)
                     }
 
                     platformMap.values.forEach { builder ->
-                        val sourcesDir = builder.sourcesDir ?: return@forEach
+                        val sourcesDir = builder.sourcesDir
+                            ?: BaseKmpBuilder.defaultSourcesDir(srcDir, builder)
                         val sourceSet = findByName(builder.sourceSet)
                             ?: throw IllegalArgumentException(
                                 "Missing sourceSet `${builder.sourceSet}`"

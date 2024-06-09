@@ -49,7 +49,7 @@ abstract class BaseKmpBuilder<
         return builderFactory
             .getBuilder()
             .apply {
-                resourcesDir = "${mainBuilder.srcDir}/${sourceSet}/kotlin/"
+                resourcesDir = defaultSourcesDir(mainBuilder.srcDir, this@BaseKmpBuilder)
                 filter = mainBuilder.filter
 
                 configure(this)
@@ -80,6 +80,12 @@ abstract class BaseKmpBuilder<
             name
         } else {
             "$packageName.$name"
+        }
+    }
+
+    companion object {
+        fun defaultSourcesDir(rootSrcDir: String, builder: BaseKmpBuilder<*, *>): String {
+            return "${rootSrcDir}/${builder.sourceSet}/kotlin/"
         }
     }
 }

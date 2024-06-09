@@ -3,12 +3,14 @@ package ru.pocketbyte.locolaser.plugin
 import org.gradle.api.DefaultTask
 import org.gradle.api.internal.TaskInputsInternal
 import org.gradle.api.internal.TaskOutputsInternal
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import ru.pocketbyte.locolaser.LocoLaser
 import ru.pocketbyte.locolaser.config.Config
 
 abstract class AbsLocalizeTask: DefaultTask() {
 
+    @Internal
     protected abstract fun getConfigOrThrow(): Config
 
     init {
