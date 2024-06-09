@@ -59,4 +59,18 @@ class ResourcesSet(
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is ResourcesSet) {
+            return false
+        }
+        return main == other.main
+            && resources == other.resources
+    }
+
+    override fun hashCode(): Int {
+        var result = resources.hashCode()
+        result = 31 * result + (main?.hashCode() ?: 0)
+        return result
+    }
 }

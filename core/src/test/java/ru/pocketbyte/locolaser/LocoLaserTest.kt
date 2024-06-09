@@ -403,14 +403,10 @@ class LocoLaserTest {
         return item
     }
 
-    private inner class MockResourcesConfig constructor(
+    private inner class MockResourcesConfig(
             override val type: String,
             override val resources: Resources
-    ) : ResourcesConfig {
-
-        override val defaultTempDirPath: String = "./temp/"
-
-    }
+    ) : ResourcesConfig
 
     private inner class MockResources (
             var mMap: ResMap?
@@ -445,9 +441,6 @@ class LocoLaserTest {
             override val type: String,
             resMap: ResMap
     ) : ResourcesConfig {
-        override val defaultTempDirPath: String
-            get() = throw NotImplementedError()
-
         override val resources: MockSource = MockSource(ResMap(resMap))
     }
 

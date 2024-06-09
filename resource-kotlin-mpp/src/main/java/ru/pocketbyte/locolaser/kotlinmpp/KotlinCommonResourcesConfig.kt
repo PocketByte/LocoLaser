@@ -31,7 +31,6 @@ class KotlinCommonResourcesConfig(
 
     override val type = TYPE
 
-    override val defaultTempDirPath   = "./build/tmp/"
     override val defaultResourcesPath = "./build/generated/src/commonMain/kotlin/"
     override val defaultResourceName  = "$DEFAULT_PACKAGE.$DEFAULT_INTERFACE_NAME"
 

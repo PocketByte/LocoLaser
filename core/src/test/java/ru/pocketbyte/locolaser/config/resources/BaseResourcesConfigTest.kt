@@ -6,8 +6,6 @@ import org.junit.Test
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.testutils.mock.MockResourceFileProvider
 
-import java.io.File
-
 class BaseResourcesConfigTest {
 
     @Test
@@ -36,7 +34,6 @@ class BaseResourcesConfigTest {
 
         override val type: String = "mock"
 
-        override val defaultTempDirPath: String = "default_temp"
         override val defaultResourcesPath: String = "default_res_path"
         override val defaultResourceName: String= "default_res_name"
 
@@ -45,5 +42,4 @@ class BaseResourcesConfigTest {
                 throw UnsupportedOperationException()
             }
     }
-
 }

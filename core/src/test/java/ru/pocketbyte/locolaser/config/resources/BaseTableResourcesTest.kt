@@ -7,15 +7,14 @@ package ru.pocketbyte.locolaser.config.resources
 
 import org.junit.Assert.*
 import org.junit.Test
-import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.BaseTableResources
-import ru.pocketbyte.locolaser.resource.entity.*
-import ru.pocketbyte.locolaser.testutils.mock.MockDataSet
-
 import ru.pocketbyte.locolaser.resource.Resources
+import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.testutils.mock.MockDataSet
 import java.io.File
 
 /**
@@ -238,7 +237,5 @@ class BaseTableResourcesTest {
 
         override val resources: Resources
             get() = TableResourcesImpl(dataSet)
-
-        override val defaultTempDirPath = ""
     }
 }

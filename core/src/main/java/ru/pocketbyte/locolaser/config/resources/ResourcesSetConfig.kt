@@ -22,7 +22,4 @@ data class ResourcesSetConfig(
         }
         ResourcesSet(resourcesSet, mainResource)
     }
-
-    override val defaultTempDirPath: String
-        get() = configs.first().defaultTempDirPath
 }

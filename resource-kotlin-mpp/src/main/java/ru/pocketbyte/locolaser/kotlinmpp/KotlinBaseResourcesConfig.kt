@@ -17,11 +17,8 @@ abstract class KotlinBaseResourcesConfig(
     KotlinClassResourceFileProvider,
     filter
 ) {
-
     companion object {
         const val DEFAULT_PACKAGE = "ru.pocketbyte.locolaser.kmpp"
         const val DEFAULT_INTERFACE_NAME = "StringRepository"
     }
-
-    override val defaultTempDirPath = "./build/tmp/"
 }

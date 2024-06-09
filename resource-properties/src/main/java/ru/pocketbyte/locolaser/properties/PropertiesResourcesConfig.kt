@@ -31,7 +31,7 @@ class PropertiesResourcesConfig(
     }
 
     override val type: String = TYPE
-    override val defaultTempDirPath: String = "./build/tmp/"
+
     override val defaultResourcesPath: String = "./locales/"
     override val defaultResourceName: String = "strings"
 
@@ -43,5 +43,4 @@ class PropertiesResourcesConfig(
             filter = this.filter
         )
     }
-
 }

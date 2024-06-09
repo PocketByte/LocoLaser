@@ -19,8 +19,6 @@ abstract class IosBaseClassResourcesConfig(
     resourceFileProvider ?: IosClassResourceFileProvider,
     filter
 ) {
-
-    override val defaultTempDirPath = "../DerivedData/LocoLaserTemp/"
     override val defaultResourcesPath = "./"
     override val defaultResourceName = "Str"
 }

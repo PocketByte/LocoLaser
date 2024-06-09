@@ -36,7 +36,6 @@ class IosPlistResourcesConfig(
 
     override val type = TYPE
 
-    override val defaultTempDirPath = "../DerivedData/LocoLaserTemp/"
     override val defaultResourcesPath = "./"
     override val defaultResourceName = "InfoPlist"
 

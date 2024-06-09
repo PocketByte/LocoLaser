@@ -47,8 +47,6 @@ class GoogleSheetResourcesConfig(
 
     override val type = TYPE
 
-    override val defaultTempDirPath: String = "./temp/"
-
     override val resources: Resources by lazy {
         GoogleSheetResources(
             sourceConfig = this,

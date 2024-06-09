@@ -41,7 +41,6 @@ class GetTextResourcesConfig(
     }
 
     override val type = TYPE
-    override val defaultTempDirPath = "./build/tmp/"
     override val defaultResourcesPath = "./languages/"
     override val defaultResourceName = "messages"
 

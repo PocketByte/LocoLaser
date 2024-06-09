@@ -23,6 +23,4 @@ class MockTableResourcesConfig(
 
     override val type = "mock"
     override val resources: Resources = MockResources(File(""), "mock", null)
-    override val defaultTempDirPath = ""
-
 }

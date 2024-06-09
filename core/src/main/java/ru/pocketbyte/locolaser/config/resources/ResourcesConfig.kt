@@ -25,9 +25,4 @@ interface ResourcesConfig : Serializable {
      * Gets resources of the platform.
      */
     val resources: Resources
-
-    /**
-     * Default temporary directory path specified for current resource and platform.
-     */
-    val defaultTempDirPath: String
 }

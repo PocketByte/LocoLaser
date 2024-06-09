@@ -44,7 +44,6 @@ class JsonResourcesConfig(
 
     override val type = TYPE
 
-    override val defaultTempDirPath = "./build/tmp/"
     override val defaultResourcesPath = "./locales/"
     override val defaultResourceName = "strings"
 
@@ -58,5 +57,4 @@ class JsonResourcesConfig(
             filter = this.filter
         )
     }
-
 }

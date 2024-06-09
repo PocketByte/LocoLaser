@@ -20,13 +20,10 @@ class MockResourcesConfig : ResourcesConfig {
 
     override val type =  "mock"
 
-    override val defaultTempDirPath = "./"
-
     override val resources = object : Resources {
         override val formattingType = NoFormattingType
         override fun read(locales: Set<String>?, extraParams: ExtraParams?) = ResMap()
         override fun write(resMap: ResMap, extraParams: ExtraParams?) { }
         override fun allFiles(locales: Set<String>): List<File> = emptyList()
     }
-
 }

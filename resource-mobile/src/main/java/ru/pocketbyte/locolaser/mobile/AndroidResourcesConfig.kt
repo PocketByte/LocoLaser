@@ -41,7 +41,6 @@ class AndroidResourcesConfig(
 
     override val type = TYPE
 
-    override val defaultTempDirPath = "./build/tmp/"
     override val defaultResourcesPath = "./src/main/res/"
     override val defaultResourceName = "strings"
 

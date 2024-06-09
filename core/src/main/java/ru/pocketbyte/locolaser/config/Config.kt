@@ -48,16 +48,10 @@ data class Config(
      */
     val locales: Set<String> = DEFAULT_LOCALES,
 
-
-    /**
-     * Defines temporary directory.
-     */
-    val tempDirPath: String? =  platform?.defaultTempDirPath,
-
     val extraParams: ExtraParams = ExtraParams()
 ): Serializable {
 
-    enum class ConflictStrategy constructor(val strValue: String) {
+    enum class ConflictStrategy(private val strValue: String) {
 
         /** Remove platform resources and replace it with resources from source.  */
         REMOVE_PLATFORM("remove_platform"),
@@ -85,14 +79,7 @@ data class Config(
     companion object {
         val DEFAULT_CONFLICT_STRATEGY = ConflictStrategy.KEEP_NEW_PLATFORM
         val DEFAULT_LOCALES = setOf(Resources.BASE_LOCALE)
-        const val DEFAULT_DELAY = 0L
     }
-
-    /**
-     * Gets temporary directory file.
-     */
-    val tempDir: File?
-        get() = tempDirPath?.let { buildFileFrom(workDir, it) }
 
     /**
      * Defines if comment should be written even if it equal resource value.

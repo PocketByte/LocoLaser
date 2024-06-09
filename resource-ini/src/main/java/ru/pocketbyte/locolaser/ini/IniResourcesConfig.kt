@@ -32,7 +32,6 @@ class IniResourcesConfig(
 
     override val type: String = TYPE
 
-    override val defaultTempDirPath: String = "./build/tmp/"
     override val defaultResourcesPath: String = "./"
     override val defaultResourceName: String = "data"
 

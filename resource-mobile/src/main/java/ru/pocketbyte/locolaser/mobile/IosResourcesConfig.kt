@@ -41,7 +41,6 @@ class IosResourcesConfig(
 
     override val type = TYPE
 
-    override val defaultTempDirPath = "../DerivedData/LocoLaserTemp/"
     override val defaultResourcesPath = "./"
     override val defaultResourceName = "Localizable"
 

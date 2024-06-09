@@ -17,11 +17,6 @@ open class ConfigBuilder {
     var conflictStrategy: Config.ConflictStrategy = Config.DEFAULT_CONFLICT_STRATEGY
 
     /**
-     * Defines temporary directory.
-     */
-    var tempDir: String? = null
-
-    /**
      * Set of locales that should be handled by LocoLaser.
      * You can use [ru.pocketbyte.locolaser.resource.Resources.BASE_LOCALE] to specify base locale.
      */
@@ -99,7 +94,6 @@ open class ConfigBuilder {
             workDir = workDir,
             file = file,
             conflictStrategy = conflictStrategy,
-            tempDirPath = tempDir,
             locales = locales,
             extraParams = ExtraParams().apply { putAll(extraParams) },
             platform = platform.build(workDir),
