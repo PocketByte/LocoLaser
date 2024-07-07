@@ -19,8 +19,8 @@ open class KotlinAbsKeyValueResourceFile(
     file: File,
     className: String,
     classPackage: String,
-    private val interfaceName: String?,
-    private val interfacePackage: String?,
+    protected val interfaceName: String?,
+    protected val interfacePackage: String?,
     formattingType: FormattingType = NoFormattingType
 ): BaseKotlinPoetClassResourceFile(file, className, classPackage, formattingType) {
 
@@ -72,7 +72,7 @@ open class KotlinAbsKeyValueResourceFile(
             .instantiatePropertySpecBuilder(name, item, resMap, extraParams)
             .getter(
                 FunSpec.getterBuilder()
-                    .addStatement("return stringProvider.getString(\"${item.key}\")")
+                    .addStatement("return ${getStringStatement(item.key)}")
                     .build()
             )
 
@@ -103,25 +103,7 @@ open class KotlinAbsKeyValueResourceFile(
             builder.addModifiers(KModifier.OVERRIDE)
         }
 
-        val argumentsString = when (formattingType.argumentsSubstitution) {
-            BY_NAME -> {
-                formattingArguments.mapIndexed { index, argument ->
-                    argument.anyName(index).let { "Pair(\"$it\", $it)" }
-                }.joinToString()
-            }
-            BY_INDEX -> {
-                formattingArguments.mapIndexed { index, argument ->
-                    argument.anyName(index)
-                }.joinToString()
-            }
-            NO -> null
-        }
-
-        if (argumentsString != null) {
-            builder.addStatement("return stringProvider.getString(\"${item.key}\", $argumentsString)")
-        } else {
-            builder.addStatement("return stringProvider.getString(\"${item.key}\")")
-        }
+        builder.addStatement("return ${getStringStatement(item.key, formattingArguments)}")
 
         return builder
     }
@@ -135,6 +117,48 @@ open class KotlinAbsKeyValueResourceFile(
         val builder = super
             .instantiatePluralSpecBuilder(name, formattingArguments, item, resMap, extraParams)
 
+        builder.addStatement("return ${getPluralStringStatement(item.key, formattingArguments)}")
+
+        if (interfaceName == null || interfacePackage == null) {
+            val valueOther = item.valueForQuantity(Quantity.OTHER)
+            if (valueOther?.value != null) {
+                builder.addKdoc("%L", wrapCommentString(valueOther.value))
+            }
+        } else {
+            builder.addModifiers(KModifier.OVERRIDE)
+        }
+
+        return builder
+    }
+
+    protected open fun getStringStatement(
+        key: String,
+        formattingArguments: List<FormattingArgument>? = null
+    ): String {
+        val argumentsString = when (formattingType.argumentsSubstitution) {
+            BY_NAME -> {
+                formattingArguments?.mapIndexed { index, argument ->
+                    argument.anyName(index).let { "Pair(\"$it\", $it)" }
+                }?.joinToString()
+            }
+            BY_INDEX -> {
+                formattingArguments?.mapIndexed { index, argument ->
+                    argument.anyName(index)
+                }?.joinToString()
+            }
+            NO -> null
+        }
+        return if (argumentsString == null) {
+            "stringProvider.getString(\"${key}\")"
+        } else {
+            "stringProvider.getString(\"${key}\", $argumentsString)"
+        }
+    }
+
+    protected open fun getPluralStringStatement(
+        key: String,
+        formattingArguments: List<FormattingArgument>
+    ): String {
         val argumentsString = when (formattingType.argumentsSubstitution) {
             BY_NAME -> {
                 formattingArguments.mapIndexed { index, argument ->
@@ -157,21 +181,10 @@ open class KotlinAbsKeyValueResourceFile(
             NO -> null
         }
 
-        if (argumentsString != null) {
-            builder.addStatement("return stringProvider.getPluralString(\"${item.key}\", $argumentsString)")
+        return if (argumentsString == null) {
+            "stringProvider.getString(\"${key}\")"
         } else {
-            builder.addStatement("return stringProvider.getString(\"${item.key}\")")
+            "stringProvider.getPluralString(\"${key}\", $argumentsString)"
         }
-
-        if (interfaceName == null || interfacePackage == null) {
-            val valueOther = item.valueForQuantity(Quantity.OTHER)
-            if (valueOther?.value != null) {
-                builder.addKdoc("%L", wrapCommentString(valueOther.value))
-            }
-        } else {
-            builder.addModifiers(KModifier.OVERRIDE)
-        }
-
-        return builder
     }
 }

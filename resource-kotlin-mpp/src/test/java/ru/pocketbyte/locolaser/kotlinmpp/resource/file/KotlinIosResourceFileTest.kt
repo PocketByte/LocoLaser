@@ -25,13 +25,15 @@ class KotlinIosResourceFileTest {
         const val CommonImportsStr =
             "import kotlin.String\n" +
             "import platform.Foundation.NSBundle\n" +
-            "import ru.pocketbyte.locolaser.provider.IndexFormattedStringProvider\n" +
-            "import ru.pocketbyte.locolaser.provider.IosStringProvider\n"
+            "import platform.Foundation.NSString\n" +
+            "import platform.Foundation.localizedStringWithFormat\n" +
+            "import platform.Foundation.stringWithFormat\n"
+
+        const val PrimaryConstructorArguments =
+            "  private val bundle: NSBundle,\n" +
+            "  private val tableName: String,\n"
 
         const val SecondConstructorsStr =
-            "  public constructor(bundle: NSBundle, tableName: String) : this(IosStringProvider(bundle,\n" +
-            "      tableName))\n" +
-            "\n" +
             "  public constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
             "\n" +
             "  public constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
@@ -75,13 +77,13 @@ class KotlinIosResourceFileTest {
             CommonImportsStr +
             "\n" +
             "public class $className(\n" +
-            "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                PrimaryConstructorArguments +
             ") {\n" +
             "  /**\n" +
             "   * value1_1\n" +
             "   */\n" +
             "  public val key1: String\n" +
-            "    get() = stringProvider.getString(\"key1\")\n" +
+            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
             "\n" +
             SecondConstructorsStr +
             "}\n"
@@ -110,14 +112,15 @@ class KotlinIosResourceFileTest {
             CommonImportsStr +
             "\n" +
             "public class $className(\n" +
-            "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                PrimaryConstructorArguments +
             ") {\n" +
             SecondConstructorsStr +
             "\n" +
             "  /**\n" +
             "   * value1_2\n" +
             "   */\n" +
-            "  public fun key1(count: Long): String = stringProvider.getPluralString(\"key1\", count)\n" +
+            "  public fun key1(count: Long): String =\n" +
+            "      NSString.localizedStringWithFormat(bundle.localizedStringForKey(\"key1\", \"\", tableName), count)\n" +
             "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -150,19 +153,19 @@ class KotlinIosResourceFileTest {
             CommonImportsStr +
             "\n" +
             "public class $className(\n" +
-            "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                PrimaryConstructorArguments +
             ") {\n" +
             "  /**\n" +
             "   * value1_2\n" +
             "   */\n" +
             "  public val key1: String\n" +
-            "    get() = stringProvider.getString(\"key1\")\n" +
+            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
             "\n" +
             "  /**\n" +
             "   * value3_2\n" +
             "   */\n" +
             "  public val key3: String\n" +
-            "    get() = stringProvider.getString(\"key3\")\n" +
+            "    get() = bundle.localizedStringForKey(\"key3\", \"\", tableName)\n" +
             "\n" +
             SecondConstructorsStr +
             "}\n"
@@ -201,13 +204,13 @@ class KotlinIosResourceFileTest {
             CommonImportsStr +
             "\n" +
             "public class $className(\n" +
-            "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                PrimaryConstructorArguments +
             ") : StrInterface {\n" +
             "  public override val key1: String\n" +
-            "    get() = stringProvider.getString(\"key1\")\n" +
+            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
             "\n" +
             "  public override val key3: String\n" +
-            "    get() = stringProvider.getString(\"key3\")\n" +
+            "    get() = bundle.localizedStringForKey(\"key3\", \"\", tableName)\n" +
             "\n" +
             SecondConstructorsStr +
             "}\n"
@@ -239,7 +242,7 @@ class KotlinIosResourceFileTest {
             CommonImportsStr +
             "\n" +
             "public class $className(\n" +
-            "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                PrimaryConstructorArguments +
             ") {\n" +
             "  /**\n" +
             "   * Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery Wery Wery Wery 4 Wery\n" +
@@ -247,7 +250,7 @@ class KotlinIosResourceFileTest {
             "   * Long Comment\n" +
             "   */\n" +
             "  public val key1: String\n" +
-            "    get() = stringProvider.getString(\"key1\")\n" +
+            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
             "\n" +
             SecondConstructorsStr +
             "}\n"
@@ -278,20 +281,21 @@ class KotlinIosResourceFileTest {
             CommonImportsStr +
             "\n" +
             "public class $className(\n" +
-            "  private val stringProvider: IndexFormattedStringProvider,\n" +
+                PrimaryConstructorArguments +
             ") {\n" +
             "  /**\n" +
             "   * $testValue\n" +
             "   */\n" +
             "  public val key1: String\n" +
-            "    get() = stringProvider.getString(\"key1\")\n" +
+            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
             "\n" +
             SecondConstructorsStr +
             "\n" +
             "  /**\n" +
             "   * $testValue\n" +
             "   */\n" +
-            "  public fun key2(count: Long): String = stringProvider.getPluralString(\"key2\", count)\n" +
+            "  public fun key2(count: Long): String =\n" +
+            "      NSString.localizedStringWithFormat(bundle.localizedStringForKey(\"key2\", \"\", tableName), count)\n" +
             "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
