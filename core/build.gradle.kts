@@ -10,8 +10,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 application {
@@ -22,7 +22,7 @@ dependencies {
     api(project(":runtime"))
     api("com.googlecode.json-simple:json-simple:1.1.1")
     api(gradleApi())
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${BuildVersion.kotlin}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
     implementation("com.beust:jcommander:1.82")
     testImplementation("junit:junit:4.13.2")
@@ -46,9 +46,9 @@ tasks {
     }
 }
 
-tasks.withType(KotlinCompile::class.java).all {
-    kotlinOptions {
-        jvmTarget = "1.8"
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 

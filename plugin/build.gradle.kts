@@ -1,5 +1,4 @@
 @file:Suppress("UnstableApiUsage")
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import kotlin.collections.listOf
 
 plugins {
@@ -10,8 +9,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
@@ -21,9 +20,9 @@ dependencies {
     api(project(":core"))
 }
 
-tasks.withType(KotlinCompile::class.java).all {
-    kotlinOptions {
-        jvmTarget = "1.8"
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 

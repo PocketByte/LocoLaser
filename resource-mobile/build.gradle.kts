@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("kotlin")
     id("org.jetbrains.kotlin.jvm")
@@ -10,38 +8,38 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
     implementation(project(":core"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${BuildVersion.kotlin}")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
     testImplementation("junit:junit:4.13.2")
 }
 
 tasks {
-    create("sourceJar", Jar::class) {
+    register("sourceJar", Jar::class) {
         from(sourceSets.main.get().allSource)
         archiveClassifier.set("sources")
     }
 
-    create("generateJavadocs", Javadoc::class) {
+    register("generateJavadocs", Javadoc::class) {
         source(sourceSets.main.get().allJava)
         isFailOnError = false
     }
 
-    create("sourceDoc", Jar::class) {
+    register("sourceDoc", Jar::class) {
         dependsOn("generateJavadocs")
         from(javadoc.get().destinationDir)
         archiveClassifier.set("javadoc")
     }
 }
 
-tasks.withType(KotlinCompile::class.java).all {
-    kotlinOptions {
-        jvmTarget = "1.8"
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 
