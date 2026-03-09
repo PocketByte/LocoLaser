@@ -30,7 +30,7 @@ class PropertiesResourceFile(
                 "# It should not be modified by hand."
 
         private const val COMMENT_SINGLE_LINE = "#"
-        private const val KEY_VALUE_PATTERN = "((?:[^\"]|\\\\\")+)=((?:[^\"]|\\\\\")*)"
+        private const val KEY_VALUE_PATTERN = "((?:[^\"=]|\\\\\")+)=((?:[^\"]|\\\\\")*)"
 
         internal fun toPlatformValue(string:String):String {
             return string

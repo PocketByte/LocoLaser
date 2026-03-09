@@ -122,6 +122,31 @@ class PropertiesResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testReadEqualityChar() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+            "key=value1=value2\r\n"
+        )
+
+        val resourceFile = PropertiesResourceFile(testFile, testLocale)
+        val resMap = resourceFile.read(null)
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+
+        resLocale.put(prepareResItem("key", arrayOf(
+            ResValue("value1=value2", null, Quantity.OTHER, NoFormattingType, emptyList())
+        )))
+
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testWrite() {
         val testLocale = "ru"
         val redundantLocale = "base"
