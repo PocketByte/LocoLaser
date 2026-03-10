@@ -99,7 +99,7 @@ kotlin {
             dependsOn(commonTest.get())
         }
     }
-    jvmToolchain(8)
+    jvmToolchain(11)
 }
 
 
@@ -189,12 +189,6 @@ kotlin {
 
     sourceSets {
         // Windows implementation not yet implemented
-    }
-}
-
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
 
