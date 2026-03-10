@@ -27,23 +27,23 @@ dependencies {
 }
 
 tasks {
-    create("sourceJar", Jar::class) {
+    register("sourceJar", Jar::class) {
         from(sourceSets.main.get().allSource)
         archiveClassifier.set("sources")
     }
 
-    create("generateJavadocs", Javadoc::class) {
+    register("generateJavadocs", Javadoc::class) {
         source(sourceSets.main.get().allJava)
         isFailOnError = false
     }
 
-    create("sourceDoc", Jar::class) {
+    register("sourceDoc", Jar::class) {
         dependsOn("generateJavadocs")
         from(javadoc.get().destinationDir)
         archiveClassifier.set("javadoc")
     }
 
-    val copyAppProperties = create("copyAppProperties", Copy::class) {
+    val copyAppProperties = register("copyAppProperties", Copy::class) {
         from("src/main/resources/properties")
         into("build/resources/main/properties")
 
@@ -62,19 +62,21 @@ tasks {
         }
     }
 
-    create("printGoogleApiKeys").doLast {
-        val propFile = project.rootProject.file("local.properties")
-        if (propFile.exists()) {
-            val propFileInputStreem = propFile.inputStream()
-            val props = Properties()
-            props.load(propFileInputStreem)
+    register("printGoogleApiKeys") {
+        doLast {
+            val propFile = project.rootProject.file("local.properties")
+            if (propFile.exists()) {
+                val propFileInputStreem = propFile.inputStream()
+                val props = Properties()
+                props.load(propFileInputStreem)
 
-            println(props["google_oauth_api_key"] ?: "none")
-            println(props["google_oauth_api_secret"] ?: "none")
+                println(props["google_oauth_api_key"] ?: "none")
+                println(props["google_oauth_api_secret"] ?: "none")
 
-            propFileInputStreem.close()
-        } else {
-            println("File 'local.properties' doesn't exists")
+                propFileInputStreem.close()
+            } else {
+                println("File 'local.properties' doesn't exists")
+            }
         }
     }
 

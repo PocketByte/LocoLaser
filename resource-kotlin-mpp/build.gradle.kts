@@ -25,17 +25,17 @@ dependencies {
 }
 
 tasks {
-    create("sourceJar", Jar::class) {
+    register("sourceJar", Jar::class) {
         from(sourceSets.main.get().allSource)
         archiveClassifier.set("sources")
     }
 
-    create("generateJavadocs", Javadoc::class) {
+    register("generateJavadocs", Javadoc::class) {
         source(sourceSets.main.get().allJava)
         isFailOnError = false
     }
 
-    create("sourceDoc", Jar::class) {
+    register("sourceDoc", Jar::class) {
         dependsOn("generateJavadocs")
         from(javadoc.get().destinationDir)
         archiveClassifier.set("javadoc")
