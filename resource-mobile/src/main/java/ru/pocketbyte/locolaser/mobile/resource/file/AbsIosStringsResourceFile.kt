@@ -31,7 +31,8 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                     .replace("\"", "\\\"")
                     .replace("\n", "\\n")
                     .replace("%s", "%@")
-                    .replace("%([0-9]{1,})\\\$s".toRegex(), "%$1\\$@")
+                    .replace("%([0-9]+)\\\$s".toRegex(), "%$1\\$@")
+                    .replace("\\\\u([0-9|a-fA-F]{4})".toRegex(), "\\\\U$1")
         }
 
         fun fromPlatformValue(string: String): String {
@@ -39,7 +40,7 @@ abstract class AbsIosStringsResourceFile(file: File, private val mLocale: String
                     .replace("\\\"", "\"")
                     .replace("\\n", "\n")
                     .replace("%@", "%s")
-                    .replace("%([0-9]{1,})\\$@".toRegex(), "%$1\\\$s")
+                    .replace("%([0-9]+)\\$@".toRegex(), "%$1\\\$s")
         }
     }
 
