@@ -19,10 +19,6 @@ class ResLocale() : LinkedHashMap<String, ResItem>() {
         map?.values?.forEach {
             put(ResItem(it))
         }
-        if (map != null)
-            for (item in map.values) {
-
-            }
     }
 
     override fun put(key: String, value: ResItem): ResItem {
