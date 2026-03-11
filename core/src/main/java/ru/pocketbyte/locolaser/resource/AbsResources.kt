@@ -7,11 +7,11 @@ package ru.pocketbyte.locolaser.resource
 
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.entity.filter
 import ru.pocketbyte.locolaser.resource.entity.merge
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
-
 import java.io.File
 import java.io.IOException
 
@@ -26,7 +26,7 @@ abstract class AbsResources(
     /** Provides resource File depending on locale, directory and name */
     private val resourceFileProvider: ResourceFileProvider,
     /** Resource name. */
-    private val filter: ((key: String) -> Boolean)?
+    private val filter: ResourcesFilter?
 ) : Resources {
 
     protected abstract fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>?

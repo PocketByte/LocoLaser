@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.kotlinmpp.resource
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
 abstract class KotlinAbsImplementationResources(
@@ -8,7 +9,7 @@ abstract class KotlinAbsImplementationResources(
     name: String,
     interfaceName: String?,
     resourceFileProvider: ResourceFileProvider,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : KotlinAbsResources(dir, name, resourceFileProvider, filter) {
 
     val interfaceName: String?

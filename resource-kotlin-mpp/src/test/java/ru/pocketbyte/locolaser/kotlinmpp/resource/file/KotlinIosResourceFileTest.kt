@@ -17,23 +17,33 @@ import org.junit.Assert.assertNull
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinAbsResources
+import ru.pocketbyte.locolaser.kotlinmpp.resource.putResItem
 import ru.pocketbyte.locolaser.kotlinmpp.utils.TemplateStr
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
 
 class KotlinIosResourceFileTest {
 
     companion object {
-        const val CommonImportsStr =
+        private const val CommonImportsStr =
             "import kotlin.String\n" +
+            "import kotlin.Suppress\n" +
             "import platform.Foundation.NSBundle\n" +
             "import platform.Foundation.NSString\n" +
             "import platform.Foundation.localizedStringWithFormat\n" +
-            "import platform.Foundation.stringWithFormat\n"
+            "import platform.Foundation.stringWithFormat\n" +
+            "import ru.pocketbyte.locolaser.provider.IosStringProvider\n" +
+            "import ru.pocketbyte.locolaser.provider.StringProvider\n"
 
-        const val PrimaryConstructorArguments =
-            "  private val bundle: NSBundle,\n" +
-            "  private val tableName: String,\n"
 
-        const val SecondConstructorsStr =
+        private const val SuppressStr = "@Suppress(\"CAST_NEVER_SUCCEEDS\")\n"
+
+        private const val PrimaryConstructorArguments =
+            "  private val stringProvider: StringProvider,\n"
+
+        private const val SecondConstructorsStr =
+            "  public constructor(bundle: NSBundle, tableName: String) : this(IosStringProvider(bundle,\n" +
+            "      tableName))\n" +
+            "\n" +
             "  public constructor(bundle: NSBundle) : this(bundle, \"Localizable\")\n" +
             "\n" +
             "  public constructor(tableName: String) : this(NSBundle.mainBundle(), tableName)\n" +
@@ -57,9 +67,7 @@ class KotlinIosResourceFileTest {
     fun testWriteOneItem() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(
-            ResValue("value1_1", "Comment", Quantity.OTHER)
-        )))
+        resLocale.putResItem("key1", ResValue("value1_1", "Comment", Quantity.OTHER))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -76,6 +84,7 @@ class KotlinIosResourceFileTest {
             "\n" +
             CommonImportsStr +
             "\n" +
+            SuppressStr +
             "public class $className(\n" +
                 PrimaryConstructorArguments +
             ") {\n" +
@@ -83,7 +92,7 @@ class KotlinIosResourceFileTest {
             "   * value1_1\n" +
             "   */\n" +
             "  public val key1: String\n" +
-            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
             "\n" +
             SecondConstructorsStr +
             "}\n"
@@ -96,7 +105,7 @@ class KotlinIosResourceFileTest {
     fun testWriteOnePluralItem() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment 1", Quantity.ONE), ResValue("value1_2", "Comment 2", Quantity.OTHER))))
+        resLocale.putResItem("key1", ResValue("value1_1", "Comment 1", Quantity.ONE), ResValue("value1_2", "Comment 2", Quantity.OTHER))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -111,6 +120,7 @@ class KotlinIosResourceFileTest {
             "import kotlin.Long\n" +
             CommonImportsStr +
             "\n" +
+            SuppressStr +
             "public class $className(\n" +
                 PrimaryConstructorArguments +
             ") {\n" +
@@ -120,7 +130,7 @@ class KotlinIosResourceFileTest {
             "   * value1_2\n" +
             "   */\n" +
             "  public fun key1(count: Long): String =\n" +
-            "      NSString.localizedStringWithFormat(bundle.localizedStringForKey(\"key1\", \"\", tableName), count)\n" +
+            "      NSString.localizedStringWithFormat(stringProvider.getString(\"key1\"), count)\n" +
             "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -132,13 +142,13 @@ class KotlinIosResourceFileTest {
         val resMap = ResMap()
 
         var resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
-        resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
+        resLocale.putResItem("key1", ResValue("value1_1", "Comment", Quantity.OTHER))
+        resLocale.putResItem("key2", ResValue("value2_1", "value2_1", Quantity.OTHER))
         resMap["ru"] = resLocale
 
         resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_2", null, Quantity.OTHER))))
-        resLocale.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
+        resLocale.putResItem("key1", ResValue("value1_2", null, Quantity.OTHER))
+        resLocale.putResItem("key3", ResValue("value3_2", "value2_1", Quantity.OTHER, formattingArguments = JavaFormattingType.argumentsFromValue("%s")))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -152,6 +162,7 @@ class KotlinIosResourceFileTest {
             "\n" +
             CommonImportsStr +
             "\n" +
+            SuppressStr +
             "public class $className(\n" +
                 PrimaryConstructorArguments +
             ") {\n" +
@@ -159,15 +170,21 @@ class KotlinIosResourceFileTest {
             "   * value1_2\n" +
             "   */\n" +
             "  public val key1: String\n" +
-            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
             "\n" +
             "  /**\n" +
             "   * value3_2\n" +
             "   */\n" +
             "  public val key3: String\n" +
-            "    get() = bundle.localizedStringForKey(\"key3\", \"\", tableName)\n" +
+            "    get() = stringProvider.getString(\"key3\")\n" +
             "\n" +
             SecondConstructorsStr +
+            "\n" +
+            "  /**\n" +
+            "   * value3_2\n" +
+            "   */\n" +
+            "  public fun key3(s1: String): String = NSString.stringWithFormat(stringProvider.getString(\"key3\"),\n" +
+            "      s1 as NSString)\n" +
             "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -179,13 +196,13 @@ class KotlinIosResourceFileTest {
         val resMap = ResMap()
 
         var resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_1", "Comment", Quantity.OTHER))))
-        resLocale.put(prepareResItem("key2", arrayOf(ResValue("value2_1", "value2_1", Quantity.OTHER))))
+        resLocale.putResItem("key1", ResValue("value1_1", "Comment", Quantity.OTHER))
+        resLocale.putResItem("key2", ResValue("value2_1", "value2_1", Quantity.OTHER))
         resMap["ru"] = resLocale
 
         resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue("value1_2", null, Quantity.OTHER))))
-        resLocale.put(prepareResItem("key3", arrayOf(ResValue("value3_2", "value2_1", Quantity.OTHER))))
+        resLocale.putResItem("key1", ResValue("value1_2", null, Quantity.OTHER))
+        resLocale.putResItem("key3", ResValue("value3_2", "value2_1", Quantity.OTHER))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -203,14 +220,15 @@ class KotlinIosResourceFileTest {
             "import com.pcg.StrInterface\n" +
             CommonImportsStr +
             "\n" +
+            SuppressStr +
             "public class $className(\n" +
                 PrimaryConstructorArguments +
             ") : StrInterface {\n" +
             "  public override val key1: String\n" +
-            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
             "\n" +
             "  public override val key3: String\n" +
-            "    get() = bundle.localizedStringForKey(\"key3\", \"\", tableName)\n" +
+            "    get() = stringProvider.getString(\"key3\")\n" +
             "\n" +
             SecondConstructorsStr +
             "}\n"
@@ -223,10 +241,10 @@ class KotlinIosResourceFileTest {
     fun testWriteLongPropertyComment() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue(
+        resLocale.putResItem("key1", ResValue(
             "Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery" +
                     " Wery Wery Wery 4 Wery Wery Wery Wery 5 Wery Long Comment", null,
-                Quantity.OTHER))))
+                Quantity.OTHER))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -241,6 +259,7 @@ class KotlinIosResourceFileTest {
             "\n" +
             CommonImportsStr +
             "\n" +
+            SuppressStr +
             "public class $className(\n" +
                 PrimaryConstructorArguments +
             ") {\n" +
@@ -250,7 +269,7 @@ class KotlinIosResourceFileTest {
             "   * Long Comment\n" +
             "   */\n" +
             "  public val key1: String\n" +
-            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
+            "    get() = stringProvider.getString(\"key1\")\n" +
             "\n" +
             SecondConstructorsStr +
             "}\n"
@@ -264,8 +283,8 @@ class KotlinIosResourceFileTest {
         val testValue = "Hello %s %s"
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(prepareResItem("key1", arrayOf(ResValue(testValue, "", Quantity.OTHER))))
-        resLocale.put(prepareResItem("key2", arrayOf(ResValue(testValue, "Comment 2", Quantity.OTHER), ResValue("value1_1", "Comment 1", Quantity.ONE))))
+        resLocale.putResItem("key1", ResValue(testValue, "", Quantity.OTHER))
+        resLocale.putResItem("key2", ResValue(testValue, "Comment 2", Quantity.OTHER), ResValue("value1_1", "Comment 1", Quantity.ONE))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -280,6 +299,7 @@ class KotlinIosResourceFileTest {
             "import kotlin.Long\n" +
             CommonImportsStr +
             "\n" +
+            SuppressStr +
             "public class $className(\n" +
                 PrimaryConstructorArguments +
             ") {\n" +
@@ -287,7 +307,7 @@ class KotlinIosResourceFileTest {
             "   * $testValue\n" +
             "   */\n" +
             "  public val key1: String\n" +
-            "    get() = bundle.localizedStringForKey(\"key1\", \"\", tableName)\n" +
+                "    get() = stringProvider.getString(\"key1\")\n" +
             "\n" +
             SecondConstructorsStr +
             "\n" +
@@ -295,7 +315,7 @@ class KotlinIosResourceFileTest {
             "   * $testValue\n" +
             "   */\n" +
             "  public fun key2(count: Long): String =\n" +
-            "      NSString.localizedStringWithFormat(bundle.localizedStringForKey(\"key2\", \"\", tableName), count)\n" +
+            "      NSString.localizedStringWithFormat(stringProvider.getString(\"key2\"), count)\n" +
             "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -304,13 +324,6 @@ class KotlinIosResourceFileTest {
     @Throws(IOException::class)
     private fun readFile(file: File): String {
         return String(Files.readAllBytes(Paths.get(file.absolutePath)), Charset.defaultCharset())
-    }
-
-    private fun prepareResItem(key: String, values: Array<ResValue>): ResItem {
-        val resItem = ResItem(key)
-        for (value in values)
-            resItem.addValue(value)
-        return resItem
     }
 
     private fun fileForClass(directory: File, className: String, classPackage: String): File {

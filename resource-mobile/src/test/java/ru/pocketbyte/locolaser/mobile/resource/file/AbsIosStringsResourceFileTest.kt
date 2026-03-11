@@ -15,8 +15,12 @@ import ru.pocketbyte.locolaser.config.ExtraParams
 class AbsIosStringsResourceFileTest {
 
     companion object {
-        const val TEST_STRING = "?'test';:<tag>\"value\nsecond line\" %1\$s %2\$s %s<tagg/>" + " Wrong Formats: %\$s $5s"
-        const val PLATFORM_TEST_STRING = "?'test';:<tag>\\\"value\\nsecond line\\\" %1$@ %2$@ %@<tagg/>" + " Wrong Formats: %\$s $5s"
+        const val TEST_STRING = "?'test';:<tag>\"value\nsecond line\" %1\$s %2\$s %s<tagg/>" +
+                " Wrong Formats: %\$s $5s" +
+                " Unicode \\U1008"
+        const val PLATFORM_TEST_STRING = "?'test';:<tag>\\\"value\\nsecond line\\\" %1$@ %2$@ %@<tagg/>" +
+                " Wrong Formats: %\$s $5s" +
+                " Unicode \\U1008"
     }
 
     @Rule @JvmField
@@ -30,6 +34,14 @@ class AbsIosStringsResourceFileTest {
     @Test
     fun testFromPlatformValue() {
         assertEquals(TEST_STRING, AbsIosStringsResourceFile.fromPlatformValue(PLATFORM_TEST_STRING))
+    }
+
+    @Test
+    fun testUnicode() {
+        assertEquals("Unicode \\U1008", AbsIosStringsResourceFile.toPlatformValue("Unicode \\u1008"))
+        assertEquals("Unicode \\U1008", AbsIosStringsResourceFile.toPlatformValue("Unicode \\U1008"))
+        assertEquals("Unicode \\u1008", AbsIosStringsResourceFile.fromPlatformValue("Unicode \\u1008"))
+        assertEquals("Unicode \\U1008", AbsIosStringsResourceFile.fromPlatformValue("Unicode \\U1008"))
     }
 
     @Test

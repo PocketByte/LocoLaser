@@ -8,6 +8,7 @@ package ru.pocketbyte.locolaser.mobile
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.mobile.resource.IosResources
 import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosResourceFileProvider
 import java.io.File
@@ -22,7 +23,7 @@ class IosResourcesConfig(
     resourceName: String?,
     resourcesDirPath: String?,
     resourceFileProvider: ResourceFileProvider?,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : BaseResourcesConfig(
     workDir,
     resourceName,

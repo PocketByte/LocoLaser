@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.gettext
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
 class GetTextResourcesConfigBuilder : BaseResourcesConfigBuilder<GetTextResourcesConfig>() {
@@ -11,7 +12,7 @@ class GetTextResourcesConfigBuilder : BaseResourcesConfigBuilder<GetTextResource
         resourceName: String?,
         resourcesDir: String?,
         resourceFileProvider: ResourceFileProvider?,
-        filter: ((key: String) -> Boolean)?
+        filter: ResourcesFilter?
     ): GetTextResourcesConfig {
         return GetTextResourcesConfig(
             workDir, resourceName, resourcesDir, resourceFileProvider, filter

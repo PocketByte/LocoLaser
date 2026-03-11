@@ -150,4 +150,6 @@ object WebFormattingType: FormattingType {
     private fun formatForArgument(argument: FormattingArgument): String? {
         return argument.parameters?.get(PARAM_TYPE_FORMAT) as? String
     }
+
+    private fun readResolve(): Any = WebFormattingType
 }

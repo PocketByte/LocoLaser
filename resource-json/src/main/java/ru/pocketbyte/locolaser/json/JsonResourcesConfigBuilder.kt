@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.json
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
 open class JsonResourcesConfigBuilder : BaseResourcesConfigBuilder<JsonResourcesConfig>() {
@@ -22,7 +23,7 @@ open class JsonResourcesConfigBuilder : BaseResourcesConfigBuilder<JsonResources
         resourceName: String?,
         resourcesDir: String?,
         resourceFileProvider: ResourceFileProvider?,
-        filter: ((key: String) -> Boolean)?
+        filter: ResourcesFilter?
     ): JsonResourcesConfig {
         return JsonResourcesConfig(
             workDir,

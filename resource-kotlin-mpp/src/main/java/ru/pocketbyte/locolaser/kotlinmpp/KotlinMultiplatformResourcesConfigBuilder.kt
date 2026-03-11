@@ -2,10 +2,11 @@ package ru.pocketbyte.locolaser.kotlinmpp
 
 import groovy.lang.Closure
 import org.gradle.api.Project
-import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourcesSetConfig
+import ru.pocketbyte.locolaser.config.resources.filter.RegExResourcesFilter
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.kotlinmpp.builder.BaseKmpBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.builder.BaseKmpClassBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.builder.CustomFormattingClassBuilderFactory
@@ -55,7 +56,22 @@ class KotlinMultiplatformResourcesConfigBuilder(
      * Filter function.
      * If defined, only strings that suits the filter will be added as Repository fields.
      */
+    @Deprecated(
+        "Lambda function for filter is deprecated and will be replaced with ResourcesFilter" +
+                " in future builds. Please, use filter(filter: ResourcesFilter?) or" +
+                " filter(regExp: String) instead."
+    )
     var filter: ((key: String) -> Boolean)? = null
+
+    /**
+     * Filter function.
+     * If defined, only strings that suits the filter will be added as Repository fields.
+     */
+    var resourcesFilter: ResourcesFilter? = null
+        set(value) {
+            field = value
+            filter = null
+        }
 
     private val platformCommon: KmpInterfaceBuilder = KmpInterfaceBuilder()
     private val platformMap = mutableMapOf<String, BaseKmpClassBuilder<*, *>>()
@@ -87,11 +103,21 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
+     * If defined, only strings with keys that matches filter will be added as Repository fields.
+     * @param filter Only strings with keys that matches filter will be added as Repository fields.
+     */
+    fun filter(filter: ResourcesFilter?) {
+        this.resourcesFilter = filter
+        this.filter = null
+    }
+
+    /**
      * If defined, only strings with keys that matches RegExp will be added as Repository fields.
      * @param regExp RegExp String. Only strings with keys that matches RegExp will be added as Repository fields.
      */
     fun filter(regExp: String) {
-        filter = BaseResourcesConfig.regExFilter(regExp)
+        resourcesFilter = RegExResourcesFilter(regExp)
+        this.filter = null
     }
 
     /**

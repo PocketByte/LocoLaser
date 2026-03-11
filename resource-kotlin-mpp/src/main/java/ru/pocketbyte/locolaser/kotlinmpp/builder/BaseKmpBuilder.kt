@@ -3,6 +3,9 @@ package ru.pocketbyte.locolaser.kotlinmpp.builder
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
+import ru.pocketbyte.locolaser.config.resources.filter.RegExResourcesFilter
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFiltersSet
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
 import java.io.File
 
@@ -31,14 +34,39 @@ abstract class BaseKmpBuilder<
      * Filter function.
      * If defined, only strings that suits the filter will be added as Repository fields.
      */
+    @Deprecated(
+        "Lambda function for filter is deprecated and will be replaced with ResourcesFilter" +
+                " in future builds. Please, use filter(filter: ResourcesFilter?) or" +
+                " filter(regExp: String) instead."
+    )
     var filter: ((key: String) -> Boolean)? = null
+
+    /**
+     * Filter function.
+     * If defined, only strings that suits the filter will be added as Repository fields.
+     */
+    var resourcesFilter: ResourcesFilter? = null
+        set(value) {
+            field = value
+            filter = null
+        }
+
+    /**
+     * If defined, only strings with keys that matches filter will be added as Repository fields.
+     * @param filter Only strings with keys that matches filter will be added as Repository fields.
+     */
+    fun filter(filter: ResourcesFilter?) {
+        this.resourcesFilter = filter
+        this.filter = null
+    }
 
     /**
      * If defined, only strings with keys that matches RegExp will be added as Repository fields.
      * @param regExp RegExp String. Only strings with keys that matches RegExp will be added as Repository fields.
      */
     fun filter(regExp: String) {
-        filter = BaseResourcesConfig.regExFilter(regExp)
+        resourcesFilter = RegExResourcesFilter(regExp)
+        this.filter = null
     }
 
     internal fun build(
@@ -50,7 +78,8 @@ abstract class BaseKmpBuilder<
             .getBuilder()
             .apply {
                 resourcesDir = defaultSourcesDir(mainBuilder.srcDir, this@BaseKmpBuilder)
-                filter = mainBuilder.filter
+                mainBuilder.filter?.let { filter = it }
+                mainBuilder.resourcesFilter?.let { resourcesFilter = it }
 
                 configure(this)
 
@@ -72,6 +101,12 @@ abstract class BaseKmpBuilder<
                     parentFiler(key) && it(key)
                 }
             } ?: it
+        }
+
+        this.resourcesFilter?.let { filter ->
+            builder.resourcesFilter = builder.resourcesFilter?.let { builderFiler ->
+                ResourcesFiltersSet(arrayOf(builderFiler, filter))
+            } ?: filter
         }
     }
 

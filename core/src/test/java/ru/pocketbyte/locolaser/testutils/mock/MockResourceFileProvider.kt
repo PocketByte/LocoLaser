@@ -7,4 +7,5 @@ internal object MockResourceFileProvider : ResourceFileProvider {
     override fun get(locale: String, directory: File, name: String, extension: String): File {
         return File(File(directory, locale), "$name.$extension")
     }
+    private fun readResolve(): Any = MockResourceFileProvider
 }

@@ -80,4 +80,5 @@ object JavaFormattingType: FormattingType {
         }
     }
 
+    private fun readResolve(): Any = JavaFormattingType
 }

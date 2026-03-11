@@ -24,7 +24,7 @@ open class KotlinAbsKeyValueResourceFile(
     formattingType: FormattingType = NoFormattingType
 ): BaseKotlinPoetClassResourceFile(file, className, classPackage, formattingType) {
 
-    private val stringProviderClassName by lazy {
+    protected open val stringProviderClassName by lazy {
         when (formattingType.argumentsSubstitution) {
             BY_INDEX -> IndexFormattedStringProvider::class.asTypeName()
             BY_NAME -> NameFormattedStringProvider::class.asTypeName()
@@ -72,7 +72,7 @@ open class KotlinAbsKeyValueResourceFile(
             .instantiatePropertySpecBuilder(name, item, resMap, extraParams)
             .getter(
                 FunSpec.getterBuilder()
-                    .addStatement("return ${getStringStatement(item.key)}")
+                    .addReturnStringStatement(item.key)
                     .build()
             )
 
@@ -103,7 +103,7 @@ open class KotlinAbsKeyValueResourceFile(
             builder.addModifiers(KModifier.OVERRIDE)
         }
 
-        builder.addStatement("return ${getStringStatement(item.key, formattingArguments)}")
+        builder.addReturnStringStatement(item.key, formattingArguments)
 
         return builder
     }
@@ -117,7 +117,7 @@ open class KotlinAbsKeyValueResourceFile(
         val builder = super
             .instantiatePluralSpecBuilder(name, formattingArguments, item, resMap, extraParams)
 
-        builder.addStatement("return ${getPluralStringStatement(item.key, formattingArguments)}")
+        builder.addReturnPluralStringStatement(item.key, formattingArguments)
 
         if (interfaceName == null || interfacePackage == null) {
             val valueOther = item.valueForQuantity(Quantity.OTHER)
@@ -131,10 +131,10 @@ open class KotlinAbsKeyValueResourceFile(
         return builder
     }
 
-    protected open fun getStringStatement(
+    protected open fun FunSpec.Builder.addReturnStringStatement(
         key: String,
         formattingArguments: List<FormattingArgument>? = null
-    ): String {
+    ): FunSpec.Builder {
         val argumentsString = when (formattingType.argumentsSubstitution) {
             BY_NAME -> {
                 formattingArguments?.mapIndexed { index, argument ->
@@ -148,17 +148,18 @@ open class KotlinAbsKeyValueResourceFile(
             }
             NO -> null
         }
+
         return if (argumentsString == null) {
-            "stringProvider.getString(\"${key}\")"
+            addStatement("return stringProvider.getString(\"${key}\")")
         } else {
-            "stringProvider.getString(\"${key}\", $argumentsString)"
+            addStatement("return stringProvider.getString(\"${key}\", $argumentsString)")
         }
     }
 
-    protected open fun getPluralStringStatement(
+    protected open fun FunSpec.Builder.addReturnPluralStringStatement(
         key: String,
         formattingArguments: List<FormattingArgument>
-    ): String {
+    ): FunSpec.Builder {
         val argumentsString = when (formattingType.argumentsSubstitution) {
             BY_NAME -> {
                 formattingArguments.mapIndexed { index, argument ->
@@ -182,9 +183,9 @@ open class KotlinAbsKeyValueResourceFile(
         }
 
         return if (argumentsString == null) {
-            "stringProvider.getString(\"${key}\")"
+            addStatement("return stringProvider.getString(\"${key}\")")
         } else {
-            "stringProvider.getPluralString(\"${key}\", $argumentsString)"
+            addStatement("return stringProvider.getPluralString(\"${key}\", $argumentsString)")
         }
     }
 }

@@ -3,6 +3,9 @@ package ru.pocketbyte.locolaser.plugin
 import groovy.lang.Closure
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.internal.provider.ValueSupplier.TaskProducer
+import org.gradle.api.tasks.TaskProvider
 import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.ConfigBuilder
 import ru.pocketbyte.locolaser.utils.callWithDelegate
@@ -30,7 +33,7 @@ open class LocalizationConfigContainer(
 
             if (dependsOnCompile.isNotEmpty()) {
                 project.tasks.configureEach {
-                    if (it.name.startsWith("compile")) {
+                    if (it.isCompileTask()) {
                         it.dependsOn(*dependsOnCompile.toTypedArray())
                     }
                 }
@@ -42,9 +45,9 @@ open class LocalizationConfigContainer(
         val builder = configs[name] ?: ConfigBuilder().apply {
             workDir = project.projectDir
             configs[name] = this
-            registerTasksForConfig(name)
         }
         builder.apply(configurator)
+        registerTasksForConfig(name)
     }
 
     fun config(configurator: ConfigBuilder.() -> Unit) {
@@ -72,11 +75,15 @@ open class LocalizationConfigContainer(
 
     private fun registerTasksForConfig(name: String?) {
         val configurator: Action<LocalizeTask> = Action {
-            it.configName.convention(name)
+            it.config.set(project.provider {
+                configs[name]?.build()
+                    ?: throw RuntimeException("Failed to find localization config `$name`.")
+            })
             it.notCompatibleWithConfigurationCache(
-                "LocoLaser doesn't support ConfigurationCache for now"
+                "LocoLaser doesn't support ConfigurationCache"
             )
         }
+
         project.tasks.register(
             localizeTaskName(name),
             LocalizeTask::class.java,
@@ -104,5 +111,11 @@ open class LocalizationConfigContainer(
 
     private fun localizeExportNewTaskName(configName: String?): String {
         return "localize${configName.firstCharToUpperCase()}ExportNew"
+    }
+
+    private fun Task.isCompileTask(): Boolean {
+        return name.startsWith("compile")
+                || name.endsWith("SourcesJar")
+                || name == "sourcesJar"
     }
 }

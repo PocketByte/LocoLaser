@@ -3,6 +3,7 @@ package ru.pocketbyte.locolaser.ini
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.ini.resource.IniResources
 import ru.pocketbyte.locolaser.ini.resource.file.provider.IniResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
@@ -13,7 +14,7 @@ class IniResourcesConfig(
     resourceName: String?,
     resourcesDirPath: String?,
     resourceFileProvider: ResourceFileProvider?,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : BaseResourcesConfig(
     workDir,
     resourceName,

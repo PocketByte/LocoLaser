@@ -1,11 +1,11 @@
 package ru.pocketbyte.locolaser.kotlinmpp.resource
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.kotlinmpp.resource.file.KotlinIosResourceFile
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
-
 import java.io.File
 
 class KotlinIosResources(
@@ -13,7 +13,7 @@ class KotlinIosResources(
     name: String,
     interfaceName: String?,
     resourceFileProvider: ResourceFileProvider,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : KotlinAbsImplementationResources(dir, name, interfaceName, resourceFileProvider, filter) {
 
     override val formattingType: FormattingType = JavaFormattingType

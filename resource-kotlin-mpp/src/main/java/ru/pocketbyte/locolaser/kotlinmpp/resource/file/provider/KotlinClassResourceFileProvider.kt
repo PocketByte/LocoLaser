@@ -7,4 +7,5 @@ internal object KotlinClassResourceFileProvider : ResourceFileProvider {
     override fun get(locale: String, directory: File, name: String, extension: String): File {
         return File(directory, "${name.replace(".", "/")}.$extension")
     }
+    private fun readResolve(): Any = KotlinClassResourceFileProvider
 }

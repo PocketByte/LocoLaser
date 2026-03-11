@@ -18,15 +18,20 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.utils.LogUtils
 import java.io.File
 import java.io.IOException
+import java.io.Serializable
 
 /**
  * @author Denis Shurygin
  */
 class GoogleSheetResources(
     private val sourceConfig: GoogleSheetResourcesConfig,
-    private val service: Sheets,
+    private val serviceProvider: ServiceProvider,
     override val formattingType: FormattingType
 ) : BaseTableResources() {
+
+    interface ServiceProvider : Serializable {
+        fun get(): Sheets
+    }
 
     companion object {
 
@@ -99,7 +104,7 @@ class GoogleSheetResources(
                 }
             }
 
-            service.spreadsheets()
+            serviceProvider.get().spreadsheets()
                 .values()
                 .batchUpdate(
                     sourceConfig.id,
@@ -170,7 +175,7 @@ class GoogleSheetResources(
                     }
 
                     // Appending keys
-                    service.spreadsheets().values()
+                    serviceProvider.get().spreadsheets().values()
                         .append(
                             sourceConfig.id,
                             "${columnName(mColumnIndexes.key)}${firstNewRow}",
@@ -183,7 +188,7 @@ class GoogleSheetResources(
                         }
 
                     // Updating values
-                    service.spreadsheets()
+                    serviceProvider.get().spreadsheets()
                         .values()
                         .batchUpdate(
                             sourceConfig.id,
@@ -251,7 +256,7 @@ class GoogleSheetResources(
             val ignoreRows = ArrayList<Int>()
             val indexColumnFeed: ValueRange?
             try {
-                indexColumnFeed = service.spreadsheets().values()
+                indexColumnFeed = serviceProvider.get().spreadsheets().values()
                         .get(sourceConfig.id, "${workSheet}A:A")
                         .execute()
             } catch (e: IOException) {
@@ -275,7 +280,7 @@ class GoogleSheetResources(
 
             val titleRowFeed: ValueRange?
             try {
-                titleRowFeed = service.spreadsheets().values()
+                titleRowFeed = serviceProvider.get().spreadsheets().values()
                         .get(sourceConfig.id, "${workSheet}$titleRow:$titleRow")
                         .execute()
             } catch (e: IOException) {
@@ -312,7 +317,7 @@ class GoogleSheetResources(
             try {
                 val minColumn = columnName(mColumnIndexes.min)
                 val maxColumn = columnName(mColumnIndexes.max)
-                mQuery = service.spreadsheets().values()
+                mQuery = serviceProvider.get().spreadsheets().values()
                         .get(sourceConfig.id, "${workSheet}$minColumn${titleRow + 1}:$maxColumn")
                         .execute()
                         .getValues()

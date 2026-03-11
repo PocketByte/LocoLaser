@@ -17,6 +17,7 @@ import org.junit.Assert.assertEquals
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinAbsResources
+import ru.pocketbyte.locolaser.kotlinmpp.resource.putResItem
 import ru.pocketbyte.locolaser.kotlinmpp.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
@@ -38,7 +39,7 @@ class KotlinCommonResourceFileTest {
     fun testWriteOneItem() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(resItem("key1", resValue("value1_1", "Comment", Quantity.OTHER)))
+        resLocale.putResItem("key1", resValue("value1_1", "Comment", Quantity.OTHER))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -67,10 +68,10 @@ class KotlinCommonResourceFileTest {
     fun testWriteOnePluralItem() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(resItem("key1",
+        resLocale.putResItem("key1",
             resValue("value1_1", "Comment 1", Quantity.ONE),
             resValue("value1_2", "Comment 2", Quantity.OTHER)
-        ))
+        )
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -101,13 +102,13 @@ class KotlinCommonResourceFileTest {
         val resMap = ResMap()
 
         var resLocale = ResLocale()
-        resLocale.put(resItem("key1", resValue("value1_1", "Comment", Quantity.OTHER)))
-        resLocale.put(resItem("key2", resValue("value2_1", "value2_1", Quantity.OTHER)))
+        resLocale.putResItem("key1", resValue("value1_1", "Comment", Quantity.OTHER))
+        resLocale.putResItem("key2", resValue("value2_1", "value2_1", Quantity.OTHER))
         resMap["ru"] = resLocale
 
         resLocale = ResLocale()
-        resLocale.put(resItem("key1", resValue("value1_2", null, Quantity.OTHER)))
-        resLocale.put(resItem("key3", resValue("value3_2", "value2_1", Quantity.OTHER)))
+        resLocale.putResItem("key1", resValue("value1_2", null, Quantity.OTHER))
+        resLocale.putResItem("key3", resValue("value3_2", "value2_1", Quantity.OTHER))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -141,10 +142,10 @@ class KotlinCommonResourceFileTest {
     fun testWriteLongPropertyComment() {
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(resItem("key1", resValue(
+        resLocale.putResItem("key1", resValue(
             "Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery" +
                     " Wery Wery Wery 4 Wery Wery Wery Wery 5 Wery Long Comment", null,
-                Quantity.OTHER)))
+                Quantity.OTHER))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -178,11 +179,11 @@ class KotlinCommonResourceFileTest {
         val testValue2 = "Count is %d"
         val resMap = ResMap()
         val resLocale = ResLocale()
-        resLocale.put(resItem("key1",
-                resValue(testValue1, "", Quantity.OTHER)))
-        resLocale.put(resItem("key2",
+        resLocale.putResItem("key1",
+                resValue(testValue1, "", Quantity.OTHER))
+        resLocale.putResItem("key2",
                 resValue(testValue2, "Comment 2", Quantity.OTHER),
-                resValue("value1_1", "Comment 1", Quantity.ONE)))
+                resValue("value1_1", "Comment 1", Quantity.ONE))
         resMap[Resources.BASE_LOCALE] = resLocale
 
         val testDirectory = tempFolder.newFolder()
@@ -220,13 +221,6 @@ class KotlinCommonResourceFileTest {
     @Throws(IOException::class)
     private fun readFile(file: File): String {
         return String(Files.readAllBytes(Paths.get(file.absolutePath)), Charset.defaultCharset())
-    }
-
-    private fun resItem(key: String, vararg values: ResValue): ResItem {
-        val resItem = ResItem(key)
-        for (value in values)
-            resItem.addValue(value)
-        return resItem
     }
 
     private fun resValue(

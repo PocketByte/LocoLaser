@@ -1,12 +1,13 @@
 package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.provider.StringProvider
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
@@ -25,28 +26,29 @@ class KotlinIosResourceFile(
 ) {
 
     companion object {
+        private val StringProviderImplClassName = ClassName(
+            StringProvider::class.java.`package`.name,
+            "IosStringProvider"
+        )
         private val BundleClassName = ClassName("platform.Foundation", "NSBundle")
     }
 
+    override val stringProviderClassName by lazy {
+        StringProvider::class.asTypeName()
+    }
+
     override fun instantiateClassSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): TypeSpec.Builder {
-        val builder = TypeSpec.classBuilder(className)
-            .addModifiers(KModifier.PUBLIC)
-            .addProperty(
-                PropertySpec
-                    .builder("bundle", BundleClassName, KModifier.PRIVATE)
-                    .initializer("bundle")
+        return super.instantiateClassSpecBuilder(resMap, extraParams)
+            .addAnnotation(
+                AnnotationSpec.builder(Suppress::class)
+                    .addMember("\"CAST_NEVER_SUCCEEDS\"")
                     .build()
             )
-            .addProperty(
-                PropertySpec
-                    .builder("tableName", String::class, KModifier.PRIVATE)
-                    .initializer("tableName")
-                    .build()
-            )
-            .primaryConstructor(
+            .addFunction(
                 FunSpec.constructorBuilder()
                     .addParameter("bundle", BundleClassName)
                     .addParameter("tableName", String::class)
+                    .callThisConstructor("${StringProviderImplClassName.simpleName}(bundle, tableName)")
                     .build()
             )
             .addFunction(
@@ -66,16 +68,15 @@ class KotlinIosResourceFile(
                     .callThisConstructor("NSBundle.mainBundle()", "\"Localizable\"")
                     .build()
             )
-
-        if (interfaceName != null && interfacePackage != null) {
-            builder.addSuperinterface(ClassName(interfacePackage, interfaceName))
-        }
-
-        return builder
     }
 
     override fun instantiateFileSpecBuilder(resMap: ResMap, extraParams: ExtraParams?): FileSpec.Builder {
         val builder = super.instantiateFileSpecBuilder(resMap, extraParams)
+
+        builder.addImport(
+            StringProviderImplClassName.packageName,
+            StringProviderImplClassName.simpleName
+        )
 
         builder.addImport(
             "platform.Foundation",
@@ -86,34 +87,33 @@ class KotlinIosResourceFile(
         return builder
     }
 
-    override fun getStringStatement(
+    override fun FunSpec.Builder.addReturnStringStatement(
         key: String,
         formattingArguments: List<FormattingArgument>?
-    ): String {
-        val result = "bundle.localizedStringForKey(\"${key}\", \"\", tableName)"
+    ): FunSpec.Builder {
+        val getStringStatement = "stringProvider.getString(\"$key\")"
 
-        val argumentsString = formattingArguments?.mapIndexed { index, argument ->
+        val stringWithFormatStatement = formattingArguments?.mapIndexed { index, argument ->
             if (argument.parameterClass() == String::class) {
                 argument.anyName(index) + " as NSString"
             } else {
                 argument.anyName(index)
             }
-        }?.joinToString()
+        }?.joinToString()?.let {
+            "NSString.stringWithFormat($getStringStatement, $it)"
+        } ?: getStringStatement
 
-        return if (argumentsString != null) {
-            "NSString.stringWithFormat(${result}, ${argumentsString})"
-        } else {
-            result
-        }
+
+        return addStatement("return $stringWithFormatStatement")
     }
 
-    override fun getPluralStringStatement(
+    override fun FunSpec.Builder.addReturnPluralStringStatement(
         key: String,
         formattingArguments: List<FormattingArgument>
-    ): String {
-        val result = "bundle.localizedStringForKey(\"${key}\", \"\", tableName)"
+    ): FunSpec.Builder {
+        val getStringStatement = "stringProvider.getString(\"$key\")"
 
-        val argumentsString = formattingArguments.mapIndexed { index, argument ->
+        val stringWithFormatStatement = formattingArguments.mapIndexed { index, argument ->
             if (index == 0) {
                 "count"
             } else if (argument.parameterClass() == String::class) {
@@ -121,12 +121,14 @@ class KotlinIosResourceFile(
             } else {
                 argument.anyName(index)
             }
-        }.joinToString()
-
-        return if (argumentsString.isNotBlank()) {
-            "NSString.localizedStringWithFormat(${result}, ${argumentsString})"
-        } else {
-            "NSString.localizedStringWithFormat(${result})"
+        }.joinToString().let {
+            if (it.isNotBlank()) {
+                "NSString.localizedStringWithFormat($getStringStatement, ${it})"
+            } else {
+                "NSString.localizedStringWithFormat($getStringStatement)"
+            }
         }
+
+        return addStatement("return $stringWithFormatStatement")
     }
 }

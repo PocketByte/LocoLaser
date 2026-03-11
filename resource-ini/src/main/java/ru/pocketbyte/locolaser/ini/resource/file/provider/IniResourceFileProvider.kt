@@ -7,4 +7,5 @@ internal object IniResourceFileProvider : ResourceFileProvider {
     override fun get(locale: String, directory: File, name: String, extension: String): File {
         return File(directory, "$name.$extension")
     }
+    private fun readResolve(): Any = IniResourceFileProvider
 }

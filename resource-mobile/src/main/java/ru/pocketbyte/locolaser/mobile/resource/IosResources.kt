@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser.mobile.resource
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.mobile.resource.file.IosPluralResourceFile
 import ru.pocketbyte.locolaser.mobile.resource.file.IosResourceFile
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
@@ -20,7 +21,7 @@ class IosResources(
     resourcesDir: File,
     name: String,
     resourceFileProvider: ResourceFileProvider,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : AbsIosStringsResources(resourcesDir, name, resourceFileProvider, filter) {
 
     companion object {

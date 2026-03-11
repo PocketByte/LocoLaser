@@ -12,4 +12,5 @@ internal object PropertiesResourceFileProvider : ResourceFileProvider {
             File(directory, "${name}_$locale.$extension")
         }
     }
+    private fun readResolve(): Any = PropertiesResourceFileProvider
 }

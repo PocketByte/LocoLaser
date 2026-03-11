@@ -8,6 +8,7 @@ package ru.pocketbyte.locolaser.json
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.json.resource.JsonResources
 import ru.pocketbyte.locolaser.json.resource.file.provider.JsonResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
@@ -25,7 +26,7 @@ class JsonResourcesConfig(
     resourceName: String?,
     resourcesDirPath: String?,
     resourceFileProvider: ResourceFileProvider?,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : BaseResourcesConfig(
     workDir,
     resourceName,

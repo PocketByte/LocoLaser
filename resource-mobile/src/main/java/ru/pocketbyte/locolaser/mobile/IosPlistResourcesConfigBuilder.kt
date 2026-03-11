@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.mobile
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
 class IosPlistResourcesConfigBuilder : BaseResourcesConfigBuilder<IosPlistResourcesConfig>() {
@@ -11,7 +12,7 @@ class IosPlistResourcesConfigBuilder : BaseResourcesConfigBuilder<IosPlistResour
         resourceName: String?,
         resourcesDir: String?,
         resourceFileProvider: ResourceFileProvider?,
-        filter: ((key: String) -> Boolean)?
+        filter: ResourcesFilter?
     ): IosPlistResourcesConfig {
         return IosPlistResourcesConfig(
             workDir, resourceName, resourcesDir, resourceFileProvider, filter
