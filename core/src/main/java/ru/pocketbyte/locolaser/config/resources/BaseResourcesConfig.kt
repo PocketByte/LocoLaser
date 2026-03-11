@@ -5,9 +5,9 @@
 
 package ru.pocketbyte.locolaser.config.resources
 
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.utils.buildFileFrom
 import java.io.File
-import java.util.regex.Pattern
 
 /**
  * Base implementation of PlatformConfig.
@@ -34,20 +34,8 @@ abstract class BaseResourcesConfig(
      */
     val resourceFileProvider: ResourceFileProvider,
 
-    val filter: ((key: String) -> Boolean)?
+    val filter: ResourcesFilter?
 ) : ResourcesConfig {
-
-    companion object {
-        fun regExFilter(filter: String?): ((key: String) -> Boolean)? {
-            if (filter == null)
-                return null
-
-            val matcher = Pattern.compile(filter).matcher("")
-            return {
-                matcher.reset(it).find()
-            }
-        }
-    }
 
     /**
      * Resource name.

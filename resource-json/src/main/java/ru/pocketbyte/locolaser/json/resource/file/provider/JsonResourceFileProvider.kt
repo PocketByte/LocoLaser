@@ -11,4 +11,5 @@ internal object JsonResourceFileProvider : ResourceFileProvider {
             "$name.$extension"
         )
     }
+    private fun readResolve(): Any = JsonResourceFileProvider
 }

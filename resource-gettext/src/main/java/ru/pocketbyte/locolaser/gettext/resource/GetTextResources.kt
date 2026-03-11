@@ -6,6 +6,7 @@
 package ru.pocketbyte.locolaser.gettext.resource
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.gettext.resource.file.GetTextResourceFile
 import ru.pocketbyte.locolaser.resource.AbsResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
@@ -20,7 +21,7 @@ class GetTextResources(
     resourcesDir: File,
     fileName: String,
     resourceFileProvider: ResourceFileProvider,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : AbsResources(resourcesDir, fileName, resourceFileProvider, filter) {
 
     override val formattingType: FormattingType = NoFormattingType

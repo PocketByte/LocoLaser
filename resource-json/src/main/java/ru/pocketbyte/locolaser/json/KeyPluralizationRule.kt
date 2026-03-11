@@ -2,10 +2,11 @@ package ru.pocketbyte.locolaser.json
 
 import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.utils.PluralUtils
+import java.io.Serializable
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-sealed class KeyPluralizationRule {
+sealed class KeyPluralizationRule: Serializable {
 
     sealed class Postfix : KeyPluralizationRule() {
 
@@ -19,14 +20,12 @@ sealed class KeyPluralizationRule {
         abstract fun encodeKey(key: String, quantity: Quantity, locale: String): String?
 
         class Numeric(override val keySeparator: String = DEFAULT_POSTFIX) : Postfix() {
-            private val matcher: Matcher by lazy {
-                Pattern.compile(
-                    "(.+)${keySeparator}_(\\d+)"
-                ).matcher("")
-            }
+
+            @Transient
+            private var matcher: Matcher? = null
 
             override fun decodeKey(key: String, locale: String): Pair<String, Quantity>? {
-                val pluralMatch = matcher.reset(key)
+                val pluralMatch = getOrCreateMatcher().reset(key)
                 if (pluralMatch.find() && pluralMatch.groupCount() == 2) {
                     return Pair(
                         pluralMatch.group(1),
@@ -48,17 +47,23 @@ sealed class KeyPluralizationRule {
                 val index = PluralUtils.quantityIndexForLocale(quantity, locale) ?: return null
                 return key + keySeparator + "_" + index
             }
+
+            private fun getOrCreateMatcher(): Matcher {
+                matcher?.let { return it }
+                return Pattern
+                    .compile("(.+)${keySeparator}_(\\d+)")
+                    .matcher("")
+                    .apply { matcher = this }
+            }
         }
 
         class Named(override val keySeparator: String = DEFAULT_POSTFIX) : Postfix() {
-            private val matcher: Matcher by lazy {
-                Pattern.compile(
-                    "(.+)${keySeparator}_(${Quantity.values().joinToString("|")})"
-                ).matcher("")
-            }
+
+            @Transient
+            private var matcher: Matcher? = null
 
             override fun decodeKey(key: String, locale: String): Pair<String, Quantity>? {
-                val pluralMatch = matcher.reset(key)
+                val pluralMatch = getOrCreateMatcher().reset(key)
                 if (pluralMatch.find() && pluralMatch.groupCount() == 2) {
                     return Pair(
                         pluralMatch.group(1),
@@ -78,6 +83,13 @@ sealed class KeyPluralizationRule {
 
             override fun encodeKey(key: String, quantity: Quantity, locale: String): String {
                 return key + keySeparator + "_" + quantity.toString()
+            }
+
+            private fun getOrCreateMatcher(): Matcher {
+                matcher?.let { return it }
+                return Pattern
+                    .compile("(.+)${keySeparator}_(${Quantity.values().joinToString("|")})")
+                    .matcher("").apply { matcher = this }
             }
         }
     }

@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.resource.entity
 
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.util.HashMap
 
 /**
@@ -40,10 +41,7 @@ fun ResMap?.merge(map: ResMap?): ResMap? {
     return this
 }
 
-fun ResMap.filter(filter: ((key: String) -> Boolean)?): ResMap {
-    if (filter == null)
-        return this
-
+inline fun ResMap.filter(filter: ((key: String) -> Boolean)): ResMap {
     val newResMap = ResMap()
 
     this.forEach { (key, resLocale) ->
@@ -51,4 +49,14 @@ fun ResMap.filter(filter: ((key: String) -> Boolean)?): ResMap {
     }
 
     return newResMap
+}
+
+fun ResMap.filter(filter: ResourcesFilter?): ResMap {
+    if (filter == null) {
+        return this
+    }
+
+    return filter { key ->
+        filter.filter(key)
+    }
 }

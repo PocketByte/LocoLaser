@@ -1,6 +1,7 @@
 package ru.pocketbyte.locolaser.kotlinmpp
 
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinIosResources
 import java.io.File
 
@@ -9,7 +10,7 @@ class KotlinIosResourcesConfig(
     resourceName: String?,
     resourcesDirPath: String?,
     interfaceName: String?,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : KotlinBaseResourcesConfig(
     workDir, resourceName, resourcesDirPath, interfaceName, filter
 ) {

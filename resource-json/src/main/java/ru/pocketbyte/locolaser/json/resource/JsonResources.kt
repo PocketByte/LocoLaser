@@ -6,13 +6,13 @@
 package ru.pocketbyte.locolaser.json.resource
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.json.KeyPluralizationRule
 import ru.pocketbyte.locolaser.json.resource.file.JsonResourceFile
 import ru.pocketbyte.locolaser.resource.AbsResources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
-
 import java.io.File
 
 /**
@@ -24,7 +24,7 @@ class JsonResources(
     resourceFileProvider: ResourceFileProvider,
     private val indent: Int,
     private val pluralKeyRule: KeyPluralizationRule.Postfix,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : AbsResources(resourcesDir, fileName, resourceFileProvider, filter) {
 
     override val formattingType: FormattingType = WebFormattingType

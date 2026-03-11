@@ -1,20 +1,20 @@
 package ru.pocketbyte.locolaser.ini.resource
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.ini.resource.file.IniResourceFile
 import ru.pocketbyte.locolaser.resource.AbsResources
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
-
 import java.io.File
 
 class IniResources(
     resourcesDir: File,
     fileName: String,
     resourceFileProvider: ResourceFileProvider,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : AbsResources(resourcesDir, fileName, resourceFileProvider, filter) {
 
     override val formattingType: FormattingType = JavaFormattingType

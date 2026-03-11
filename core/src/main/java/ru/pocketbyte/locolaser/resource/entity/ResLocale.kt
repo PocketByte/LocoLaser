@@ -71,11 +71,7 @@ class ResLocale() : LinkedHashMap<String, ResItem>() {
     }
 }
 
-fun ResLocale.filter(filter: ((key: String) -> Boolean)?): ResLocale {
-    if (filter == null)
-        return this
-
-
+inline fun ResLocale.filter(filter: ((key: String) -> Boolean)): ResLocale {
     val newResLocale = ResLocale()
 
     this.forEach { (key, resItem) ->

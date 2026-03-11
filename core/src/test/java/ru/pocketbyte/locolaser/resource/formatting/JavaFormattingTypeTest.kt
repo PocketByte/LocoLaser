@@ -96,7 +96,7 @@ class JavaFormattingTypeTest {
     }
 
     private class FormattingTypeMock(
-            val javaValue: ResValue
+        val javaValue: ResValue
     ): FormattingType {
         var convertToJavaCalls = 0
             private set

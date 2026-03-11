@@ -2,8 +2,9 @@ package ru.pocketbyte.locolaser.resource.formatting
 
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.resource.entity.ResValue
+import java.io.Serializable
 
-interface FormattingType {
+interface FormattingType: Serializable {
 
     enum class ArgumentsSubstitution {
         /**

@@ -1,10 +1,10 @@
 package ru.pocketbyte.locolaser.mobile.resource
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.resource.AbsResources
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
-
 import java.io.File
 
 abstract class IosBaseClassResources(
@@ -12,7 +12,7 @@ abstract class IosBaseClassResources(
     name: String,
     resourceFileProvider: ResourceFileProvider,
     tableName: String?,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : AbsResources(resourcesDir, name, resourceFileProvider, filter) {
 
     override val formattingType: FormattingType = NoFormattingType

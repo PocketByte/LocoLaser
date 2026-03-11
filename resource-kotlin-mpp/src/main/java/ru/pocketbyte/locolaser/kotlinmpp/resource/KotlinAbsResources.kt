@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.kotlinmpp.resource
 
 
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.resource.AbsResources
 import java.io.File
 
@@ -9,7 +10,7 @@ abstract class KotlinAbsResources(
     dir: File,
     name: String,
     resourceFileProvider: ResourceFileProvider,
-    filter: ((key: String) -> Boolean)?
+    filter: ResourcesFilter?
 ) : AbsResources(dir, name, resourceFileProvider, filter) {
 
     companion object {

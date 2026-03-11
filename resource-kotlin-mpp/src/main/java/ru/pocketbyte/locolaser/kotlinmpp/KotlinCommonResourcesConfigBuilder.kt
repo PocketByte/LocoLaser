@@ -2,6 +2,7 @@ package ru.pocketbyte.locolaser.kotlinmpp
 
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
+import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
 class KotlinCommonResourcesConfigBuilder
@@ -12,7 +13,7 @@ class KotlinCommonResourcesConfigBuilder
         resourceName: String?,
         resourcesDir: String?,
         resourceFileProvider: ResourceFileProvider?,
-        filter: ((key: String) -> Boolean)?
+        filter: ResourcesFilter?
     ): KotlinCommonResourcesConfig {
         return KotlinCommonResourcesConfig(
             workDir, resourceName, resourcesDir, filter

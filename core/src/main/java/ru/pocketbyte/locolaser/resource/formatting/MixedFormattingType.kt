@@ -24,4 +24,6 @@ object MixedFormattingType: FormattingType {
                 "${MixedFormattingType::class.java.canonicalName} doesn't support value conversion."
         )
     }
+
+    private fun readResolve(): Any = MixedFormattingType
 }

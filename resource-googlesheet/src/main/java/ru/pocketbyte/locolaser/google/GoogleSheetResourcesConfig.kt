@@ -5,6 +5,7 @@
 
 package ru.pocketbyte.locolaser.google
 
+import com.google.api.services.sheets.v4.Sheets
 import ru.pocketbyte.locolaser.config.resources.BaseTableResourcesConfig
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.google.resource.GoogleSheetResources
@@ -50,10 +51,23 @@ class GoogleSheetResourcesConfig(
     override val resources: Resources by lazy {
         GoogleSheetResources(
             sourceConfig = this,
-            service = GoogleSheetGlobalPool.getService(
-                id, credentialFile?.let { buildFileFrom(workDir, it) }
+            serviceProvider = GoogleSheetGlobalPoolServiceProvider(
+                id, workDir, credentialFile
             ),
             formattingType = formattingType
         )
+    }
+
+    private class GoogleSheetGlobalPoolServiceProvider(
+        private val id: String,
+        private val workDir: File?,
+        credentialFile: String?,
+    ): GoogleSheetResources.ServiceProvider {
+
+        private val credentialFile = credentialFile?.let { buildFileFrom(workDir, it) }
+
+        override fun get(): Sheets {
+            return GoogleSheetGlobalPool.getService(id, credentialFile)
+        }
     }
 }

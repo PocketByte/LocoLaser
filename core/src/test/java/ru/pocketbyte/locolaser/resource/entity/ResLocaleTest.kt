@@ -179,8 +179,6 @@ class ResLocaleTest {
         resLocale.put(prepareResItem("welcome_3",
                 ResValue("value1_1", null)))
 
-        assertSame(resLocale, resLocale.filter(null))
-
         val filtered1 = resLocale.filter { it.startsWith("welcome") }
         assertEquals(2, filtered1.size)
         assertNull(filtered1["key1"])

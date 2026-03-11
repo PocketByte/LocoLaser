@@ -27,4 +27,6 @@ object NoFormattingType: FormattingType {
             value.formattingType.convertToJava(value)
         }
     }
+
+    private fun readResolve(): Any = NoFormattingType
 }

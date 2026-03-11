@@ -11,13 +11,14 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import java.io.File
 
 import java.io.IOException
+import java.io.Serializable
 
 /**
  * Represent resources for specified platform.
  *
  * @author Denis Shurygin
  */
-interface Resources {
+interface Resources: Serializable {
 
     companion object {
         const val BASE_LOCALE = "base"

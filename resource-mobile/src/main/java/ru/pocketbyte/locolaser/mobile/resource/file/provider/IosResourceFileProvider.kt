@@ -15,4 +15,5 @@ internal object IosResourceFileProvider : ResourceFileProvider {
 
         return File(File(directory, localeDir.toString()), "$name.$extension")
     }
+    private fun readResolve(): Any = IosResourceFileProvider
 }
