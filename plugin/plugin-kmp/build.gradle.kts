@@ -1,6 +1,4 @@
 @file:Suppress("UnstableApiUsage")
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import kotlin.collections.listOf
 
 plugins {
     id("kotlin")

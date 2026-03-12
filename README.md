@@ -11,10 +11,6 @@ Utility support following resource types:
 - INI File: strings.ini
 - Java properties: strings.properties
 
-##### Migration to 2.0.0
-
-Please read [Migration instruction](docs/migration.md) to migrate to version 2.0.0
-
 ##### Related Git's
 
 Android Example: https://github.com/PocketByte/locolaser-android-example  
@@ -33,7 +29,7 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin-all:2.3.1")
+        classpath("ru.pocketbyte.locolaser:plugin-all:2.6.0")
     }
 }
 
@@ -67,6 +63,10 @@ When configuration is done it creates localization tasks in `localization` group
 You can override config properties by calling corresponded tasks:
 - `localize[ConfigName]ExportNew`: Exports new strings from platform resources to source.
 - `localize[ConfigName]Force`: Forces localization ignoring cache.
+
+##### Migration to 2.0.0
+
+Please read [Migration instruction](docs/migration.md) to migrate to version 2.0.0
 
 ## License
 

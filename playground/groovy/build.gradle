@@ -15,16 +15,8 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        def locolaserVersion = "2.4.1"
-        classpath "ru.pocketbyte.locolaser:plugin:$locolaserVersion"
-        classpath "ru.pocketbyte.locolaser:core:$locolaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-gettext:$locolaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-googlesheet:$locolaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-ini:$locolaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-json:$locolaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-kotlin-mpp:$locolaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-mobile:$locolaserVersion"
-        classpath "ru.pocketbyte.locolaser:resource-properties:$locolaserVersion"
+        def locolaserVersion = "2.6.0"
+        classpath "ru.pocketbyte.locolaser:plugin-all:$locolaserVersion"
     }
 }
 

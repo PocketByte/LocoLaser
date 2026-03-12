@@ -11,7 +11,7 @@ In **`build.gradle.kts`** of the module, apply LocoLaser plugin:
 
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.3.1")
+    id("ru.pocketbyte.locolaser").version("2.6.0")
 }
 ```
 
@@ -27,8 +27,8 @@ buildscript {
         ...
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.3.1")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.3.1")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:2.6.0")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.6.0")
         ...
     }
 }
