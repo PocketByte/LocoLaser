@@ -9,6 +9,7 @@ plugins {
     id("com.android.library")
     id("maven-publish")
     id("signing")
+    id("com.gradleup.nmcp")
 }
 
 java {
@@ -194,12 +195,6 @@ kotlin {
 
 val javadocJar by tasks.registering(Jar::class) {
     archiveClassifier.set("javadoc")
-}
-
-publishing {
-    repositories {
-        sonatype(sonatypeUser, sonatypePassword)
-    }
 }
 
 signing {

@@ -1,5 +1,4 @@
 @file:Suppress("UnstableApiUsage")
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
@@ -7,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm")
     id("maven-publish")
     id("signing")
+    id("com.gradleup.nmcp")
 }
 
 java {
@@ -92,9 +92,6 @@ kotlin {
 }
 
 publishing {
-    repositories {
-        sonatype(sonatypeUser, sonatypePassword)
-    }
     publications {
         create("locolaser", MavenPublication::class) {
             from(components.getByName("java"))

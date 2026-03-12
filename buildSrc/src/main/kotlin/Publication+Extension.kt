@@ -1,16 +1,4 @@
-import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.publish.maven.MavenPom
-
-fun RepositoryHandler.sonatype(sonatypeUser: String, sonatypePassword: String) {
-    maven {
-        name = "Sonatype"
-        setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2")
-        credentials {
-            username = sonatypeUser
-            password = sonatypePassword
-        }
-    }
-}
 
 @Suppress("UnstableApiUsage")
 fun MavenPom.addCommonRepositoryProperties() {
