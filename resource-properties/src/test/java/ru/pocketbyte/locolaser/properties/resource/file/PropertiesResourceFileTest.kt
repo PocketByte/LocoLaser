@@ -9,6 +9,7 @@ import ru.pocketbyte.locolaser.config.ExtraParams
 import ru.pocketbyte.locolaser.config.duplicateComments
 import ru.pocketbyte.locolaser.resource.entity.*
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 import java.io.File
 import java.io.IOException
 import java.io.PrintWriter
@@ -313,6 +314,58 @@ class PropertiesResourceFileTest {
                 "key1.few=Значение FEW\r\n" +
                 "# Комментарий\r\n" +
                 "key2=Значение 2\r\n"
+
+        assertEquals(expectedResult, readFile(testFile))
+    }
+
+    @Test
+    @Throws(IOException::class)
+    fun testWriteWithDifferentFormattingType() {
+        val testLocale = "ru"
+
+        val resMap = ResMap()
+
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem(
+            "key1",
+            arrayOf(
+                ResValue(
+                    "value1 {{count}}",
+                    "Comment",
+                    Quantity.OTHER,
+                    WebFormattingType,
+                    listOf(
+                        FormattingArgument("count", 0,)
+                    )
+                )
+            )
+        ))
+        resLocale.put(prepareResItem(
+            "key2",
+            arrayOf(
+                ResValue(
+                    "value2 {{firstname}} {{lastname}}",
+                    "Comment key2",
+                    Quantity.OTHER,
+                    WebFormattingType,
+                    listOf(
+                        FormattingArgument("firstname", 0,),
+                        FormattingArgument("lastname", 1,)
+                    )
+                )
+            )
+        ))
+        resMap[testLocale] = resLocale
+
+        val testFile = tempFolder.newFile()
+        val resourceFile = PropertiesResourceFile(testFile, testLocale)
+        resourceFile.write(resMap, null)
+
+        val expectedResult = FILE_HEADER +
+                "# Comment\r\n" +
+                "key1=value1 %s\r\n" +
+                "# Comment key2\r\n" +
+                "key2=value2 %s %s\r\n"
 
         assertEquals(expectedResult, readFile(testFile))
     }

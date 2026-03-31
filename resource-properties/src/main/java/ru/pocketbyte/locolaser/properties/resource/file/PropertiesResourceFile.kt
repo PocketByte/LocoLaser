@@ -134,24 +134,27 @@ class PropertiesResourceFile(
             if (resItem != null) {
                 if (resItem.isHasQuantities) {
                     for (value in resItem.values) {
-                        if (commentShouldBeWritten(value, extraParams)) {
-                            writeComment(value.comment)
+                        val resValue = formattingType.convert(value)
+                        if (commentShouldBeWritten(resValue, extraParams)) {
+                            writeComment(resValue.comment)
                         }
                         writeString(resItem.key)
                         writeString(".")
-                        writeString(value.quantity.toString())
+                        writeString(resValue.quantity.toString())
                         writeString("=")
-                        writeStringLn(toPlatformValue(value.value))
+                        writeStringLn(toPlatformValue(resValue.value))
                     }
                 } else {
-                    val value = resItem.valueForQuantity(Quantity.OTHER)
-                    if (value != null) {
-                        if (commentShouldBeWritten(value, extraParams)) {
-                            writeComment(value.comment)
+                    val resValue = resItem.valueForQuantity(Quantity.OTHER)
+                        ?.let { formattingType.convert(it) }
+
+                    if (resValue != null) {
+                        if (commentShouldBeWritten(resValue, extraParams)) {
+                            writeComment(resValue.comment)
                         }
                         writeString(resItem.key)
                         writeString("=")
-                        writeStringLn(toPlatformValue(value.value))
+                        writeStringLn(toPlatformValue(resValue.value))
                     }
                 }
             }
