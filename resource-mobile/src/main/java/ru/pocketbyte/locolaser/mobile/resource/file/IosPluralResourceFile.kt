@@ -195,7 +195,7 @@ class IosPluralResourceFile(file: File, private val mLocale: String) : ResourceS
         private var mDocLevel = LEVEL_NONE
 
         private var mQuantity: Quantity? = null
-        private var mComment: String? = null //TODO comments not work
+        private var mComment: String? = null // comments are not supported for iOS plurals
 
         @Throws(SAXException::class)
         override fun startDocument() { }

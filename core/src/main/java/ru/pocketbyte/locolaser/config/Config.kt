@@ -77,6 +77,7 @@ data class Config(
     }
 
     companion object {
+        private const val serialVersionUID = 1L
         val DEFAULT_CONFLICT_STRATEGY = ConflictStrategy.KEEP_NEW_PLATFORM
         val DEFAULT_LOCALES = setOf(Resources.BASE_LOCALE)
     }
