@@ -80,13 +80,18 @@ class PropertiesResourceFile(
                         if (keyValueMatcher.find() && keyValueMatcher.groupCount() == 2) {
                             val commentString = comment?.toString()
                             val keyString = keyValueMatcher.group(1)
-                            val valueString = keyValueMatcher.group(2)
                             val quantitySeparatorIndex = keyString.lastIndexOf(".")
                             val quantity = if (quantitySeparatorIndex > 0) {
                                 PluralUtils.quantityFromString(
                                     keyString.substring(quantitySeparatorIndex + 1)
                                 )
                             } else { null }
+
+                            var valueString = keyValueMatcher.group(2)
+                            while (valueString.last() == '\\') {
+                                valueString = valueString.dropLast(1) +
+                                        lineReader.readLine().trimStart()
+                            }
 
                             if (quantity != null) {
                                 val key = keyString.substring(0, quantitySeparatorIndex)

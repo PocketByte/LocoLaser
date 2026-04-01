@@ -148,6 +148,34 @@ class PropertiesResourceFileTest {
 
     @Test
     @Throws(IOException::class)
+    fun testReadMultilineValue() {
+        val testLocale = "ru"
+        val testFile = prepareTestFile(
+            "# Comment 1\r\n" +
+                    "string1=Value1_1  \\\r\n" +
+                    "Value1_2\\\r\n" +
+                    "          Value1_3\r\n" +
+                    "# Comment 2\r\n" +
+                    "string2=Value2_1\\\r\n" +
+                    "  Value2_2"
+        )
+
+        val resourceFile = PropertiesResourceFile(testFile, testLocale)
+        val resMap = resourceFile.read(null)
+
+        assertNotNull(resMap)
+
+        val expectedMap = ResMap()
+        val resLocale = ResLocale()
+        resLocale.put(prepareResItem("string1", arrayOf(ResValue("Value1_1  Value1_2Value1_3", "Comment 1", Quantity.OTHER))))
+        resLocale.put(prepareResItem("string2", arrayOf(ResValue("Value2_1Value2_2", "Comment 2", Quantity.OTHER))))
+        expectedMap[testLocale] = resLocale
+
+        assertEquals(expectedMap, resMap)
+    }
+
+    @Test
+    @Throws(IOException::class)
     fun testWrite() {
         val testLocale = "ru"
         val redundantLocale = "base"
