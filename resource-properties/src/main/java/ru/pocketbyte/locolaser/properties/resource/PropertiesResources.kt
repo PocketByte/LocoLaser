@@ -13,16 +13,16 @@ class PropertiesResources(
     resourcesDir: File,
     name: String,
     resourceFileProvider: ResourceFileProvider,
-    filter: ResourcesFilter?
+    filter: ResourcesFilter?,
+    override val formattingType: FormattingType = JavaFormattingType
 ) : AbsResources(resourcesDir, name, resourceFileProvider, filter) {
 
-    override val formattingType: FormattingType = JavaFormattingType
     override val fileExtension: String = "properties"
 
     override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
         val localesArray = locales?.toTypedArray() ?: return null
         return Array(locales.size) { i ->
-            PropertiesResourceFile(getFileForLocale(localesArray[i]), localesArray[i])
+            PropertiesResourceFile(getFileForLocale(localesArray[i]), localesArray[i], formattingType)
         }
     }
 }

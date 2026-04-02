@@ -17,7 +17,11 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.regex.Pattern
 
-class IniResourceFile(file:File, private val mLocales:Set<String>?):ResourceStreamFile(file) {
+class IniResourceFile(
+    file:File,
+    private val mLocales:Set<String>?,
+    override val formattingType: FormattingType = JavaFormattingType
+):ResourceStreamFile(file) {
 
     companion object {
 
@@ -44,8 +48,6 @@ class IniResourceFile(file:File, private val mLocales:Set<String>?):ResourceStre
                     .replace("\\n", "\n")
         }
     }
-
-    override val formattingType: FormattingType = JavaFormattingType
 
     override fun read(extraParams: ExtraParams?):ResMap? {
         if (file.exists())
@@ -198,7 +200,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>?):ResourceStre
                             writeString("[")
                             writeString(value.quantity.toString())
                             writeString("] = ")
-                            writeStringLn(toPlatformValue(value.value))
+                            writeStringLn(toPlatformValue(formattingType.convert(value).value))
                         }
                     }
                     else
@@ -214,7 +216,7 @@ class IniResourceFile(file:File, private val mLocales:Set<String>?):ResourceStre
                             }
                             writeString(resItem.key)
                             writeString(" = ")
-                            writeStringLn(toPlatformValue(value.value))
+                            writeStringLn(toPlatformValue(formattingType.convert(value).value))
                         }
                     }
                 }

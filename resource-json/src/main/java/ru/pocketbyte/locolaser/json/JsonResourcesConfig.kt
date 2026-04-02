@@ -12,6 +12,7 @@ import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.json.resource.JsonResources
 import ru.pocketbyte.locolaser.json.resource.file.provider.JsonResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import java.io.File
 
 /**
@@ -25,6 +26,7 @@ class JsonResourcesConfig(
     val pluralKeyRule: KeyPluralizationRule.Postfix,
     resourceName: String?,
     resourcesDirPath: String?,
+    val formattingType: FormattingType,
     resourceFileProvider: ResourceFileProvider?,
     filter: ResourcesFilter?
 ) : BaseResourcesConfig(
@@ -52,6 +54,7 @@ class JsonResourcesConfig(
         JsonResources(
             resourcesDir = this.resourcesDir,
             fileName = this.resourceName,
+            formattingType = formattingType,
             resourceFileProvider = this.resourceFileProvider,
             indent = this.indent,
             pluralKeyRule = this.pluralKeyRule,

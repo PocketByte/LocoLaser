@@ -29,10 +29,9 @@ class JsonResourceFile(
     private val file: File,
     private val mLocale: String,
     private val indent: Int,
-    private val pluralKeyRule: KeyPluralizationRule.Postfix
-) : ResourceFile {
-
+    private val pluralKeyRule: KeyPluralizationRule.Postfix,
     override val formattingType: FormattingType = WebFormattingType
+) : ResourceFile {
 
     override fun read(extraParams: ExtraParams?): ResMap? {
         if (!file.exists())

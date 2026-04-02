@@ -1,8 +1,11 @@
 package ru.pocketbyte.locolaser.properties.resource.file
 
-import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.config.ExtraParams
-import ru.pocketbyte.locolaser.resource.entity.*
+import ru.pocketbyte.locolaser.entity.Quantity
+import ru.pocketbyte.locolaser.resource.entity.ResItem
+import ru.pocketbyte.locolaser.resource.entity.ResLocale
+import ru.pocketbyte.locolaser.resource.entity.ResMap
+import ru.pocketbyte.locolaser.resource.entity.ResValue
 import ru.pocketbyte.locolaser.resource.file.ResourceStreamFile
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
@@ -19,7 +22,8 @@ import java.util.regex.Pattern
 
 class PropertiesResourceFile(
     file:File,
-    private val locale: String
+    private val locale: String,
+    override val formattingType: FormattingType = JavaFormattingType
 ):ResourceStreamFile(file) {
 
     companion object {
@@ -44,8 +48,6 @@ class PropertiesResourceFile(
                     .replace("\\n", "\n")
         }
     }
-
-    override val formattingType: FormattingType = JavaFormattingType
 
     override fun read(extraParams: ExtraParams?):ResMap? {
         if (file.exists()) {

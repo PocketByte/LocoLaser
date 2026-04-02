@@ -24,10 +24,10 @@ class JsonResources(
     resourceFileProvider: ResourceFileProvider,
     private val indent: Int,
     private val pluralKeyRule: KeyPluralizationRule.Postfix,
-    filter: ResourcesFilter?
+    filter: ResourcesFilter?,
+    override val formattingType: FormattingType = WebFormattingType
 ) : AbsResources(resourcesDir, fileName, resourceFileProvider, filter) {
 
-    override val formattingType: FormattingType = WebFormattingType
     override val fileExtension: String = "json"
 
     override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
@@ -36,7 +36,8 @@ class JsonResources(
             JsonResourceFile(
                 getFileForLocale(localesArray[i]),
                 localesArray[i], indent,
-                pluralKeyRule
+                pluralKeyRule,
+                formattingType
             )
         }
     }

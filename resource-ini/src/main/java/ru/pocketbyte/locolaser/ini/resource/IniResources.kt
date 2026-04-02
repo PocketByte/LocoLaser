@@ -14,14 +14,14 @@ class IniResources(
     resourcesDir: File,
     fileName: String,
     resourceFileProvider: ResourceFileProvider,
-    filter: ResourcesFilter?
+    filter: ResourcesFilter?,
+    override val formattingType: FormattingType = JavaFormattingType,
 ) : AbsResources(resourcesDir, fileName, resourceFileProvider, filter) {
 
-    override val formattingType: FormattingType = JavaFormattingType
     override val fileExtension: String = "ini"
 
     override fun getResourceFiles(locales: Set<String>?): Array<ResourceFile>? {
-        return arrayOf(IniResourceFile(getFileForLocale(Resources.BASE_LOCALE), locales))
+        return arrayOf(IniResourceFile(getFileForLocale(Resources.BASE_LOCALE), locales, formattingType))
     }
 
     override fun allFiles(locales: Set<String>): List<File> {

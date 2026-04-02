@@ -7,12 +7,14 @@ import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.properties.resource.PropertiesResources
 import ru.pocketbyte.locolaser.properties.resource.file.provider.PropertiesResourceFileProvider
 import ru.pocketbyte.locolaser.resource.Resources
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import java.io.File
 
 class PropertiesResourcesConfig(
     workDir: File?,
     resourceName: String?,
     resourcesDirPath: String?,
+    val formattingType: FormattingType,
     resourceFileProvider: ResourceFileProvider?,
     filter: ResourcesFilter?
 ) : BaseResourcesConfig(
@@ -40,6 +42,7 @@ class PropertiesResourcesConfig(
         PropertiesResources(
             resourcesDir = this.resourcesDir,
             name = this.resourceName,
+            formattingType = formattingType,
             resourceFileProvider = this.resourceFileProvider,
             filter = this.filter
         )

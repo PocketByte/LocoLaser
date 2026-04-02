@@ -3,6 +3,9 @@ package ru.pocketbyte.locolaser.json
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.JavaFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.WebFormattingType
 import java.io.File
 
 open class JsonResourcesConfigBuilder : BaseResourcesConfigBuilder<JsonResourcesConfig>() {
@@ -18,6 +21,8 @@ open class JsonResourcesConfigBuilder : BaseResourcesConfigBuilder<JsonResources
      */
     var pluralKeyRule: KeyPluralizationRule.Postfix = KeyPluralizationRule.Postfix.Named()
 
+    var formattingType: FormattingType = WebFormattingType
+
     override fun buildConfig(
         workDir: File?,
         resourceName: String?,
@@ -29,6 +34,7 @@ open class JsonResourcesConfigBuilder : BaseResourcesConfigBuilder<JsonResources
             workDir,
             indent, pluralKeyRule,
             resourceName, resourcesDir,
+            formattingType,
             resourceFileProvider, filter
         )
     }
