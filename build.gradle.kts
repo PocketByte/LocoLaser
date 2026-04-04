@@ -13,13 +13,13 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${BuildVersion.kotlin}")
+        classpath(libs.kotlin.gradle.plugin)
     }
 }
 
 plugins {
-    id("com.android.library") version "8.13.0" apply false
-    id("com.gradleup.nmcp.aggregation").version("1.4.4")
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.nmcp.aggregation)
 }
 
 nmcpAggregation {
@@ -48,15 +48,8 @@ dependencies {
 }
 
 allprojects {
-
     version = LibraryInfo.version
     group = LibraryInfo.group
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-    }
 }
 
 // Force minimum versions for vulnerable transitive NPM dependencies (kotlin-js-store/yarn.lock)

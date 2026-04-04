@@ -16,11 +16,11 @@ java {
 dependencies {
     implementation(project(":core"))
     implementation(project(":resource-mobile"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${BuildVersion.kotlin}")
-    implementation("com.squareup:kotlinpoet:${BuildVersion.kotlinPoet}")
-    testImplementation("junit:junit:4.13.2")
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.kotlin.gradle.plugin)
+    implementation(libs.kotlinPoet)
+    testImplementation(libs.junit)
 }
 
 tasks {

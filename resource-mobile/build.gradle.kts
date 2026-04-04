@@ -15,9 +15,9 @@ java {
 
 dependencies {
     implementation(project(":core"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:${BuildVersion.kotlin}")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
-    testImplementation("junit:junit:4.13.2")
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.stdlib.jdk8)
+    testImplementation(libs.junit)
 }
 
 tasks {

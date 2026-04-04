@@ -6,6 +6,14 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+    }
+}
+
 rootProject.name = "locolaser"
 
 include(":core")

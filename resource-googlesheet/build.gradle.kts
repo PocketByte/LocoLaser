@@ -16,14 +16,14 @@ java {
 
 dependencies {
     implementation(project(":core"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.stdlib.jdk8)
 
-    implementation("com.google.api-client:google-api-client:${BuildVersion.googleApiClient}")
-    implementation("com.google.oauth-client:google-oauth-client-jetty:${BuildVersion.googleAuthClient}")
-    implementation("com.google.apis:google-api-services-sheets:${BuildVersion.googleSheets}")
+    implementation(libs.google.api.client)
+    implementation(libs.google.oauth.client.jetty)
+    implementation(libs.google.api.services.sheets)
 
-    val testImplementation = testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 }
 
 tasks {

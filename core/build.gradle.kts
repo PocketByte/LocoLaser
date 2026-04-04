@@ -21,12 +21,12 @@ application {
 
 dependencies {
     api(project(":runtime"))
-    api("com.googlecode.json-simple:json-simple:1.1.1")
+    api(libs.json.simple)
     api(gradleApi())
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:${BuildVersion.kotlin}")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${BuildVersion.kotlin}")
-    implementation("com.beust:jcommander:1.82")
-    testImplementation("junit:junit:4.13.2")
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.stdlib.jdk8)
+    implementation(libs.jcommander)
+    testImplementation(libs.junit)
 }
 
 tasks {

@@ -18,11 +18,11 @@ java {
 }
 
 android {
-    compileSdk = AndroidSdk.compile
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     namespace = "ru.pocketbyte.locolaser.runtime"
 
     defaultConfig {
-        minSdk = AndroidSdk.min
+        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     compileOptions {
@@ -47,7 +47,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-stdlib")
+                implementation(libs.kotlin.stdlib)
             }
         }
 
@@ -92,7 +92,7 @@ kotlin {
         jvmMain {
             dependsOn(commonMain.get())
             dependencies {
-                implementation("com.ibm.icu:icu4j:73.2")
+                implementation(libs.icu4j)
             }
         }
 

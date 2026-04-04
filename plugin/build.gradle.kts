@@ -4,7 +4,7 @@ import kotlin.collections.listOf
 plugins {
     id("kotlin")
     id("java-gradle-plugin")
-    id("com.gradle.plugin-publish") version "1.2.0"
+    alias(libs.plugins.gradle.pluginPublish)
     id("maven-publish")
 }
 
@@ -16,7 +16,7 @@ java {
 dependencies {
     implementation(gradleApi())
     implementation(localGroovy())
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation(libs.kotlin.stdlib)
     api(project(":core"))
 }
 
