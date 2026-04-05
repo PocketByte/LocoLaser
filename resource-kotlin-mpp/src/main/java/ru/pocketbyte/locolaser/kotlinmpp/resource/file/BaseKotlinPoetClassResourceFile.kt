@@ -1,22 +1,26 @@
 package ru.pocketbyte.locolaser.kotlinmpp.resource.file
 
-import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import org.apache.commons.lang3.text.WordUtils
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
 import ru.pocketbyte.locolaser.config.ExtraParams
+import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.exception.InvalidValueException
 import ru.pocketbyte.locolaser.kotlinmpp.utils.TemplateStr
 import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
-import ru.pocketbyte.locolaser.entity.Quantity
 import ru.pocketbyte.locolaser.resource.entity.ResItem
 import ru.pocketbyte.locolaser.resource.entity.ResMap
 import ru.pocketbyte.locolaser.resource.file.ResourceFile
-import ru.pocketbyte.locolaser.resource.formatting.*
-import ru.pocketbyte.locolaser.resource.formatting.FormattingType.ArgumentsSubstitution
+import ru.pocketbyte.locolaser.resource.formatting.FormattingType
+import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
+import ru.pocketbyte.locolaser.resource.formatting.anyName
+import ru.pocketbyte.locolaser.resource.formatting.parameterClass
 import ru.pocketbyte.locolaser.utils.TextUtils
 import java.io.File
-import java.util.HashSet
 
 abstract class BaseKotlinPoetClassResourceFile(
     protected val directory: File,
@@ -165,7 +169,7 @@ abstract class BaseKotlinPoetClassResourceFile(
     }
 
     protected fun wrapCommentString(string: String): String {
-        return WordUtils.wrap(string, MAX_LINE_SIZE, "\n", true)
+        return string.replace(" ", "♢")
     }
 
     private fun sortFormattingArguments(

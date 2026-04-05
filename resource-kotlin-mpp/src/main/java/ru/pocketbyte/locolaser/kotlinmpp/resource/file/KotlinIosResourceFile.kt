@@ -48,7 +48,7 @@ class KotlinIosResourceFile(
                 FunSpec.constructorBuilder()
                     .addParameter("bundle", BundleClassName)
                     .addParameter("tableName", String::class)
-                    .callThisConstructor("${StringProviderImplClassName.simpleName}(bundle, tableName)")
+                    .callThisConstructor("${StringProviderImplClassName.simpleName}(bundle,♢tableName)")
                     .build()
             )
             .addFunction(
@@ -99,8 +99,8 @@ class KotlinIosResourceFile(
             } else {
                 argument.anyName(index)
             }
-        }?.joinToString()?.let {
-            "NSString.stringWithFormat($getStringStatement, $it)"
+        }?.joinToString(",♢")?.let {
+            "NSString.stringWithFormat($getStringStatement,♢$it)"
         } ?: getStringStatement
 
 
@@ -121,11 +121,11 @@ class KotlinIosResourceFile(
             } else {
                 argument.anyName(index)
             }
-        }.joinToString().let {
+        }.joinToString(",♢").let {
             if (it.isNotBlank()) {
-                "NSString.localizedStringWithFormat($getStringStatement, ${it})"
+                "NSString.localizedStringWithFormat(\n    $getStringStatement,♢${it}\n)"
             } else {
-                "NSString.localizedStringWithFormat($getStringStatement)"
+                "NSString.localizedStringWithFormat(\n    $getStringStatement\n)"
             }
         }
 

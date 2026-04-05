@@ -202,7 +202,7 @@ open class KotlinAbsStaticResourceFile(
         isPlural: Boolean
     ): StringBuilder {
         formattingArguments.forEachIndexed { index, argument ->
-            append(", ")
+            append(",♢")
             val argumentName = if (isPlural && index == 0) {
                 PARAMETER_NAME_COUNT
             } else {

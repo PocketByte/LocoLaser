@@ -267,12 +267,10 @@ class KotlinAbsStaticResourceFileTest {
                 "public abstract class $className {\n" +
                 "  /**\n" +
                 "   * Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery Wery Wery Wery 4 Wery\n" +
-                "   * Wery Wery Wery 5 Wery\n" +
-                "   * Long Comment\n" +
+                "   * Wery Wery Wery 5 Wery Long Comment\n" +
                 "   */\n" +
                 "  public val key1: String\n" +
-                "    get() =\n" +
-                "        \"Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery" +
+                "    get() = \"Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery" +
                          " Wery Wery Wery 4 Wery Wery Wery Wery 5 Wery Long Comment\"\n" +
                 "\n" +
                 getAbstractFunctions(resourceFile.formattingType) +

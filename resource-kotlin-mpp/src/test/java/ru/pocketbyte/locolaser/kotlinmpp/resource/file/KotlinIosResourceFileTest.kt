@@ -129,8 +129,9 @@ class KotlinIosResourceFileTest {
             "  /**\n" +
             "   * value1_2\n" +
             "   */\n" +
-            "  public fun key1(count: Long): String =\n" +
-            "      NSString.localizedStringWithFormat(stringProvider.getString(\"key1\"), count)\n" +
+            "  public fun key1(count: Long): String = NSString.localizedStringWithFormat(\n" +
+            "      stringProvider.getString(\"key1\"), count\n" +
+            "  )\n" +
             "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))
@@ -265,8 +266,7 @@ class KotlinIosResourceFileTest {
             ") {\n" +
             "  /**\n" +
             "   * Wery Wery Wery Wery 1 Wery Wery Wery Wery 2 Wery Wery Wery Wery 3 Wery Wery Wery Wery 4 Wery\n" +
-            "   * Wery Wery Wery 5 Wery\n" +
-            "   * Long Comment\n" +
+            "   * Wery Wery Wery 5 Wery Long Comment\n" +
             "   */\n" +
             "  public val key1: String\n" +
             "    get() = stringProvider.getString(\"key1\")\n" +
@@ -314,8 +314,9 @@ class KotlinIosResourceFileTest {
             "  /**\n" +
             "   * $testValue\n" +
             "   */\n" +
-            "  public fun key2(count: Long): String =\n" +
-            "      NSString.localizedStringWithFormat(stringProvider.getString(\"key2\"), count)\n" +
+            "  public fun key2(count: Long): String = NSString.localizedStringWithFormat(\n" +
+            "      stringProvider.getString(\"key2\"), count\n" +
+            "  )\n" +
             "}\n"
 
         assertEquals(expectedResult, readFile(fileForClass(testDirectory, className, classPackage)))

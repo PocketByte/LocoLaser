@@ -139,12 +139,12 @@ open class KotlinAbsKeyValueResourceFile(
             BY_NAME -> {
                 formattingArguments?.mapIndexed { index, argument ->
                     argument.anyName(index).let { "Pair(\"$it\", $it)" }
-                }?.joinToString()
+                }?.joinToString(",♢")
             }
             BY_INDEX -> {
                 formattingArguments?.mapIndexed { index, argument ->
                     argument.anyName(index)
-                }?.joinToString()
+                }?.joinToString(",♢")
             }
             NO -> null
         }
@@ -152,7 +152,7 @@ open class KotlinAbsKeyValueResourceFile(
         return if (argumentsString == null) {
             addStatement("return stringProvider.getString(\"${key}\")")
         } else {
-            addStatement("return stringProvider.getString(\"${key}\", $argumentsString)")
+            addStatement("return stringProvider.getString(\"${key}\",♢$argumentsString)")
         }
     }
 
@@ -168,7 +168,7 @@ open class KotlinAbsKeyValueResourceFile(
                     } else {
                         argument.anyName(index).let { "Pair(\"$it\", $it)" }
                     }
-                }.joinToString()
+                }.joinToString(",♢")
             }
             BY_INDEX -> {
                 formattingArguments.mapIndexed { index, argument ->
@@ -177,7 +177,7 @@ open class KotlinAbsKeyValueResourceFile(
                     } else {
                         argument.anyName(index)
                     }
-                }.joinToString()
+                }.joinToString(",♢")
             }
             NO -> null
         }
@@ -185,7 +185,7 @@ open class KotlinAbsKeyValueResourceFile(
         return if (argumentsString == null) {
             addStatement("return stringProvider.getString(\"${key}\")")
         } else {
-            addStatement("return stringProvider.getPluralString(\"${key}\", $argumentsString)")
+            addStatement("return stringProvider.getPluralString(\"${key}\",♢$argumentsString)")
         }
     }
 }
