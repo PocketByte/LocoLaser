@@ -59,7 +59,7 @@ rootProject.plugins.withType<YarnPlugin> {
         resolution("serialize-javascript", ">=7.0.5")
         resolution("flatted", ">=3.4.2")
         resolution("socket.io-parser", ">=4.2.6")
-        resolution("minimatch", ">=3.1.4")
+
         resolution("body-parser", ">=1.20.3")
         resolution("ws", ">=8.17.1")
         // MEDIUM severity
