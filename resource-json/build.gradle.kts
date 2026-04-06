@@ -6,6 +6,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("com.gradleup.nmcp")
+    id("publishing-conventions")
 }
 
 java {
@@ -55,8 +56,6 @@ publishing {
                 name.set("locolaser-${project.name}")
                 description.set("Implementation of platform for LocoLaser tool to work with JSON resources.")
                 url.set("https://github.com/PocketByte/LocoLaser")
-
-                addCommonRepositoryProperties()
             }
 
             artifact(tasks.getByPath("sourceJar"))

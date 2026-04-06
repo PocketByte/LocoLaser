@@ -10,6 +10,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("com.gradleup.nmcp")
+    id("publishing-conventions")
 }
 
 java {
@@ -206,8 +207,6 @@ fun configurePomDefault(pom: MavenPom, targetName: String?) {
         name.set("locolaser-${project.name}-$targetName")
         description.set("Runtime dependency for LocoLaser.")
         url.set("https://github.com/PocketByte/LocoLaser")
-
-        addCommonRepositoryProperties()
     }
 }
 

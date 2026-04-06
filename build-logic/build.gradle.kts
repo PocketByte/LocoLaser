@@ -1,3 +1,8 @@
+plugins {
+    `kotlin-dsl`
+    `maven-publish`
+}
+
 repositories {
     mavenLocal()
     google()
@@ -5,7 +10,4 @@ repositories {
     gradlePluginPortal()
 }
 
-plugins {
-    `kotlin-dsl`
-    `maven-publish`
-}
+group = "ru.pocketbyte"

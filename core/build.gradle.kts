@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("java")
     id("kotlin")
@@ -8,6 +6,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("com.gradleup.nmcp")
+    id("publishing-conventions")
 }
 
 java {
@@ -64,8 +63,6 @@ publishing {
                 name.set("locolaser-${project.name}")
                 description.set("Core library of LocoLaser tool")
                 url.set("https://github.com/PocketByte/LocoLaser")
-
-                addCommonRepositoryProperties()
             }
 
             artifact(tasks.getByPath("sourceJar"))

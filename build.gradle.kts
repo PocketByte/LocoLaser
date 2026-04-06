@@ -31,7 +31,7 @@ nmcpAggregation {
         publishingType = "USER_MANAGED"
 
         // optional: configure the name of your publication in the portal UI
-        publicationName = "${LibraryInfo.group}:${LibraryInfo.version}"
+        publicationName = "${property("lib-group")}:${property("lib-version") as String}"
 
         // optional: increase the validation timeout to 30 minutes
         validationTimeout = java.time.Duration.of(30, ChronoUnit.MINUTES)
@@ -48,8 +48,8 @@ dependencies {
 }
 
 allprojects {
-    version = LibraryInfo.version
-    group = LibraryInfo.group
+    version = rootProject.version
+    group = rootProject.group
 }
 
 // Force minimum versions for vulnerable transitive NPM dependencies (kotlin-js-store/yarn.lock)
