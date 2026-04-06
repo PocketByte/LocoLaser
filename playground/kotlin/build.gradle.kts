@@ -14,13 +14,11 @@ buildscript {
         mavenCentral()
         maven("https://plugins.gradle.org/m2/")
     }
-    dependencies {
-        val locolaserVersion = "2.6.0"
-        classpath("ru.pocketbyte.locolaser:plugin-all:$locolaserVersion")
-    }
 }
 
-plugins.apply("ru.pocketbyte.locolaser.all")
+plugins {
+    id("ru.pocketbyte.locolaser.all")
+}
 
 version = "unspecified"
 

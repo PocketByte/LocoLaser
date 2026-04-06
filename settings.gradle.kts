@@ -30,6 +30,4 @@ include(":plugin")
 include(":plugin:plugin-kmp")
 include(":plugin:plugin-all")
 
-include(":playground")
-include(":playground:kotlin")
-include(":playground:groovy")
+includeBuild("playground")
