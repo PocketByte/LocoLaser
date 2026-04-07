@@ -10,7 +10,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("com.gradleup.nmcp")
-    id("publishing-conventions")
+    id("common-publishing-conventions")
 }
 
 java {

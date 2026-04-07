@@ -11,3 +11,7 @@ repositories {
 }
 
 group = "ru.pocketbyte"
+
+dependencies {
+    implementation(libs.kotlin.gradle.plugin)
+}
