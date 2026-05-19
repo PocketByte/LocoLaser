@@ -11,14 +11,14 @@ import java.io.IOException
 import java.io.OutputStream
 
 /**
- * Extension of the ResourceFile that allow writing strings into resource file through open OutputStream.
- * Before writing the stream should be open via open(). When writing is completed the stream should be closed via close().
+ * A [ResourceFile] that writes content to an [OutputStream].
+ * The stream must be opened via [open] before writing and closed via [close] when done.
  *
  * @author Denis Shurygin
  */
 abstract class ResourceStreamFile(
     /**
-     * File of the resource.
+     * The resource file this stream writes to.
      */
     val file: File
 ) : ResourceFile {
@@ -26,12 +26,15 @@ abstract class ResourceStreamFile(
 
     private var stream: OutputStream? = null
 
+    /**
+     * True if the output stream is currently open.
+     */
     val isOpen: Boolean
         get() = stream != null
 
     /**
-     * Open stream for writing.
-     * @throws IOException
+     * Opens the output stream for writing.
+     * @throws IOException if an I/O error occurs while opening the file.
      */
     @Throws(IOException::class)
     fun open() {
@@ -42,8 +45,8 @@ abstract class ResourceStreamFile(
     }
 
     /**
-     * Close stream.
-     * @throws IOException
+     * Flushes and closes the output stream.
+     * @throws IOException if an I/O error occurs while closing the stream.
      */
     @Throws(IOException::class)
     fun close() {
@@ -55,9 +58,9 @@ abstract class ResourceStreamFile(
     }
 
     /**
-     * Write string into stream.
-     * @param string String for writing.
-     * @throws IOException
+     * Writes [string] to the stream encoded as UTF-8.
+     * @param string The string to write.
+     * @throws IOException if an I/O error occurs or the stream is not open.
      */
     @Throws(IOException::class)
     fun writeString(string: String) {
@@ -67,6 +70,10 @@ abstract class ResourceStreamFile(
         stream?.write(string.toByteArray(charset("UTF-8")))
     }
 
+    /**
+     * Writes [string] followed by a newline to the stream.
+     * @throws IOException if an I/O error occurs or the stream is not open.
+     */
     @Throws(IOException::class)
     fun writeStringLn(string: String) {
         writeString(string)
@@ -74,8 +81,8 @@ abstract class ResourceStreamFile(
     }
 
     /**
-     * Write new line symbol into stream.
-     * @throws IOException
+     * Writes a newline (CR+LF) to the stream.
+     * @throws IOException if an I/O error occurs or the stream is not open.
      */
     @Throws(IOException::class)
     fun writeln() {
@@ -85,5 +92,4 @@ abstract class ResourceStreamFile(
         stream?.write(0x0D)
         stream?.write(0x0A)
     }
-
 }

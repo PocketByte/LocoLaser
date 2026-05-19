@@ -12,8 +12,11 @@ import ru.pocketbyte.locolaser.kotlinmpp.KotlinJsResourcesConfigBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
 
 /**
- * Create and configure Kotlin Multiplatform Common config.
- * This config generates strings Repository interface for Common code.
+ * Creates and adds a Kotlin Multiplatform Common resources configuration to this resources set.
+ *
+ * Generates a strings repository interface for common (shared) code.
+ *
+ * @param action Configuration block applied to the [KotlinCommonResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.kotlinCommon(
     action: KotlinCommonResourcesConfigBuilder.() -> Unit
@@ -22,8 +25,11 @@ fun ResourcesSetConfigBuilder.kotlinCommon(
 }
 
 /**
- * Create and configure Kotlin Multiplatform Android config.
- * This config generates strings Repository implementation for Android platform.
+ * Creates and adds a Kotlin Multiplatform Android resources configuration to this resources set.
+ *
+ * Generates a strings repository implementation for the Android platform.
+ *
+ * @param action Configuration block applied to the [KotlinAndroidResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.kotlinAndroid(
     action: KotlinAndroidResourcesConfigBuilder.() -> Unit
@@ -32,8 +38,11 @@ fun ResourcesSetConfigBuilder.kotlinAndroid(
 }
 
 /**
- * Create and configure Kotlin Multiplatform iOS config.
- * This config generates strings Repository implementation for iOS platform.
+ * Creates and adds a Kotlin Multiplatform iOS resources configuration to this resources set.
+ *
+ * Generates a strings repository implementation for the iOS platform.
+ *
+ * @param action Configuration block applied to the [KotlinIosResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.kotlinIos(
     action: KotlinIosResourcesConfigBuilder.() -> Unit
@@ -42,8 +51,11 @@ fun ResourcesSetConfigBuilder.kotlinIos(
 }
 
 /**
- * Create and configure Kotlin Multiplatform JS config.
- * This config generates strings Repository implementation for JS platform.
+ * Creates and adds a Kotlin Multiplatform JS resources configuration to this resources set.
+ *
+ * Generates a strings repository implementation for the JS platform.
+ *
+ * @param action Configuration block applied to the [KotlinJsResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.kotlinJs(
     action: KotlinJsResourcesConfigBuilder.() -> Unit
@@ -52,8 +64,11 @@ fun ResourcesSetConfigBuilder.kotlinJs(
 }
 
 /**
- * Create and configure Kotlin Multiplatform AbsKeyValue config.
- * This config generates abstract strings Repository implementation, that can be used in any target.
+ * Creates and adds a Kotlin Multiplatform AbsKeyValue resources configuration to this resources set.
+ *
+ * Generates an abstract key-value strings repository implementation usable in any target.
+ *
+ * @param action Configuration block applied to the [KotlinAbsKeyValueResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.kotlinAbsKeyValue(
     action: KotlinAbsKeyValueResourcesConfigBuilder.() -> Unit
@@ -62,8 +77,12 @@ fun ResourcesSetConfigBuilder.kotlinAbsKeyValue(
 }
 
 /**
- * Create and configure Kotlin Multiplatform AbsStatic config.
- * This config generates abstract strings Repository implementation, that can be used in any target.
+ * Creates and adds a Kotlin Multiplatform AbsStatic resources configuration to this resources set.
+ *
+ * Generates an abstract static strings repository implementation usable in any target.
+ * Particularly useful for testing, as it provides a simple static implementation of the repository.
+ *
+ * @param action Configuration block applied to the [KotlinAbsStaticResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.kotlinAbsStatic(
     action: KotlinAbsStaticResourcesConfigBuilder.() -> Unit
@@ -72,8 +91,11 @@ fun ResourcesSetConfigBuilder.kotlinAbsStatic(
 }
 
 /**
- * Create and configure Kotlin Multiplatform AbsProxy config.
- * This config generates abstract strings Repository implementation, that can be used in any target.
+ * Creates and adds a Kotlin Multiplatform AbsProxy resources configuration to this resources set.
+ *
+ * Generates an abstract proxy strings repository implementation usable in any target.
+ *
+ * @param action Configuration block applied to the [KotlinAbsProxyResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.kotlinAbsProxy(
     action: KotlinAbsProxyResourcesConfigBuilder.() -> Unit
@@ -82,9 +104,12 @@ fun ResourcesSetConfigBuilder.kotlinAbsProxy(
 }
 
 /**
- * Create and configure Kotlin Multiplatform config.
- * This config generates strings Repository interface ant it's implementation.
- * @param project if provided, generated files will be registered in kotlin source sets of the project.
+ * Creates and adds a Kotlin Multiplatform resources configuration to this resources set.
+ *
+ * Generates a strings repository interface and its platform implementations.
+ *
+ * @param project If provided, generated files will be registered in Kotlin source sets of the project.
+ * @param action Configuration block applied to the [KotlinMultiplatformResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.kotlinMultiplatform(
     project: Project? = null,

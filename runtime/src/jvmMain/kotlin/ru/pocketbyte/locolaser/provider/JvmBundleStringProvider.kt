@@ -8,6 +8,21 @@ import java.util.*
 private typealias FallbackHandler =
             (bundle: ResourceBundle, locale: Locale, key: String) -> String
 
+/**
+ * An [IndexFormattedStringProvider] that loads strings from a JVM [ResourceBundle],
+ * using ICU4J for locale-aware plural form selection.
+ *
+ * Plural key resolution follows this order:
+ * 1. `key.{cldrCategory}` (e.g. `key.one`, `key.few`)
+ * 2. `key.other`
+ * 3. `key` (bare key, as a last resort)
+ *
+ * @param bundle the resource bundle to load strings from.
+ * @param locale the locale used for plural rule selection and string formatting.
+ * Defaults to [Locale.getDefault].
+ * @param fallbackHandler called when a key is not found in the bundle.
+ * By default, throws [java.util.MissingResourceException].
+ */
 class JvmBundleStringProvider(
     private val bundle: ResourceBundle,
     private val locale: Locale = Locale.getDefault(),
@@ -24,6 +39,18 @@ class JvmBundleStringProvider(
         }
     }
 
+    /**
+     * Creates a provider by loading a [ResourceBundle] from the given class loader.
+     *
+     * @param resClassLoader the class loader used to locate the bundle.
+     * @param bundleName the name of the bundle file (without extension). Defaults to `"strings"`.
+     * @param bundlePath the path prefix for the bundle, relative to the class loader root.
+     * Defaults to `"strings"`. The bundle is loaded from `"$bundlePath/$bundleName"`.
+     * @param locale the locale used for plural rule selection and string formatting.
+     * Defaults to [Locale.getDefault].
+     * @param fallbackHandler called when a key is not found in the bundle.
+     * By default, throws [java.util.MissingResourceException].
+     */
     constructor(
         resClassLoader: ClassLoader,
         bundleName: String = "strings",
@@ -66,5 +93,4 @@ class JvmBundleStringProvider(
         }
         return fallbackHandler(bundle, locale, key)
     }
-
 }

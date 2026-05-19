@@ -4,14 +4,23 @@ import groovy.lang.Closure
 import ru.pocketbyte.locolaser.utils.callWithDelegate
 import java.io.File
 
+/**
+ * Builder for constructing a [Config] instance using a DSL-style API.
+ */
 open class ConfigBuilder {
 
+    /**
+     * Working directory used to resolve relative paths defined in the config.
+     */
     var workDir: File? = null
 
+    /**
+     * File from which this config was read.
+     */
     var file: File? = null
 
     /**
-     * Strategy that should be used for merge conflicts.
+     * Strategy for resolving conflicts between platform and source resources during localization.
      * @see [ru.pocketbyte.locolaser.config.Config.ConflictStrategy]
      */
     var conflictStrategy: Config.ConflictStrategy = Config.DEFAULT_CONFLICT_STRATEGY
@@ -22,56 +31,64 @@ open class ConfigBuilder {
      */
     var locales: Set<String> = Config.DEFAULT_LOCALES
 
+    /**
+     * Additional parameters passed to resources during read and write operations.
+     */
     val extraParams: ExtraParams = ExtraParams()
 
     /**
-     * Platform that contain logic of resource creation.
+     * The target platform to which localized resource files are written (e.g., Android, iOS).
      */
     val platform: ResourcesSetConfigBuilder = ResourcesSetConfigBuilder()
 
     /**
-     * Platform that contain logic of resource creation.
+     * Configures the platform using the given action.
      */
     fun platform(action: ResourcesSetConfigBuilder.() -> Unit) {
         action.invoke(platform)
     }
 
     /**
-     * Platform that contain logic of resource creation.
+     * Configures the platform using the given action.
      */
     fun platform(action: Closure<Unit>) {
         action.callWithDelegate(platform)
     }
 
     /**
-     * Source that contain resources.
+     * The resource source from which localization data is read (e.g., a remote spreadsheet or file).
      */
     val source: ResourcesSetConfigBuilder = ResourcesSetConfigBuilder(true)
 
+    /**
+     * Determines whether the localization task should depend on compile tasks.
+     */
     var isDependsOnCompileTasks: Boolean = false
         private set
 
     /**
-     * Source that contain resources.
+     * Configures the source using the given action.
      */
     fun source(action: ResourcesSetConfigBuilder.() -> Unit) {
         action.invoke(source)
     }
 
     /**
-     * Source that contain resources.
+     * Configures the source using the given action.
      */
     fun source(action: Closure<Unit>) {
         action.callWithDelegate(source)
     }
 
+    /**
+     * Enables the dependency of the localization task on compile tasks.
+     */
     fun dependsOnCompileTasks() {
         isDependsOnCompileTasks = true
     }
 
     /**
-     * Defines if comment should be written even if it equal resource value.
-     * True if comment should be written even if it equal resource value, false otherwise.
+     * Defines if a comment should be written even if it equals the resource value.
      */
     var duplicateComments: Boolean
         get() = extraParams.duplicateComments
@@ -80,8 +97,7 @@ open class ConfigBuilder {
         }
 
     /**
-     * Defines if unsupported quantities should be throw away if is not supported by locale.
-     * True if unsupported quantities should be throw away, false otherwise.
+     * Defines if unsupported quantities should be thrown away if they are not supported by the locale.
      */
     var trimUnsupportedQuantities: Boolean
         get() = extraParams.trimUnsupportedQuantities
@@ -89,6 +105,9 @@ open class ConfigBuilder {
             extraParams.trimUnsupportedQuantities = value
         }
 
+    /**
+     * Builds and returns a [Config] instance from the current builder state.
+     */
     fun build(): Config {
         return Config(
             workDir = workDir,

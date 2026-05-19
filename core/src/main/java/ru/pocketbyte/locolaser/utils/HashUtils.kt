@@ -12,10 +12,10 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 /**
- * Gets MD5 Checksum of the file.
- * @param file File.
- * @return MD5 Checksum of the file.
- * @throws IOException
+ * Returns the MD5 checksum of this file as a hex string,
+ * or null if this file is null, does not exist, or the checksum cannot be computed.
+ *
+ * @throws IOException if an I/O error occurs while reading the file.
  */
 fun File?.getMD5Checksum(): String? {
     if (this == null || !this.exists())

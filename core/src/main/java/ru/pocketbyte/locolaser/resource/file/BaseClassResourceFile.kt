@@ -13,6 +13,9 @@ import java.io.IOException
 import java.util.HashSet
 import java.util.regex.Pattern
 
+/**
+ * Abstract base for generating class-based resource files (e.g., Kotlin/Java object files) from the base locale.
+ */
 abstract class BaseClassResourceFile(file: File) : ResourceStreamFile(file) {
 
     companion object {
@@ -41,6 +44,7 @@ abstract class BaseClassResourceFile(file: File) : ResourceStreamFile(file) {
     @Throws(IOException::class)
     protected abstract fun writeClassFooter(resMap: ResMap, extraParams: ExtraParams?)
 
+    /** Always returns null — class-based resource files are write-only. */
     override fun read(extraParams: ExtraParams?): ResMap? {
         return null
     }

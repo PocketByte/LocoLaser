@@ -5,6 +5,7 @@ import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinAndroidResources
 import java.io.File
 
+/** Resources configuration for the Kotlin Multiplatform Android strings repository generator. */
 class KotlinAndroidResourcesConfig(
     workDir: File?,
     resourceName: String?,

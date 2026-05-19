@@ -18,14 +18,21 @@ import ru.pocketbyte.locolaser.kotlinmpp.extension.kotlin
 import ru.pocketbyte.locolaser.utils.callWithDelegate
 import java.io.File
 
+/**
+ * Builder for Kotlin Multiplatform localization resources configuration.
+ *
+ * Configures a strings repository interface for common code and its platform-specific implementations
+ * (Android, iOS, JS, or custom targets). When a [Project] is provided, generated source directories
+ * are automatically registered in the corresponding Kotlin source sets.
+ */
 class KotlinMultiplatformResourcesConfigBuilder(
     private val project: Project?
 ) : ResourcesConfigBuilder<ResourcesConfig> {
 
     /**
      * Package of the Repository that should be used in interface and class names.
-     * Package will be ignored if interface name or class name contains canonical name.
-     * By default package will taken from project.group if it provided.
+     * Package will be ignored if interface name or class name contains a canonical name.
+     * By default, the package is taken from `project.group` if it is provided.
      */
     var repositoryPackage: String? = null
         get() = if (field == null) {
@@ -35,14 +42,14 @@ class KotlinMultiplatformResourcesConfigBuilder(
         }
 
     /**
-     * Canonical or Simple name of the Repository interface that
+     * Canonical or simple name of the Repository interface that
      * should be implemented by generated classes.
-     * If empty there will no interfaces implemented by generated Repository classes.
+     * If `null` or empty, no interface will be implemented by generated Repository classes.
      */
     var repositoryInterface: String? = null
 
     /**
-     * Canonical or Simple name of the Repository class that
+     * Canonical or simple name of the Repository class that
      * should be generated for each platform.
      */
     var repositoryClass: String? = null
@@ -54,7 +61,7 @@ class KotlinMultiplatformResourcesConfigBuilder(
 
     /**
      * Filter function.
-     * If defined, only strings that suits the filter will be added as Repository fields.
+     * If defined, only strings that suit the filter will be added as Repository fields.
      */
     @Deprecated(
         "Lambda function for filter is deprecated and will be replaced with ResourcesFilter" +
@@ -65,7 +72,7 @@ class KotlinMultiplatformResourcesConfigBuilder(
 
     /**
      * Filter function.
-     * If defined, only strings that suits the filter will be added as Repository fields.
+     * If defined, only strings that suit the filter will be added as Repository fields.
      */
     var resourcesFilter: ResourcesFilter? = null
         set(value) {
@@ -103,8 +110,8 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * If defined, only strings with keys that matches filter will be added as Repository fields.
-     * @param filter Only strings with keys that matches filter will be added as Repository fields.
+     * If defined, only strings with keys that match the filter will be added as Repository fields.
+     * @param filter Filter to apply. Only strings with matching keys will be added as Repository fields.
      */
     fun filter(filter: ResourcesFilter?) {
         this.resourcesFilter = filter
@@ -112,8 +119,8 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * If defined, only strings with keys that matches RegExp will be added as Repository fields.
-     * @param regExp RegExp String. Only strings with keys that matches RegExp will be added as Repository fields.
+     * If defined, only strings with keys that match the RegExp will be added as Repository fields.
+     * @param regExp Regular expression string. Only strings with matching keys will be added as Repository fields.
      */
     fun filter(regExp: String) {
         resourcesFilter = RegExResourcesFilter(regExp)
@@ -121,94 +128,104 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure Repository interface in common module.
+     * Configures generation of a strings repository interface for common (shared) code.
+     * @param action Configuration block applied to [KmpInterfaceBuilder].
      */
     fun common(action: KmpInterfaceBuilder.() -> Unit) {
         action.invoke(platformCommon)
     }
 
     /**
-     * Configure Repository interface in common module.
+     * Configures generation of a strings repository interface for common (shared) code.
+     * @param action Configuration block applied to [KmpInterfaceBuilder].
      */
     fun common(action: Closure<Unit>) {
         common { action.callWithDelegate(this) }
     }
 
     /**
-     * Configure Repository implementation for Android platform.
-     * There is no Android implementation will be generated if Android platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the Android platform.
+     * No Android implementation will be generated if the Android platform is not configured.
      */
     fun android() {
         android(null)
     }
 
     /**
-     * Configure Repository implementation for Android platform.
-     * There is no Android implementation will be generated if Android platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the Android platform.
+     * No Android implementation will be generated if the Android platform is not configured.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun android(action: (KmpClassFixedFormattingBuilder.() -> Unit)?) {
         platform("android", KotlinAndroidResourcesConfig, action ?: {})
     }
 
     /**
-     * Configure Repository implementation for Android platform.
-     * There is no Android implementation will be generated if Android platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the Android platform.
+     * No Android implementation will be generated if the Android platform is not configured.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun android(action: Closure<Unit>) {
         android { action.callWithDelegate(this) }
     }
 
     /**
-     * Configure Repository implementation for iOS platform.
-     * There is no iOS implementation will be generated if iOS platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the iOS platform.
+     * No iOS implementation will be generated if the iOS platform is not configured.
      */
     fun ios() {
         ios(null)
     }
 
     /**
-     * Configure Repository implementation for iOS platform.
-     * There is no iOS implementation will be generated if iOS platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the iOS platform.
+     * No iOS implementation will be generated if the iOS platform is not configured.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun ios(action: (KmpClassFixedFormattingBuilder.() -> Unit)?) {
         platform("ios", KotlinIosResourcesConfig, action ?: {})
     }
 
     /**
-     * Configure Repository implementation for iOS platform.
-     * There is no iOS implementation will be generated if iOS platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the iOS platform.
+     * No iOS implementation will be generated if the iOS platform is not configured.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun ios(action: Closure<Unit>) {
         ios { action.callWithDelegate(this) }
     }
 
     /**
-     * Configure Repository implementation for JS platform.
-     * There is no JS implementation will be generated if JS platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the JS platform.
+     * No JS implementation will be generated if the JS platform is not configured.
      */
     fun js() {
         js(null)
     }
 
     /**
-     * Configure Repository implementation for JS platform.
-     * There is no JS implementation will be generated if JS platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the JS platform.
+     * No JS implementation will be generated if the JS platform is not configured.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun js(action: (KmpClassFixedFormattingBuilder.() -> Unit)?) {
         platform("js", KotlinJsResourcesConfig, action ?: {})
     }
 
     /**
-     * Configure Repository implementation for JS platform.
-     * There is no JS implementation will be generated if JS platform wasn't be configured.
+     * Configures generation of a strings repository implementation for the JS platform.
+     * No JS implementation will be generated if the JS platform is not configured.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun js(action: Closure<Unit>) {
         js { action.callWithDelegate(this) }
     }
 
     /**
-     * Configure abstract KeyValue Repository implementation for provided platform name.
-     * This config generates abstract strings Repository implementation, that can be used in any target.
+     * Configures generation of an abstract key-value strings repository implementation
+     * for the provided platform name, usable in any target.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param action Configuration block applied to [KmpClassCustomFormattingBuilder].
      */
     fun absKeyValue(
         name: String,
@@ -218,8 +235,10 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure abstract KeyValue Repository implementation for provided platform name.
-     * This config generates abstract strings Repository implementation, that can be used in any target.
+     * Configures generation of an abstract key-value strings repository implementation
+     * for the provided platform name, usable in any target.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param action Configuration block applied to [KmpClassCustomFormattingBuilder].
      */
     fun absKeyValue(
         name: String,
@@ -229,8 +248,14 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure abstract Static Repository implementation for provided platform name.
-     * This config generates abstract strings Repository implementation, that can be used in any target.
+     * Configures generation of an abstract static strings repository implementation
+     * for the provided platform name, usable in any target.
+     *
+     * The generated class returns string values as hardcoded static constants,
+     * which eliminates the need for a real string source and makes test output predictable.
+     * Particularly useful for testing.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param action Configuration block applied to [KmpClassCustomFormattingBuilder].
      */
     fun absStatic(
         name: String,
@@ -240,8 +265,14 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure abstract Static Repository implementation for provided platform name.
-     * This config generates abstract strings Repository implementation, that can be used in any target.
+     * Configures generation of an abstract static strings repository implementation
+     * for the provided platform name, usable in any target.
+     *
+     * The generated class returns string values as hardcoded static constants,
+     * which eliminates the need for a real string source and makes test output predictable.
+     * Particularly useful for testing.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param action Configuration block applied to [KmpClassCustomFormattingBuilder].
      */
     fun absStatic(
         name: String,
@@ -251,8 +282,15 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure abstract Proxy Repository implementation for provided platform name.
-     * This config generates abstract strings Repository implementation, that can be used in any target.
+     * Configures generation of an abstract proxy strings repository implementation
+     * for the provided platform name, usable in any target.
+     *
+     * The generated class delegates all string lookups to another instance of the same interface
+     * via an abstract `stringRepository` property — useful for wrapping an existing repository
+     * implementation, for example to add logging, swap the string source at runtime,
+     * or combine multiple providers.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun absProxy(
         name: String,
@@ -262,8 +300,15 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure abstract Proxy Repository implementation for provided platform name.
-     * This config generates abstract strings Repository implementation, that can be used in any target.
+     * Configures generation of an abstract proxy strings repository implementation
+     * for the provided platform name, usable in any target.
+     *
+     * The generated class delegates all string lookups to another instance of the same interface
+     * via an abstract `stringRepository` property — useful for wrapping an existing repository
+     * implementation, for example to add logging, swap the string source at runtime,
+     * or combine multiple providers.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun absProxy(
         name: String,
@@ -273,11 +318,10 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure Repository implementation for provided platform type.
-     * @param name Name of platform.
-     * @param config Platform Configuration instance.
-     * Class should not be abstract and should have a constructor without parameters.
-     * @param action Configure action.
+     * Configures generation of a strings repository implementation for the provided platform type.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param builderFactory Factory that provides the platform-specific resources config builder.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun platform (
         name: String,
@@ -294,11 +338,10 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure Repository implementation for provided platform type.
-     * @param name Name of platform.
-     * @param config Platform Configuration instance.
-     * Class should not be abstract and should have a constructor without parameters.
-     * @param action Configure action.
+     * Configures generation of a strings repository implementation for the provided platform type.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param builderFactory Factory that provides the platform-specific resources config builder.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     fun platform (
         name: String,
@@ -311,11 +354,10 @@ class KotlinMultiplatformResourcesConfigBuilder(
     }
 
     /**
-     * Configure Repository implementation for provided platform type.
-     * @param name Name of platform.
-     * @param config Platform Configuration instance.
-     * Class should not be abstract and should have a constructor without parameters.
-     * @param action Configure action.
+     * Configures generation of a strings repository implementation for the provided platform type.
+     * @param name Name of the platform target (e.g. `"common"`, `"android"`, `"ios"`, `"js"`).
+     * @param builderFactory Factory that provides the platform-specific resources config builder.
+     * @param action Configuration block applied to [KmpClassFixedFormattingBuilder].
      */
     private fun platformWithFormat (
         name: String,

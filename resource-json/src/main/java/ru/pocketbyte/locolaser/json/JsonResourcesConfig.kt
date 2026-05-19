@@ -16,9 +16,7 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import java.io.File
 
 /**
- * JSON resources configuration.
- *
- * @author Denis Shurygin
+ * Resources configuration for the JSON localization format.
  */
 class JsonResourcesConfig(
     workDir: File?,

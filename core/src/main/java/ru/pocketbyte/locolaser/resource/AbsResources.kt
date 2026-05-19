@@ -16,16 +16,18 @@ import java.io.File
 import java.io.IOException
 
 /**
+ * Abstract base implementation of [Resources] providing common read/write logic.
+ *
  * @author Denis Shurygin
  */
 abstract class AbsResources(
-    /** Resource directory path. */
+    /** The directory where resource files are located. */
     val directory: File,
     /** Resource name. */
     val name: String,
-    /** Provides resource File depending on locale, directory and name */
+    /** Provides the resource [File] for a given locale, directory, and name. */
     private val resourceFileProvider: ResourceFileProvider,
-    /** Resource name. */
+    /** Filter for including or excluding resources by key. */
     private val filter: ResourcesFilter?
 ) : Resources {
 

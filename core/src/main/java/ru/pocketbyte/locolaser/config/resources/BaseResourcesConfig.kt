@@ -10,17 +10,14 @@ import ru.pocketbyte.locolaser.utils.buildFileFrom
 import java.io.File
 
 /**
- * Base implementation of PlatformConfig.
+ * Base implementation of [ResourcesConfig].
  *
  * @author Denis Shurygin
- */
-/**
- * Construct new Platform object.
  */
 abstract class BaseResourcesConfig(
     private val workDir: File?,
     /**
-     * Resource name or null if should be used default name.
+     * Resource name, or null to use [defaultResourceName].
      */
     private val resName: String?,
 
@@ -30,10 +27,13 @@ abstract class BaseResourcesConfig(
     val resourcesDirPath: String?,
 
     /**
-     * ResourceFileProvider provides resource File depending on locale, directory and name.
+     * Provides the resource [File] for a given locale, directory, and name.
      */
     val resourceFileProvider: ResourceFileProvider,
 
+    /**
+     * Filter for including or excluding resources by key.
+     */
     val filter: ResourcesFilter?
 ) : ResourcesConfig {
 

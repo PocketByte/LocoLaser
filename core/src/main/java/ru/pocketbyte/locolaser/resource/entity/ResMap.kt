@@ -9,6 +9,8 @@ import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.util.HashMap
 
 /**
+ * A map of resource locales, keyed by locale identifier.
+ *
  * @author Denis Shurygin
  */
 class ResMap() : HashMap<String, ResLocale>() {
@@ -19,6 +21,10 @@ class ResMap() : HashMap<String, ResLocale>() {
         }
     }
 
+    /**
+     * Removes from this map the items specified in [map], deleting locales that become empty.
+     * @return This map after removal.
+     */
     fun remove(map: ResMap?): ResMap {
         map?.forEach { locale, removeItem ->
             val destinationItems = this[locale]
@@ -31,6 +37,10 @@ class ResMap() : HashMap<String, ResLocale>() {
     }
 }
 
+/**
+ * Merges [map] into this [ResMap], combining values for existing locales and adding new ones.
+ * @return The merged map, or [map] if this is null.
+ */
 fun ResMap?.merge(map: ResMap?): ResMap? {
     if (this == null)
         return map
@@ -41,6 +51,9 @@ fun ResMap?.merge(map: ResMap?): ResMap? {
     return this
 }
 
+/**
+ * Returns a new [ResMap] containing only the items whose keys satisfy [filter].
+ */
 inline fun ResMap.filter(filter: ((key: String) -> Boolean)): ResMap {
     val newResMap = ResMap()
 
@@ -51,6 +64,9 @@ inline fun ResMap.filter(filter: ((key: String) -> Boolean)): ResMap {
     return newResMap
 }
 
+/**
+ * Returns a filtered [ResMap] using the given [filter], or this map unchanged if [filter] is null.
+ */
 fun ResMap.filter(filter: ResourcesFilter?): ResMap {
     if (filter == null) {
         return this

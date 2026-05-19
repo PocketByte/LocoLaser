@@ -10,15 +10,34 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 
 /**
+ * Represents a single localization value with its comment, plural quantity, formatting type, and metadata.
+ *
  * @author Denis Shurygin
  */
 class ResValue(
+    /**
+     * The localized string value.
+     */
     val value: String,
-    /** Resource comment. */
-        val comment: String?,
+    /**
+     * An optional comment for this value.
+     */
+    val comment: String?,
+    /**
+     * The plural quantity this value corresponds to.
+     */
     val quantity: Quantity = Quantity.OTHER,
+    /**
+     * The formatting type used to interpret formatting arguments in [value].
+     */
     val formattingType: FormattingType = NoFormattingType,
+    /**
+     * The list of formatting arguments extracted from [value], or null if none.
+     */
     val formattingArguments: List<FormattingArgument>? = null,
+    /**
+     * Additional metadata associated with this value, or null if none.
+     */
     val meta: Map<String, String>? = null
 ) {
 
@@ -78,6 +97,11 @@ fun ResValue.formatArgumentsIsNotEmpty(): Boolean {
     return !this.formatArgumentsIsEmpty()
 }
 
+/**
+ * Merges this [ResValue] with [item], with [item]'s properties taking precedence.
+ * @param item The value to merge with.
+ * @return The merged [ResValue], or null if both are null.
+ */
 fun ResValue?.merge(item: ResValue?): ResValue? {
     if (this == null) return item
     if (item == null) return this

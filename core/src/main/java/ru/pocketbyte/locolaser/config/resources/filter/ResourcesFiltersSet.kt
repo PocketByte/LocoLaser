@@ -1,6 +1,12 @@
 package ru.pocketbyte.locolaser.config.resources.filter
 
+/**
+ * A [ResourcesFilter] that combines multiple filters, including a resource only if all filters accept its key (logical AND).
+ */
 data class ResourcesFiltersSet(
+    /**
+     * The array of [ResourcesFilter] instances that are all applied.
+     */
     val filters: Array<out ResourcesFilter>
 ): ResourcesFilter {
 

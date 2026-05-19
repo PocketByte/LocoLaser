@@ -4,8 +4,12 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.mobile.resource.IosSwiftResources
+import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
+/**
+ * Resources configuration for the iOS Swift class generator.
+ */
 class IosSwiftResourcesConfig(
     workDir: File?,
     resourceName: String?,
@@ -31,7 +35,7 @@ class IosSwiftResourcesConfig(
     }
 
     override val type = TYPE
-    override val resources by lazy {
+    override val resources: Resources by lazy {
         IosSwiftResources(
             resourcesDir = this.resourcesDir,
             name = this.resourceName,
@@ -40,5 +44,4 @@ class IosSwiftResourcesConfig(
             filter = this.filter
         )
     }
-
 }

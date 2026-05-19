@@ -7,6 +7,12 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 
+/**
+ * Resources configuration for the abstract static Kotlin Multiplatform strings repository generator.
+ *
+ * The generated class implements the strings repository interface and returns string values
+ * as hardcoded static constants. Particularly useful for testing.
+ */
 class KotlinAbsStaticResourcesConfig(
     workDir: File?,
     resourceName: String?,

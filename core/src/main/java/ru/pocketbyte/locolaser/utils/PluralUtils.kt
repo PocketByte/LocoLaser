@@ -2,6 +2,9 @@ package ru.pocketbyte.locolaser.utils
 
 import ru.pocketbyte.locolaser.entity.Quantity
 
+/**
+ * Utility object for working with CLDR plural quantities and locale-specific plural rules.
+ */
 object PluralUtils {
 
     private val languageQuantitiesMap = mutableMapOf<String, List<Quantity>>()
@@ -68,6 +71,11 @@ object PluralUtils {
         }
     }
 
+    /**
+     * Returns the list of plural quantities supported by [locale],
+     * or null if the locale is unknown.
+     * If an exact match is not found, strips the region suffix and retries (e.g., `"en_US"` → `"en"`).
+     */
     fun quantitiesForLocale(locale: String): List<Quantity>? {
         val result = languageQuantitiesMap[locale]
         if (result != null)
@@ -81,6 +89,10 @@ object PluralUtils {
         return null
     }
 
+    /**
+     * Returns the index of [quantity] in the plural quantity list for [locale],
+     * or null if the locale is unknown or the quantity is not in the list.
+     */
     fun quantityIndexForLocale(quantity: Quantity, locale: String): Int? {
         val quantities = quantitiesForLocale(locale) ?: return null
         for (index in quantities.indices) {
@@ -90,6 +102,11 @@ object PluralUtils {
         return null
     }
 
+    /**
+     * Parses [string] to a [Quantity], first by CLDR name (e.g., `"one"`, `"few"`),
+     * then by numeric index within the quantity list for [locale].
+     * Returns null if [string] is null or cannot be resolved.
+     */
     fun quantityFromString(string: String?, locale: String): Quantity? {
         if (string == null)
             return null
@@ -98,6 +115,10 @@ object PluralUtils {
                 ?: quantityFromIndex(string.toIntOrNull(), locale)
     }
 
+    /**
+     * Parses [string] to a [Quantity] by CLDR name (e.g., `"zero"`, `"one"`, `"other"`).
+     * Returns null if [string] is null or does not match any known quantity name.
+     */
     fun quantityFromString(string: String?): Quantity? {
         return when (string?.trim { it <= ' ' }) {
             "zero" -> Quantity.ZERO
@@ -111,6 +132,10 @@ object PluralUtils {
     }
 
 
+    /**
+     * Returns the [Quantity] at position [index] in the plural quantity list for [locale],
+     * or null if [index] is null, the locale is unknown, or the index is out of range.
+     */
     fun quantityFromIndex(index: Int?, locale: String): Quantity? {
         if (index == null)
             return null
@@ -122,8 +147,10 @@ object PluralUtils {
         return null
     }
 
+    /**
+     * Returns true if [quantity] is supported by [locale] or the locale is unknown.
+     */
     fun quantityIsSupported(quantity: Quantity, locale: String): Boolean {
         return quantitiesForLocale(locale)?.contains(quantity) ?: true
     }
-
 }

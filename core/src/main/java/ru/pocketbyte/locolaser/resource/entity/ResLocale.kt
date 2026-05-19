@@ -8,8 +8,7 @@ package ru.pocketbyte.locolaser.resource.entity
 import java.util.LinkedHashMap
 
 /**
- * Resources map for single locale.
- * Key is the key of resource, value is the resource item.
+ * A map of resource items for a single locale, keyed by resource key.
  *
  * @author Denis Shurygin
  */
@@ -33,10 +32,17 @@ class ResLocale() : LinkedHashMap<String, ResItem>() {
         throw UnsupportedOperationException("Please, use put(ResItem value).")
     }
 
+    /**
+     * Adds or replaces the resource item in the map using its key.
+     */
     fun put(value: ResItem) {
         super.put(value.key, value)
     }
 
+    /**
+     * Merges [resLocale] into this map, combining values for existing keys and adding new ones.
+     * @return This map after merging.
+     */
     fun merge(resLocale: ResLocale?): ResLocale {
         if (resLocale != null) {
             for ((key, value) in resLocale) {
@@ -50,6 +56,10 @@ class ResLocale() : LinkedHashMap<String, ResItem>() {
         return this
     }
 
+    /**
+     * Removes from this map the quantities specified in [mapForRemove], deleting items that become empty.
+     * @return This map after removal.
+     */
     fun remove(mapForRemove: ResLocale?): ResLocale {
         if (mapForRemove != null) {
             for ((key, value) in mapForRemove) {
@@ -67,6 +77,9 @@ class ResLocale() : LinkedHashMap<String, ResItem>() {
     }
 }
 
+/**
+ * Returns a new [ResLocale] containing only the items whose keys satisfy [filter].
+ */
 inline fun ResLocale.filter(filter: ((key: String) -> Boolean)): ResLocale {
     val newResLocale = ResLocale()
 

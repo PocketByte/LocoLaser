@@ -10,6 +10,10 @@ internal typealias FixedFormattingClassBuilder
 internal typealias FixedFormattingClassBuilderFactory
         = ResourcesConfigBuilderFactory<KotlinBaseResourcesConfig, FixedFormattingClassBuilder>
 
+/**
+ * Builder for Kotlin Multiplatform platform-specific strings repository class configurations
+ * with a fixed (non-configurable) string formatting type.
+ */
 open class KmpClassFixedFormattingBuilder(
     name: String,
     builderFactory: FixedFormattingClassBuilderFactory,

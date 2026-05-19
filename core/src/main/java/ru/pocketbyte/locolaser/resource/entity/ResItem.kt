@@ -12,7 +12,7 @@ import java.util.ArrayList
 import java.util.Collections
 
 /**
- * Single resource item that contain key, value and comment.
+ * Single resource item that contains a key and a list of values (one per plural quantity).
  *
  * @author Denis Shurygin
  */
@@ -23,15 +23,19 @@ class ResItem(
 
     private val mutableValues = ArrayList<ResValue>(1)
 
-    /** Resource values. */
-    val values: List<ResValue> = Collections.unmodifiableList(mutableValues)!!
+    /** The list of [ResValue] instances for this item, one per plural quantity. */
+    val values: List<ResValue> = Collections.unmodifiableList(mutableValues)
 
 
     constructor(item: ResItem) : this(item.key) {
         mutableValues.addAll(item.mutableValues)
     }
 
-    //TODO docs
+    /**
+     * Adds [value] to this item. If a value with the same quantity already exists, it is replaced.
+     * @param value The value to add.
+     * @return true if no duplicate was found, false if an existing value was replaced.
+     */
     fun addValue(value: ResValue): Boolean {
         var isHasNoError = true
 
@@ -45,12 +49,17 @@ class ResItem(
         return isHasNoError
     }
 
-    //TODO docs
+    /**
+     * Removes [value] from this item.
+     * @return true if the value was present and removed, false otherwise.
+     */
     fun removeValue(value: ResValue): Boolean {
         return mutableValues.remove(value)
     }
 
-    //TODO docs
+    /**
+     * Removes and returns the [ResValue] with the given [quantity], or null if not found.
+     */
     fun removeValueForQuantity(quantity: Quantity): ResValue? {
         for (i in mutableValues.indices) {
             val resValue = mutableValues[i]
@@ -61,7 +70,9 @@ class ResItem(
         return null
     }
 
-    //TODO docs
+    /**
+     * Returns the [ResValue] with the given [quantity], or null if not found.
+     */
     fun valueForQuantity(quantity: Quantity): ResValue? {
         for (resValue in mutableValues) {
             if (resValue.quantity == quantity) {
@@ -71,11 +82,16 @@ class ResItem(
         return null
     }
 
-    //TODO docs
+    /**
+     * True if this item has multiple values or its single value has a quantity other than [Quantity.OTHER].
+     */
     val isHasQuantities: Boolean
         get() = mutableValues.size > 1 || mutableValues.size == 1 && mutableValues[0].quantity !== Quantity.OTHER
 
-    //TODO docs
+    /**
+     * Merges the values from [item] into this item, replacing existing values for the same quantity.
+     * @return This item after merging.
+     */
     fun merge(item: ResItem?): ResItem {
         if (item != null) {
             for (value2 in item.mutableValues) {

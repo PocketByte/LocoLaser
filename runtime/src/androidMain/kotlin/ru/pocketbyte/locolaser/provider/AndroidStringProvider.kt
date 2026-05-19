@@ -2,6 +2,14 @@ package ru.pocketbyte.locolaser.provider
 
 import android.content.Context
 
+/**
+ * An [IndexFormattedStringProvider] that loads strings from Android application resources by key name.
+ *
+ * Resource IDs are resolved via [android.content.res.Resources.getIdentifier] and cached
+ * internally to avoid repeated lookups.
+ *
+ * @param context the application context used to access resources.
+ */
 class AndroidStringProvider(
     private val context: Context
 ) : IndexFormattedStringProvider {

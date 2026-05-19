@@ -6,6 +6,9 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 
+/**
+ * A no-op implementation of [Resources] that always returns empty results.
+ */
 class EmptyResources: Resources {
 
     override val formattingType: FormattingType = NoFormattingType

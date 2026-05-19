@@ -9,20 +9,19 @@ import ru.pocketbyte.locolaser.resource.Resources
 import java.io.Serializable
 
 /**
- * Configuration object that contains information about localization rules for specified platform.
+ * Defines the configuration for a resource source or target platform.
  *
  * @author Denis Shurygin
  */
 interface ResourcesConfig : Serializable {
 
     /**
-     * Gets name of the platform.
-     * @return Name of the platform.
+     * The type identifier of this resource configuration.
      */
     val type: String
 
     /**
-     * Gets resources of the platform.
+     * The [Resources] instance associated with this configuration.
      */
     val resources: Resources
 }

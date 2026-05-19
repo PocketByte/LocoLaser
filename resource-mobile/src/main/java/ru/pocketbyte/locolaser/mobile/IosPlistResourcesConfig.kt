@@ -6,12 +6,11 @@ import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.mobile.resource.IosPlistResources
 import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosResourceFileProvider
+import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
 /**
- * iOS Info.plist localisation configuration.
- *
- * @author Denis Shurygin
+ * Resources configuration for iOS Info.plist localization.
  */
 class IosPlistResourcesConfig(
     workDir: File?,
@@ -40,7 +39,7 @@ class IosPlistResourcesConfig(
     override val defaultResourcesPath = "./"
     override val defaultResourceName = "InfoPlist"
 
-    override val resources by lazy {
+    override val resources: Resources by lazy {
         IosPlistResources(
             resourcesDir = this.resourcesDir,
             name = this.resourceName,

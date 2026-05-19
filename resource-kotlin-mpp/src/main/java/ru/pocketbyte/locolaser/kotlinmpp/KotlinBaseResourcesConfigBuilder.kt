@@ -3,12 +3,13 @@ package ru.pocketbyte.locolaser.kotlinmpp
 import ru.pocketbyte.locolaser.config.resources.BaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 
+/** Abstract builder for [KotlinBaseResourcesConfig] subclasses. */
 abstract class KotlinBaseResourcesConfigBuilder<out T : KotlinBaseResourcesConfig>
     : BaseResourcesConfigBuilder<T>() {
 
     /**
-     * Canonical name of the Repository interface that should be implemented by generated class.
-     * If empty there will no interfaces implemented by generated Repository class.
+     * Fully qualified name of the interface that the generated repository class will implement.
+     * If `null` or empty, no interface will be implemented.
      */
     var implements: String? = null
 
@@ -23,7 +24,8 @@ abstract class KotlinBaseResourcesConfigBuilder<out T : KotlinBaseResourcesConfi
     override var resourcesDir: String? = null
 
     /**
-     * ResourceFileProvider provides resource File depending on locale, directory and name.
+     * Always throws [UnsupportedOperationException]. Changing the resource file provider
+     * is not supported for Kotlin class-based resources.
      */
     override var resourceFileProvider: ResourceFileProvider?
         get() = null
@@ -32,5 +34,4 @@ abstract class KotlinBaseResourcesConfigBuilder<out T : KotlinBaseResourcesConfi
                 "Changing of resourceFileProvider is not supported for Kotlin Class based resources"
             )
         }
-
 }

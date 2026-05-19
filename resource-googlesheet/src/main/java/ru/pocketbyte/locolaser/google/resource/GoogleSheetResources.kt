@@ -20,9 +20,6 @@ import java.io.File
 import java.io.IOException
 import java.io.Serializable
 
-/**
- * @author Denis Shurygin
- */
 class GoogleSheetResources(
     private val sourceConfig: GoogleSheetResourcesConfig,
     private val serviceProvider: ServiceProvider,

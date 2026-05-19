@@ -14,16 +14,16 @@ import ru.pocketbyte.locolaser.utils.PluralUtils
 import java.io.IOException
 
 /**
- * This class contain logic of localization by specified localization config.
+ * Entry point for running the localization process defined by a [Config].
  *
  * @author Denis Shurygin
  */
 object LocoLaser {
 
     /**
-     * Build localization files by specified config.
-     * @param config Localization config.
-     * @return Return true if localization success, false otherwise.
+     * Builds localization files using the specified config.
+     * @param config The configuration defining the source, platform, locales, and conflict resolution strategy.
+     * @return true if localization succeeds, false otherwise.
      */
     fun localize(config: Config): Boolean {
         val startTime = System.currentTimeMillis()

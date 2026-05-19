@@ -16,20 +16,14 @@ import ru.pocketbyte.locolaser.utils.buildFileFrom
 import java.io.File
 
 /**
- * @author Denis Shurygin
+ * Resources configuration for the Google Sheets localization source.
  */
 class GoogleSheetResourcesConfig(
     private val workDir: File?,
-
     val id: String,
-
-    /**
-     * Title of the Worksheet that should be used for localization.
-     */
     val worksheetTitle: String? = null,
     val credentialFile: String? = null,
     val formattingType: FormattingType,
-
     keyColumn: String,
     quantityColumn: String? = null,
     commentColumn: String? = null,

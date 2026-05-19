@@ -11,9 +11,9 @@ package ru.pocketbyte.locolaser.kotlinmpp.extension
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-val Project.kotlin: KotlinMultiplatformExtension?
+internal val Project.kotlin: KotlinMultiplatformExtension?
     get() = extensions.findByName("kotlin") as? KotlinMultiplatformExtension
 
-fun Project.kotlin(configure: KotlinMultiplatformExtension.() -> Unit) {
+internal fun Project.kotlin(configure: KotlinMultiplatformExtension.() -> Unit) {
     extensions.configure("kotlin", configure)
 }

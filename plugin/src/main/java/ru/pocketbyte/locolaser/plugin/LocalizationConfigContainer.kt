@@ -4,18 +4,22 @@ import groovy.lang.Closure
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.internal.provider.ValueSupplier.TaskProducer
-import org.gradle.api.tasks.TaskProvider
 import ru.pocketbyte.locolaser.config.Config
 import ru.pocketbyte.locolaser.config.ConfigBuilder
 import ru.pocketbyte.locolaser.utils.callWithDelegate
 import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
 
+/**
+ * Gradle extension that allows configuring one or more localization configurations in a project.
+ *
+ * @param project the Gradle project this extension is attached to.
+ */
 open class LocalizationConfigContainer(
     private val project: Project
 ) {
 
     companion object {
+        /** The name used for an unnamed localization configuration (when no name is passed to [config]). */
         const val EMPTY_NAME = ""
     }
 
@@ -41,6 +45,16 @@ open class LocalizationConfigContainer(
         }
     }
 
+    /**
+     * Registers or updates a named localization configuration.
+     *
+     * If a configuration with [name] already exists, [configurator] is applied on top of it.
+     * Registers `localize<Name>`, `localize<Name>Force`, and `localize<Name>ExportNew` Gradle tasks
+     * the first time this name is used.
+     *
+     * @param name the configuration name, used as a suffix in generated task names.
+     * @param configurator the block to configure the [ConfigBuilder].
+     */
     fun config(name: String, configurator: ConfigBuilder.() -> Unit) {
         val builder = configs[name] ?: ConfigBuilder().apply {
             workDir = project.projectDir
@@ -50,6 +64,15 @@ open class LocalizationConfigContainer(
         registerTasksForConfig(name)
     }
 
+    /**
+     * Registers or updates an unnamed localization configuration.
+     *
+     * If the unnamed configuration already exists, [configurator] is applied on top of it.
+     * Registers `localize`, `localizeForce`, and `localizeExportNew` Gradle tasks
+     * the first time this is called.
+     *
+     * @param configurator the block to configure the [ConfigBuilder].
+     */
     fun config(configurator: ConfigBuilder.() -> Unit) {
         config(EMPTY_NAME, configurator)
     }
@@ -57,12 +80,23 @@ open class LocalizationConfigContainer(
     // ==================
     // Closure ==
 
+    /**
+     * Groovy DSL equivalent of [config(name, ConfigBuilder.() -> Unit)][config].
+     *
+     * @param name the configuration name.
+     * @param configurator the Groovy closure to configure the [ConfigBuilder].
+     */
     fun config(name: String, configurator: Closure<Unit>) {
         config(name) {
             configurator.callWithDelegate(this)
         }
     }
 
+    /**
+     * Groovy DSL equivalent of [config(ConfigBuilder.() -> Unit)][config].
+     *
+     * @param configurator the Groovy closure to configure the [ConfigBuilder].
+     */
     fun config(configurator: Closure<Unit>) {
         config {
             configurator.callWithDelegate(this)

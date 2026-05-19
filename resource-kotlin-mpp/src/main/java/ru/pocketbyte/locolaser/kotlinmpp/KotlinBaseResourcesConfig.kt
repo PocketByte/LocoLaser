@@ -5,6 +5,7 @@ import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.kotlinmpp.resource.file.provider.KotlinClassResourceFileProvider
 import java.io.File
 
+/** Base resources configuration for Kotlin Multiplatform strings repository generators. */
 abstract class KotlinBaseResourcesConfig(
     workDir: File?,
     resourceName: String?,

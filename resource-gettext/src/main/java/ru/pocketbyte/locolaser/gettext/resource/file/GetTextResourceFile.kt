@@ -21,11 +21,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.regex.Pattern
 
-/**
- * ResourceFile implementation for Android platform.
- *
- * @author Denis Shurygin
- */
 class GetTextResourceFile(file: File, private val mLocale: String) : ResourceStreamFile(file) {
 
     companion object {

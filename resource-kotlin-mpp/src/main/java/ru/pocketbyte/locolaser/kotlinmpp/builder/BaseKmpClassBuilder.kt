@@ -8,6 +8,11 @@ import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseResourcesConfigBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
 import ru.pocketbyte.locolaser.utils.firstCharToUpperCase
 
+/**
+ * Abstract base builder for Kotlin Multiplatform platform-specific strings repository class configurations.
+ *
+ * Extends [BaseKmpBuilder] with class name and package configuration for the generated repository class.
+ */
 abstract class BaseKmpClassBuilder<
         ConfigType: KotlinBaseResourcesConfig,
         BuilderType: KotlinBaseResourcesConfigBuilder<ConfigType>>(
@@ -18,13 +23,13 @@ abstract class BaseKmpClassBuilder<
     override var sourceSet: String = "${name}Main"
 
     /**
-     * Package of the Repository that should be used in class name.
-     * Package will be ignored if class name contains canonical name.
+     * Package of the Repository that should be used in the class name.
+     * Package will be ignored if the class name contains a canonical name.
      */
     var classPackage: String? = null
 
     /**
-     * Canonical or Simple name of the Repository class that should be generated.
+     * Canonical or simple name of the Repository class that should be generated.
      */
     var className: String? = null
 

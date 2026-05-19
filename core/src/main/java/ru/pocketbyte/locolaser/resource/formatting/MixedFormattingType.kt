@@ -3,6 +3,10 @@ package ru.pocketbyte.locolaser.resource.formatting
 import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.resource.entity.ResValue
 
+/**
+ * A [FormattingType] that represents a value containing a mix of multiple formatting types.
+ * Parsing and conversion operations are not supported and will throw [UnsupportedOperationException].
+ */
 object MixedFormattingType: FormattingType {
 
     override val argumentsSubstitution = FormattingType.ArgumentsSubstitution.NO

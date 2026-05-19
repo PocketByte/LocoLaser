@@ -2,6 +2,14 @@ package ru.pocketbyte.locolaser.provider
 
 import i18next.I18n
 
+/**
+ * A [NameFormattedStringProvider] backed by an i18next [I18n] instance.
+ *
+ * Named format arguments are passed to i18next as a dynamic JS object.
+ *
+ * @param i18n the i18next instance used for translation lookups.
+ * @param pluralKeyPostfix the suffix appended to the key when looking up plural strings.
+ */
 class JsStringProvider(
     private val i18n: I18n,
     private val pluralKeyPostfix: String = "_plural"

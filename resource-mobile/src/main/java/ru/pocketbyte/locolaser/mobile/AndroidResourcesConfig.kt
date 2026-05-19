@@ -11,12 +11,11 @@ import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.mobile.resource.AndroidResources
 import ru.pocketbyte.locolaser.mobile.resource.file.provider.AndroidResourceFileProvider
+import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
 /**
- * Android platform configuration.
- *
- * @author Denis Shurygin
+ * Resources configuration for the Android platform.
  */
 class AndroidResourcesConfig(
     workDir: File?,
@@ -45,7 +44,7 @@ class AndroidResourcesConfig(
     override val defaultResourcesPath = "./src/main/res/"
     override val defaultResourceName = "strings"
 
-    override val resources by lazy {
+    override val resources: Resources by lazy {
         AndroidResources(
             resourcesDir = this.resourcesDir,
             fileName = this.resourceName,
@@ -53,5 +52,4 @@ class AndroidResourcesConfig(
             filter = this.filter
         )
     }
-
 }

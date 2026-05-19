@@ -4,8 +4,12 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.mobile.resource.IosObjectiveCResources
+import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
+/**
+ * Resources configuration for the iOS Objective-C class generator.
+ */
 class IosObjectiveCResourcesConfig(
     workDir: File?,
     resourceName: String?,
@@ -32,7 +36,7 @@ class IosObjectiveCResourcesConfig(
 
     override val type = TYPE
 
-    override val resources by lazy {
+    override val resources: Resources by lazy {
         IosObjectiveCResources(
             resourcesDir = this.resourcesDir,
             name = this.resourceName,

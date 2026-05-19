@@ -4,9 +4,8 @@ import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.resource.entity.ResValue
 
 /**
- * Represents value without formatting.
- * Arguments for this format always null.
- * Conversion always returns same object.
+ * A [FormattingType] that represents a value without formatting.
+ * Arguments are always null. Conversion always returns the same object.
  */
 object NoFormattingType: FormattingType {
 

@@ -3,8 +3,10 @@ package ru.pocketbyte.locolaser.kotlinmpp
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinJsResources
+import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
+/** Resources configuration for the Kotlin Multiplatform JS strings repository generator. */
 class KotlinJsResourcesConfig(
     workDir: File?,
     resourceName: String?,
@@ -28,7 +30,7 @@ class KotlinJsResourcesConfig(
     override val defaultResourcesPath = "./build/generated/src/jsMain/kotlin/"
     override val defaultResourceName  = "$DEFAULT_PACKAGE.Js$DEFAULT_INTERFACE_NAME"
 
-    override val resources by lazy {
+    override val resources: Resources by lazy {
         KotlinJsResources(
             dir = this.resourcesDir,
             name = this.resourceName,
@@ -37,5 +39,4 @@ class KotlinJsResourcesConfig(
             filter = this.filter
         )
     }
-
 }

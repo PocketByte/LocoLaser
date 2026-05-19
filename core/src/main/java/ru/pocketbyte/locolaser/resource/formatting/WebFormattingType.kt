@@ -4,8 +4,12 @@ import ru.pocketbyte.locolaser.resource.entity.FormattingArgument
 import ru.pocketbyte.locolaser.resource.entity.ResValue
 import ru.pocketbyte.locolaser.resource.entity.merge
 
+/**
+ * [FormattingType] implementation for web-style format strings (e.g., `{{user_name}}`, `{{count, number}}`).
+ */
 object WebFormattingType: FormattingType {
 
+    /** Parameter key for the web format hint of an argument (e.g., `"number"`, `"date"`). */
     const val PARAM_TYPE_FORMAT = "Web_TypeFormat"
 
     private val pattern = "\\{\\{(\\w+)(,\\s*(\\S+))?}}"

@@ -12,24 +12,29 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import java.io.*
 
 /**
- * Represent resource file.
+ * Represents a single localization resource file.
  *
  * @author Denis Shurygin
  */
 interface ResourceFile {
 
+    /**
+     * The formatting type used to parse and convert formatting arguments in this file's values.
+     */
     val formattingType: FormattingType
 
     /**
-     * Read resources map from the resource file.
-     * @return Map with resources.
+     * Reads and returns the resource map from this file.
+     * @param extraParams Additional parameters for the read operation, or null for defaults.
+     * @return A [ResMap] containing the resources, or null if the file is empty or unreadable.
      */
     fun read(extraParams: ExtraParams?): ResMap?
 
     /**
-     * Write resources map into resource files.
-     * @param resMap Map with resources.
-     * @throws IOException
+     * Writes the given resource map to this file.
+     * @param resMap The resource map to write.
+     * @param extraParams Additional parameters for the write operation, or null for defaults.
+     * @throws IOException if an I/O error occurs during writing.
      */
     @Throws(IOException::class)
     fun write(resMap: ResMap, extraParams: ExtraParams?)

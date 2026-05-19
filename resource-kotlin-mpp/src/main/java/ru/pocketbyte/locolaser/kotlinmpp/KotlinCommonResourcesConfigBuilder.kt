@@ -5,6 +5,12 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
+/**
+ * Builder for [KotlinCommonResourcesConfig].
+ *
+ * Provides configuration options for the Kotlin Multiplatform Common strings repository generator,
+ * which produces a Kotlin interface with string accessor properties for use in shared (`commonMain`) code.
+ */
 class KotlinCommonResourcesConfigBuilder
     : BaseResourcesConfigBuilder<KotlinCommonResourcesConfig>() {
 
@@ -21,7 +27,7 @@ class KotlinCommonResourcesConfigBuilder
     }
 
     /**
-     * Canonical name of the Repository interface that should be should be generated.
+     * Canonical name of the Repository interface that should be generated.
      */
     override var resourceName: String? = null
 
@@ -31,7 +37,8 @@ class KotlinCommonResourcesConfigBuilder
     override var resourcesDir: String? = null
 
     /**
-     * ResourceFileProvider provides resource File depending on locale, directory and name.
+     * Always throws [UnsupportedOperationException]. Changing the resource file provider
+     * is not supported for Kotlin class-based resources.
      */
     override var resourceFileProvider: ResourceFileProvider?
         get() = null

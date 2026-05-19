@@ -11,11 +11,19 @@ internal typealias CustomFormattingClassBuilder
 internal typealias CustomFormattingClassBuilderFactory
         = ResourcesConfigBuilderFactory<KotlinBaseResourcesConfig, CustomFormattingClassBuilder>
 
+/**
+ * Builder for Kotlin Multiplatform platform-specific strings repository class configurations
+ * that support a configurable string formatting type.
+ */
 class KmpClassCustomFormattingBuilder(
     name: String,
     builderFactory: CustomFormattingClassBuilderFactory,
 ) : BaseKmpClassBuilder<KotlinBaseResourcesConfig, CustomFormattingClassBuilder>(name, builderFactory) {
 
+    /**
+     * Formatting type applied to localized string values in the generated repository class.
+     * If `null`, the formatting type from the parent builder is used.
+     */
     var formattingType: FormattingType? = null
 
     override fun configure(builder: CustomFormattingClassBuilder) {

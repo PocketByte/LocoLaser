@@ -7,8 +7,10 @@ import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseResourcesConfig.Companion.DEF
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinBaseResourcesConfig.Companion.DEFAULT_PACKAGE
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinCommonResources
 import ru.pocketbyte.locolaser.kotlinmpp.resource.file.provider.KotlinClassResourceFileProvider
+import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
+/** Resources configuration for the Kotlin Multiplatform Common strings repository generator. */
 class KotlinCommonResourcesConfig(
     workDir: File?,
     resourceName: String?,
@@ -35,7 +37,7 @@ class KotlinCommonResourcesConfig(
     override val defaultResourcesPath = "./build/generated/src/commonMain/kotlin/"
     override val defaultResourceName  = "$DEFAULT_PACKAGE.$DEFAULT_INTERFACE_NAME"
 
-    override val resources by lazy {
+    override val resources: Resources by lazy {
         KotlinCommonResources(
             dir = this.resourcesDir,
             name = this.resourceName,
@@ -43,5 +45,4 @@ class KotlinCommonResourcesConfig(
             filter = this.filter
         )
     }
-
 }

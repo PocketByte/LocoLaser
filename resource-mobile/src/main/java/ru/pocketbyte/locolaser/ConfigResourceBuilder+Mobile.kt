@@ -14,50 +14,59 @@ import ru.pocketbyte.locolaser.mobile.IosSwiftResourcesConfigBuilder
 
 
 /**
- * Create and configure Android resources config.
+ * Creates and adds an Android resources configuration to this resources set.
+ *
+ * @param action Configuration block applied to the [AndroidResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.android(action: AndroidResourcesConfigBuilder.() -> Unit) {
     add(AndroidResourcesConfig, action)
 }
 
 /**
- * Create default Android resources config.
+ * Creates and adds a default Android resources configuration to this resources set.
  */
 fun ResourcesSetConfigBuilder.android() {
     add(AndroidResourcesConfig)
 }
 
 /**
- * Create and configure iOS resources config.
+ * Creates and adds an iOS resources configuration to this resources set.
+ *
+ * @param action Configuration block applied to the [IosResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.ios(action: IosResourcesConfigBuilder.() -> Unit) {
     add(IosResourcesConfig, action)
 }
 
 /**
- * Create default iOS resources config.
+ * Creates and adds a default iOS resources configuration to this resources set.
  */
 fun ResourcesSetConfigBuilder.ios() {
     add(IosResourcesConfig)
 }
 
 /**
- * Create and configure iOS Plist resources config.
+ * Creates and adds an iOS Plist resources configuration to this resources set.
+ *
+ * @param action Configuration block applied to the [IosPlistResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.iosPlist(action: IosPlistResourcesConfigBuilder.() -> Unit) {
     add(IosPlistResourcesConfig, action)
 }
 
 /**
- * Create and configure iOS Objective C class generator config.
+ * Creates and adds an iOS Objective-C class generator configuration to this resources set.
+ *
+ * @param action Configuration block applied to the [IosObjectiveCResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.iosObjC(action: IosObjectiveCResourcesConfigBuilder.() -> Unit) {
     add(IosObjectiveCResourcesConfig ,action)
 }
 
-
 /**
- * Create and configure iOS Swift class generator config.
+ * Creates and adds an iOS Swift class generator configuration to this resources set.
+ *
+ * @param action Configuration block applied to the [IosSwiftResourcesConfigBuilder].
  */
 fun ResourcesSetConfigBuilder.iosSwift(action: IosSwiftResourcesConfigBuilder.() -> Unit) {
     add(IosSwiftResourcesConfig, action)

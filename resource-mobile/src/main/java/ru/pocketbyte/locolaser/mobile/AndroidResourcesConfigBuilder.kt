@@ -5,6 +5,12 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
+/**
+ * Builder for [AndroidResourcesConfig].
+ *
+ * Provides configuration options for Android localization resources stored
+ * in XML string files under `res/` directories.
+ */
 class AndroidResourcesConfigBuilder
     : BaseResourcesConfigBuilder<AndroidResourcesConfig>() {
     override fun buildConfig(

@@ -6,6 +6,11 @@ import ru.pocketbyte.locolaser.kotlinmpp.KotlinCommonResourcesConfigBuilder
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
 
 
+/**
+ * Builder for the Kotlin Multiplatform common strings repository interface configuration.
+ *
+ * Configures the interface generated for shared (`commonMain`) code.
+ */
 class KmpInterfaceBuilder : BaseKmpBuilder<
         KotlinCommonResourcesConfig,
         KotlinCommonResourcesConfigBuilder>(KotlinCommonResourcesConfig) {
@@ -13,13 +18,13 @@ class KmpInterfaceBuilder : BaseKmpBuilder<
     override var sourceSet: String = "commonMain"
 
     /**
-     * Package of the Repository that should be used in Interface name.
-     * Package will be ignored if Interface name contains Canonical name.
+     * Package of the Repository that should be used in the interface name.
+     * Package will be ignored if the interface name contains a canonical name.
      */
     var interfacePackage: String? = null
 
     /**
-     * Canonical or Simple name of the Repository interface that should be generated.
+     * Canonical or simple name of the Repository interface that should be generated.
      */
     var interfaceName: String? = null
 

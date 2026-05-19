@@ -7,6 +7,9 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 
+/**
+ * Resources configuration for the abstract key-value Kotlin Multiplatform strings repository generator.
+ */
 class KotlinAbsKeyValueResourcesConfig(
     workDir: File?,
     resourceName: String?,

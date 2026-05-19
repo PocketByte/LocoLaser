@@ -1,8 +1,22 @@
 package ru.pocketbyte.locolaser.resource.entity
 
+/**
+ * Represents a single formatting argument within a localization string value.
+ */
 data class FormattingArgument(
+    /**
+     * The argument name for named substitutions (e.g., `"%name$s"`), or null if unnamed.
+     */
     val name: String? = null,
+
+    /**
+     * The argument index for positional substitutions (e.g., `"%1$s"`), or null if unindexed.
+     */
     val index: Int? = null,
+
+    /**
+     * Additional formatting parameters (e.g., type name), or null if none.
+     */
     val parameters: Map<String, Any>? = null
 ) {
     override fun equals(other: Any?): Boolean {
@@ -23,6 +37,12 @@ data class FormattingArgument(
     }
 }
 
+/**
+ * Merges this [FormattingArgument] with [argument], combining their properties.
+ * Properties from [argument] take precedence unless null.
+ * @param argument The argument to merge with.
+ * @return The merged [FormattingArgument], or null if both are null.
+ */
 fun FormattingArgument?.merge(argument: FormattingArgument?): FormattingArgument? {
     if (this == null) return argument
     if (argument == null) return this

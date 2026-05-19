@@ -10,6 +10,7 @@ import ru.pocketbyte.locolaser.resource.Resources
 import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import java.io.File
 
+/** Resources configuration for Java `.properties` file-based localization. */
 class PropertiesResourcesConfig(
     workDir: File?,
     resourceName: String?,

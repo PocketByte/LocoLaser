@@ -6,6 +6,9 @@
 package ru.pocketbyte.locolaser.exception
 
 /**
+ * Exception thrown when a localization config is invalid or cannot be processed.
+ *
+ * @param message Optional detail message appended to the default error message.
  * @author Denis Shurygin
  */
 class InvalidConfigException @JvmOverloads constructor(

@@ -5,6 +5,12 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
+/**
+ * Builder for [IosResourcesConfig].
+ *
+ * Provides configuration options for iOS localization resources stored
+ * in `.strings` and `.stringsdict` files.
+ */
 class IosResourcesConfigBuilder : BaseResourcesConfigBuilder<IosResourcesConfig>() {
 
     override fun buildConfig(

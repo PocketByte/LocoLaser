@@ -5,11 +5,18 @@ import ru.pocketbyte.locolaser.resource.entity.ResValue
 import java.util.*
 import kotlin.reflect.KClass
 
+/**
+ * [FormattingType] implementation for Java-style format strings (e.g., `%1$s`, `%2$d`).
+ */
 object JavaFormattingType: FormattingType {
 
+    /** Parameter key for the Java format type specifier character (e.g., `"s"`, `"d"`). */
     const val PARAM_TYPE_NAME      = "Java_TypeName"
+
+    /** Parameter key for the Java format flags and width/precision modifiers (e.g., `"-10.2"`). */
     const val PARAM_TYPE_PARAMETERS = "Java_TypeParameters"
 
+    /** Regex pattern that matches Java-style format specifiers in a string. */
     val pattern =
             "(^|[^\\\\])%(([0-9]+)\\\$)?([0-9|+|\\-|.|,|(|#|]*)([a|b|c|d|e|f|g|h|n|o|s|t|x][a-zA-Z]?)"
                     .toRegex(RegexOption.MULTILINE).toPattern()
@@ -45,7 +52,11 @@ object JavaFormattingType: FormattingType {
         return value.formattingType.convertToJava(value)
     }
 
-    public fun argumentToString(argument: FormattingArgument): String? {
+    /**
+     * Converts [argument] to its Java format specifier string (e.g., `%1$s`).
+     * @return The format specifier string, or null if the argument has no type name.
+     */
+    fun argumentToString(argument: FormattingArgument): String? {
         val typeName = argument.parameters?.get(PARAM_TYPE_NAME) as? String
 
         if (typeName.isNullOrBlank()) return null
@@ -61,6 +72,10 @@ object JavaFormattingType: FormattingType {
         return builder.toString()
     }
 
+    /**
+     * Returns the Kotlin class corresponding to the Java format type specifier [name]
+     * (e.g., `"s"` → [String], `"d"` → [Long]), or null if the specifier is unknown or unsupported.
+     */
     fun classFromName(name: String?): KClass<*>? {
         return when (name?.getOrNull(0)) {
             'a' -> Double::class

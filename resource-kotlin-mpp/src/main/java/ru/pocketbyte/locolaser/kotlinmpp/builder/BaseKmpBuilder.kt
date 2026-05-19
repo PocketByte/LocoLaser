@@ -9,6 +9,12 @@ import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFiltersSet
 import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
 import java.io.File
 
+/**
+ * Abstract base builder for Kotlin Multiplatform platform-specific strings repository configurations.
+ *
+ * Provides common configuration options — source set, sources directory, and string filter —
+ * shared by all platform builders in [KotlinMultiplatformResourcesConfigBuilder].
+ */
 abstract class BaseKmpBuilder<
         ConfigType: BaseResourcesConfig,
         BuilderType: BaseResourcesConfigBuilder<ConfigType>>(
@@ -16,8 +22,8 @@ abstract class BaseKmpBuilder<
 ) {
 
     /**
-     * Name of source set.
-     * Will be used to get path to sources directory if sourcesDir is null.
+     * Name of the source set.
+     * Used to determine the path to the sources directory when [sourcesDir] is not set.
      */
     abstract var sourceSet: String
 
@@ -32,7 +38,7 @@ abstract class BaseKmpBuilder<
 
     /**
      * Filter function.
-     * If defined, only strings that suits the filter will be added as Repository fields.
+     * If defined, only strings that suit the filter will be added as Repository fields.
      */
     @Deprecated(
         "Lambda function for filter is deprecated and will be replaced with ResourcesFilter" +
@@ -43,7 +49,7 @@ abstract class BaseKmpBuilder<
 
     /**
      * Filter function.
-     * If defined, only strings that suits the filter will be added as Repository fields.
+     * If defined, only strings that suit the filter will be added as Repository fields.
      */
     var resourcesFilter: ResourcesFilter? = null
         set(value) {
@@ -52,8 +58,9 @@ abstract class BaseKmpBuilder<
         }
 
     /**
-     * If defined, only strings with keys that matches filter will be added as Repository fields.
-     * @param filter Only strings with keys that matches filter will be added as Repository fields.
+     * Sets the filter for repository fields.
+     * Only strings with keys that match the filter will be added as Repository fields.
+     * @param filter Filter to apply, or `null` to clear the filter.
      */
     fun filter(filter: ResourcesFilter?) {
         this.resourcesFilter = filter
@@ -61,8 +68,9 @@ abstract class BaseKmpBuilder<
     }
 
     /**
-     * If defined, only strings with keys that matches RegExp will be added as Repository fields.
-     * @param regExp RegExp String. Only strings with keys that matches RegExp will be added as Repository fields.
+     * Sets the filter for repository fields using a regular expression.
+     * Only strings with keys that match the RegExp will be added as Repository fields.
+     * @param regExp Regular expression string to match against string keys.
      */
     fun filter(regExp: String) {
         resourcesFilter = RegExResourcesFilter(regExp)
@@ -119,6 +127,9 @@ abstract class BaseKmpBuilder<
     }
 
     companion object {
+        /**
+         * Returns the default sources directory path for the given [builder] within [rootSrcDir].
+         */
         fun defaultSourcesDir(rootSrcDir: String, builder: BaseKmpBuilder<*, *>): String {
             return "${rootSrcDir}/${builder.sourceSet}/kotlin/"
         }

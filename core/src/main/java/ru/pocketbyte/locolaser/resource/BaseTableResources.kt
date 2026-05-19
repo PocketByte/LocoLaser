@@ -14,14 +14,21 @@ import ru.pocketbyte.locolaser.utils.PluralUtils
 import kotlin.math.max
 
 /**
+ * Abstract base implementation of [Resources] for table-based resource sources.
+ *
  * @author Denis Shurygin
  */
 abstract class BaseTableResources : Resources {
 
     companion object {
 
+        /**
+         * Parses a metadata string in `"key=value;key=value"` format into a map.
+         * @param metaString The raw metadata string, or null.
+         * @return A map of key-value pairs, or null if the string is null or blank.
+         */
         fun parseMeta(metaString: String?): Map<String, String>? {
-            return if (metaString != null && metaString.isNotBlank()) {
+            return if (!metaString.isNullOrBlank()) {
                 val metadata = mutableMapOf<String, String>()
                 metaString.split(";").forEach {
                     val metaParts = it.split("=")
@@ -29,18 +36,34 @@ abstract class BaseTableResources : Resources {
                         metadata[metaParts[0].trim()] = metaParts[1].trim()
                     }
                 }
-                if (metadata.isNotEmpty()) metadata else null
+                metadata.ifEmpty { null }
             } else null
         }
     }
 
+    /** The index of the first data row in the table. */
     abstract val firstRow: Int
+
+    /** The total number of rows in the table. */
     abstract val rowsCount: Int
+
+    /**
+     * Returns the cell value at the given column and row, or null if the cell is empty.
+     * @param col The column index.
+     * @param row The row index.
+     */
     abstract fun getValue(col: Int, row: Int): String?
+
+    /** Column index mappings for key, quantity, comment, metadata, and locale columns. */
     abstract val columnIndexes: ColumnIndexes
 
     private var keysRows: MutableMap<String, MutableMap<Quantity, Int>>? = null
 
+    /**
+     * Returns the row index for the given resource key and quantity, or null if not found.
+     * @param key The resource key.
+     * @param quantity The plural quantity.
+     */
     fun getRow(key: String, quantity: Quantity): Int? {
         if (this.keysRows == null) {
             val keysRows = mutableMapOf<String, MutableMap<Quantity, Int>>()
@@ -70,6 +93,12 @@ abstract class BaseTableResources : Resources {
         quantityMap[quantity] = row
     }
 
+    /**
+     * Reads resources from the table for the given locales.
+     * @param locales The set of locale identifiers to read, or null to read all available locales.
+     * @param extraParams Additional parameters passed to the read operation, or null for defaults.
+     * @return A [ResMap] containing the read resources, or null if no resources were found.
+     */
     override fun read(locales: Set<String>?, extraParams: ExtraParams?): ResMap? {
         val items = ResMap()
 
@@ -148,18 +177,18 @@ abstract class BaseTableResources : Resources {
 
 
     /**
-     * Converts common value to source value format
-     * @param value Value that should be converted
-     * @return Source value format
+     * Converts a common value to the source-specific format before writing to the table.
+     * @param value The value in common format.
+     * @return The value converted to source format.
      */
     open fun valueToSourceValue(value: String): String {
         return value
     }
 
     /**
-     * Converts source value to common value format
-     * @param sourceValue Source value that should be converted
-     * @return Value in common format
+     * Converts a source-specific value to the common format after reading from the table.
+     * @param sourceValue The value in source format.
+     * @return The value converted to common format.
      */
     open fun sourceValueToValue(sourceValue: String): String {
         return sourceValue
@@ -173,16 +202,27 @@ abstract class BaseTableResources : Resources {
         return quantity ?: Quantity.OTHER
     }
 
+    /**
+     * Holds column index mappings for key, quantity, comment, metadata, and locale columns.
+     */
     class ColumnIndexes(
+            /** Column index for the resource key column. */
             val key: Int,
+            /** Column index for the plural quantity column. */
             val quantity: Int,
+            /** Column index for the comment column. */
             val comment: Int,
+            /** Column index for the metadata column. */
             val metadata: Int,
+            /** Map from locale identifier to its column index. */
             val indexesMap: Map<String, Int>
 
     ) {
 
+        /** Maximum column index among all locale columns, or -1 if none. */
         val max: Int
+
+        /** Minimum column index among all locale columns, or -1 if none. */
         val min: Int
 
         init {

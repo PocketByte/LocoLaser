@@ -15,11 +15,20 @@ import java.io.File
 
 import java.io.IOException
 
+/**
+ * A [Resources] implementation that aggregates a set of [Resources] instances.
+ *
+ * @param resources The set of [Resources] instances to aggregate.
+ * @param main The primary [Resources] instance used for write operations, or null to write to all.
+ */
 class ResourcesSet(
     private val resources: Set<Resources>,
     private val main: Resources? = null
 ) : Resources {
 
+    /**
+     * Returns [MixedFormattingType] if instances differ in formatting type, otherwise the shared type.
+     */
     override val formattingType: FormattingType
         get() {
             val firstItemType = if (resources.isEmpty()) {
@@ -41,6 +50,11 @@ class ResourcesSet(
         }
     }
 
+    /**
+     * Writes the given resource map to [main] if set, otherwise writes to all instances in the set.
+     * @param resMap The resource map to write.
+     * @param extraParams Additional parameters passed to the write operation, or null for defaults.
+     */
     @Throws(IOException::class)
     override fun write(resMap: ResMap, extraParams: ExtraParams?) {
         if (main != null) {
@@ -52,6 +66,9 @@ class ResourcesSet(
         }
     }
 
+    /**
+     * Returns the combined list of resource files from all instances in the set.
+     */
     override fun allFiles(locales: Set<String>): List<File> {
         return resources.fold(mutableListOf()) { list, resource ->
             list.apply {

@@ -15,9 +15,8 @@ import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
 /**
- * Android platform configuration.
- *
- * @author Denis Shurygin
+ * Resources configuration for the GetText localization format.
+ * Manages localization files based on `.po` / `.pot` files.
  */
 class GetTextResourcesConfig(
     workDir: File?,

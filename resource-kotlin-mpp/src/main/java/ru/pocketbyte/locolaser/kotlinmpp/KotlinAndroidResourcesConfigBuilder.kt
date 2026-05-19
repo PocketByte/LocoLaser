@@ -4,6 +4,11 @@ import ru.pocketbyte.locolaser.config.resources.ResourceFileProvider
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import java.io.File
 
+/**
+ * Builder for [KotlinAndroidResourcesConfig].
+ *
+ * Provides configuration options for the Kotlin Multiplatform Android strings repository generator.
+ */
 class KotlinAndroidResourcesConfigBuilder
     : KotlinBaseResourcesConfigBuilder<KotlinAndroidResourcesConfig>() {
     override fun buildConfig(

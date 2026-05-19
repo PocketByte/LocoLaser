@@ -14,9 +14,6 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 
-/**
- * @author Denis Shurygin
- */
 class GetTextResources(
     resourcesDir: File,
     fileName: String,

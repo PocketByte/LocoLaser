@@ -6,6 +6,9 @@ import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.mobile.resource.file.provider.IosClassResourceFileProvider
 import java.io.File
 
+/**
+ * Base resources configuration for iOS class-based code generators (Objective-C and Swift).
+ */
 abstract class IosBaseClassResourcesConfig(
     workDir: File?,
     resourceName: String?,

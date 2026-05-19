@@ -6,6 +6,8 @@
 package ru.pocketbyte.locolaser.config
 
 /**
+ * A map of additional parameters passed to resources during read and write operations.
+ *
  * @author Denis Shurygin
  */
 class ExtraParams: HashMap<String, Any?>() {
@@ -13,12 +15,12 @@ class ExtraParams: HashMap<String, Any?>() {
     companion object {
 
         /**
-         * Defines if comment should be written even if it equal resource value.
+         * Defines if a comment should be written even if it equals the resource value.
          */
         const val DUPLICATE_COMMENTS = "DuplicateComments"
 
         /**
-         * Defines if unsupported quantities should be throw away if is not supported by locale.
+         * Defines if unsupported quantities should be thrown away if they are not supported by the locale.
          */
         const val TRIM_UNSUPPORTED_QUANTITIES = "TrimUnsupportedQuantities"
     }
@@ -26,7 +28,7 @@ class ExtraParams: HashMap<String, Any?>() {
 }
 
 /**
- * Defines if comment should be written even if it equal resource value. Default value: false.
+ * Defines if a comment should be written even if it equals the resource value. Default value: false.
  */
 var ExtraParams.duplicateComments: Boolean
     get() = get(ExtraParams.DUPLICATE_COMMENTS) as? Boolean ?: false
@@ -35,7 +37,7 @@ var ExtraParams.duplicateComments: Boolean
     }
 
 /**
- * Defines if unsupported quantities should be throw away if is not supported by locale. Default value: true.
+ * Defines if unsupported quantities should be thrown away if they are not supported by the locale. Default value: true.
  */
 var ExtraParams.trimUnsupportedQuantities: Boolean
     get() = get(ExtraParams.TRIM_UNSUPPORTED_QUANTITIES) as? Boolean ?: true

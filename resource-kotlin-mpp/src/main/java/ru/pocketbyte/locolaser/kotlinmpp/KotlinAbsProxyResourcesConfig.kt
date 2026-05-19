@@ -3,8 +3,10 @@ package ru.pocketbyte.locolaser.kotlinmpp
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinAbsProxyResources
+import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
+/** Resources configuration for the abstract proxy Kotlin Multiplatform strings repository generator. */
 class KotlinAbsProxyResourcesConfig(
     workDir: File?,
     resourceName: String?,
@@ -27,7 +29,7 @@ class KotlinAbsProxyResourcesConfig(
     override val defaultResourcesPath = "./build/generated/src/commonMain/kotlin/"
     override val defaultResourceName  = "$DEFAULT_PACKAGE.AbsProxy$DEFAULT_INTERFACE_NAME"
 
-    override val resources by lazy {
+    override val resources: Resources by lazy {
         KotlinAbsProxyResources(
             dir = this.resourcesDir,
             name = this.resourceName,

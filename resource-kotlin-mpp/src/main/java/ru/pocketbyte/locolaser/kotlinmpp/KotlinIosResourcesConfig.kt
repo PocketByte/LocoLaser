@@ -3,8 +3,10 @@ package ru.pocketbyte.locolaser.kotlinmpp
 import ru.pocketbyte.locolaser.config.resources.ResourcesConfigBuilderFactory
 import ru.pocketbyte.locolaser.config.resources.filter.ResourcesFilter
 import ru.pocketbyte.locolaser.kotlinmpp.resource.KotlinIosResources
+import ru.pocketbyte.locolaser.resource.Resources
 import java.io.File
 
+/** Resources configuration for the Kotlin Multiplatform iOS strings repository generator. */
 class KotlinIosResourcesConfig(
     workDir: File?,
     resourceName: String?,
@@ -28,7 +30,7 @@ class KotlinIosResourcesConfig(
     override val defaultResourcesPath = "./build/generated/src/iosMain/kotlin/"
     override val defaultResourceName  = "$DEFAULT_PACKAGE.Ios$DEFAULT_INTERFACE_NAME"
 
-    override val resources by lazy {
+    override val resources: Resources by lazy {
         KotlinIosResources(
             dir = this.resourcesDir,
             name = this.resourceName,
@@ -37,5 +39,4 @@ class KotlinIosResourcesConfig(
             filter = this.filter
         )
     }
-
 }
