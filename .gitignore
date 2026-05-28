@@ -38,4 +38,4 @@ proguard/
 build/
 
 # Claude Code
-.claude
+.claude/settings.local.json
