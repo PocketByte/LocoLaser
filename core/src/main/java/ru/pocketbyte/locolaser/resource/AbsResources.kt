@@ -59,7 +59,7 @@ abstract class AbsResources(
         getResourceFiles(locales)?.forEach { resFile ->
             resMap.merge(resFile.read(extraParams))
         }
-        return resMap
+        return resMap.filter(filter)
     }
 
     @Throws(IOException::class)
