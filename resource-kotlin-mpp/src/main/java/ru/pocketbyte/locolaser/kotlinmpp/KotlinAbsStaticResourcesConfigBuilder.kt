@@ -14,6 +14,7 @@ import java.io.File
  * as hardcoded static constants. Particularly useful for testing, as it eliminates the need
  * for a real string source and makes test output predictable.
  */
+@Deprecated("Use KotlinMultiplatformResourcesConfigBuilder instead.", level = DeprecationLevel.WARNING)
 class KotlinAbsStaticResourcesConfigBuilder
     : KotlinBaseCustomFormattingResourceConfigBuilder<KotlinAbsStaticResourcesConfig>() {
 

@@ -21,7 +21,6 @@ import ru.pocketbyte.locolaser.resource.formatting.FormattingType
 import ru.pocketbyte.locolaser.resource.formatting.NoFormattingType
 import java.io.File
 import java.io.IOException
-import java.io.PrintWriter
 
 /**
  * @author Denis Shurygin
@@ -66,20 +65,10 @@ class LocoLaserTest {
 
         config = Config(
             workDir = workDir,
-            file = File(workDir, "config.json"),
             platform = platformConfig,
             source = sourceConfig,
             locales = setOf("en", "ru")
         )
-
-        // Write config file to make it not empty
-        config.file?.let {
-            PrintWriter(it).run {
-                write("{}")
-                flush()
-                close()
-            }
-        }
     }
 
     // ====================================================

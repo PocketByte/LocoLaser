@@ -9,6 +9,7 @@ import java.io.File
  *
  * Provides configuration options for the Kotlin Multiplatform iOS strings repository generator.
  */
+@Deprecated("Use KotlinMultiplatformResourcesConfigBuilder instead.", level = DeprecationLevel.WARNING)
 class KotlinIosResourcesConfigBuilder
     : KotlinBaseResourcesConfigBuilder<KotlinIosResourcesConfig>() {
 

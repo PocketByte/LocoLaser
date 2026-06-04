@@ -10,6 +10,7 @@ import java.io.File
  * Provides configuration options for the abstract key-value Kotlin Multiplatform
  * strings repository generator, including the string formatting type.
  */
+@Deprecated("Use KotlinMultiplatformResourcesConfigBuilder instead.", level = DeprecationLevel.WARNING)
 class KotlinAbsKeyValueResourcesConfigBuilder
     : KotlinBaseCustomFormattingResourceConfigBuilder<KotlinAbsKeyValueResourcesConfig>() {
 

@@ -23,9 +23,7 @@ data class Config(
      */
     val workDir: File? = null,
 
-    /**
-     * File from which this config was read.
-     */
+    @Deprecated("This property is obsolete and no longer in use.", level = DeprecationLevel.ERROR)
     val file: File? = null,
 
     /**

@@ -14,6 +14,7 @@ import java.io.File
  * This is useful for wrapping an existing repository implementation — for example, to add logging,
  * swap the string source at runtime, or combine multiple providers.
  */
+@Deprecated("Use KotlinMultiplatformResourcesConfigBuilder instead.", level = DeprecationLevel.WARNING)
 class KotlinAbsProxyResourcesConfigBuilder
     : KotlinBaseResourcesConfigBuilder<KotlinAbsProxyResourcesConfig>() {
 

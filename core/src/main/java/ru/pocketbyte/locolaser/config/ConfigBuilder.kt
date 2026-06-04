@@ -14,9 +14,7 @@ open class ConfigBuilder {
      */
     var workDir: File? = null
 
-    /**
-     * File from which this config was read.
-     */
+    @Deprecated("This property is obsolete and no longer in use.", level = DeprecationLevel.ERROR)
     var file: File? = null
 
     /**
@@ -111,7 +109,6 @@ open class ConfigBuilder {
     fun build(): Config {
         return Config(
             workDir = workDir,
-            file = file,
             conflictStrategy = conflictStrategy,
             locales = locales,
             extraParams = ExtraParams().apply { putAll(extraParams) },

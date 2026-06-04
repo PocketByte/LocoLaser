@@ -18,6 +18,7 @@ import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuild
  *
  * @param action Configuration block applied to the [KotlinCommonResourcesConfigBuilder].
  */
+@Deprecated("Use kotlinMultiplatform.common instead.", level = DeprecationLevel.WARNING)
 fun ResourcesSetConfigBuilder.kotlinCommon(
     action: KotlinCommonResourcesConfigBuilder.() -> Unit
 ) {
@@ -31,6 +32,7 @@ fun ResourcesSetConfigBuilder.kotlinCommon(
  *
  * @param action Configuration block applied to the [KotlinAndroidResourcesConfigBuilder].
  */
+@Deprecated("Use kotlinMultiplatform.android instead.", level = DeprecationLevel.WARNING)
 fun ResourcesSetConfigBuilder.kotlinAndroid(
     action: KotlinAndroidResourcesConfigBuilder.() -> Unit
 ) {
@@ -44,6 +46,7 @@ fun ResourcesSetConfigBuilder.kotlinAndroid(
  *
  * @param action Configuration block applied to the [KotlinIosResourcesConfigBuilder].
  */
+@Deprecated("Use kotlinMultiplatform.ios instead.", level = DeprecationLevel.WARNING)
 fun ResourcesSetConfigBuilder.kotlinIos(
     action: KotlinIosResourcesConfigBuilder.() -> Unit
 ) {
@@ -57,6 +60,7 @@ fun ResourcesSetConfigBuilder.kotlinIos(
  *
  * @param action Configuration block applied to the [KotlinJsResourcesConfigBuilder].
  */
+@Deprecated("Use kotlinMultiplatform.js instead.", level = DeprecationLevel.WARNING)
 fun ResourcesSetConfigBuilder.kotlinJs(
     action: KotlinJsResourcesConfigBuilder.() -> Unit
 ) {
@@ -70,6 +74,7 @@ fun ResourcesSetConfigBuilder.kotlinJs(
  *
  * @param action Configuration block applied to the [KotlinAbsKeyValueResourcesConfigBuilder].
  */
+@Deprecated("Use kotlinMultiplatform.absKeyValue instead.", level = DeprecationLevel.WARNING)
 fun ResourcesSetConfigBuilder.kotlinAbsKeyValue(
     action: KotlinAbsKeyValueResourcesConfigBuilder.() -> Unit
 ) {
@@ -84,6 +89,7 @@ fun ResourcesSetConfigBuilder.kotlinAbsKeyValue(
  *
  * @param action Configuration block applied to the [KotlinAbsStaticResourcesConfigBuilder].
  */
+@Deprecated("Use kotlinMultiplatform.absStatic instead.", level = DeprecationLevel.WARNING)
 fun ResourcesSetConfigBuilder.kotlinAbsStatic(
     action: KotlinAbsStaticResourcesConfigBuilder.() -> Unit
 ) {
@@ -97,6 +103,7 @@ fun ResourcesSetConfigBuilder.kotlinAbsStatic(
  *
  * @param action Configuration block applied to the [KotlinAbsProxyResourcesConfigBuilder].
  */
+@Deprecated("Use kotlinMultiplatform.absProxy instead.", level = DeprecationLevel.WARNING)
 fun ResourcesSetConfigBuilder.kotlinAbsProxy(
     action: KotlinAbsProxyResourcesConfigBuilder.() -> Unit
 ) {

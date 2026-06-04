@@ -11,6 +11,7 @@ import java.io.File
  * Provides configuration options for the Kotlin Multiplatform Common strings repository generator,
  * which produces a Kotlin interface with string accessor properties for use in shared (`commonMain`) code.
  */
+@Deprecated("Use KotlinMultiplatformResourcesConfigBuilder instead.", level = DeprecationLevel.WARNING)
 class KotlinCommonResourcesConfigBuilder
     : BaseResourcesConfigBuilder<KotlinCommonResourcesConfig>() {
 
