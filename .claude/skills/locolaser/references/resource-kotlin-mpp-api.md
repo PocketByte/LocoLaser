@@ -37,6 +37,40 @@ For all other blocks (`android`, `ios`, `js`, `absKeyValue`, `absStatic`, `absPr
 
 ---
 
+## Key → member name mapping
+
+Every string key is converted to a Kotlin identifier by `TextUtils.keyToProperty`:
+
+1. Any run of non-alphanumeric characters is collapsed to a single `_`.
+2. If the result starts with a digit, a `_` is prepended.
+3. Trailing underscores are stripped.
+4. The whole name is lowercased.
+
+Examples:
+
+| Key | Member name |
+|---|---|
+| `title` | `title` |
+| `item_count` | `item_count` |
+| `Some Value` | `some_value` |
+| `some__value__` | `some_value` |
+| `1_value` | `_1_value` |
+| `formula x = (y + 3/2) * z.` | `formula_x_y_3_2_z` |
+
+**What gets generated per key:**
+
+- **Simple string** — a `val` property.
+- **Formatted string** (contains format arguments) — both a `val` property (raw template) **and** a `fun` with the same name whose parameters match the format arguments.
+- **Plural string** — a `fun` only; the first parameter is always `count: Long` (or `Int` if the source argument is typed as `Int`), followed by any additional format arguments.
+
+**Function parameter names** follow formatting type conventions:
+
+- `JavaFormattingType` (`%s`, `%d`, …): positional names built from the Java type shorthand + 1-based index — `s1`, `d2`, `s3`, etc.
+- `WebFormattingType` (`{{name}}`): the name from the template placeholder is used as-is.
+- Plural `count` argument: always named `count` regardless of formatting type.
+
+---
+
 Given keys `title` (simple), `greeting` (formatted — `"Hello, %s!"`), and `itemCount` (plural), LocoLaser generates the following.
 
 ## Common interface (`commonMain`)

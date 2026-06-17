@@ -230,6 +230,16 @@ Same parameters as `android`/`ios`/`js` above, plus:
 
 **build.gradle.kts:**
 ```kotlin
+// In the shared KMP module:
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("ru.pocketbyte.locolaser:runtime:2.6.0")
+        }
+    }
+}
+
+// In the module that applies the LocoLaser plugin:
 localize {
     config("KMP") {
         locales = setOf("base", "en", "de")
@@ -255,6 +265,19 @@ localize {
 ```groovy
 // import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
 // import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfig
+
+// In the shared KMP module:
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation "ru.pocketbyte.locolaser:runtime:2.6.0"
+            }
+        }
+    }
+}
+
+// In the module that applies the LocoLaser plugin:
 localize {
     config("KMP") {
         locales = ["base", "en", "de"]
