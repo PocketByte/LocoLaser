@@ -1,50 +1,141 @@
-# Resources: JSON for i18next
+# Resource: JSON (i18next)
 
-### Gradle dependency
-```gradle
-dependencies {
-    localize 'ru.pocketbyte.locolaser:resource-json:2.0.0'
+The `resource-json` module reads and writes JSON files in i18next format.
+
+Included in `plugin-all` and `plugin-kmp`. Requires `ru.pocketbyte.locolaser.kmp` or `ru.pocketbyte.locolaser.all` plugin.
+
+→ [Back to root README](../README.md)
+
+---
+
+## DSL
+
+Resource blocks are configured through the [LocoLaser Gradle plugin](../plugin/README.md) and go inside `source { }` or `platform { }` within `localize { config { } }`.
+
+**build.gradle.kts:**
+```kotlin
+json {
+    resourcesDir = "./locales/"   // default
+    resourceName = "strings"      // → locales/en/strings.json
+    indent = 2                    // optional; omit for compact JSON
+    filter("^web_.*")             // optional; RegExp on keys
 }
 ```
 
-### Config
-JSON Resources can be defined by single string or by JSON object. In case of string you can use value `"json"`.  
-JSON object should have following structure:
-```
-{
-    "type" : "json",
-    "res_name" : (String value),
-    "res_dir" : (Path to dir),
-    "indent": (Integer value),
-    "filter" : (String value)
+**build.gradle:**
+```groovy
+// import ru.pocketbyte.locolaser.json.JsonResourcesConfig
+add(JsonResourcesConfig.@Companion) {
+    resourcesDir = "./locales/"
+    resourceName = "strings"
+    indent = 2
+    filter("^web_.*")
 }
 ```
-Properties description:  
-- **`type`** - String. Type of the resource. In case of JSON should be used value `"json"`.
-- **`res_name`** - String. Resource file name. Default value: `"strings"`.
-- **`res_dir`** - String. Path to resources directory. Default value: `"./locales/"`.
-- **`indent`** - Integer. JSON indent. Set this property to prettify result JSON. Default value: no indent. 
-- **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource.
-  By default, no filter.
 
-### Plurals
-Plurals are supported in JSON resource implementation but with some restrictions.
-Keys for plural string should be in following pattern `"<key>_plural_<quantity>"`, where:
-- **`<key>`** - Is the key of the string.
-- **`<quantity>`** - Numeric representation of quantity. To get more details please refer to official documentation of i18next.
+---
 
-For "OTHER" quantity also can be used simplified key pattern `"<key>_plural"`.
+## Parameters
 
-### Example
-Here is the example of LocoLaser config where JSON used as a platform.
+| Parameter | Default | Description |
+|---|---|---|
+| `resourceName` | `"strings"` | File name without `.json` extension. |
+| `resourcesDir` | `"./"` | Base directory. Locale subdirectories are created inside it. |
+| `indent` | `-1` | Spaces for pretty-printing. `-1` produces compact JSON. |
+| `pluralKeyRule` | `KeyPluralizationRule.Postfix.Named()` | Rule for encoding plural keys. |
+| `formattingType` | `WebFormattingType` | Formatting type applied to string values. |
+
+---
+
+## File layout
+
+```
+resourcesDir/
+  base/strings.json    ← base locale
+  en/strings.json      ← "en" locale
+  de/strings.json      ← "de" locale
+```
+
+File format:
 ```json
 {
-    "platform" : {
-        "type" : "json",
-        "res_name" : "strings_intro",
-        "filter" : "screen_intro__*"
-    },
-    "source" : "android",
-    "locales" : ["en", "fi"]
+  "app_title": "My App",
+  "welcome_message": "Hello, {{name}}!"
+}
+```
+
+---
+
+## Plural support
+
+Plural forms are encoded as separate keys with a postfix.
+
+**`KeyPluralizationRule.Postfix.Named()`** (default — modern i18next):
+
+| Quantity | Key pattern |
+|---|---|
+| `other` | `file_count_plural` |
+| `one` | `file_count_plural_one` |
+| `zero` | `file_count_plural_zero` |
+
+**`KeyPluralizationRule.Postfix.Numeric()`** (legacy i18next):
+
+| Quantity | Key pattern |
+|---|---|
+| `other` | `file_count_plural` |
+| `one` | `file_count_plural_1` |
+| `zero` | `file_count_plural_0` |
+
+---
+
+## Full example
+
+**build.gradle.kts:**
+```kotlin
+import ru.pocketbyte.locolaser.*
+
+localize {
+    config("Web") {
+        locales = setOf("base", "en", "de", "fr")
+        source {
+            googleSheet {
+                id = "YOUR_SHEET_ID"
+                keyColumn = "key"
+                credentialFile = "./service_account.json"
+            }
+        }
+        platform {
+            json {
+                resourcesDir = "./src/locales/"
+                resourceName = "translation"
+                indent = 2
+            }
+        }
+    }
+}
+```
+
+**build.gradle:**
+```groovy
+// import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
+// import ru.pocketbyte.locolaser.json.JsonResourcesConfig
+localize {
+    config("Web") {
+        locales = ["base", "en", "de", "fr"]
+        source {
+            add(GoogleSheetResourcesConfig.@Companion) {
+                id = "YOUR_SHEET_ID"
+                keyColumn = "key"
+                credentialFile = "./service_account.json"
+            }
+        }
+        platform {
+            add(JsonResourcesConfig.@Companion) {
+                resourcesDir = "./src/locales/"
+                resourceName = "translation"
+                indent = 2
+            }
+        }
+    }
 }
 ```

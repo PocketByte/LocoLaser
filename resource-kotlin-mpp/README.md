@@ -1,149 +1,198 @@
-# Platform: Kotlin Mobile Multiplatform
+# Resource: Kotlin Multiplatform
 
-### Overview
-Kotlin Mobile Platform it's extension of LocoLaser.
-It generates the interface of common repository with strings resources and then implementations for each platform.
-Currently, it supports Android, iOS and JavaScript.  
-  
-Common interface example:
-```Kotlin
-interface StringRepository {
-    val screen_main_hello_text: String
-}
-```
-Each platform implements following interface using corresponded platform dependent features.
+The `resource-kotlin-mpp` module generates Kotlin code — a shared string repository interface with platform-specific implementations for Android, iOS, and JS. It is always used as **platform** (code is written); it cannot act as source.
 
-### Gradle dependency
-```gradle
-dependencies {
-    localize 'ru.pocketbyte.locolaser:resource-kotlin-mobile:2.0.0'
-}
-```
+Included in `plugin-all` and `plugin-kmp`. Requires `ru.pocketbyte.locolaser.kmp` or `ru.pocketbyte.locolaser.all` plugin.
 
-### Config
-Each class or interface that need to be generated should be described by separated platform config.
-Config can be defined by JSON object.  
-  
-In general config of one source file should have following structure:
-```
-{
-    "type": ("kotlin-common" | "kotlin-android" | "kotlin-ios"),
-    "res_name" : (String value, Canonical Java name),
-    "res_dir" : (Path to dir),
-    "filter" : (String value)
-}
-```
-Properties description:  
-- **`type`** - String. Type of the platform. For common kotlin interface it should be `"kotlin-common"`.
-- **`res_name`** - String. Desirable canonical name of repository interface or class implementation.
-- **`res_dir`** - String. Path to directory with interface or class file.
-- **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource.
-  By default, no filter.
+→ [Back to root README](../README.md)
 
-### Implementation Configs
-Repository implementation config require one more additional parameter:
-- **`implements`** - String. Canonical name of repository interface that should be implemented.
- In most cases it will have the same value that `res_name` from `"kotlin-common"` config.
+---
 
-So, Android,iOS or JS config should have following structure:
-```
-{
-    "type": ("kotlin-android" | "kotlin-ios", "kotlin-js"),
-    "res_name" : (String value, Canonical Java name),
-    "res_dir" : (Path to dir),
-    "filter" : (String value),
-    "implements" : (String value, Canonical Java name)
-}
-```
+## How it works
 
-### Default values
-For `"kotlin-common"`:
-- **`res_dir`** - `"./src/commonMain/kotlin/"`
-- **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.StringRepository"`
+The generated platform implementations delegate string lookups to native platform string resources at runtime (Android `strings.xml`, iOS `Localizable.strings`, etc.). **Those platform string files must be populated before the KMP code runs** — typically by a separate LocoLaser config.
 
-For `"kotlin-android"`:
-- **`res_dir`** - `"./src/androidMain/kotlin/"`
-- **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.AndroidStringRepository"`
-- **`implements`** - `ru.pocketbyte.locolaser.kmpp.StringRepository`
+### Recommended two-config setup
 
-For `"kotlin-ios"`:
-- **`res_dir`** - `"./src/iosMain/kotlin/"`
-- **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.IosStringRepository"`
-- **`implements`** - `ru.pocketbyte.locolaser.kmpp.StringRepository`
+**build.gradle.kts:**
+```kotlin
+import ru.pocketbyte.locolaser.*
 
-For `"kotlin-js"`:
-- **`res_dir`** - `"./src/jsMain/kotlin/"`
-- **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.JsStringRepository"`
-- **`implements`** - `ru.pocketbyte.locolaser.kmpp.StringRepository`
-
-### Usage
-All configs of kotlin-mobile describes write only resources.
-So, to get list of strings of your application you should also add at least one config that describe resource that can be read.
-Here is the example of full config:
-```
-{
-    "platform": [
-        {
-            "type": "android",
-            "res_dir": "./app_android/src/main/res/"
-        },
-        {
-            "type": "ios",
-            "res_dir": "./app_ios/locolaser-kotlin-multiplatform-example/"
-        },
-        {
-            "type": "kotlin-common",
-            "res_dir": "./common/build/generated/kotlin/",
-            "res_name": "ru.pocketbyte.locolaser.example.repository.StringRepository"
-        },
-        {
-            "type": "kotlin-android",
-            "res_dir": "./app_android/build/generated/kotlin/",
-            "res_name": "ru.pocketbyte.locolaser.example.repository.AndroidStringRepository",
-            "implements": "ru.pocketbyte.locolaser.example.repository.StringRepository"
-        },
-        {
-            "type": "kotlin-ios",
-            "res_dir": "./app_ios/build/generated/kotlin/",
-            "res_name": "ru.pocketbyte.locolaser.example.repository.IosStringRepository",
-            "implements": "ru.pocketbyte.locolaser.example.repository.StringRepository"
+localize {
+    // Step 1: sync strings from source to platform resource files
+    config("Mobile") {
+        locales = setOf("base", "en", "de")
+        source {
+            googleSheet {
+                id = "YOUR_SHEET_ID"
+                keyColumn = "key"
+                credentialFile = "./service_account.json"
+            }
         }
-    ],
-    "source": "null",
-    "locales" : ["base"],
-    "temp_dir": "./build/temp/"
-}
-```
-This config has also description of [Android and iOS](../resource-mobile/README.md) resources.
-They are readable and Repository will be fulfilled by strings from this resource files.
+        platform {
+            android { resourcesDir = "./android/src/main/res/" }
+            ios { resourcesDir = "./ios/" }
+        }
+    }
 
-### Custom Repository
-You able to implement your custom repository for any platform.
-To do it you should use type `kotlin-abs-key-value`.
-Then LocoLaser will generate implementation of abstract repository with interface `StringProvider`,
-which should be implemented and provided to repository class through constructor.
-
-If you would to generate formatting functions for formatted strings you should provide formatting type through the property **`formatting_type`**.
-See more details in [FORMATTING_TYPE.md](../FORMATTING_TYPE.md).
-
-So, Custom config should have following structure:
-```
-{
-    "type": "kotlin-abs-key-value",
-    "res_name" : (String value, Canonical Java name),
-    "res_dir" : (Path to dir),
-    "filter" : (String value),
-    "implements" : (String value, Canonical Java name),
-    "formatting_type" : (String value, Canonical Java name)
+    // Step 2: generate KMP repository code, reading keys from the platform resource files
+    config("KMP") {
+        locales = setOf("base", "en", "de")
+        dependsOnCompileTasks()
+        source {
+            android { resourcesDir = "./android/src/main/res/" }
+        }
+        platform {
+            kotlinMultiplatform(project) {
+                srcDir = "./shared/build/generated/locolaser/"
+                repositoryInterface = "com.example.StringRepository"
+                repositoryClass = "com.example.StringRepositoryImpl"
+                android()
+                ios()
+            }
+        }
+    }
 }
 ```
 
-Default values for `"kotlin-abs-key-value"`:
-- **`res_dir`** - `"./src/main/kotlin/"`
-- **`res_name`** - `"ru.pocketbyte.locolaser.kmpp.AbsKeyValueStringRepository"`
-- **`filter`** - By default no filter.
-- **`implements`** - `"ru.pocketbyte.locolaser.kmpp.StringRepository"`
-- **`formatting_type`** - `"no"`
+**build.gradle:**
+```groovy
+// import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
+// import ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder
+// import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfig
+// import ru.pocketbyte.locolaser.mobile.IosResourcesConfig
+localize {
+    config("Mobile") {
+        locales = ["base", "en", "de"]
+        source {
+            add(GoogleSheetResourcesConfig.@Companion) {
+                id = "YOUR_SHEET_ID"
+                keyColumn = "key"
+                credentialFile = "./service_account.json"
+            }
+        }
+        platform {
+            add(AndroidResourcesConfig.@Companion) { resourcesDir = "./android/src/main/res/" }
+            add(IosResourcesConfig.@Companion) { resourcesDir = "./ios/" }
+        }
+    }
 
-### Example project
-You can find example project in [locolaser-kotlin-mpp-example](https://github.com/PocketByte/locolaser-kotlin-mpp-example)
+    config("KMP") {
+        locales = ["base", "en", "de"]
+        dependsOnCompileTasks()
+        source {
+            add(AndroidResourcesConfig.@Companion) { resourcesDir = "./android/src/main/res/" }
+        }
+        platform {
+            add(new KotlinMultiplatformResourcesConfigBuilder(project)) {
+                srcDir = "./shared/build/generated/locolaser/"
+                repositoryInterface = "com.example.StringRepository"
+                repositoryClass = "com.example.StringRepositoryImpl"
+                android(); ios()
+            }
+        }
+    }
+}
+```
+
+### Runtime dependency
+
+Add the LocoLaser runtime library to `commonMain` in your shared KMP module:
+
+**build.gradle.kts:**
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("ru.pocketbyte.locolaser:runtime:2.6.0")
+        }
+    }
+}
+```
+
+**build.gradle:**
+```groovy
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation "ru.pocketbyte.locolaser:runtime:2.6.0"
+            }
+        }
+    }
+}
+```
+
+---
+
+## DSL
+
+Configured through the [LocoLaser Gradle plugin](../plugin/README.md) and goes inside `localize { config { } }`.
+
+```kotlin
+platform {
+    kotlinMultiplatform(project) {
+        srcDir = "./build/generated/locolaser/"
+        repositoryInterface = "com.example.StringRepository"
+        repositoryClass = "com.example.StringRepositoryImpl"
+        android()
+        ios()
+        js()
+    }
+}
+```
+
+---
+
+## Parameters
+
+| Parameter | Default | Description |
+|---|---|---|
+| `srcDir` | `"./build/generated/locolaser/"` | Root output directory. Subdirectories per source set are created automatically. |
+| `repositoryInterface` | `null` | Canonical or simple name of the interface to generate. |
+| `repositoryClass` | `null` | Canonical or simple name of the implementation class per platform. |
+| `repositoryPackage` | `project.group` | Package used when `repositoryInterface` or `repositoryClass` is a simple (non-canonical) name. |
+
+| Function | Description |
+|---|---|
+| `common(action?)` | Configures the common interface. Optional — generated by default. |
+| `android(action?)` | Adds an Android implementation. |
+| `ios(action?)` | Adds an iOS implementation. |
+| `js(action?)` | Adds a JS implementation. |
+| `absKeyValue(name, action?)` | Adds an abstract key-value implementation for custom platforms. |
+| `absStatic(name, action?)` | Adds a static (hardcoded) implementation — useful for tests. |
+| `absProxy(name, action?)` | Adds a proxy/delegating implementation. |
+| `filter(regExp: String)` | Syncs only keys matching the regular expression. |
+
+---
+
+## Generated API
+
+Given keys `title` (simple string), `greeting` (formatted — `"Hello, %s!"`), and `itemCount` (plural):
+
+**Common interface** (`commonMain`):
+```kotlin
+interface StringRepository {
+    val title: String
+    fun greeting(s1: String): String
+    fun itemCount(count: Long): String
+}
+```
+
+**Android** (`androidMain`) — reads from `strings.xml`, constructor accepts `Context`.
+
+**iOS** (`iosMain`) — reads from `Localizable.strings`/`.stringsdict`, constructors:
+```kotlin
+constructor()
+constructor(bundle: NSBundle)
+constructor(tableName: String)
+constructor(bundle: NSBundle, tableName: String)
+```
+
+**JS** (`jsMain`) — reads from i18next, constructor accepts `I18n`.
+
+---
+
+## Example project
+
+[locolaser-kotlin-mpp-example](https://github.com/PocketByte/locolaser-kotlin-mpp-example)

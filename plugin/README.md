@@ -1,98 +1,89 @@
-# LocoLaser Gradle plugin
+# LocoLaser Gradle Plugin
+![Maven Central](https://img.shields.io/maven-central/v/ru.pocketbyte.locolaser/plugin-all) [![License](https://img.shields.io/badge/License-Apache/2.0-blue.svg)](../LICENSE)
 
-LocoLaser - Is Localization tool for many types of string resources.  
-This gradle plugin simplify work with LocoLaser by adding several tasks and extensions.
+Gradle plugin that adds the `localize {}` DSL extension and localization tasks to your build.
 
-### Usage
+---
 
-##### 1. Apply plugin
+## Applying
 
-In **`build.gradle.kts`** of the module, apply LocoLaser plugin:
+### Option A: bundle artifact (recommended)
 
+Includes the plugin and resource modules in a single dependency — no separate `classpath` entries needed.
+
+**build.gradle.kts:**
+```kotlin
+buildscript {
+    repositories {
+        mavenCentral()
+        maven("https://plugins.gradle.org/m2/")
+    }
+    dependencies {
+        classpath("ru.pocketbyte.locolaser:plugin-all:2.6.0")
+        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.6.0")
+    }
+}
+
+apply(plugin = "ru.pocketbyte.locolaser.all")
+// or: apply(plugin = "ru.pocketbyte.locolaser.kmp")
+```
+
+Bundle contents:
+- `plugin-all` — all resources: mobile, kotlin-mpp, json, gettext, ini, properties, googlesheet
+- `plugin-kmp` — mobile, kotlin-mpp, json, properties (no gettext, ini, googlesheet)
+
+### Option B: base plugin + explicit resource modules
+
+**build.gradle.kts:**
 ```kotlin
 plugins {
     id("ru.pocketbyte.locolaser").version("2.6.0")
 }
-```
 
-##### 2. Add dependency
-
-Choose which type of artifact you will use and also add it as **`classpath`** dependency
-in **`build.gradle.kts`** of the module:
-
-```kotlin
 buildscript {
-    repositories {
-        mavenCentral() // For resources artifacts
-        ...
-    }
+    repositories { mavenCentral() }
     dependencies {
         classpath("ru.pocketbyte.locolaser:resource-mobile:2.6.0")
         classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.6.0")
-        ...
     }
 }
 ```
 
-##### 2. Create configuration
+---
 
-In same **`build.gradle.kts`** create localization configuration:
+## DSL
 
 ```kotlin
 import ru.pocketbyte.locolaser.*
-import ru.pocketbyte.locolaser.plugin.localize
 
-// 2: Configure localization config
 localize {
-    config("KMP") {
-        platform {
-            kotlinMultiplatform {
-                srcDir("${project.projectDir}/build/generated/src/")
-                android()
-                ios()
-                js()
-            }
-        }
-        source {
-            android { resourcesDir("../app_android/src/main/res") }
-            ios { resourcesDir("../app_ios/locolaser-kotlin-multiplatform-example/") }
-            json { resourcesDir("../app_js/src/main/resources/locales/") }
-        }
+    config {                                    // unnamed → tasks: localize, localizeForce, localizeExportNew
+        locales = setOf("base", "en", "de")
+        source { /* ... */ }
+        platform { /* ... */ }
+    }
+
+    config("KMP") {                            // named → tasks: localizeKMP, localizeKMPForce, localizeKMPExportNew
+        locales = setOf("base", "en", "de")
+        dependsOnCompileTasks()                // call when KMP codegen must precede compilation
+        source { /* ... */ }
+        platform { /* ... */ }
     }
 }
 ```
 
-Here `kotlinMultiplatform`, `android`, `ios` and `json` is an extensions for `ConfigResourceBuilder`.
-Each locolaser artifact that you add in section `buildscript.dependencies` adds its own Kotlin Extension.
+Each resource module added as a `classpath` dependency registers its own builder extensions for `source {}` and `platform {}` blocks.
 
-##### Extension
+---
 
-Plugin add **`localize`** extension. This extension has following methods:
-- **`config(name, configSetup)`** - Creates config with provided name and configure it with closure configSetup.
-- **`configFromFile(name, file, workDir)`** - **Depecated**. Don't use it. Will be removed in future.
+## Tasks
 
-##### Tasks
+The plugin adds tasks to the **`localization`** group. For an unnamed config:
 
-Plugin add 3 tasks into **`localization`** group:
-- **`localize[ConfigName]`** - Run LocoLaser with default parameters;
-- **`localize[ConfigName]Force`** - Run LocoLaser with force (ignoring cache);
-- **`localize[ConfigName]ExportNew`** - Run LocoLaser with force and conflict strategy = export_new_platform.
+| Task | Behavior |
+|---|---|
+| `localize` | Sync strings (Gradle task cache applies) |
+| `localizeForce` | Sync strings, bypass cache |
+| `localizeExportNew` | Sync + export new platform strings to source |
 
-### License
-
-```
-Copyright © 2017 Denis Shurygin. All rights reserved.
-Contacts: <mail@pocketbyte.ru>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+For a config named `KMP`, tasks are `localizeKMP`, `localizeKMPForce`, `localizeKMPExportNew`.

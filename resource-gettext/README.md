@@ -1,43 +1,111 @@
-# Resources: GetText
+# Resource: GetText
 
-### Gradle dependency
-```gradle
-dependencies {
-    localize 'ru.pocketbyte.locolaser:resource-gettext:2.0.0'
+The `resource-gettext` module reads and writes `.po` files in GNU GetText format.
+
+Included in `plugin-all`. Requires `ru.pocketbyte.locolaser.all` plugin.
+
+→ [Back to root README](../README.md)
+
+---
+
+## DSL
+
+Resource blocks are configured through the [LocoLaser Gradle plugin](../plugin/README.md) and go inside `source { }` or `platform { }` within `localize { config { } }`.
+
+**build.gradle.kts:**
+```kotlin
+gettext {
+    resourcesDir = "./languages/"   // default
+    resourceName = "messages"       // → languages/en/LC_MESSAGES/messages.po
+    filter(".*")                    // optional; RegExp on keys
 }
 ```
 
-### Config
-GetText Resources can be defined by single string or by JSON object. In case of string you can use value `"gettext"`.  
-JSON object should have following structure:
-```
-{
-    "type" : "gettext",
-    "res_name" : (String value),
-    "res_dir" : (Path to dir),
-    "filter" : (String value)
+**build.gradle:**
+```groovy
+// import ru.pocketbyte.locolaser.gettext.GetTextResourcesConfig
+add(GetTextResourcesConfig.@Companion) {
+    resourcesDir = "./languages/"
+    resourceName = "messages"
 }
 ```
-Properties description:  
-- **`type`** - String. Type of the resource. In case of GetText should be used value `"gettext"`.
-- **`res_name`** - String. Resource file name. Default value: `"messages"`.
-- **`res_dir`** - String. Path to resources directory. Default value: `"./languages/"`.
-- **`filter`** - RegExp String. If defined, only strings with keys that matches RegExp will be written into resource.
-  By default, no filter.
 
-### Plurals
-Plurals are not supported in GetText resource implementation. All quantities except OTHER will be ignored.
+---
 
-### Example
-Here is the example of LocoLaser config where GetText used as a platform.
-```json
-{
-    "platform" : {
-        "type" : "gettext",
-        "res_name" : "messages_intro",
-        "filter" : "screen_intro__*"
-    },
-    "source" : "android",
-    "locales" : ["en", "fi"]
+## Parameters
+
+| Parameter | Default | Description |
+|---|---|---|
+| `resourceName` | `"messages"` | File name without `.po` extension. |
+| `resourcesDir` | `"./"` | Base directory. Locale subdirectories are created inside it. |
+
+---
+
+## File layout
+
+```
+resourcesDir/
+  base/LC_MESSAGES/messages.po    ← base locale
+  en/LC_MESSAGES/messages.po      ← "en" locale
+  de/LC_MESSAGES/messages.po      ← "de" locale
+```
+
+---
+
+## Plural support
+
+GetText has native plural support, but LocoLaser currently uses only the `other` quantity form. Use `trimUnsupportedQuantities = true` in the global config to discard other forms automatically.
+
+---
+
+## Full example
+
+**build.gradle.kts:**
+```kotlin
+import ru.pocketbyte.locolaser.*
+
+localize {
+    config("Backend") {
+        locales = setOf("base", "en", "de")
+        trimUnsupportedQuantities = true
+        source {
+            googleSheet {
+                id = "YOUR_SHEET_ID"
+                keyColumn = "key"
+                credentialFile = "./service_account.json"
+            }
+        }
+        platform {
+            gettext {
+                resourcesDir = "./src/locales/"
+                resourceName = "messages"
+            }
+        }
+    }
+}
+```
+
+**build.gradle:**
+```groovy
+// import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
+// import ru.pocketbyte.locolaser.gettext.GetTextResourcesConfig
+localize {
+    config("Backend") {
+        locales = ["base", "en", "de"]
+        trimUnsupportedQuantities = true
+        source {
+            add(GoogleSheetResourcesConfig.@Companion) {
+                id = "YOUR_SHEET_ID"
+                keyColumn = "key"
+                credentialFile = "./service_account.json"
+            }
+        }
+        platform {
+            add(GetTextResourcesConfig.@Companion) {
+                resourcesDir = "./src/locales/"
+                resourceName = "messages"
+            }
+        }
+    }
 }
 ```

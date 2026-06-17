@@ -1,50 +1,149 @@
-# Source: Google Sheet
+# Resource: Google Sheets
 
-### Gradle dependency
-```gradle
-dependencies {
-    localize 'ru.pocketbyte.locolaser:resource-googlesheet:2.0.0'
+Google Sheets is typically used as **Source** (strings are read from it). It can also be used as Platform to export strings back to a sheet.
+
+Included in `plugin-all`. Requires `ru.pocketbyte.locolaser.all` plugin.
+
+→ [Back to root README](../README.md)
+
+---
+
+## DSL
+
+Resource blocks are configured through the [LocoLaser Gradle plugin](../plugin/README.md) and go inside `localize { config { } }`.
+
+**build.gradle.kts:**
+```kotlin
+source {
+    googleSheet {
+        id = "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
+        keyColumn = "key"
+        quantityColumn = "quantity"     // optional; enables plural support
+        commentColumn = "comment"       // optional
+        metadataColumn = "metadata"     // optional; Android-specific attributes
+        worksheetTitle = "Strings"      // optional; first sheet if omitted
+        credentialFile = "./service_account.json"
+    }
 }
 ```
-### Config
-Google Sheet source config is a JSON object that has following structure:
-```
-{
-    "type" : "googlesheet",
-    "id" : (String value),
-    "worksheet_title" : (String value),
-    "column_key" : (String value),
-    "column_quantity" : (String value),
-    "column_comment" : (String value),
-    "column_metadata" : (String value),
-    "credential_file" : (Path to file),
-    "formatting_type" : (String value, Canonical Java name)
+
+**build.gradle:**
+```groovy
+// import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
+source {
+    add(GoogleSheetResourcesConfig.@Companion) {
+        id = "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
+        keyColumn = "key"
+        quantityColumn = "quantity"
+        commentColumn = "comment"
+        credentialFile = "./service_account.json"
+    }
 }
 ```
-Each field in JSON has following purpose:
-- **`type`** - String. Type of the source. Must be equal `"googlesheet"`.
-- **`id`** - String. ID of the Google Sheet. You can get it from sheet url (https://docs.google.com/spreadsheets/d/**sheet_id**).
-- **`worksheet_title`** - Title of the worksheet with localized strings. Not necessary property, by default will be used first worksheet of the sheet.
-- **`column_key`** - String. Column title which contain string key's.
-- **`column_quantity`** - String. Column title which contain quantity. Not necessary property, by default no quantities.
-- **`column_comment`** - String. Column title which contain comment. Not necessary property, by default no comments.
-- **`column_metadata`** - String. Column title which contain Metadata of the row. Not necessary property, by default no metadata. Pattern of the metadata cell value: "[key_name_1]=[value];[key_name_2]=[value];...".
-- **`credential_file`** - String. Path to OAUth credential file. See tutorial [Google Sheet Credential File](credential_file_tut/README.md).
-- **`formatting_type`** - String. Values formatting type. Default value `java`. See more details in [FORMATTING_TYPE.md](../FORMATTING_TYPE.md).
 
-You can use keyword `base` to specify base locale. If base locale not set or column with base locale not exists, first locale in provided locales list will import as base locale also.
+---
 
-### Example
-Here is the example of LocoLaser config where Google Sheet used as a source.
-```json
-{
-    "platform" : "android",
-    "source" : {
-        "type" : "googlesheet",
-        "column_key" : "key",
-        "id" : "1KDu0_iel5qoNTKHZI0e4l3Uy52WisdfswYRy_GlFOPtY"
-    },
-    "locales" : ["en", "fi"],
-    "delay" : 30
+## Parameters
+
+| Parameter | Default | Description |
+|---|---|---|
+| `id` | **(required)** | Spreadsheet ID from the URL: `https://docs.google.com/spreadsheets/d/{id}/`. |
+| `keyColumn` | `"key"` | Header of the column containing string keys. |
+| `quantityColumn` | `null` | Header of the quantity column. Enables plural support when set. |
+| `commentColumn` | `null` | Header of the comment column. |
+| `metadataColumn` | `null` | Header of the metadata column. Used for Android-specific string attributes. |
+| `worksheetTitle` | `null` | Tab name inside the spreadsheet. If `null`, uses the first worksheet. |
+| `credentialFile` | `null` | Path to a Google service account JSON file. Required for CI/headless environments. If `null`, interactive OAuth is used. |
+| `formattingType` | `JavaFormattingType` | Formatting type applied to string values. |
+
+---
+
+## Sheet layout
+
+LocoLaser expects locale columns alongside the key column. The column header must match the locale code exactly:
+
+| key | base | en | de | quantity | comment |
+|---|---|---|---|---|---|
+| app_title | App | App | App | | Application title |
+| file_count | %1$d files | %1$d files | %1$d Dateien | other | |
+| file_count | %1$d file | %1$d file | %1$d Datei | one | |
+
+- `base` column → default/fallback locale
+- Repeat rows with the same key and different `quantity` values for plural forms
+- Quantity values: `zero`, `one`, `two`, `few`, `many`, `other`
+
+---
+
+## Credentials setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) and create a project.
+2. Open **Service Accounts**, create a service account, and generate a JSON key.
+3. Share the spreadsheet with the service account email (Viewer access is sufficient for source; Editor for export).
+4. Pass the path to the key file via `credentialFile`.
+
+For a detailed walkthrough see [credential_file_tut/README.md](credential_file_tut/README.md).
+
+Without `credentialFile`, LocoLaser falls back to interactive OAuth — only works on developer machines with a browser.
+
+---
+
+## Metadata (Android-specific)
+
+The `metadataColumn` value is a semicolon-separated list of `key=value` pairs:
+
+```
+formatted=false;xml-cdata=true
+```
+
+Common attributes:
+- `formatted=false` — marks string as not using `String.format()`
+- `xml-cdata=true` — wraps value in `<![CDATA[...]]>`
+- `translatable=false` — marks string as non-translatable in Android
+
+---
+
+## Full example
+
+**build.gradle.kts:**
+```kotlin
+import ru.pocketbyte.locolaser.*
+
+localize {
+    config {
+        locales = setOf("base", "en", "de")
+        source {
+            googleSheet {
+                id = "YOUR_SHEET_ID"
+                keyColumn = "key"
+                quantityColumn = "quantity"
+                credentialFile = "./service_account.json"
+            }
+        }
+        platform {
+            android { resourcesDir = "./app/src/main/res/" }
+        }
+    }
+}
+```
+
+**build.gradle:**
+```groovy
+// import ru.pocketbyte.locolaser.google.GoogleSheetResourcesConfig
+// import ru.pocketbyte.locolaser.mobile.AndroidResourcesConfig
+localize {
+    config {
+        locales = ["base", "en", "de"]
+        source {
+            add(GoogleSheetResourcesConfig.@Companion) {
+                id = "YOUR_SHEET_ID"
+                keyColumn = "key"
+                quantityColumn = "quantity"
+                credentialFile = "./service_account.json"
+            }
+        }
+        platform {
+            add(AndroidResourcesConfig.@Companion) { resourcesDir = "./app/src/main/res/" }
+        }
+    }
 }
 ```
