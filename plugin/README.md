@@ -19,8 +19,8 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin-all:2.6.0")
-        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.6.0")
+        classpath("ru.pocketbyte.locolaser:plugin-all:2.7.0")
+        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.7.0")
     }
 }
 
@@ -37,14 +37,14 @@ Bundle contents:
 **build.gradle.kts:**
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.6.0")
+    id("ru.pocketbyte.locolaser").version("2.7.0")
 }
 
 buildscript {
     repositories { mavenCentral() }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.6.0")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.6.0")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:2.7.0")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.7.0")
     }
 }
 ```

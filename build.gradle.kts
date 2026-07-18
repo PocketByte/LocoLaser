@@ -24,8 +24,8 @@ plugins {
 
 nmcpAggregation {
     centralPortal {
-        username = providers.gradleProperty("sonatype.publish.user").get() ?: ""
-        password = providers.gradleProperty("sonatype.publish.password").get() ?: ""
+        username = providers.gradleProperty("sonatype.publish.user").getOrElse("")
+        password = providers.gradleProperty("sonatype.publish.password").getOrElse("")
 
         // optional: publish manually from the portal
         publishingType = "USER_MANAGED"
@@ -46,6 +46,9 @@ dependencies {
         nmcpAggregation(project(path))
     }
 }
+
+version = property("lib-version").toString()
+group = property("lib-group").toString()
 
 allprojects {
     version = rootProject.version

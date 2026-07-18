@@ -1,5 +1,5 @@
 # LocoLaser
-![Maven Central](https://img.shields.io/maven-central/v/ru.pocketbyte.locolaser/plugin-all) [![License](https://img.shields.io/badge/License-Apache/2.0-blue.svg)](LICENSE) [![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-D97757)](https://github.com/PocketByte/LocoLaser/blob/master/.claude/skills/locolaser/SKILL.md)
+[![Maven Central](https://img.shields.io/maven-central/v/ru.pocketbyte.locolaser/core)] [![License](https://img.shields.io/badge/License-Apache/2.0-blue.svg)](LICENSE) [![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-D97757)](https://github.com/PocketByte/LocoLaser/blob/master/.claude/skills/locolaser/SKILL.md)
 
 LocoLaser is a Gradle plugin that syncs localization strings between a **Source** resource and a **Platform** resource:
 
@@ -51,8 +51,8 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin-all:2.6.0")
-        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.6.0")
+        classpath("ru.pocketbyte.locolaser:plugin-all:2.7.0")
+        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.7.0")
     }
 }
 
@@ -68,7 +68,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath "ru.pocketbyte.locolaser:plugin-all:2.6.0"
+        classpath "ru.pocketbyte.locolaser:plugin-all:2.7.0"
     }
 }
 
@@ -84,14 +84,14 @@ Bundle contents:
 **build.gradle.kts:**
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.6.0")
+    id("ru.pocketbyte.locolaser").version("2.7.0")
 }
 
 buildscript {
     repositories { mavenCentral() }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.6.0")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.6.0")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:2.7.0")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.7.0")
     }
 }
 ```
@@ -230,7 +230,7 @@ The generated KMP code requires a runtime dependency in your shared module:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("ru.pocketbyte.locolaser:runtime:2.6.0")
+            implementation("ru.pocketbyte.locolaser:runtime:2.7.0")
         }
     }
 }

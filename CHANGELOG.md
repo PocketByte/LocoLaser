@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.7.0] - 2026-06-17
+## [2.7.0] - 2026-07-18
 
 ### Added
 - Custom `FormattingType` support for Properties, Json and Ini resources ([#27](https://github.com/PocketByte/LocoLaser/issues/27))
@@ -141,14 +141,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrate build scripts to Kotlin DSL
 - Refactor plugin to use Gradle configuration DSL instead of JSON configs
 - Restore fat JARs for distribution
-
-[Unreleased]: https://github.com/PocketByte/LocoLaser/compare/2.6.0...HEAD
-[2.6.0]: https://github.com/PocketByte/LocoLaser/compare/2.5.0...2.6.0
-[2.5.0]: https://github.com/PocketByte/LocoLaser/compare/2.4.3...2.5.0
-[2.4.3]: https://github.com/PocketByte/LocoLaser/compare/2.4.2...2.4.3
-[2.4.2]: https://github.com/PocketByte/LocoLaser/compare/2.4.1...2.4.2
-[2.4.1]: https://github.com/PocketByte/LocoLaser/compare/2.4.0...2.4.1
-[2.4.0]: https://github.com/PocketByte/LocoLaser/compare/2.3.2...2.4.0
-[2.3.2]: https://github.com/PocketByte/LocoLaser/compare/2.3.1...2.3.2
-[2.3.1]: https://github.com/PocketByte/LocoLaser/compare/2.2.0...2.3.1
-[2.2.0]: https://github.com/PocketByte/LocoLaser/releases/tag/2.2.0

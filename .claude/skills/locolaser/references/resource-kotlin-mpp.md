@@ -15,7 +15,7 @@ The generated KMP code depends on classes from the LocoLaser runtime library. Ad
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("ru.pocketbyte.locolaser:runtime:2.6.0")
+            implementation("ru.pocketbyte.locolaser:runtime:2.7.0")
         }
     }
 }
@@ -27,7 +27,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation "ru.pocketbyte.locolaser:runtime:2.6.0"
+                implementation "ru.pocketbyte.locolaser:runtime:2.7.0"
             }
         }
     }
@@ -234,7 +234,7 @@ Same parameters as `android`/`ios`/`js` above, plus:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("ru.pocketbyte.locolaser:runtime:2.6.0")
+            implementation("ru.pocketbyte.locolaser:runtime:2.7.0")
         }
     }
 }
@@ -271,7 +271,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation "ru.pocketbyte.locolaser:runtime:2.6.0"
+                implementation "ru.pocketbyte.locolaser:runtime:2.7.0"
             }
         }
     }

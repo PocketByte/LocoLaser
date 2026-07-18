@@ -5,7 +5,7 @@ description: Use when working with LocoLaser — a Gradle-based localization too
 
 # LocoLaser
 
-> Current version: **2.6.0**. Use this version in all `classpath` and `id(...)` examples.
+> Current version: **2.7.0**. Use this version in all `classpath` and `id(...)` examples.
 > Full release list: [GitHub Releases](https://github.com/PocketByte/LocoLaser/releases) · [Maven Central](https://central.sonatype.com/search?q=ru.pocketbyte.locolaser)
 
 LocoLaser syncs localization strings between a **Source** resource and a **Platform** resource:
@@ -67,8 +67,8 @@ buildscript {
         maven("https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin-all:2.6.0")   // recommended: all resource modules
-        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.6.0")  // KMP + JSON + Mobile + Properties
+        classpath("ru.pocketbyte.locolaser:plugin-all:2.7.0")   // recommended: all resource modules
+        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.7.0")  // KMP + JSON + Mobile + Properties
     }
 }
 
@@ -84,8 +84,8 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath "ru.pocketbyte.locolaser:plugin-all:2.6.0"
-        // or: classpath "ru.pocketbyte.locolaser:plugin-kmp:2.6.0"
+        classpath "ru.pocketbyte.locolaser:plugin-all:2.7.0"
+        // or: classpath "ru.pocketbyte.locolaser:plugin-kmp:2.7.0"
     }
 }
 
@@ -100,14 +100,14 @@ Use the base plugin and declare only the resource modules you need:
 **build.gradle.kts:**
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.6.0")
+    id("ru.pocketbyte.locolaser").version("2.7.0")
 }
 
 buildscript {
     repositories { mavenCentral() }
     dependencies {
-        classpath("ru.pocketbyte.locolaser:resource-mobile:2.6.0")
-        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.6.0")
+        classpath("ru.pocketbyte.locolaser:resource-mobile:2.7.0")
+        classpath("ru.pocketbyte.locolaser:resource-googlesheet:2.7.0")
         // add only what you need
     }
 }
@@ -116,14 +116,14 @@ buildscript {
 **build.gradle:**
 ```groovy
 plugins {
-    id "ru.pocketbyte.locolaser" version "2.6.0"
+    id "ru.pocketbyte.locolaser" version "2.7.0"
 }
 
 buildscript {
     repositories { mavenCentral() }
     dependencies {
-        classpath "ru.pocketbyte.locolaser:resource-mobile:2.6.0"
-        classpath "ru.pocketbyte.locolaser:resource-googlesheet:2.6.0"
+        classpath "ru.pocketbyte.locolaser:resource-mobile:2.7.0"
+        classpath "ru.pocketbyte.locolaser:resource-googlesheet:2.7.0"
         // add only what you need
     }
 }

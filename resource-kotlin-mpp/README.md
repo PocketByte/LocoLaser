@@ -104,7 +104,7 @@ Add the LocoLaser runtime library to `commonMain` in your shared KMP module:
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("ru.pocketbyte.locolaser:runtime:2.6.0")
+            implementation("ru.pocketbyte.locolaser:runtime:2.7.0")
         }
     }
 }
@@ -116,7 +116,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation "ru.pocketbyte.locolaser:runtime:2.6.0"
+                implementation "ru.pocketbyte.locolaser:runtime:2.7.0"
             }
         }
     }
