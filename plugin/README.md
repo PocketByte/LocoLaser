@@ -13,19 +13,10 @@ Includes the plugin and resource modules in a single dependency — no separate 
 
 **build.gradle.kts:**
 ```kotlin
-buildscript {
-    repositories {
-        mavenCentral()
-        maven("https://plugins.gradle.org/m2/")
-    }
-    dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin-all:2.7.0")
-        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.7.0")
-    }
+plugins {
+    id("ru.pocketbyte.locolaser.all") version "2.7.0"
+    // or: id("ru.pocketbyte.locolaser.kmp") version "2.7.0"
 }
-
-apply(plugin = "ru.pocketbyte.locolaser.all")
-// or: apply(plugin = "ru.pocketbyte.locolaser.kmp")
 ```
 
 Bundle contents:
@@ -37,7 +28,7 @@ Bundle contents:
 **build.gradle.kts:**
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.7.0")
+    id("ru.pocketbyte.locolaser") version "2.7.0"
 }
 
 buildscript {

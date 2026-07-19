@@ -61,36 +61,18 @@ Use `plugin-all` or `plugin-kmp` — these include the plugin plus pre-bundled r
 
 **build.gradle.kts:**
 ```kotlin
-buildscript {
-    repositories {
-        mavenCentral()
-        maven("https://plugins.gradle.org/m2/")
-    }
-    dependencies {
-        classpath("ru.pocketbyte.locolaser:plugin-all:2.7.0")   // recommended: all resource modules
-        // or: classpath("ru.pocketbyte.locolaser:plugin-kmp:2.7.0")  // KMP + JSON + Mobile + Properties
-    }
+plugins {
+    id("ru.pocketbyte.locolaser.all") version "2.7.0"   // recommended: all resource modules
+    // or: id("ru.pocketbyte.locolaser.kmp") version "2.7.0"  // KMP + JSON + Mobile + Properties
 }
-
-apply(plugin = "ru.pocketbyte.locolaser.all")   // matches plugin-all
-// or: apply(plugin = "ru.pocketbyte.locolaser.kmp")
 ```
 
 **build.gradle:**
 ```groovy
-buildscript {
-    repositories {
-        mavenCentral()
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-    dependencies {
-        classpath "ru.pocketbyte.locolaser:plugin-all:2.7.0"
-        // or: classpath "ru.pocketbyte.locolaser:plugin-kmp:2.7.0"
-    }
+plugins {
+    id "ru.pocketbyte.locolaser.all" version "2.7.0"
+    // or: id "ru.pocketbyte.locolaser.kmp" version "2.7.0"
 }
-
-apply plugin: "ru.pocketbyte.locolaser.all"
-// or: apply plugin: "ru.pocketbyte.locolaser.kmp"
 ```
 
 ### Option B: plugin + separate resource modules
@@ -100,7 +82,7 @@ Use the base plugin and declare only the resource modules you need:
 **build.gradle.kts:**
 ```kotlin
 plugins {
-    id("ru.pocketbyte.locolaser").version("2.7.0")
+    id("ru.pocketbyte.locolaser") version "2.7.0"
 }
 
 buildscript {
