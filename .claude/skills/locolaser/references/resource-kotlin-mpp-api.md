@@ -85,7 +85,15 @@ interface StringRepository {
 
 ## Android implementation (`androidMain`)
 
-Reads from `strings.xml`. Constructor accepts `Context`.
+Reads from `strings.xml`. Two constructors:
+- **primary** — `constructor(provider: IndexFormattedStringProvider)`;
+- **convenience** — `constructor(context: Context)`, which wraps `AndroidStringProvider(context)` and delegates to the primary.
+
+The `Context` constructor is the simplest for DI wiring:
+
+```kotlin
+val repo = AppStringRepositoryImpl(context)   // resolves strings by resource name
+```
 
 ## iOS implementation (`iosMain`)
 

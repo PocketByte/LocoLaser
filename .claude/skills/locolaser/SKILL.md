@@ -8,6 +8,8 @@ description: Use when working with LocoLaser — a Gradle-based localization too
 > Current version: **2.7.0**. Use this version in all `classpath` and `id(...)` examples.
 > Full release list: [GitHub Releases](https://github.com/PocketByte/LocoLaser/releases) · [Maven Central](https://central.sonatype.com/search?q=ru.pocketbyte.locolaser)
 
+> **Kotlin compatibility:** the `runtime` library ships Kotlin metadata built with its own Kotlin version, and the consuming project's Kotlin compiler must be **≥** that version to read it (a newer compiler reads older metadata fine — it's a floor, not an exact match). LocoLaser **2.6+** requires the consuming project on Kotlin **≥ 2.3**. If the project is pinned to Kotlin 1.9 / 2.0 / 2.1, either upgrade its Kotlin or stay on LocoLaser **≤ 2.5.0**. Symptom of a mismatch: `Module was compiled with an incompatible version of Kotlin. The binary version of its metadata is 2.3.0, expected version is 2.1.0.`
+
 LocoLaser syncs localization strings between a **Source** resource and a **Platform** resource:
 
 ```
@@ -120,11 +122,13 @@ buildscript {
 
 ## Config DSL structure
 
-**build.gradle.kts** — resource extension functions (`android`, `ios`, `googleSheet`, `json`, etc.) are in the `ru.pocketbyte.locolaser` package. Add this import:
+**build.gradle.kts** — resource extension functions used *inside* the block (`android()`, `ios()`, `kotlinMultiplatform()`, `googleSheet()`, `json()`, etc.) live in the `ru.pocketbyte.locolaser` package. Add:
 
 ```kotlin
 import ru.pocketbyte.locolaser.*
 ```
+
+Add `import ru.pocketbyte.locolaser.config.Config` only when you set `conflictStrategy` (to reference `Config.ConflictStrategy.…`).
 
 ```kotlin
 localize {

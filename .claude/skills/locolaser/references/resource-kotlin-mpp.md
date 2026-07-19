@@ -148,6 +148,49 @@ platform {
 
 ---
 
+## Single-platform / plain Android module
+
+All examples above pass `kotlinMultiplatform(project)`, which assumes a **Kotlin Multiplatform** module: when a `Project` is provided, the generated directories are auto-registered into the `commonMain` / `<platform>Main` Kotlin source sets.
+
+A plain Android module (`com.android.application` / `com.android.library` with `kotlin-android`, no KMP source sets) has **no** `commonMain` / `androidMain` source sets. Passing `project` there fails with `Missing sourceSet `androidMain`` (or a `commonMain` error), because the builder tries to register into source sets that don't exist on a non-multiplatform Kotlin extension.
+
+Recipe for LocoLaser **2.7.0** on a plain Android module:
+
+- Call `kotlinMultiplatform { … }` **without** `project` (disables auto source-set registration).
+- Emit only the target(s) you need (`android()`).
+- Register the generated directories into the `main` source set manually.
+
+**build.gradle.kts:**
+```kotlin
+localize {
+    config("App") {
+        locales = setOf("base", "ru")
+        dependsOnCompileTasks()
+        source { android { resourcesDir = "./src/main/res/" } }
+        platform {
+            kotlinMultiplatform {                 // NOTE: no `project`
+                srcDir = "./build/generated/locolaser/"
+                repositoryInterface = "AppStringRepository"
+                repositoryClass = "AppStringRepositoryImpl"
+                repositoryPackage = "com.example.app.localization"
+                android()
+            }
+        }
+    }
+}
+
+android {
+    sourceSets.getByName("main").java.srcDirs(
+        "build/generated/locolaser/commonMain/kotlin",
+        "build/generated/locolaser/androidMain/kotlin",
+    )
+}
+```
+
+The generated files still land under `commonMain/` and `androidMain/` subdirectories of `srcDir` (the builder names output dirs by target); only the source-set *registration* differs.
+
+---
+
 ## Parameters
 
 > Full set of parameters and functions available inside `kotlinMultiplatform { }` is defined in `ru.pocketbyte.locolaser.kotlinmpp.KotlinMultiplatformResourcesConfigBuilder`.
